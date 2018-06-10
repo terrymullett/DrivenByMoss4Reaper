@@ -8,8 +8,8 @@ import de.mossgrabers.controller.apc.APCControllerDefinition;
 import de.mossgrabers.controller.apcmini.APCminiControllerDefinition;
 import de.mossgrabers.controller.beatstep.BeatstepControllerDefinition;
 import de.mossgrabers.controller.generic.GenericFlexiControllerDefinition;
-import de.mossgrabers.controller.kontrol.osc.mkii.KontrolOSCControllerDefinition;
 import de.mossgrabers.controller.kontrol.usb.mki.Kontrol1ControllerDefinition;
+import de.mossgrabers.controller.kontrol.usb.mkii.Kontrol2ControllerDefinition;
 import de.mossgrabers.controller.launchpad.LaunchpadControllerDefinition;
 import de.mossgrabers.controller.mcu.MCUControllerDefinition;
 import de.mossgrabers.controller.osc.OSCControllerDefinition;
@@ -22,11 +22,12 @@ import de.mossgrabers.reaper.controller.apcmini.APCminiControllerInstance;
 import de.mossgrabers.reaper.controller.beatstep.BeatstepControllerInstance;
 import de.mossgrabers.reaper.controller.beatstep.BeatstepProControllerInstance;
 import de.mossgrabers.reaper.controller.generic.GenericFlexiControllerInstance;
-import de.mossgrabers.reaper.controller.kontrol.osc.mkii.KontrolMkIIControllerInstance;
 import de.mossgrabers.reaper.controller.kontrol.usb.mki.KontrolMkIS25ControllerInstance;
 import de.mossgrabers.reaper.controller.kontrol.usb.mki.KontrolMkIS49ControllerInstance;
 import de.mossgrabers.reaper.controller.kontrol.usb.mki.KontrolMkIS61ControllerInstance;
 import de.mossgrabers.reaper.controller.kontrol.usb.mki.KontrolMkIS88ControllerInstance;
+import de.mossgrabers.reaper.controller.kontrol.usb.mkii.KontrolMkIIS49ControllerInstance;
+import de.mossgrabers.reaper.controller.kontrol.usb.mkii.KontrolMkIIS61ControllerInstance;
 import de.mossgrabers.reaper.controller.launchpad.LaunchpadMkIIControllerInstance;
 import de.mossgrabers.reaper.controller.launchpad.LaunchpadProControllerInstance;
 import de.mossgrabers.reaper.controller.mcu.MCU1ControllerInstance;
@@ -70,7 +71,10 @@ public class ControllerInstanceManager
         KontrolMkIS49ControllerInstance.class,
         KontrolMkIS61ControllerInstance.class,
         KontrolMkIS88ControllerInstance.class,
-        KontrolMkIIControllerInstance.class,
+        KontrolMkIIS49ControllerInstance.class,
+        KontrolMkIIS61ControllerInstance.class,
+        // TODO Support protocol with more than 8 bank pages
+        // KontrolMkIIControllerInstance.class,
         LaunchpadMkIIControllerInstance.class,
         LaunchpadProControllerInstance.class,
         MCU1ControllerInstance.class,
@@ -97,7 +101,10 @@ public class ControllerInstanceManager
         new Kontrol1ControllerDefinition (1),
         new Kontrol1ControllerDefinition (2),
         new Kontrol1ControllerDefinition (3),
-        new KontrolOSCControllerDefinition (),
+        new Kontrol2ControllerDefinition (0),
+        new Kontrol2ControllerDefinition (1),
+        // TODO Support protocol with more than 8 bank pages
+        // new KontrolOSCControllerDefinition (),
         new LaunchpadControllerDefinition (true),
         new LaunchpadControllerDefinition (false),
         new MCUControllerDefinition (0),

@@ -1465,6 +1465,8 @@ public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
      */
     public void setPosition (final int position)
     {
+        if (position < 0)
+            return;
         this.position = position;
         this.selectedDevice = position % this.getNumDevices ();
     }
