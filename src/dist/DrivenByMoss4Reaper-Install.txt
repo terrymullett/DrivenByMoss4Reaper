@@ -76,3 +76,7 @@
        - If you get an error that you do not have access. Open a console and enter
          the directory which contains the "DrivenByMoss" command. Then execute the command
          "chmod a+x DrivenByMoss".
+
+       - If you run Reaper without the Java app running it might crash. In that case you could remove
+         the EEL script from autostart and run it manually (assign a keyboard shortcut) when you want 
+         to use DrivenByMoss.
