@@ -31,12 +31,12 @@ import java.util.List;
  */
 public class UsbDeviceImpl implements IUsbDevice
 {
-    private IHost                 host;
-    private DeviceHandle          handle;
-    private UsbMatcher            usbMatcher;
-    private List<Byte>            interfaces    = new ArrayList<> ();
-    private List<UsbEndpointImpl> endpointCache = new ArrayList<> ();
-    private HidDeviceImpl         hidDevice;
+    private final IHost                 host;
+    private final UsbMatcher            usbMatcher;
+    private final List<Byte>            interfaces    = new ArrayList<> ();
+    private final List<UsbEndpointImpl> endpointCache = new ArrayList<> ();
+    private DeviceHandle                handle;
+    private HidDeviceImpl               hidDevice;
 
 
     /**
@@ -50,9 +50,6 @@ public class UsbDeviceImpl implements IUsbDevice
     {
         this.host = host;
         this.usbMatcher = usbMatcher;
-
-        if (usbMatcher.isEnableHID ())
-            this.hidDevice = new HidDeviceImpl (this.usbMatcher.getVendor (), this.usbMatcher.getProductID ());
 
         // Only attempt to open the device if endpoints are configured
         if (usbMatcher.getEndpoints ().isEmpty ())
@@ -187,8 +184,10 @@ public class UsbDeviceImpl implements IUsbDevice
 
     /** {@inheritDoc} */
     @Override
-    public IHidDevice getHidDevice ()
+    public IHidDevice getHidDevice () throws UsbException
     {
+        if (this.hidDevice == null)
+            this.hidDevice = new HidDeviceImpl (this.usbMatcher.getVendor (), this.usbMatcher.getProductID ());
         return this.hidDevice;
     }
 }

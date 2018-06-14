@@ -475,7 +475,7 @@ public class Kontrol1UsbDevice
         }
 
         this.displayBlock = host.createMemoryBlock (DATA_SZ);
-        this.ledBlock = host.createMemoryBlock (26);
+        this.ledBlock = host.createMemoryBlock (25);
         this.keyLedBlock = host.createMemoryBlock (266);
 
         // To send black LEDs on startup
@@ -674,7 +674,7 @@ public class Kontrol1UsbDevice
                         displayBuffer.put ((byte) 0);
                 }
 
-                // TODO TEST
+                // TODO Use Memory object for interface; also rewind on createByteBuffer with Reaper
                 displayBuffer.rewind ();
                 final byte [] data = new byte [DATA_SZ];
                 displayBuffer.get (data);
@@ -726,7 +726,6 @@ public class Kontrol1UsbDevice
 
         final ByteBuffer ledBuffer = this.ledBlock.createByteBuffer ();
         ledBuffer.clear ();
-        ledBuffer.put ((byte) 0x80);
         ledBuffer.put (this.buttonStates);
         ledBuffer.put ((byte) 0);
         ledBuffer.put ((byte) 0);
@@ -736,10 +735,10 @@ public class Kontrol1UsbDevice
         this.busySendingLEDs = true;
 
         // TODO TEST
-        final byte [] data = new byte [26];
+        final byte [] data = new byte [25];
         ledBuffer.rewind ();
         ledBuffer.get (data);
-        this.hidDevice.sendFeatureReport ((byte) 0, data, data.length);
+        this.hidDevice.sendOutputReport ((byte) 0x80, data, data.length);
         // this.usbEndpointDisplay.send (this.ledBlock, TIMEOUT);
 
         this.busySendingLEDs = false;
@@ -792,8 +791,8 @@ public class Kontrol1UsbDevice
         keyLedBuffer.rewind ();
         keyLedBuffer.get (data);
 
-        // TODO Bug in HID impl or is 88*3 too long?
-        // this.hidDevice.sendOutputReport ((byte) 0x82, data, data.length);
+        // TODO Bug in HID impl or is 88*3 too long? --> Try with modified lib
+        this.hidDevice.sendOutputReport ((byte) 0x82, data, 183); // data.length);
 
         this.busySendingKeyLEDs = false;
     }
