@@ -270,7 +270,6 @@ public class PropertiesEx extends java.util.Properties
     public void storeStagePlacement (final Stage stage)
     {
         this.putWindowPlacement (MAIN, -1, stage);
-        this.putBoolean (MAIN + MAXIMIZED, stage.isMaximized ());
     }
 
 
@@ -282,7 +281,6 @@ public class PropertiesEx extends java.util.Properties
     public void restoreStagePlacement (final Stage stage)
     {
         this.restoreWindowPlacement (MAIN, stage);
-        stage.setMaximized (this.getBoolean (MAIN + MAXIMIZED));
     }
 
 
@@ -355,10 +353,17 @@ public class PropertiesEx extends java.util.Properties
     public void putWindowPlacement (final String name, final int id, final Window window)
     {
         final String prop = buildPropertyName (name, id);
-        this.putDouble (prop + X, window.getX ());
-        this.putDouble (prop + Y, window.getY ());
-        this.putDouble (prop + W, window.getWidth ());
-        this.putDouble (prop + H, window.getHeight ());
+        final double x = window.getX ();
+        final double y = window.getY ();
+        final double width = window.getWidth ();
+        final double height = window.getHeight ();
+        if (Double.isNaN (x) || Double.isNaN (y) || Double.isNaN (width) || Double.isNaN (height))
+            return;
+
+        this.putDouble (prop + X, x);
+        this.putDouble (prop + Y, y);
+        this.putDouble (prop + W, width);
+        this.putDouble (prop + H, height);
     }
 
 

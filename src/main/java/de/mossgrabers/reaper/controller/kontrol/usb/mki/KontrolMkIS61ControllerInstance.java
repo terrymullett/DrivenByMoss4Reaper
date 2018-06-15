@@ -44,6 +44,6 @@ public class KontrolMkIS61ControllerInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new Kontrol1ControllerSetup (this.host, setupFactory, this.settingsUI);
+        return new Kontrol1ControllerSetup (2, this.host, setupFactory, this.settingsUI);
     }
 }
