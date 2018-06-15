@@ -22,7 +22,6 @@ public class PropertiesEx extends java.util.Properties
     private static final char   W                = 'W';
     private static final char   Y                = 'Y';
     private static final char   X                = 'X';
-    private static final String MAXIMIZED        = "Maximized";
 
 
     /**
