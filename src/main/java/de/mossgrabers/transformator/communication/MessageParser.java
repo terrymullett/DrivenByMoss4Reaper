@@ -152,7 +152,7 @@ public class MessageParser
         switch (command)
         {
             case "click":
-                this.transport.setMetronome (Double.parseDouble (value) > 0);
+                this.transport.setMetronomeState (Double.parseDouble (value) > 0);
                 break;
 
             case "preroll":
@@ -180,12 +180,12 @@ public class MessageParser
                 break;
 
             case "tempo":
-                this.transport.setTempo (Double.parseDouble (value));
+                this.transport.setTempoState (Double.parseDouble (value));
                 break;
 
             case "time":
                 if (parts.isEmpty ())
-                    this.transport.setPosition (Double.parseDouble (value));
+                    this.transport.setPositionValue (Double.parseDouble (value));
                 else if ("str".equals (parts.poll ()))
                     this.transport.setPositionText (value);
                 break;

@@ -171,11 +171,22 @@ public class TransportImpl extends BaseImpl implements ITransport
     }
 
 
+    /**
+     * Set the metronome state.
+     *
+     * @param on True to enable
+     */
+    public void setMetronomeState (final boolean on)
+    {
+        this.isMetronomeOn = on;
+    }
+
+
     /** {@inheritDoc} */
     @Override
     public void setMetronome (final boolean on)
     {
-        this.isMetronomeOn = on;
+        this.invokeAction (on ? Actions.ENABLE_METRONOME : Actions.DISABLE_METRONOME);
     }
 
 
@@ -438,14 +449,6 @@ public class TransportImpl extends BaseImpl implements ITransport
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public void setPosition (final double beats)
-    {
-        this.position = beats;
-    }
-
-
     /**
      * Set the text for the playback position (time).
      *
@@ -468,6 +471,26 @@ public class TransportImpl extends BaseImpl implements ITransport
     }
 
 
+    /**
+     * Set the position value.
+     *
+     * @param beats The position
+     */
+    public void setPositionValue (final double beats)
+    {
+        this.position = beats;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setPosition (final double beats)
+    {
+        this.position = beats;
+        this.sender.sendOSC ("/time", Double.valueOf (this.position));
+    }
+
+
     /** {@inheritDoc} */
     @Override
     public void changePosition (final boolean increase)
@@ -481,8 +504,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void changePosition (final boolean increase, final boolean slow)
     {
         final double frac = slow ? INC_FRACTION_TIME_SLOW : INC_FRACTION_TIME;
-        this.position = increase ? this.position + frac : Math.max (this.position - frac, 0.0);
-        this.sender.sendOSC ("/time", Double.valueOf (this.position));
+        setPosition (increase ? this.position + frac : Math.max (this.position - frac, 0.0));
     }
 
 
@@ -569,11 +591,22 @@ public class TransportImpl extends BaseImpl implements ITransport
     }
 
 
+    /**
+     * Set the tempo value.
+     *
+     * @param tempo The value
+     */
+    public void setTempoState (final double tempo)
+    {
+        this.tempo = tempo;
+    }
+
+
     /** {@inheritDoc} */
     @Override
     public void setTempo (final double tempo)
     {
-        this.tempo = tempo;
+        this.sender.sendOSC ("/tempo", Double.valueOf (tempo));
     }
 
 

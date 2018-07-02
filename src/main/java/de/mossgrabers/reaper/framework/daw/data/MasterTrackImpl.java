@@ -35,7 +35,8 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
     public MasterTrackImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger)
     {
         super (host, sender, valueChanger, -1, 8, 0);
-
+        // Master channel does always exist
+        this.setExists (true);
         this.valueChanger = valueChanger;
     }
 

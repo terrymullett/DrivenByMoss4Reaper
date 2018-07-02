@@ -21,14 +21,6 @@ public interface MessageSender
 
 
     /**
-     * Returns true if the sender is connected to the receiver.
-     *
-     * @return True if connected
-     */
-    boolean isConnected ();
-
-
-    /**
      * Invokes the action for the given action identifier.
      *
      * @param id the action identifier, must not be null

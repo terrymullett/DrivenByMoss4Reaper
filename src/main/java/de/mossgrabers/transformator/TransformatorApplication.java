@@ -5,21 +5,17 @@
 package de.mossgrabers.transformator;
 
 import de.mossgrabers.framework.controller.IControllerDefinition;
-import de.mossgrabers.framework.utils.OperatingSystem;
 import de.mossgrabers.reaper.controller.ControllerInstanceManager;
 import de.mossgrabers.reaper.controller.IControllerInstance;
 import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.reaper.framework.device.DeviceManager;
 import de.mossgrabers.reaper.framework.graphics.SVGImage;
-import de.mossgrabers.transformator.communication.MessageHandler;
+import de.mossgrabers.transformator.communication.DataModelUpdateExecutor;
+import de.mossgrabers.transformator.communication.DataModelUpdater;
 import de.mossgrabers.transformator.communication.MessageSender;
-import de.mossgrabers.transformator.communication.MessageServer;
 import de.mossgrabers.transformator.midi.Midi;
 import de.mossgrabers.transformator.midi.MidiConnection;
 import de.mossgrabers.transformator.util.LogModel;
-import de.mossgrabers.transformator.util.TextInputValidator;
-
-import com.illposed.osc.OSCMessage;
 
 import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
@@ -32,12 +28,10 @@ import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -45,16 +39,10 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
-import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -64,16 +52,12 @@ import javax.sound.midi.MidiUnavailableException;
 import java.awt.AWTException;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -81,28 +65,22 @@ import java.util.concurrent.TimeUnit;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class TransformatorApplication extends Application implements MessageHandler, MessageSender
+public class TransformatorApplication extends Application implements MessageSender, DataModelUpdater
 {
-    protected final SimpleStringProperty        title              = new SimpleStringProperty ();
-    protected final LogModel                    logModel           = new LogModel ();
+    protected final SimpleStringProperty        title             = new SimpleStringProperty ();
+    protected final LogModel                    logModel          = new LogModel ();
 
-    protected final MainConfiguration           mainConfiguration  = new MainConfiguration ();
+    protected final MainConfiguration           mainConfiguration = new MainConfiguration ();
 
     protected Stage                             stage;
-    private final TextField                     applicationCommand = new TextField ();
-    private final CheckBox                      runAutomatically   = new CheckBox ("Auto-run");
-    private final CheckBox                      enablePreviewBox   = new CheckBox ();
-    private final TextField                     tcpPortField       = new TextField ();
-    private final ListView<IControllerInstance> controllerList     = new ListView<> ();
+    private final ListView<IControllerInstance> controllerList    = new ListView<> ();
 
     private ControllerInstanceManager           instanceManager;
+    private AnimationTimer                      animationTimer;
+    private final DataModelUpdateExecutor       modelUpdater      = new DataModelUpdateExecutor (this);
 
     private TrayIcon                            trayIcon;
     private SystemTray                          tray;
-    private AnimationTimer                      animationTimer;
-    private final ScheduledExecutorService      executor           = Executors.newSingleThreadScheduledExecutor ();
-
-    private final MessageServer                 oscServer          = new MessageServer ("Reaper communication server", this.logModel, this);
 
 
     /** {@inheritDoc} */
@@ -160,56 +138,12 @@ public class TransformatorApplication extends Application implements MessageHand
     {
         // Top pane with options
 
-        final GridPane topPane = new GridPane ();
-        topPane.getStyleClass ().addAll ("grid", "padding");
-
-        // Top pane - row 1
-        final Label dawPathLabel = new Label ("DAW Path:");
-        dawPathLabel.setAlignment (Pos.CENTER_RIGHT);
-        dawPathLabel.setLabelFor (this.applicationCommand);
-        GridPane.setHgrow (this.applicationCommand, Priority.ALWAYS);
-
-        this.runAutomatically.setTooltip (new Tooltip ("If the DAW path is configured correctly Reaper is automatically started. Furthermore, the app starts minimized."));
-        this.runAutomatically.setOnAction (e -> this.mainConfiguration.setRunAutomatically (this.runAutomatically.isSelected ()));
-
-        final Button selectFileButton = new Button ("...");
-        selectFileButton.setMaxWidth (Double.MAX_VALUE);
-        selectFileButton.setOnAction (e -> this.selectDAWExecutable ());
-        final Button runButton = new Button ("Run");
-        runButton.setMaxWidth (Double.MAX_VALUE);
-        runButton.setOnAction (e -> this.runDAW ());
-
-        topPane.add (dawPathLabel, 0, 0);
-        topPane.add (this.applicationCommand, 1, 0);
-        topPane.add (selectFileButton, 2, 0);
-        topPane.add (runButton, 3, 0);
-        topPane.add (this.runAutomatically, 4, 0);
-
-        // Top pane - row 2
-        final Label displayPortLabel = new Label ("Communication Port:");
-        displayPortLabel.setAlignment (Pos.CENTER_RIGHT);
-        displayPortLabel.setLabelFor (this.tcpPortField);
-        GridPane.setHgrow (this.tcpPortField, Priority.ALWAYS);
-        TextInputValidator.limitToNumbers (this.tcpPortField);
-        final Button applyButton = new Button ("Apply");
-        applyButton.setMaxWidth (Double.MAX_VALUE);
-        applyButton.setOnAction (e -> this.applyTCPPort ());
-
+        // Top pane
         final Button refreshButton = new Button ("Refresh");
         refreshButton.setMaxWidth (Double.MAX_VALUE);
         refreshButton.setOnAction (event -> this.sendRefreshCommand ());
-        final CheckBox tcpConnectionBox = new CheckBox ("TCP connected");
-        tcpConnectionBox.setDisable (true);
-        tcpConnectionBox.selectedProperty ().bind (this.oscServer.getIsClientConnectedProperty ());
-
-        topPane.add (displayPortLabel, 0, 1);
-        topPane.add (this.tcpPortField, 1, 1);
-        topPane.add (applyButton, 2, 1);
-        topPane.add (refreshButton, 3, 1);
-        topPane.add (tcpConnectionBox, 4, 1);
 
         // Center pane with device configuration and logging
-
         final Button configButton = new Button ("Configuration");
         configButton.setOnAction (event -> this.editController ());
         configButton.setMaxWidth (Double.MAX_VALUE);
@@ -220,10 +154,12 @@ public class TransformatorApplication extends Application implements MessageHand
         final Button removeButton = new Button ("Remove");
         removeButton.setOnAction (event -> this.removeController ());
         removeButton.setMaxWidth (Double.MAX_VALUE);
-        final VBox deviceButtonContainer = new VBox (addButton, removeButton, configButton);
+        final VBox deviceButtonContainer = new VBox (addButton, removeButton, configButton, refreshButton);
         deviceButtonContainer.getStyleClass ().add ("configurationButtons");
 
-        this.controllerList.setMinWidth (300);
+        this.controllerList.setMinWidth (200);
+        this.controllerList.setMinHeight (200);
+        this.controllerList.setMaxHeight (200);
         final BorderPane controllerConfigurationPane = new BorderPane (this.controllerList, new Label ("Controller:"), deviceButtonContainer, null, null);
         controllerConfigurationPane.getStyleClass ().add ("configuration");
 
@@ -234,9 +170,7 @@ public class TransformatorApplication extends Application implements MessageHand
         final BorderPane loggingPane = new BorderPane (loggingTextArea, loggingAreaLabel, null, null, null);
         loggingPane.getStyleClass ().add ("logging");
 
-        final BorderPane centerPane = new BorderPane (loggingPane, null, null, null, controllerConfigurationPane);
-
-        final BorderPane root = new BorderPane (centerPane, topPane, null, null, null);
+        final BorderPane root = new BorderPane (loggingPane, controllerConfigurationPane, null, null, null);
         final Scene scene = new Scene (root, javafx.scene.paint.Color.TRANSPARENT);
         scene.getStylesheets ().add ("css/DefaultStyles.css");
         return scene;
@@ -249,13 +183,13 @@ public class TransformatorApplication extends Application implements MessageHand
     {
         this.logModel.addLogMessage ("Shutting down...");
 
+        this.modelUpdater.stopUpdater ();
+
         if (this.animationTimer != null)
         {
             this.logModel.addLogMessage ("Stopping flush timer...");
             this.animationTimer.stop ();
         }
-
-        this.executor.shutdown ();
 
         this.instanceManager.stopAll ();
 
@@ -264,9 +198,6 @@ public class TransformatorApplication extends Application implements MessageHand
         this.logModel.addLogMessage ("Storing configuration...");
         this.instanceManager.save (this.mainConfiguration);
         this.saveConfig ();
-
-        this.logModel.addLogMessage ("Stopping OSC...");
-        this.oscServer.stop ();
 
         MidiConnection.cleanupUnusedDevices ();
 
@@ -313,8 +244,8 @@ public class TransformatorApplication extends Application implements MessageHand
      */
     protected void showStage (final Stage stage, final Scene scene)
     {
-        stage.minWidthProperty ().set (820);
-        stage.minHeightProperty ().set (300);
+        stage.minWidthProperty ().set (600);
+        stage.minHeightProperty ().set (500);
 
         stage.titleProperty ().bind (this.title);
 
@@ -324,7 +255,7 @@ public class TransformatorApplication extends Application implements MessageHand
 
         stage.setScene (scene);
 
-        if (!SystemTray.isSupported () || !this.mainConfiguration.isRunAutomatically ())
+        if (!SystemTray.isSupported ())
             stage.show ();
     }
 
@@ -345,15 +276,7 @@ public class TransformatorApplication extends Application implements MessageHand
 
         this.mainConfiguration.restoreStagePlacement (this.stage);
 
-        this.enablePreviewBox.setSelected (this.mainConfiguration.isPreviewEnabled ());
-        this.applicationCommand.setText (this.mainConfiguration.getApplicationCommand ());
-        this.runAutomatically.setSelected (this.mainConfiguration.isRunAutomatically ());
-        this.tcpPortField.setText (Integer.toString (this.mainConfiguration.getTcpPort ()));
-
         SVGImage.clearCache ();
-
-        if (this.runAutomatically.isSelected ())
-            this.runDAW ();
     }
 
 
@@ -364,7 +287,6 @@ public class TransformatorApplication extends Application implements MessageHand
     {
         try
         {
-            this.mainConfiguration.setApplicationCommand (this.applicationCommand.getText ());
             this.mainConfiguration.storeStagePlacement (this.stage);
             this.mainConfiguration.save ();
         }
@@ -374,55 +296,6 @@ public class TransformatorApplication extends Application implements MessageHand
             this.logModel.addLogMessage (message);
             this.message (message);
         }
-    }
-
-
-    /**
-     * Select the Bitwig executable.
-     */
-    private void selectDAWExecutable ()
-    {
-        final FileChooser chooser = new FileChooser ();
-        chooser.setTitle ("Select the DAW executable file");
-
-        if (OperatingSystem.get () == OperatingSystem.WINDOWS)
-        {
-            final ExtensionFilter filter = new ExtensionFilter ("Executable", "*.exe");
-            chooser.getExtensionFilters ().add (filter);
-        }
-
-        final File file = chooser.showOpenDialog (this.stage);
-        if (file != null)
-            this.applicationCommand.setText (file.getAbsolutePath ());
-    }
-
-
-    /**
-     * Start the DAW.
-     */
-    private void runDAW ()
-    {
-        Platform.runLater ( () -> {
-            try
-            {
-                final String text = this.applicationCommand.getText ();
-                if (OperatingSystem.get () == OperatingSystem.MAC)
-                {
-                    final String [] cmd = new String []
-                    {
-                        "open",
-                        text
-                    };
-                    new ProcessBuilder (cmd).start ();
-                }
-                else
-                    new ProcessBuilder (text).start ();
-            }
-            catch (final IOException ex)
-            {
-                this.logModel.addLogMessage (ex.getLocalizedMessage ());
-            }
-        });
     }
 
 
@@ -449,7 +322,6 @@ public class TransformatorApplication extends Application implements MessageHand
      */
     private void startupInfrastructure ()
     {
-        this.startOSCCommunication ();
         this.startFlushTimer ();
 
         try
@@ -467,9 +339,10 @@ public class TransformatorApplication extends Application implements MessageHand
         if (!items.isEmpty ())
             this.controllerList.getSelectionModel ().select (0);
 
-        // Only start controllers if connection to Reaper is established
-        if (this.oscServer.getIsServerRunningProperty ().get ())
-            this.startControllers ();
+        // Start the loop to read data from Reaper
+        this.modelUpdater.execute ();
+
+        this.startControllers ();
     }
 
 
@@ -521,17 +394,6 @@ public class TransformatorApplication extends Application implements MessageHand
 
 
     /**
-     * Starts the receiption and opens the send port via TCP for extended communication not
-     * available in the standard Reaper OSC. This has to use TCP since UDP is not available in
-     * Reaper EEL.
-     */
-    private void startOSCCommunication ()
-    {
-        this.oscServer.connect (null, this.mainConfiguration.getTcpPort ());
-    }
-
-
-    /**
      * Closes the given socket if it is not null.
      *
      * @param socket The socket to close
@@ -551,20 +413,14 @@ public class TransformatorApplication extends Application implements MessageHand
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public void handle (final OSCMessage message)
+    /**
+     * Parse an incoming DAW message into all configured controllers.
+     *
+     * @param address The message address
+     * @param argument The argument
+     */
+    private void handleReceiveOSC (final String address, final String argument)
     {
-        final String address = message.getAddress ();
-        final List<Object> arguments = message.getArguments ();
-        String argument = null;
-        if (arguments != null && !arguments.isEmpty ())
-        {
-            final Object val = arguments.get (0);
-            if (val != null)
-                argument = val.toString ();
-        }
-
         if (address.contains ("inipath"))
             this.loadINIFiles (argument);
         else
@@ -576,13 +432,69 @@ public class TransformatorApplication extends Application implements MessageHand
     @Override
     public void sendOSC (final String command, final Object value)
     {
-        final OSCMessage message = this.createOSCMessage (command, value);
-        final StringBuilder msg = new StringBuilder ();
-        msg.append (message.getAddress ());
-        for (final Object arg: message.getArguments ())
-            msg.append (' ').append (arg.toString ());
-        this.oscServer.sendMessage (msg.toString ());
+        if (value == null)
+            this.processNoArg (command);
+        else if (value instanceof String)
+            this.processStringArg (command, (String) value);
+        else if (value instanceof Integer)
+            this.processIntArg (command, ((Integer) value).intValue ());
+        else if (value instanceof Double)
+        {
+            final Double doubleValue = (Double) value;
+            if (value.toString ().endsWith (".0"))
+                this.processIntArg (command, doubleValue.intValue ());
+            else
+                this.processDoubleArg (command, doubleValue.doubleValue ());
+        }
+        else if (value instanceof Boolean)
+            this.processIntArg (command, ((Boolean) value).booleanValue () ? 1 : 0);
+        else
+            this.logModel.addLogMessage ("Unsupported type: " + value.getClass ().toString ());
     }
+
+
+    /**
+     * Retrieve data from Reaper via the DLL.
+     * 
+     * @param dump Resend all data, ignore cache
+     * @return The data formatted in an OSC style with line separators
+     */
+    public native String receiveModelData (final boolean dump);
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param command The OSC path command
+     */
+    public native void processNoArg (final String command);
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param command The OSC path command
+     * @param value A string value
+     */
+    public native void processStringArg (final String command, final String value);
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param command The OSC path command
+     * @param value An integer value
+     */
+    public native void processIntArg (final String command, final int value);
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param command The OSC path command
+     * @param value A double value
+     */
+    public native void processDoubleArg (final String command, final double value);
 
 
     /** {@inheritDoc} */
@@ -601,59 +513,6 @@ public class TransformatorApplication extends Application implements MessageHand
     public void invokeAction (final int id)
     {
         this.sendOSC ("/action", Integer.valueOf (id));
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isConnected ()
-    {
-        return this.oscServer.getIsClientConnectedProperty ().get ();
-    }
-
-
-    /**
-     * Creates an OSC message.
-     *
-     * @param command The command
-     * @param value The value(s)
-     * @return The created message
-     */
-    private OSCMessage createOSCMessage (final String command, final Object value)
-    {
-        final List<Object> values = new ArrayList<> ();
-        if (value != null)
-        {
-            if (value instanceof Double)
-            {
-                final Double doubleValue = (Double) value;
-                if (value.toString ().endsWith (".0"))
-                    values.add (Integer.valueOf (doubleValue.intValue ()));
-                else
-                    values.add (Float.valueOf (doubleValue.floatValue ()));
-            }
-            else if (value instanceof Integer)
-                values.add (value);
-            else if (value instanceof Boolean)
-                values.add (((Boolean) value).booleanValue () ? Integer.valueOf (1) : Integer.valueOf (0));
-            else if (value instanceof String)
-                values.add (value);
-            else
-                this.logModel.addLogMessage ("Unsupported OSC type: " + value.getClass ().toString ());
-        }
-        return new OSCMessage (command, values);
-    }
-
-
-    private void applyTCPPort ()
-    {
-        final int newPort = Integer.parseInt (this.tcpPortField.getText ());
-        this.mainConfiguration.setTcpPort (newPort);
-        this.startOSCCommunication ();
-
-        // Only start controllers if connection to Reaper is established
-        if (this.oscServer.getIsServerRunningProperty ().get ())
-            this.restartControllers ();
     }
 
 
@@ -678,12 +537,34 @@ public class TransformatorApplication extends Application implements MessageHand
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    public void updateDataModel (final boolean dump)
+    {
+        final String data = this.receiveModelData (dump);
+        if (data.isEmpty ())
+            return;
+        for (final String command: data.split ("\n"))
+        {
+            final String [] split = command.split (" ");
+            final String params = split.length == 1 ? null : command.substring (split[0].length () + 1);
+            try
+            {
+                this.handleReceiveOSC (split[0], params);
+            }
+            catch (final IllegalArgumentException ex)
+            {
+                final StringWriter sw = new StringWriter ();
+                ex.printStackTrace (new PrintWriter (sw));
+                this.logModel.addLogMessage (sw.toString ());
+            }
+        }
+    }
+
+
     private void sendRefreshCommand ()
     {
-        if (this.isConnected ())
-            this.sendOSC ("/refresh", null);
-        else
-            this.executor.schedule (this::sendRefreshCommand, 1000, TimeUnit.MILLISECONDS);
+        this.modelUpdater.executeDump ();
     }
 
 

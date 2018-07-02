@@ -40,6 +40,10 @@ public final class Actions
     public static final int    RECORD_PREROLL                         = 41819;
     /** Options: Toggle metronome. */
     public static final int    TOGGLE_METRONOME                       = 40364;
+    /** Options: Enable metronome. */
+    public static final int    ENABLE_METRONOME                       = 41745;
+    /** Options: Disable metronome. */
+    public static final int    DISABLE_METRONOME                      = 41746;
 
     /** Track: Insert new track. */
     public static final int    INSERT_NEW_TRACK                       = 40001;
