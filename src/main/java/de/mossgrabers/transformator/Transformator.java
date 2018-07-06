@@ -16,7 +16,7 @@ public class Transformator
     /**
      * Main function.
      *
-     * @param args Unused
+     * @param args The first entry must contain the folder where the Reaper INI files are stored
      */
     public static void main (final String [] args)
     {

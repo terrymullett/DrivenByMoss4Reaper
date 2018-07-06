@@ -8,6 +8,7 @@ import de.mossgrabers.controller.launchpad.LaunchpadControllerDefinition;
 import de.mossgrabers.controller.launchpad.LaunchpadControllerSetup;
 import de.mossgrabers.framework.controller.IControllerSetup;
 import de.mossgrabers.reaper.controller.AbstractControllerInstance;
+import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.ReaperSetupFactory;
 import de.mossgrabers.transformator.communication.MessageSender;
 import de.mossgrabers.transformator.util.LogModel;
@@ -28,10 +29,11 @@ public class LaunchpadMkIIControllerInstance extends AbstractControllerInstance
      * @param logModel The logging model
      * @param window The owner window for the configuration dialog
      * @param sender The sender
+     * @param iniFiles The INI configuration files
      */
-    public LaunchpadMkIIControllerInstance (final LogModel logModel, final Window window, final MessageSender sender)
+    public LaunchpadMkIIControllerInstance (final LogModel logModel, final Window window, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new LaunchpadControllerDefinition (true), logModel, window, sender);
+        super (new LaunchpadControllerDefinition (true), logModel, window, sender, iniFiles);
     }
 
 

@@ -5,10 +5,12 @@
 package de.mossgrabers.reaper.controller;
 
 import de.mossgrabers.framework.configuration.AbstractConfiguration;
+import de.mossgrabers.framework.configuration.Configuration;
 import de.mossgrabers.framework.controller.IControllerDefinition;
 import de.mossgrabers.framework.controller.IControllerSetup;
 import de.mossgrabers.framework.usb.UsbMatcher;
 import de.mossgrabers.framework.utils.OperatingSystem;
+import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.ReaperSetupFactory;
 import de.mossgrabers.reaper.framework.configuration.SettingsUI;
 import de.mossgrabers.reaper.framework.daw.HostImpl;
@@ -34,10 +36,11 @@ import java.io.IOException;
  */
 public abstract class AbstractControllerInstance implements IControllerInstance
 {
+    protected final IControllerDefinition controllerDefinition;
     protected final LogModel              logModel;
     protected final Window                window;
     protected final MessageSender         sender;
-    protected final IControllerDefinition controllerDefinition;
+    protected final IniFiles              iniFiles;
 
     protected HostImpl                    host;
     protected SettingsUI                  settingsUI;
@@ -58,13 +61,15 @@ public abstract class AbstractControllerInstance implements IControllerInstance
      * @param logModel The logging model
      * @param window The owner window for the configuration dialog
      * @param sender The sender
+     * @param iniFiles The INI configuration files
      */
-    public AbstractControllerInstance (final IControllerDefinition controllerDefinition, final LogModel logModel, final Window window, final MessageSender sender)
+    public AbstractControllerInstance (final IControllerDefinition controllerDefinition, final LogModel logModel, final Window window, final MessageSender sender, final IniFiles iniFiles)
     {
+        this.controllerDefinition = controllerDefinition;
         this.logModel = logModel;
         this.window = window;
         this.sender = sender;
-        this.controllerDefinition = controllerDefinition;
+        this.iniFiles = iniFiles;
     }
 
 
@@ -93,7 +98,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
             this.host = new HostImpl (this.logModel, this.window);
             this.settingsUI = new SettingsUI (this.controllerDefinition.getNumMidiInPorts (), this.controllerDefinition.getNumMidiOutPorts (), this.controllerDefinition.getMidiDiscoveryPairs (OperatingSystem.get ()));
 
-            final File configFile = new File (this.getFileName ());
+            final File configFile = this.getFileName ();
             if (configFile.exists ())
             {
                 try (final FileReader reader = new FileReader (configFile))
@@ -112,7 +117,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
 
             this.settingsUI.load (this.controllerConfiguration);
 
-            this.setupFactory = new ReaperSetupFactory (this.sender, this.host, this.logModel, this.settingsUI.getSelectedMidiInputs (), this.settingsUI.getSelectedMidiOutputs ());
+            this.setupFactory = new ReaperSetupFactory (this.iniFiles, this.sender, this.host, this.logModel, this.settingsUI.getSelectedMidiInputs (), this.settingsUI.getSelectedMidiOutputs ());
             this.controllerSetup = this.createControllerSetup (this.setupFactory);
 
             Platform.runLater ( () -> {
@@ -136,9 +141,9 @@ public abstract class AbstractControllerInstance implements IControllerInstance
 
     private void storeQuantizeAmount ()
     {
-        // TODO Store in INI file
-
-        // "midiedit", "quantstrength", Integer.toString (configuration.getQuantizeAmount ()
+        final Configuration configuration = this.controllerSetup.getConfiguration ();
+        this.iniFiles.getIniReaperMain ().set ("midiedit", "quantstrength", Integer.toString (configuration.getQuantizeAmount ()));
+        this.iniFiles.saveMainFile ();
     }
 
 
@@ -225,8 +230,8 @@ public abstract class AbstractControllerInstance implements IControllerInstance
     }
 
 
-    private String getFileName ()
+    private File getFileName ()
     {
-        return "DrivenByMoss4Reaper-" + this.controllerDefinition.getHardwareModel ().replace (' ', '-') + ".config";
+        return new File (iniFiles.getIniPath (), "DrivenByMoss4Reaper-" + this.controllerDefinition.getHardwareModel ().replace (' ', '-') + ".config");
     }
 }

@@ -58,6 +58,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
+import java.util.List;
 import java.util.ResourceBundle;
 
 
@@ -79,6 +80,7 @@ public class TransformatorApplication extends Application implements MessageSend
     private ControllerInstanceManager           instanceManager;
     private AnimationTimer                      animationTimer;
     private final DataModelUpdateExecutor       modelUpdater      = new DataModelUpdateExecutor (this);
+    private String                              iniPath;
     private IniFiles                            iniFiles          = new IniFiles ();
 
     private TrayIcon                            trayIcon;
@@ -90,7 +92,7 @@ public class TransformatorApplication extends Application implements MessageSend
     public void start (final Stage stage)
     {
         this.stage = stage;
-        this.instanceManager = new ControllerInstanceManager (this.logModel, stage, this);
+        this.instanceManager = new ControllerInstanceManager (this.logModel, stage, this, this.iniFiles);
 
         // Run the application as a tray icon if supported
         if (SystemTray.isSupported ())
@@ -104,13 +106,26 @@ public class TransformatorApplication extends Application implements MessageSend
         }
 
         this.setTitle ();
-        this.loadConfig ();
+
+        final List<String> parameters = this.getParameters ().getRaw ();
+        if (parameters.isEmpty ())
+            this.logModel.addLogMessage ("Missing INI path parameter! Cannot start the application.");
+        else
+        {
+            this.iniPath = parameters.get (0);
+            this.loadConfig ();
+            this.loadINIFiles (this.iniPath);
+        }
+
         final Scene scene = this.createUI ();
         this.logModel.addShutdownListener ((ChangeListener<Boolean>) (observable, oldValue, newValue) -> this.exit ());
         this.showStage (stage, scene);
-        this.initUSB ();
 
-        Platform.runLater (this::startupInfrastructure);
+        if (this.iniPath != null)
+        {
+            this.initUSB ();
+            Platform.runLater (this::startupInfrastructure);
+        }
     }
 
 
@@ -269,7 +284,7 @@ public class TransformatorApplication extends Application implements MessageSend
     {
         try
         {
-            this.mainConfiguration.load ();
+            this.mainConfiguration.load (this.iniPath);
         }
         catch (final IOException ex)
         {
@@ -287,10 +302,13 @@ public class TransformatorApplication extends Application implements MessageSend
      */
     protected void saveConfig ()
     {
+        if (this.iniPath == null)
+            return;
+
         try
         {
             this.mainConfiguration.storeStagePlacement (this.stage);
-            this.mainConfiguration.save ();
+            this.mainConfiguration.save (this.iniPath);
         }
         catch (final IOException ex)
         {
@@ -423,10 +441,7 @@ public class TransformatorApplication extends Application implements MessageSend
      */
     private void handleReceiveOSC (final String address, final String argument)
     {
-        if (address.contains ("inipath"))
-            this.loadINIFiles (argument);
-        else
-            this.instanceManager.parseAll (address, argument);
+        this.instanceManager.parseAll (address, argument);
     }
 
 

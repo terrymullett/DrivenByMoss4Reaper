@@ -8,6 +8,7 @@ import de.mossgrabers.controller.push.PushControllerDefinition;
 import de.mossgrabers.controller.push.PushControllerSetup;
 import de.mossgrabers.framework.controller.IControllerSetup;
 import de.mossgrabers.reaper.controller.AbstractControllerInstance;
+import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.ReaperSetupFactory;
 import de.mossgrabers.transformator.communication.MessageSender;
 import de.mossgrabers.transformator.util.LogModel;
@@ -28,10 +29,11 @@ public class Push2ControllerInstance extends AbstractControllerInstance
      * @param logModel The logging model
      * @param window The owner window for the configuration dialog
      * @param sender The sender
+     * @param iniFiles The INI configuration files
      */
-    public Push2ControllerInstance (final LogModel logModel, final Window window, final MessageSender sender)
+    public Push2ControllerInstance (final LogModel logModel, final Window window, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new PushControllerDefinition (true), logModel, window, sender);
+        super (new PushControllerDefinition (true), logModel, window, sender, iniFiles);
     }
 
 

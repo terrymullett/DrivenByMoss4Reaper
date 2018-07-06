@@ -8,6 +8,7 @@ import de.mossgrabers.controller.kontrol.usb.mki.Kontrol1ControllerDefinition;
 import de.mossgrabers.controller.kontrol.usb.mki.Kontrol1ControllerSetup;
 import de.mossgrabers.framework.controller.IControllerSetup;
 import de.mossgrabers.reaper.controller.AbstractControllerInstance;
+import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.ReaperSetupFactory;
 import de.mossgrabers.transformator.communication.MessageSender;
 import de.mossgrabers.transformator.util.LogModel;
@@ -28,10 +29,11 @@ public class KontrolMkIS25ControllerInstance extends AbstractControllerInstance
      * @param logModel The logging model
      * @param window The owner window for the configuration dialog
      * @param sender The sender
+     * @param iniFiles The INI configuration files
      */
-    public KontrolMkIS25ControllerInstance (final LogModel logModel, final Window window, final MessageSender sender)
+    public KontrolMkIS25ControllerInstance (final LogModel logModel, final Window window, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new Kontrol1ControllerDefinition (0), logModel, window, sender);
+        super (new Kontrol1ControllerDefinition (0), logModel, window, sender, iniFiles);
     }
 
 

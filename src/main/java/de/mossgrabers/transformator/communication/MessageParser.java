@@ -21,7 +21,6 @@ import de.mossgrabers.reaper.framework.daw.AbstractTrackBankImpl;
 import de.mossgrabers.reaper.framework.daw.ApplicationImpl;
 import de.mossgrabers.reaper.framework.daw.BrowserImpl;
 import de.mossgrabers.reaper.framework.daw.CursorDeviceImpl;
-import de.mossgrabers.reaper.framework.daw.GrooveImpl;
 import de.mossgrabers.reaper.framework.daw.ProjectImpl;
 import de.mossgrabers.reaper.framework.daw.TransportImpl;
 import de.mossgrabers.reaper.framework.daw.data.ChannelImpl;
@@ -51,7 +50,6 @@ public class MessageParser
     private final IValueChanger    valueChanger;
     private final CursorDeviceImpl cursorDevice;
     private final IBrowser         browser;
-    private final GrooveImpl       groove;
     private IModel                 model;
 
 
@@ -72,7 +70,6 @@ public class MessageParser
         this.valueChanger = this.model.getValueChanger ();
         this.cursorDevice = (CursorDeviceImpl) this.model.getCursorDevice ();
         this.browser = this.model.getBrowser ();
-        this.groove = (GrooveImpl) this.model.getGroove ();
     }
 
 
@@ -131,10 +128,6 @@ public class MessageParser
                 this.parseBrowserValue (parts, value);
                 break;
 
-            case "groove":
-                this.parseGrooveValue (parts, value);
-                break;
-
             case "quantize":
                 if ("strength".equals (parts.poll ()))
                     this.controllerSetup.getConfiguration ().setQuantizeAmount (Integer.parseInt (value));
@@ -153,10 +146,6 @@ public class MessageParser
         {
             case "click":
                 this.transport.setMetronomeState (Double.parseDouble (value) > 0);
-                break;
-
-            case "preroll":
-                this.transport.setInternalPreroll ((int) Double.parseDouble (value));
                 break;
 
             case "prerollClick":
@@ -581,61 +570,6 @@ public class MessageParser
 
             default:
                 this.host.error ("Unhandled Clip Parameter: " + command);
-                break;
-        }
-    }
-
-
-    private void parseGrooveValue (final Queue<String> parts, final String value)
-    {
-        // TODO Load from INI file instead
-
-        // BR_Win32_GetPrivateProfileString("fingers", "groove_strength", "100", configFile, result,
-        // LENGTH);
-        // this->grooveStrength = CollectIntValue(ss, "/groove/strength", this->grooveStrength,
-        // std::atoi(result), dump);
-
-        // BR_Win32_GetPrivateProfileString("fingers", "groove_velstrength", "100", configFile,
-        // result, LENGTH);
-        // this->grooveVelstrength = CollectIntValue(ss, "/groove/velocity",
-        // this->grooveVelstrength, std::atoi(result), dump);
-
-        // BR_Win32_GetPrivateProfileString("fingers", "groove_target", "0", configFile, result,
-        // LENGTH);
-        // this->grooveTarget = CollectIntValue(ss, "/groove/target", this->grooveTarget,
-        // std::atoi(result), dump);
-
-        // BR_Win32_GetPrivateProfileString("fingers", "groove_tolerance", "16", configFile, result,
-        // LENGTH);
-        // this->grooveTolerance = CollectIntValue(ss, "/groove/tolerance", this->grooveTolerance,
-        // std::atoi(result), dump);
-
-        // BR_Win32_GetPrivateProfileString("midiedit", "quantstrength", "100", configFile, result,
-        // LENGTH);
-        // this->quantizeStrength = CollectIntValue(ss, "/quantize/strength",
-        // this->quantizeStrength, std::atoi(result), dump);
-
-        final String command = parts.poll ();
-        switch (command)
-        {
-            case "strength":
-                this.groove.setParameter (0, Integer.parseInt (value));
-                break;
-
-            case "velocity":
-                this.groove.setParameter (1, Integer.parseInt (value));
-                break;
-
-            case "target":
-                this.groove.setParameter (2, Integer.parseInt (value));
-                break;
-
-            case "tolerance":
-                this.groove.setParameter (3, Integer.parseInt (value));
-                break;
-
-            default:
-                this.host.error ("Unhandled Groove Parameter: " + command);
                 break;
         }
     }

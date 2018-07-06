@@ -11,6 +11,7 @@ import de.mossgrabers.framework.daw.ICursorClip;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.scale.Scales;
+import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.data.MasterTrackImpl;
 import de.mossgrabers.transformator.communication.MessageSender;
 
@@ -27,7 +28,8 @@ public class ModelImpl extends AbstractModel
 
     /**
      * Constructor.
-     *
+     * 
+     * @param iniFiles The INI configuration files
      * @param sender The OSC sender
      * @param host The DAW host
      * @param colorManager The color manager
@@ -44,7 +46,7 @@ public class ModelImpl extends AbstractModel
      * @param numDeviceLayers The number of device layers to monitor
      * @param numDrumPadLayers The number of drum pad layers to monitor
      */
-    public ModelImpl (final MessageSender sender, final IHost host, final ColorManager colorManager, final IValueChanger valueChanger, final Scales scales, final int numTracks, final int numScenes, final int numSends, final int numFilterColumnEntries, final int numResults, final boolean hasFlatTrackList, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
+    public ModelImpl (final IniFiles iniFiles, final MessageSender sender, final IHost host, final ColorManager colorManager, final IValueChanger valueChanger, final Scales scales, final int numTracks, final int numScenes, final int numSends, final int numFilterColumnEntries, final int numResults, final boolean hasFlatTrackList, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
     {
         super (colorManager, valueChanger, scales, numTracks, numScenes, numSends, numFilterColumnEntries, numResults, hasFlatTrackList, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
 
@@ -66,9 +68,9 @@ public class ModelImpl extends AbstractModel
         this.arranger = new ArrangerImpl ();
         this.mixer = new MixerImpl (sender, host);
         this.project = new ProjectImpl (sender);
-        this.transport = new TransportImpl (sender, host, this.trackBank, valueChanger);
+        this.transport = new TransportImpl (iniFiles, sender, host, this.trackBank, valueChanger);
 
-        this.groove = new GrooveImpl (sender, host, valueChanger);
+        this.groove = new GrooveImpl (iniFiles, host, valueChanger);
 
         this.currentTrackBank = this.trackBank;
     }

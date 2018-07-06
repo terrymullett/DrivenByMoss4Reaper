@@ -8,9 +8,9 @@ import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IGroove;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IParameter;
+import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.data.GrooveParameter;
 import de.mossgrabers.reaper.framework.daw.data.ParameterImpl;
-import de.mossgrabers.transformator.communication.MessageSender;
 
 
 /**
@@ -28,18 +28,18 @@ public class GrooveImpl extends BaseImpl implements IGroove
     /**
      * Constructor
      *
-     * @param sender The OSC sender
+     * @param iniFiles The INI configuration files
      * @param host The DAW host
      * @param valueChanger The value changer
      */
-    public GrooveImpl (final MessageSender sender, final IHost host, final IValueChanger valueChanger)
+    public GrooveImpl (final IniFiles iniFiles, final IHost host, final IValueChanger valueChanger)
     {
-        super (sender, host);
+        super (null, host);
 
         this.valueChanger = valueChanger;
 
         for (int i = 0; i < this.parameters.length; i++)
-            this.parameters[i] = new GrooveParameter (sender, valueChanger, i);
+            this.parameters[i] = new GrooveParameter (iniFiles, valueChanger, i);
     }
 
 
@@ -67,6 +67,8 @@ public class GrooveImpl extends BaseImpl implements IGroove
      */
     public void setParameter (final int index, final int value)
     {
+        // TODO Is this necessary? Needs to be moved to setValue?!
+
         switch (index)
         {
             case 0:

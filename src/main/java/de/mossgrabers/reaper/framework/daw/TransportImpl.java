@@ -10,6 +10,7 @@ import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.reaper.framework.Actions;
+import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
 import de.mossgrabers.transformator.communication.MessageSender;
 
@@ -34,6 +35,7 @@ public class TransportImpl extends BaseImpl implements ITransport
 
     private ITrackBank          trackBank;
     private IValueChanger       valueChanger;
+    private IniFiles            iniFiles;
 
     private int                 crossfade              = 0;
     private double              position               = 0;        // Time
@@ -58,15 +60,17 @@ public class TransportImpl extends BaseImpl implements ITransport
     /**
      * Constructor
      *
+     * @param iniFiles The INI configuration files
      * @param sender The OSC sender
      * @param host The DAW host
      * @param trackBank
      * @param valueChanger The value changer
      */
-    public TransportImpl (final MessageSender sender, final IHost host, final ITrackBank trackBank, final IValueChanger valueChanger)
+    public TransportImpl (final IniFiles iniFiles, final MessageSender sender, final IHost host, final ITrackBank trackBank, final IValueChanger valueChanger)
     {
         super (sender, host);
 
+        this.iniFiles = iniFiles;
         this.trackBank = trackBank;
         this.valueChanger = valueChanger;
     }
@@ -276,19 +280,20 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public String getPreroll ()
     {
+        this.preroll = (int) Math.floor (this.iniFiles.getMainIniDouble ("reaper", "prerollmeas", 2.0));
+
         switch (this.preroll)
         {
             case 0:
                 return ITransport.PREROLL_NONE;
-            case 1:
-                return ITransport.PREROLL_1_BAR;
             case 2:
                 return ITransport.PREROLL_2_BARS;
             case 4:
                 return ITransport.PREROLL_4_BARS;
+            case 1:
             default:
                 // Other values are not supported
-                return "";
+                return ITransport.PREROLL_1_BAR;
         }
     }
 
@@ -331,7 +336,9 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void setPrerollAsBars (final int preroll)
     {
         this.preroll = preroll;
-        this.sender.sendOSC ("/preroll", Integer.valueOf (preroll));
+
+        this.iniFiles.setMainIniDouble ("reaper", "prerollmeas", this.preroll);
+        this.iniFiles.saveMainFile ();
     }
 
 

@@ -35,6 +35,7 @@ public class IniFiles
     private boolean             isVstPresent;
     private boolean             isFxTagsPresent;
     private boolean             isFxFoldersPresent;
+    private LogModel            logModel;
 
 
     /**
@@ -57,6 +58,7 @@ public class IniFiles
     public void init (final String iniPath, final LogModel logModel)
     {
         this.iniPath = iniPath;
+        this.logModel = logModel;
 
         this.isMainPresent = loadINIFile (iniPath + File.separator + REAPER_MAIN, this.iniReaperMain, logModel);
         this.isVstPresent = loadINIFile (iniPath + File.separator + VST_PLUGINS_64, this.iniVstPlugins64, logModel);
@@ -177,8 +179,100 @@ public class IniFiles
         {
             logModel.addLogMessage ("Could not load file: " + filename);
             logModel.addLogMessage (ex.getClass () + ":" + ex.getMessage ());
-
         }
         return false;
+    }
+
+
+    /**
+     * Save the main INI configuration file.
+     */
+    public void saveMainFile ()
+    {
+        // TODO Add storage optimization, if stored very often
+        String filename = this.iniPath + File.separator + REAPER_MAIN;
+        try
+        {
+            this.iniReaperMain.save (filename);
+        }
+        catch (IOException ex)
+        {
+            this.logModel.addLogMessage ("Could not store file: " + filename);
+            this.logModel.addLogMessage (ex.getClass () + ":" + ex.getMessage ());
+        }
+    }
+
+
+    /**
+     * Get an option value from the main INI file as an integer.
+     *
+     * @param section The section in the INI file
+     * @param option The option name
+     * @param defaultValue The default value to return if the value could not be read
+     * @return The value
+     */
+    public int getMainIniInteger (final String section, final String option, final int defaultValue)
+    {
+        final String value = this.iniReaperMain.get (section, option);
+        if (value == null)
+            return defaultValue;
+        try
+        {
+            return Integer.parseInt (value);
+        }
+        catch (final NumberFormatException ex)
+        {
+            return defaultValue;
+        }
+    }
+
+
+    /**
+     * Set an integer option value in the main INI file.
+     *
+     * @param section The section in the INI file
+     * @param option The option name
+     * @param value The value to set
+     */
+    public void setMainIniInteger (final String section, final String option, final int value)
+    {
+        this.iniReaperMain.set (section, option, Integer.toString (value));
+    }
+
+
+    /**
+     * Get an option value from the main INI file as a double.
+     *
+     * @param section The section in the INI file
+     * @param option The option name
+     * @param defaultValue The default value to return if the value could not be read
+     * @return The value
+     */
+    public double getMainIniDouble (final String section, final String option, final double defaultValue)
+    {
+        final String value = this.iniReaperMain.get (section, option);
+        if (value == null)
+            return defaultValue;
+        try
+        {
+            return Double.parseDouble (value);
+        }
+        catch (final NumberFormatException ex)
+        {
+            return defaultValue;
+        }
+    }
+
+
+    /**
+     * Set a double option value in the main INI file.
+     *
+     * @param section The section in the INI file
+     * @param option The option name
+     * @param value The value to set
+     */
+    public void setMainIniDouble (final String section, final String option, final double value)
+    {
+        this.iniReaperMain.set (section, option, Double.toString (value));
     }
 }

@@ -26,12 +26,13 @@ public class MainConfiguration extends PropertiesEx
 
     /**
      * Load the settings from the config file.
-     *
+     * 
+     * @param path The path where the config file is stored
      * @throws IOException Could not load configuration file
      */
-    public void load () throws IOException
+    public void load (final String path) throws IOException
     {
-        final File configFile = new File (CONFIG_FILENAME);
+        final File configFile = new File (path, CONFIG_FILENAME);
         if (!configFile.exists ())
             return;
 
@@ -45,11 +46,12 @@ public class MainConfiguration extends PropertiesEx
     /**
      * Store the settings to the config file.
      *
+     * @param path The path where the config file is stored
      * @throws IOException Could not store
      */
-    public void save () throws IOException
+    public void save (final String path) throws IOException
     {
-        final File configFile = new File (CONFIG_FILENAME);
+        final File configFile = new File (path, CONFIG_FILENAME);
         try (final FileWriter writer = new FileWriter (configFile))
         {
             this.store (writer, "");

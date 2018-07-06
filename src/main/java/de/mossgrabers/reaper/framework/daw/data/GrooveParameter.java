@@ -5,7 +5,7 @@
 package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.transformator.communication.MessageSender;
+import de.mossgrabers.reaper.framework.IniFiles;
 
 
 /**
@@ -25,25 +25,64 @@ public class GrooveParameter extends ParameterImpl
 
     private static final String [] PARAMETER_COMMANDS = new String []
     {
-        "strength",
-        "velocity",
-        "target",
-        "tolerance"
+        "groove_strength",
+        "groove_velstrength",
+        "groove_target",
+        "groove_tolerance"
     };
+
+    private IniFiles               iniFiles;
 
 
     /**
      * Constructor.
      *
-     * @param sender The OSC sender
+     * @param iniFiles The INI file where the values are stored
      * @param valueChanger The value changer
      * @param index The index of the parameters
      */
-    public GrooveParameter (final MessageSender sender, final IValueChanger valueChanger, final int index)
+    public GrooveParameter (final IniFiles iniFiles, final IValueChanger valueChanger, final int index)
     {
-        super (sender, valueChanger, index);
+        super (null, valueChanger, index);
+
+        this.iniFiles = iniFiles;
 
         this.setName (PARAMETER_NAMES[index]);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public int getValue ()
+    {
+        switch (this.index)
+        {
+            case 0:
+                this.value = this.iniFiles.getMainIniInteger ("fingers", "groove_strength", 100);
+                break;
+
+            case 1:
+                this.value = this.iniFiles.getMainIniInteger ("fingers", "groove_velstrength", 100);
+                break;
+
+            case 2:
+                this.value = this.iniFiles.getMainIniInteger ("fingers", "groove_target", 0);
+                break;
+
+            case 3:
+                this.value = this.iniFiles.getMainIniInteger ("fingers", "groove_tolerance", 16);
+                break;
+
+            case 4:
+                this.value = this.iniFiles.getMainIniInteger ("midiedit", "quantstrength", 100);
+                break;
+
+            default:
+                // Not used
+                break;
+        }
+
+        return super.getValue ();
     }
 
 
@@ -87,32 +126,13 @@ public class GrooveParameter extends ParameterImpl
                         break;
                 }
                 break;
+
             default:
                 // Not used
                 break;
         }
-        this.sender.sendOSC ("/groove/" + PARAMETER_COMMANDS[this.index], Integer.valueOf (scaledValue));
-
-        // TODO Write to ini file instead
-        // if (!APIExists("BR_Win32_WritePrivateProfileString")) && get_ini_file(inipath) ?
-        // (
-        // part = strcpy(#, parsePart(line, '/', 2));
-        // strcmp(part, "strength") == 0 ? (
-        // extension_api("BR_Win32_WritePrivateProfileString", "fingers", "groove_strength", value,
-        // inipath);
-
-        // ) : (strcmp(part, "velocity") == 0 ? (
-        // extension_api("BR_Win32_WritePrivateProfileString", "fingers", "groove_velstrength",
-        // value, inipath);
-
-        // ) : (strcmp(part, "target") == 0 ? (
-        // extension_api("BR_Win32_WritePrivateProfileString", "fingers", "groove_target", value,
-        // inipath);
-
-        // ) : (strcmp(part, "tolerance") == 0 ? (
-        // extension_api("BR_Win32_WritePrivateProfileString", "fingers", "groove_tolerance", value,
-        // inipath);
-
+        this.iniFiles.getIniReaperMain ().set ("fingers", PARAMETER_COMMANDS[this.index], Integer.toString (scaledValue));
+        this.iniFiles.saveMainFile ();
     }
 
 

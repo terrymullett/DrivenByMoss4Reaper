@@ -29,19 +29,22 @@ public class ReaperSetupFactory implements ISetupFactory
     private final MessageSender  sender;
     private final IHost          host;
     private final MidiAccessImpl midiAccess;
+    private final IniFiles       iniFiles;
 
 
     /**
      * Constructor.
      *
+     * @param iniFiles The INI configuration files
      * @param sender The OSC sender
      * @param host The DAW host
      * @param logModel The logging model
      * @param inputs The midi input devices
      * @param outputs The midi output devices
      */
-    public ReaperSetupFactory (final MessageSender sender, final IHost host, final LogModel logModel, final MidiDevice [] inputs, final MidiDevice [] outputs)
+    public ReaperSetupFactory (final IniFiles iniFiles, final MessageSender sender, final IHost host, final LogModel logModel, final MidiDevice [] inputs, final MidiDevice [] outputs)
     {
+        this.iniFiles = iniFiles;
         this.sender = sender;
         this.host = host;
         this.midiAccess = new MidiAccessImpl (logModel, this.host, this.sender, inputs, outputs);
@@ -61,7 +64,7 @@ public class ReaperSetupFactory implements ISetupFactory
     @Override
     public IModel createModel (final ColorManager colorManager, final IValueChanger valueChanger, final Scales scales, final int numTracks, final int numScenes, final int numSends, final int numFilterColumnEntries, final int numResults, final boolean hasFlatTrackList, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
     {
-        return new ModelImpl (this.sender, this.host, colorManager, valueChanger, scales, numTracks, numScenes, numSends, numFilterColumnEntries, numResults, hasFlatTrackList, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
+        return new ModelImpl (this.iniFiles, this.sender, this.host, colorManager, valueChanger, scales, numTracks, numScenes, numSends, numFilterColumnEntries, numResults, hasFlatTrackList, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
     }
 
 
