@@ -22,8 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class NotificationWindow
 {
-    /** Display the message for about 4 seconds. */
-    private static final int               TIMEOUT         = 4;
+    private static final int               TIMEOUT         = 2;
     private static final double            FRAME_WIDTH     = 600;
     private static final double            FRAME_HEIGHT    = 100;
     private static final int               MIN_FONT_HEIGHT = 10;
