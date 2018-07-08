@@ -14,7 +14,8 @@ import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
 import de.mossgrabers.transformator.communication.MessageSender;
 
-import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 
 /**
@@ -286,14 +287,16 @@ public class TransportImpl extends BaseImpl implements ITransport
         {
             case 0:
                 return ITransport.PREROLL_NONE;
+            case 1:
+                return ITransport.PREROLL_1_BAR;
             case 2:
                 return ITransport.PREROLL_2_BARS;
             case 4:
                 return ITransport.PREROLL_4_BARS;
-            case 1:
             default:
-                // Other values are not supported
-                return ITransport.PREROLL_1_BAR;
+                // Other values are not supported, set to the default value
+                this.setPreroll (ITransport.PREROLL_2_BARS);
+                return ITransport.PREROLL_2_BARS;
         }
     }
 
@@ -335,10 +338,9 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void setPrerollAsBars (final int preroll)
     {
-        this.preroll = preroll;
-
-        this.iniFiles.setMainIniDouble ("reaper", "prerollmeas", this.preroll);
+        this.iniFiles.setMainIniDouble ("reaper", "prerollmeas", preroll);
         this.iniFiles.saveMainFile ();
+
     }
 
 
@@ -629,7 +631,9 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public String formatTempo (final double tempo)
     {
-        return new DecimalFormat ("#.00").format (tempo);
+        final NumberFormat instance = NumberFormat.getNumberInstance (Locale.US);
+        instance.setMaximumFractionDigits (2);
+        return instance.format (tempo);
     }
 
 
@@ -637,7 +641,9 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public String formatTempoNoFraction (final double tempo)
     {
-        return new DecimalFormat ("###").format (tempo);
+        final NumberFormat instance = NumberFormat.getNumberInstance (Locale.US);
+        instance.setMaximumFractionDigits (0);
+        return instance.format (tempo);
     }
 
 
@@ -750,17 +756,6 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void setDenominator (final int denominator)
     {
         this.denominator = denominator;
-    }
-
-
-    /**
-     * Set the number of preroll bars.
-     *
-     * @param preroll The number of bars
-     */
-    public void setInternalPreroll (final int preroll)
-    {
-        this.preroll = preroll;
     }
 
 

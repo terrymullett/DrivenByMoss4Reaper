@@ -212,7 +212,6 @@ public class BrowserImpl extends AbstractBrowser
     public void browseForPresets ()
     {
         this.stopBrowsing (false);
-        this.sender.sendOSC ("/browser/preset", null);
         this.insertPosition = this.cursorDevice.getPositionInChain ();
         this.setContentType (ContentType.CONTENTTYPE_PRESET.ordinal ());
         this.isBrowserActive = true;

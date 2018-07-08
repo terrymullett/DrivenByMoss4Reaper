@@ -131,7 +131,7 @@ public class GrooveParameter extends ParameterImpl
                 // Not used
                 break;
         }
-        this.iniFiles.getIniReaperMain ().set ("fingers", PARAMETER_COMMANDS[this.index], Integer.toString (scaledValue));
+        this.iniFiles.setMainIniInteger ("fingers", PARAMETER_COMMANDS[this.index], scaledValue);
         this.iniFiles.saveMainFile ();
     }
 

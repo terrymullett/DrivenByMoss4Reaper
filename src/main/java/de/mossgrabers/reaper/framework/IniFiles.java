@@ -60,21 +60,14 @@ public class IniFiles
         this.iniPath = iniPath;
         this.logModel = logModel;
 
-        this.isMainPresent = loadINIFile (iniPath + File.separator + REAPER_MAIN, this.iniReaperMain, logModel);
+        synchronized (this.iniReaperMain)
+        {
+            this.isMainPresent = loadINIFile (iniPath + File.separator + REAPER_MAIN, this.iniReaperMain, logModel);
+        }
+
         this.isVstPresent = loadINIFile (iniPath + File.separator + VST_PLUGINS_64, this.iniVstPlugins64, logModel);
         this.isFxTagsPresent = loadINIFile (iniPath + File.separator + FX_TAGS, this.iniFxTags, logModel);
         this.isFxFoldersPresent = loadINIFile (iniPath + File.separator + FX_FOLDERS, this.iniFxFolders, logModel);
-    }
-
-
-    /**
-     * Get the main Reaper config file.
-     *
-     * @return The file
-     */
-    public IniEditor getIniReaperMain ()
-    {
-        return this.iniReaperMain;
     }
 
 
@@ -189,11 +182,13 @@ public class IniFiles
      */
     public void saveMainFile ()
     {
-        // TODO Add storage optimization, if stored very often
         String filename = this.iniPath + File.separator + REAPER_MAIN;
         try
         {
-            this.iniReaperMain.save (filename);
+            synchronized (this.iniReaperMain)
+            {
+                this.iniReaperMain.save (filename);
+            }
         }
         catch (IOException ex)
         {
@@ -213,7 +208,11 @@ public class IniFiles
      */
     public int getMainIniInteger (final String section, final String option, final int defaultValue)
     {
-        final String value = this.iniReaperMain.get (section, option);
+        String value;
+        synchronized (this.iniReaperMain)
+        {
+            value = this.iniReaperMain.get (section, option);
+        }
         if (value == null)
             return defaultValue;
         try
@@ -236,7 +235,10 @@ public class IniFiles
      */
     public void setMainIniInteger (final String section, final String option, final int value)
     {
-        this.iniReaperMain.set (section, option, Integer.toString (value));
+        synchronized (this.iniReaperMain)
+        {
+            this.iniReaperMain.set (section, option, Integer.toString (value));
+        }
     }
 
 
@@ -250,7 +252,11 @@ public class IniFiles
      */
     public double getMainIniDouble (final String section, final String option, final double defaultValue)
     {
-        final String value = this.iniReaperMain.get (section, option);
+        String value;
+        synchronized (this.iniReaperMain)
+        {
+            value = this.iniReaperMain.get (section, option);
+        }
         if (value == null)
             return defaultValue;
         try
@@ -273,6 +279,9 @@ public class IniFiles
      */
     public void setMainIniDouble (final String section, final String option, final double value)
     {
-        this.iniReaperMain.set (section, option, Double.toString (value));
+        synchronized (this.iniReaperMain)
+        {
+            this.iniReaperMain.set (section, option, Double.toString (value));
+        }
     }
 }

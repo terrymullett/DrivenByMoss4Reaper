@@ -372,7 +372,7 @@ public class TransformatorApplication extends Application implements MessageSend
     private void startControllers ()
     {
         this.instanceManager.startAll ();
-        this.sendRefreshCommand ();
+        Platform.runLater (this::sendRefreshCommand);
     }
 
 

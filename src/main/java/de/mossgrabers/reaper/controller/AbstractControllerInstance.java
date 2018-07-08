@@ -142,7 +142,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
     private void storeQuantizeAmount ()
     {
         final Configuration configuration = this.controllerSetup.getConfiguration ();
-        this.iniFiles.getIniReaperMain ().set ("midiedit", "quantstrength", Integer.toString (configuration.getQuantizeAmount ()));
+        this.iniFiles.setMainIniInteger ("midiedit", "quantstrength", configuration.getQuantizeAmount ());
         this.iniFiles.saveMainFile ();
     }
 
@@ -232,6 +232,6 @@ public abstract class AbstractControllerInstance implements IControllerInstance
 
     private File getFileName ()
     {
-        return new File (iniFiles.getIniPath (), "DrivenByMoss4Reaper-" + this.controllerDefinition.getHardwareModel ().replace (' ', '-') + ".config");
+        return new File (this.iniFiles.getIniPath (), "DrivenByMoss4Reaper-" + this.controllerDefinition.getHardwareModel ().replace (' ', '-') + ".config");
     }
 }

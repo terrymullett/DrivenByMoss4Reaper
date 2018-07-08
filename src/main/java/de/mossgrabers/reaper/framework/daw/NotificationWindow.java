@@ -22,17 +22,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class NotificationWindow
 {
-    private static final int               TIMEOUT         = 2;
-    private static final double            FRAME_WIDTH     = 600;
-    private static final double            FRAME_HEIGHT    = 100;
-    private static final int               MIN_FONT_HEIGHT = 10;
-    private static final int               MAX_FONT_HEIGHT = 60;
+    private static final int               TIMEOUT      = 2;
+    private static final double            FRAME_WIDTH  = 600;
+    private static final double            FRAME_HEIGHT = 100;
 
-    private final AtomicInteger            counter         = new AtomicInteger ();
-    private final ScheduledExecutorService executor        = Executors.newSingleThreadScheduledExecutor ();
+    private final AtomicInteger            counter      = new AtomicInteger ();
+    private final ScheduledExecutorService executor     = Executors.newSingleThreadScheduledExecutor ();
 
-    private final Stage                    popupStage      = new Stage ();
-    private final Text                     label           = new Text (0, 0, "");
+    private final Stage                    popupStage   = new Stage ();
+    private final Text                     label        = new Text (0, 0, "");
 
 
     /**
