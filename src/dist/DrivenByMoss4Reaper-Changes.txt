@@ -1,3 +1,6 @@
+3.00
+- New: Replaced the Reaper EEL backend with a C++ implementation.
+
 2.10
 - New: If supported by the Java/OS platform the application is run as a tray icon.
        Closing the app minimizes it to the tray. Double click the tray icon to show it again.

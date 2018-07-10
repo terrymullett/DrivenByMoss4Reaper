@@ -27,7 +27,6 @@ import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -118,7 +117,6 @@ public class TransformatorApplication extends Application implements MessageSend
         }
 
         final Scene scene = this.createUI ();
-        this.logModel.addShutdownListener ((ChangeListener<Boolean>) (observable, oldValue, newValue) -> this.exit ());
         this.showStage (stage, scene);
 
         if (this.iniPath != null)
@@ -669,17 +667,9 @@ public class TransformatorApplication extends Application implements MessageSend
             final java.awt.Font defaultFont = java.awt.Font.decode (null);
             openItem.setFont (defaultFont.deriveFont (java.awt.Font.BOLD));
 
-            // To really exit the application, the user must go to the system tray icon
-            // and select the exit option, this will shutdown JavaFX and remove the
-            // tray icon (removing the tray icon will also shut down AWT).
-            final java.awt.MenuItem exitItem = new java.awt.MenuItem ("Exit");
-            exitItem.addActionListener (event -> this.exit ());
-
             // Setup the popup menu for the application.
             final java.awt.PopupMenu popup = new java.awt.PopupMenu ();
             popup.add (openItem);
-            popup.addSeparator ();
-            popup.add (exitItem);
             this.trayIcon.setPopupMenu (popup);
 
             // Add the application tray icon to the system tray.
