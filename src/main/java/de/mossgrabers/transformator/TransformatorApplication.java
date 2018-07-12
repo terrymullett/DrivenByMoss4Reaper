@@ -557,7 +557,7 @@ public class TransformatorApplication extends Application implements MessageSend
     public void updateDataModel (final boolean dump)
     {
         final String data = this.receiveModelData (dump);
-        if (data.isEmpty ())
+        if (data == null || data.isEmpty ())
             return;
         for (final String command: data.split ("\n"))
         {
