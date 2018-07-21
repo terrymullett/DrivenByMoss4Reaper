@@ -5,7 +5,9 @@
 package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.controller.IValueChanger;
+import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.reaper.framework.IniFiles;
+import de.mossgrabers.transformator.communication.MessageSender;
 
 
 /**
@@ -36,14 +38,16 @@ public class GrooveParameter extends ParameterImpl
 
     /**
      * Constructor.
-     *
-     * @param iniFiles The INI file where the values are stored
+     * 
+     * @param host The DAW host
+     * @param sender The OSC sender
      * @param valueChanger The value changer
      * @param index The index of the parameters
+     * @param iniFiles The INI file where the values are stored
      */
-    public GrooveParameter (final IniFiles iniFiles, final IValueChanger valueChanger, final int index)
+    public GrooveParameter (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int index, final IniFiles iniFiles)
     {
-        super (null, valueChanger, index);
+        super (host, sender, valueChanger, index);
 
         this.iniFiles = iniFiles;
 
@@ -55,7 +59,7 @@ public class GrooveParameter extends ParameterImpl
     @Override
     public int getValue ()
     {
-        switch (this.index)
+        switch (this.getIndex ())
         {
             case 0:
                 this.value = this.iniFiles.getMainIniInteger ("fingers", "groove_strength", 100);
@@ -94,7 +98,7 @@ public class GrooveParameter extends ParameterImpl
             return;
 
         int scaledValue = 0;
-        switch (this.index)
+        switch (this.getIndex ())
         {
             case 0:
             case 1:
@@ -131,7 +135,7 @@ public class GrooveParameter extends ParameterImpl
                 // Not used
                 break;
         }
-        this.iniFiles.setMainIniInteger ("fingers", PARAMETER_COMMANDS[this.index], scaledValue);
+        this.iniFiles.setMainIniInteger ("fingers", PARAMETER_COMMANDS[this.getIndex ()], scaledValue);
         this.iniFiles.saveMainFile ();
     }
 
@@ -140,7 +144,7 @@ public class GrooveParameter extends ParameterImpl
     @Override
     public void resetValue ()
     {
-        if (this.index < 2)
+        if (this.getIndex () < 2)
             this.setValue (this.valueChanger.getUpperBound () - 1.0);
         else
             super.resetValue ();

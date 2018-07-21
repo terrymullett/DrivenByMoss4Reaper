@@ -5,8 +5,10 @@
 package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.AbstractChannelBank;
+import de.mossgrabers.framework.daw.DAWColors;
 import de.mossgrabers.framework.daw.IHost;
+import de.mossgrabers.framework.daw.ISceneBank;
+import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
 import de.mossgrabers.transformator.communication.MessageSender;
@@ -17,13 +19,11 @@ import de.mossgrabers.transformator.communication.MessageSender;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public abstract class AbstractTrackBankImpl extends AbstractChannelBank
+public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> implements ITrackBank
 {
-    private MessageSender sender;
-    private IHost         host;
-
-    // Set the intial value pretty so navigation works even if TCP communication may be broken
-    private int           trackCount = 1000;
+    private int        numScenes;
+    private int        numSends;
+    private ISceneBank sceneBank;
 
 
     /**
@@ -38,89 +38,33 @@ public abstract class AbstractTrackBankImpl extends AbstractChannelBank
      */
     public AbstractTrackBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numTracks, final int numScenes, final int numSends)
     {
-        super (valueChanger, numTracks, numScenes, numSends);
-        this.sender = sender;
-        this.host = host;
-    }
+        super (host, sender, valueChanger, numTracks);
+        this.numScenes = numScenes;
+        this.numSends = numSends;
 
-
-    /**
-     * Initialise all observers.
-     */
-    public void init ()
-    {
-        this.tracks = this.createTracks (this.numTracks);
+        this.sceneBank = new SceneBankImpl (this.numScenes);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void enableObservers (final boolean enable)
-    {
-        // Intentionally empty
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public int getTrackCount ()
-    {
-        return this.trackCount;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean canScrollTracksUp ()
-    {
-        return this.tracks[0].getPosition () > 0;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean canScrollTracksDown ()
-    {
-        final ITrack sel = this.getSelectedTrack ();
-        return sel != null && sel.getPosition () < this.getTrackCount () - 1;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void scrollTracksUp ()
-    {
-        // Not supported
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void scrollTracksDown ()
-    {
-        // Not supported
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void scrollTracksPageUp ()
+    public void scrollPageBackwards ()
     {
         // Deselect previous selected track (if any)
-        final ITrack selectedTrack = this.getSelectedTrack ();
+        final ITrack selectedTrack = this.getSelectedItem ();
         if (selectedTrack != null)
             this.sendTrackOSC (selectedTrack.getIndex () + 1 + "/select", Integer.valueOf (0));
         this.sendTrackOSC ("bank/-", null);
-        this.sendTrackOSC (this.getNumTracks () + "/select", Integer.valueOf (1));
+        this.sendTrackOSC (this.getPageSize () + "/select", Integer.valueOf (1));
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void scrollTracksPageDown ()
+    public void scrollPageForwards ()
     {
         // Deselect previous selected track (if any)
-        final ITrack selectedTrack = this.getSelectedTrack ();
+        final ITrack selectedTrack = this.getSelectedItem ();
         if (selectedTrack != null)
             this.sendTrackOSC (selectedTrack.getIndex () + 1 + "/select", Integer.valueOf (0));
         this.sendTrackOSC ("bank/+", null);
@@ -130,62 +74,10 @@ public abstract class AbstractTrackBankImpl extends AbstractChannelBank
 
     /** {@inheritDoc} */
     @Override
-    public void scrollToChannel (final int channel)
+    protected void initItems ()
     {
-        // Not supported
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void scrollToScene (final int position)
-    {
-        // Not supported
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void setIndication (final boolean enable)
-    {
-        // Not supported
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public int getTrackPositionFirst ()
-    {
-        return this.getTrack (0).getPosition ();
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public int getTrackPositionLast ()
-    {
-        for (int i = 7; i >= 0; i--)
-        {
-            final int pos = this.getTrack (i).getPosition ();
-            if (pos >= 0)
-                return pos;
-        }
-        return -1;
-    }
-
-
-    /**
-     * Create all track data and setup observers.
-     *
-     * @param count The number of tracks of the track bank page
-     * @return The created data
-     */
-    protected ITrack [] createTracks (final int count)
-    {
-        final ITrack [] trackData = new TrackImpl [count];
-        for (int i = 0; i < count; i++)
-            trackData[i] = new TrackImpl (this.host, this.sender, this.valueChanger, i, this.numSends, this.numScenes);
-        return trackData;
+        for (int i = 0; i < this.pageSize; i++)
+            this.items.add (new TrackImpl (this.host, this.sender, this.valueChanger, i, this.numSends, this.numScenes));
     }
 
 
@@ -196,7 +88,7 @@ public abstract class AbstractTrackBankImpl extends AbstractChannelBank
      */
     public void setTrackCount (final int trackCount)
     {
-        this.trackCount = trackCount;
+        this.itemCount = trackCount;
     }
 
 
@@ -216,7 +108,75 @@ public abstract class AbstractTrackBankImpl extends AbstractChannelBank
     {
         if (index < 0)
             return;
-        this.getTrack (index).setSelected (isSelected);
-        this.notifyTrackSelectionObservers (index, isSelected);
+        this.getItem (index).setSelected (isSelected);
+        this.notifySelectionObservers (index, isSelected);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void selectChildren ()
+    {
+        // Intentionally empty
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void selectParent ()
+    {
+        // Intentionally empty
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasParent ()
+    {
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isClipRecording ()
+    {
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public String getSelectedChannelColorEntry ()
+    {
+        final ITrack sel = this.getSelectedItem ();
+        if (sel == null)
+            return DAWColors.COLOR_OFF;
+        final double [] color = sel.getColor ();
+        return DAWColors.getColorIndex (color[0], color[1], color[2]);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public ISceneBank getSceneBank ()
+    {
+        return this.sceneBank;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void stop ()
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setIndication (boolean enable)
+    {
+        // Not supported
     }
 }

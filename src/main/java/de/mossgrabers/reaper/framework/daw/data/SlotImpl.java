@@ -4,9 +4,10 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
+import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.ISlot;
+import de.mossgrabers.framework.utils.StringUtils;
 import de.mossgrabers.reaper.framework.Actions;
-import de.mossgrabers.reaper.framework.daw.BaseImpl;
 import de.mossgrabers.transformator.communication.MessageSender;
 
 
@@ -15,41 +16,24 @@ import de.mossgrabers.transformator.communication.MessageSender;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class SlotImpl extends BaseImpl implements ISlot
+public class SlotImpl extends ItemImpl implements ISlot
 {
-    private final int index;
     private final int trackIndex;
 
 
     /**
      * Constructor.
      *
+     * @param host The DAW host
      * @param sender The OSC sender
      * @param trackIndex The track index
      * @param index The index of the slot
      */
-    public SlotImpl (final MessageSender sender, final int trackIndex, final int index)
+    public SlotImpl (final IHost host, final MessageSender sender, final int trackIndex, final int index)
     {
-        super (sender, null);
+        super (host, sender, index);
 
-        this.index = index;
         this.trackIndex = trackIndex;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public int getIndex ()
-    {
-        return this.index;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean doesExist ()
-    {
-        return false;
     }
 
 
@@ -57,7 +41,7 @@ public class SlotImpl extends BaseImpl implements ISlot
     @Override
     public String getName ()
     {
-        return "Slot " + this.index;
+        return "Slot " + this.getIndex ();
     }
 
 
@@ -65,15 +49,7 @@ public class SlotImpl extends BaseImpl implements ISlot
     @Override
     public String getName (final int limit)
     {
-        return this.getName ();
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isSelected ()
-    {
-        return false;
+        return StringUtils.optimizeName (this.getName (), limit);
     }
 
 
@@ -141,14 +117,6 @@ public class SlotImpl extends BaseImpl implements ISlot
     /** {@inheritDoc} */
     @Override
     public void setColor (final double red, final double green, final double blue)
-    {
-        // Not supported
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void select ()
     {
         // Not supported
     }

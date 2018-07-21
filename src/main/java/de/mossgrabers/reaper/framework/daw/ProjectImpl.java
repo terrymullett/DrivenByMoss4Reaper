@@ -4,6 +4,7 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
+import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.IProject;
 import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.transformator.communication.MessageSender;
@@ -22,11 +23,12 @@ public class ProjectImpl extends BaseImpl implements IProject
     /**
      * Constructor.
      *
+     * @param host The DAW host
      * @param sender The OSC sender
      */
-    public ProjectImpl (final MessageSender sender)
+    public ProjectImpl (final IHost host, final MessageSender sender)
     {
-        super (sender, null);
+        super (host, sender);
     }
 
 

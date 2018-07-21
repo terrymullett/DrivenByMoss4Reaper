@@ -11,6 +11,7 @@ import de.mossgrabers.framework.daw.ICursorClip;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.IProject;
+import de.mossgrabers.framework.daw.ISendBank;
 import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.data.IMasterTrack;
 import de.mossgrabers.framework.daw.data.IParameter;
@@ -24,6 +25,7 @@ import de.mossgrabers.reaper.framework.daw.CursorDeviceImpl;
 import de.mossgrabers.reaper.framework.daw.ProjectImpl;
 import de.mossgrabers.reaper.framework.daw.TransportImpl;
 import de.mossgrabers.reaper.framework.daw.data.ChannelImpl;
+import de.mossgrabers.reaper.framework.daw.data.ItemImpl;
 import de.mossgrabers.reaper.framework.daw.data.ParameterImpl;
 import de.mossgrabers.reaper.framework.daw.data.SendImpl;
 import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
@@ -209,7 +211,7 @@ public class MessageParser
         final String part = parts.poll ();
         try
         {
-            this.parseTrackValue (tb.getTrack (Integer.parseInt (part) - 1), parts, value);
+            this.parseTrackValue (tb.getItem (Integer.parseInt (part) - 1), parts, value);
         }
         catch (final NumberFormatException ex)
         {
@@ -349,8 +351,9 @@ public class MessageParser
                 if (!parts.isEmpty ())
                 {
                     final int sendIndex = Integer.parseInt (parts.poll ()) - 1;
-                    if (sendIndex < this.model.getTrackBank ().getNumSends ())
-                        this.parseSendValue (track.getSend (sendIndex), parts, value);
+                    final ISendBank sendBank = track.getSendBank ();
+                    if (sendIndex < sendBank.getPageSize ())
+                        this.parseSendValue (sendBank.getItem (sendIndex), parts, value);
                 }
                 break;
 
@@ -432,7 +435,7 @@ public class MessageParser
                     switch (parts.poll ())
                     {
                         case "name":
-                            this.cursorDevice.setSiblingDeviceName (siblingNo, value);
+                            ((ItemImpl) this.cursorDevice.getDeviceBank ().getItem (siblingNo)).setName (value);
                             break;
 
                         default:

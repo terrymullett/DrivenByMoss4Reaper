@@ -56,9 +56,10 @@ public class DeviceCategoryFilterColumn extends BaseColumn
         @Override
         public String getName ()
         {
-            if (this.index < 0)
+            final int index = this.getIndex ();
+            if (index < 0)
                 return WILDCARD;
-            return this.index < DeviceCategoryFilterColumn.this.getMaxNumItems () ? new ArrayList<> (DeviceManager.get ().getCategories ()).get (this.index) : "";
+            return index < DeviceCategoryFilterColumn.this.getMaxNumItems () ? new ArrayList<> (DeviceManager.get ().getCategories ()).get (index) : "";
         }
 
 
@@ -66,7 +67,7 @@ public class DeviceCategoryFilterColumn extends BaseColumn
         @Override
         public boolean isSelected ()
         {
-            return this.index + 1 == DeviceCategoryFilterColumn.this.selectedRow;
+            return this.getIndex () + 1 == DeviceCategoryFilterColumn.this.selectedRow;
         }
 
 
@@ -75,9 +76,10 @@ public class DeviceCategoryFilterColumn extends BaseColumn
         public int getHitCount ()
         {
             final DeviceManager deviceManager = DeviceManager.get ();
-            if (this.index < 0)
+            final int index = this.getIndex ();
+            if (index < 0)
                 return deviceManager.getNumDevices ();
-            return this.index < DeviceCategoryFilterColumn.this.getMaxNumItems () ? deviceManager.filterByCategory (new ArrayList<> (deviceManager.getCategories ()).get (this.index)).size () : 0;
+            return index < DeviceCategoryFilterColumn.this.getMaxNumItems () ? deviceManager.filterByCategory (new ArrayList<> (deviceManager.getCategories ()).get (index)).size () : 0;
         }
     }
 }

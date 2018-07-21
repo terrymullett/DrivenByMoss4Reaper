@@ -182,7 +182,7 @@ public class IniFiles
      */
     public void saveMainFile ()
     {
-        String filename = this.iniPath + File.separator + REAPER_MAIN;
+        final String filename = this.iniPath + File.separator + REAPER_MAIN;
         try
         {
             synchronized (this.iniReaperMain)
@@ -190,7 +190,7 @@ public class IniFiles
                 this.iniReaperMain.save (filename);
             }
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             this.logModel.addLogMessage ("Could not store file: " + filename);
             this.logModel.addLogMessage (ex.getClass () + ":" + ex.getMessage ());

@@ -7,8 +7,8 @@ package de.mossgrabers.controller.kontrol.usb.mkii.view;
 import de.mossgrabers.controller.kontrol.usb.mkii.Kontrol2Configuration;
 import de.mossgrabers.controller.kontrol.usb.mkii.controller.Kontrol2ControlSurface;
 import de.mossgrabers.controller.kontrol.usb.mkii.mode.Modes;
-import de.mossgrabers.framework.daw.IChannelBank;
 import de.mossgrabers.framework.daw.IModel;
+import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.mode.ModeManager;
@@ -32,7 +32,6 @@ public class ControlView extends AbstractView<Kontrol2ControlSurface, Kontrol2Co
     public ControlView (final Kontrol2ControlSurface surface, final IModel model)
     {
         super ("Control", surface, model);
-        this.scales = model.getScales ();
     }
 
 
@@ -41,10 +40,10 @@ public class ControlView extends AbstractView<Kontrol2ControlSurface, Kontrol2Co
     public void updateButtons ()
     {
         final ModeManager modeManager = this.surface.getModeManager ();
-        final boolean isBrowseMode = modeManager.isActiveMode (Modes.MODE_BROWSER);
+        final boolean isBrowseMode = modeManager.isActiveOrTempMode (Modes.MODE_BROWSER);
         final ITransport transport = this.model.getTransport ();
-        final IChannelBank currentTrackBank = this.model.getCurrentTrackBank ();
-        final ITrack t = currentTrackBank.getSelectedTrack ();
+        final ITrackBank currentTrackBank = this.model.getCurrentTrackBank ();
+        final ITrack t = currentTrackBank.getSelectedItem ();
         final Kontrol2Configuration configuration = this.surface.getConfiguration ();
 
         this.surface.updateButton (Kontrol2ControlSurface.BUTTON_SHIFT, this.surface.isShiftPressed () ? Kontrol2ControlSurface.BUTTON_STATE_HI : Kontrol2ControlSurface.BUTTON_STATE_ON);
@@ -65,7 +64,7 @@ public class ControlView extends AbstractView<Kontrol2ControlSurface, Kontrol2Co
         this.surface.updateButton (Kontrol2ControlSurface.BUTTON_NAVIGATE_UP, isBrowseMode ? Kontrol2ControlSurface.BUTTON_STATE_OFF : Kontrol2ControlSurface.BUTTON_STATE_ON);
         this.surface.updateButton (Kontrol2ControlSurface.BUTTON_NAVIGATE_DOWN, isBrowseMode ? Kontrol2ControlSurface.BUTTON_STATE_OFF : Kontrol2ControlSurface.BUTTON_STATE_ON);
 
-        if (modeManager.isActiveMode (Modes.MODE_TRACK) || modeManager.isActiveMode (Modes.MODE_VOLUME))
+        if (modeManager.isActiveOrTempMode (Modes.MODE_TRACK) || modeManager.isActiveOrTempMode (Modes.MODE_VOLUME))
         {
             this.surface.updateButton (Kontrol2ControlSurface.BUTTON_MUTE, t != null && t.isMute () ? Kontrol2ControlSurface.BUTTON_STATE_HI : Kontrol2ControlSurface.BUTTON_STATE_ON);
             this.surface.updateButton (Kontrol2ControlSurface.BUTTON_SOLO, t != null && t.isSolo () ? Kontrol2ControlSurface.BUTTON_STATE_HI : Kontrol2ControlSurface.BUTTON_STATE_ON);

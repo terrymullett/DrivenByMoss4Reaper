@@ -6,11 +6,10 @@ package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;
+import de.mossgrabers.framework.daw.ISendBank;
 import de.mossgrabers.framework.daw.data.IChannel;
-import de.mossgrabers.framework.daw.data.ISend;
 import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.reaper.framework.Actions;
-import de.mossgrabers.reaper.framework.daw.BaseImpl;
 import de.mossgrabers.transformator.communication.MessageSender;
 
 
@@ -19,26 +18,22 @@ import de.mossgrabers.transformator.communication.MessageSender;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class ChannelImpl extends BaseImpl implements IChannel
+public class ChannelImpl extends ItemImpl implements IChannel
 {
     protected IValueChanger valueChanger;
 
-    private int             index;
     private ChannelType     type;
-    private boolean         selected;
     protected int           volume;
     private String          volumeStr          = "";
     private int             vuLeft;
     private int             vuRight;
-    private String          name;
     private String          panStr             = "";
     protected int           pan;
     private boolean         isMute;
     private boolean         isSolo;
     private boolean         isActivated        = true;
-    private boolean         exists;
     private double []       color;
-    private ISend []        sends;
+    private ISendBank       sendBank;
 
     private boolean         isVolumeBeingTouched;
     private int             lastReceivedVolume = -1;
@@ -57,26 +52,10 @@ public class ChannelImpl extends BaseImpl implements IChannel
      */
     public ChannelImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int index, final int numSends)
     {
-        super (sender, host);
-
+        super (host, sender, index);
         this.valueChanger = valueChanger;
-        this.index = index;
 
-        this.name = "Track " + (index + 1);
-
-        this.sends = new SendImpl [numSends];
-        if (numSends == 0)
-            return;
-        for (int i = 0; i < numSends; i++)
-            this.sends[i] = new SendImpl (sender, valueChanger, index, i);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public int getIndex ()
-    {
-        return this.index;
+        this.setName ("Track " + (index + 1));
     }
 
 
@@ -90,49 +69,9 @@ public class ChannelImpl extends BaseImpl implements IChannel
 
     /** {@inheritDoc} */
     @Override
-    public boolean isSelected ()
-    {
-        return this.doesExist () && this.selected;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void setSelected (final boolean isSelected)
-    {
-        this.selected = isSelected;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean doesExist ()
-    {
-        return this.exists;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public boolean isActivated ()
     {
         return this.doesExist () && this.isActivated;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public String getName ()
-    {
-        return this.name;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public String getName (final int limit)
-    {
-        return this.name != null && this.name.length () >= limit ? this.name.substring (0, limit) : this.name;
     }
 
 
@@ -385,22 +324,6 @@ public class ChannelImpl extends BaseImpl implements IChannel
 
     /** {@inheritDoc} */
     @Override
-    public int getNumSends ()
-    {
-        return this.sends.length;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public ISend getSend (final int sendIndex)
-    {
-        return this.sends[sendIndex];
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public void setIsActivated (final boolean value)
     {
         if (value)
@@ -474,23 +397,6 @@ public class ChannelImpl extends BaseImpl implements IChannel
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public void makeVisible ()
-    {
-        // Not supported
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void selectAndMakeVisible ()
-    {
-        this.select ();
-        this.makeVisible ();
-    }
-
-
     /**
      * Store the type of the track.
      *
@@ -499,17 +405,6 @@ public class ChannelImpl extends BaseImpl implements IChannel
     public void setType (final ChannelType type)
     {
         this.type = type;
-    }
-
-
-    /**
-     * Set the name of the channel.
-     *
-     * @param name The name
-     */
-    public void setName (final String name)
-    {
-        this.name = name;
     }
 
 
@@ -608,17 +503,6 @@ public class ChannelImpl extends BaseImpl implements IChannel
 
 
     /**
-     * Set the exists state.
-     *
-     * @param exists True if exists
-     */
-    public void setExists (final boolean exists)
-    {
-        this.exists = exists;
-    }
-
-
-    /**
      * Set the activated state.
      *
      * @param isActivated True if is activated
@@ -649,8 +533,16 @@ public class ChannelImpl extends BaseImpl implements IChannel
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    public ISendBank getSendBank ()
+    {
+        return this.sendBank;
+    }
+
+
     protected void sendTrackOSC (final String command, final Object value)
     {
-        this.sender.sendOSC ("/track/" + (this.index + 1) + "/" + command, value);
+        this.sender.sendOSC ("/track/" + (this.getIndex () + 1) + "/" + command, value);
     }
 }

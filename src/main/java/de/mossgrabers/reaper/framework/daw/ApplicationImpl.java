@@ -23,13 +23,13 @@ public class ApplicationImpl extends BaseImpl implements IApplication
 
     /**
      * Constructor.
-     *
-     * @param sender The OSC sender
+     * 
      * @param host The DAW host
+     * @param sender The OSC sender
      */
-    public ApplicationImpl (final MessageSender sender, final IHost host)
+    public ApplicationImpl (final IHost host, final MessageSender sender)
     {
-        super (sender, host);
+        super (host, sender);
     }
 
 
@@ -313,6 +313,22 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     public void escape ()
     {
         // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void sliceToSampler ()
+    {
+        this.invokeAction (Actions.DYNAMIC_SPLIT);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void sliceToDrumMachine ()
+    {
+        this.invokeAction (Actions.DYNAMIC_SPLIT);
     }
 
 

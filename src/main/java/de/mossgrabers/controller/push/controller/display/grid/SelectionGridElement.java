@@ -2,7 +2,7 @@
 // (c) 2017-2018
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
-package de.mossgrabers.controller.push.controller.display.model.grid;
+package de.mossgrabers.controller.push.controller.display.grid;
 
 import de.mossgrabers.controller.push.PushConfiguration;
 import de.mossgrabers.framework.controller.color.ColorEx;
@@ -20,7 +20,7 @@ import java.util.EnumMap;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class ChannelSelectionGridElement extends AbstractGridElement
+public class SelectionGridElement extends AbstractGridElement
 {
     private static final EnumMap<ChannelType, String> ICONS            = new EnumMap<> (ChannelType.class);
 
@@ -50,7 +50,7 @@ public class ChannelSelectionGridElement extends AbstractGridElement
      * @param isSelected True if the grid element is selected
      * @param type The type of the track
      */
-    public ChannelSelectionGridElement (final String menuName, final boolean isMenuSelected, final String name, final ColorEx color, final boolean isSelected, final ChannelType type)
+    public SelectionGridElement (final String menuName, final boolean isMenuSelected, final String name, final ColorEx color, final boolean isSelected, final ChannelType type)
     {
         super (menuName, isMenuSelected, null, name, color, isSelected);
         this.type = type;

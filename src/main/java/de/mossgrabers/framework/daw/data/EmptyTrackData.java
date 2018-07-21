@@ -4,6 +4,10 @@
 
 package de.mossgrabers.framework.daw.data;
 
+import de.mossgrabers.framework.daw.EmptyBank;
+import de.mossgrabers.framework.daw.ISendBank;
+import de.mossgrabers.framework.daw.ISlotBank;
+import de.mossgrabers.framework.daw.NoteObserver;
 import de.mossgrabers.framework.daw.resource.ChannelType;
 
 
@@ -17,14 +21,8 @@ public class EmptyTrackData implements ITrack
     /** The singleton. */
     public static final ITrack INSTANCE = new EmptyTrackData ();
 
-
-    /**
-     * Constructor.
-     */
-    private EmptyTrackData ()
-    {
-        // Intentionally empty
-    }
+    private final ISlotBank    slotBank = new EmptySlotBank ();
+    private final ISendBank    sendBank = new EmptySendBank ();
 
 
     /** {@inheritDoc} */
@@ -237,38 +235,6 @@ public class EmptyTrackData implements ITrack
     public int getVuRight ()
     {
         return 0;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public int getNumSends ()
-    {
-        return 0;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public ISend getSend (final int sendIndex)
-    {
-        return null;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public int getNumSlots ()
-    {
-        return 0;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public ISlot getSlot (final int slotIndex)
-    {
-        return null;
     }
 
 
@@ -514,23 +480,7 @@ public class EmptyTrackData implements ITrack
 
     /** {@inheritDoc} */
     @Override
-    public void makeVisible ()
-    {
-        // Intentionally empty
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public void duplicate ()
-    {
-        // Intentionally empty
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void selectAndMakeVisible ()
     {
         // Intentionally empty
     }
@@ -579,33 +529,6 @@ public class EmptyTrackData implements ITrack
 
     /** {@inheritDoc} */
     @Override
-    public ISlot [] getSelectedSlots ()
-    {
-        // Intentionally empty
-        return null;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public ISlot getSelectedSlot ()
-    {
-        // Intentionally empty
-        return null;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public ISlot getEmptySlot (final int startFrom)
-    {
-        // Intentionally empty
-        return null;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public void stop ()
     {
         // Intentionally empty
@@ -622,15 +545,39 @@ public class EmptyTrackData implements ITrack
 
     /** {@inheritDoc} */
     @Override
-    public void scrollClipPageBackwards ()
+    public ISlotBank getSlotBank ()
     {
         // Intentionally empty
+        return this.slotBank;
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void scrollClipPageForwards ()
+    public ISendBank getSendBank ()
+    {
+        // Intentionally empty
+        return this.sendBank;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void addNoteObserver (final NoteObserver observer)
+    {
+        // Intentionally empty
+    }
+
+    class EmptySlotBank extends EmptyBank<ISlot> implements ISlotBank
+    {
+        @Override
+        public ISlot getEmptySlot (int startFrom)
+        {
+            return null;
+        }
+    }
+
+    class EmptySendBank extends EmptyBank<ISend> implements ISendBank
     {
         // Intentionally empty
     }

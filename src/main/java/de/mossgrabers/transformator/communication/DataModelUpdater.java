@@ -13,7 +13,7 @@ public interface DataModelUpdater
 {
     /**
      * Update the data model.
-     * 
+     *
      * @param dump True to dump the whole model otherwise only changes
      */
     void updateDataModel (boolean dump);

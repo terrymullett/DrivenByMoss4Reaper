@@ -51,7 +51,7 @@ public class MoveTrackBankCommand<S extends IControlSurface<C>, C extends Config
         if (event != ButtonEvent.DOWN)
             return;
 
-        if (this.surface.getModeManager ().isActiveMode (this.deviceMode))
+        if (this.surface.getModeManager ().isActiveOrTempMode (this.deviceMode))
         {
             if (this.moveBy1)
             {
@@ -73,16 +73,16 @@ public class MoveTrackBankCommand<S extends IControlSurface<C>, C extends Config
         if (this.moveBy1)
         {
             if (this.moveLeft)
-                this.model.getCurrentTrackBank ().scrollTracksUp ();
+                this.model.getCurrentTrackBank ().scrollBackwards ();
             else
-                this.model.getCurrentTrackBank ().scrollTracksDown ();
+                this.model.getCurrentTrackBank ().scrollForwards ();
         }
         else
         {
             if (this.moveLeft)
-                this.model.getCurrentTrackBank ().scrollTracksPageUp ();
+                this.model.getCurrentTrackBank ().scrollPageBackwards ();
             else
-                this.model.getCurrentTrackBank ().scrollTracksPageDown ();
+                this.model.getCurrentTrackBank ().scrollPageForwards ();
         }
     }
 }

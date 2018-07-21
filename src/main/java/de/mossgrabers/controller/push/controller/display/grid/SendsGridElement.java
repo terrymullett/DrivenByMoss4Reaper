@@ -2,7 +2,7 @@
 // (c) 2017-2018
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
-package de.mossgrabers.controller.push.controller.display.model.grid;
+package de.mossgrabers.controller.push.controller.display.grid;
 
 import de.mossgrabers.controller.push.PushConfiguration;
 import de.mossgrabers.framework.controller.color.ColorEx;
@@ -16,7 +16,7 @@ import de.mossgrabers.framework.graphics.IGraphicsContext;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class SendsGridElement extends ChannelSelectionGridElement
+public class SendsGridElement extends SelectionGridElement
 {
     final String []    sendNames           = new String []
     {

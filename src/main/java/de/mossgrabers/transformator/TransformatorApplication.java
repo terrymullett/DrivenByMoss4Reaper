@@ -470,7 +470,7 @@ public class TransformatorApplication extends Application implements MessageSend
 
     /**
      * Retrieve data from Reaper via the DLL.
-     * 
+     *
      * @param dump Resend all data, ignore cache
      * @return The data formatted in an OSC style with line separators
      */

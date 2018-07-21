@@ -60,16 +60,16 @@ public class TransportImpl extends BaseImpl implements ITransport
 
     /**
      * Constructor
-     *
-     * @param iniFiles The INI configuration files
-     * @param sender The OSC sender
+     * 
      * @param host The DAW host
-     * @param trackBank
+     * @param sender The OSC sender
      * @param valueChanger The value changer
+     * @param trackBank
+     * @param iniFiles The INI configuration files
      */
-    public TransportImpl (final IniFiles iniFiles, final MessageSender sender, final IHost host, final ITrackBank trackBank, final IValueChanger valueChanger)
+    public TransportImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final ITrackBank trackBank, final IniFiles iniFiles)
     {
-        super (sender, host);
+        super (host, sender);
 
         this.iniFiles = iniFiles;
         this.trackBank = trackBank;
@@ -392,7 +392,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     public String getAutomationWriteMode ()
     {
         // Get from selected track
-        final TrackImpl selectedTrack = (TrackImpl) this.trackBank.getSelectedTrack ();
+        final TrackImpl selectedTrack = (TrackImpl) this.trackBank.getSelectedItem ();
         return selectedTrack == null ? "" : selectedTrack.getAutomation ();
     }
 
@@ -401,7 +401,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void setAutomationWriteMode (final String mode)
     {
-        final ITrack selectedTrack = this.trackBank.getSelectedTrack ();
+        final ITrack selectedTrack = this.trackBank.getSelectedItem ();
         if (selectedTrack != null)
             this.sender.sendOSC ("/track/" + (selectedTrack.getIndex () + 1) + "/auto" + mode, Double.valueOf (1));
     }
@@ -513,7 +513,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void changePosition (final boolean increase, final boolean slow)
     {
         final double frac = slow ? INC_FRACTION_TIME_SLOW : INC_FRACTION_TIME;
-        setPosition (increase ? this.position + frac : Math.max (this.position - frac, 0.0));
+        this.setPosition (increase ? this.position + frac : Math.max (this.position - frac, 0.0));
     }
 
 

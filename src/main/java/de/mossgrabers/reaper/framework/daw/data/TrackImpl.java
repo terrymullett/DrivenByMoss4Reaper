@@ -6,8 +6,10 @@ package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;
-import de.mossgrabers.framework.daw.data.ISlot;
+import de.mossgrabers.framework.daw.ISlotBank;
+import de.mossgrabers.framework.daw.NoteObserver;
 import de.mossgrabers.framework.daw.data.ITrack;
+import de.mossgrabers.reaper.framework.daw.SlotBankImpl;
 import de.mossgrabers.transformator.communication.MessageSender;
 
 
@@ -36,12 +38,12 @@ public class TrackImpl extends ChannelImpl implements ITrack
     /** Automation write is write. */
     public static final String AUTOMATION_WRITE = "write";
 
-    private ISlot []           slots;
     private int                position;
     private boolean            isRecArm;
     private boolean            monitor;
     private boolean            autoMonitor;
     private String             automation       = AUTOMATION_TRIM;
+    private final ISlotBank    slotBank;
 
     private boolean            isRepeat;
     private int                repeatNoteLength;
@@ -61,9 +63,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     {
         super (host, sender, valueChanger, index, numSends);
 
-        this.slots = new SlotImpl [numScenes];
-        for (int i = 0; i < numScenes; i++)
-            this.slots[i] = new SlotImpl (sender, index, i);
+        this.slotBank = new SlotBankImpl (host, sender, valueChanger, index, numScenes);
     }
 
 
@@ -182,22 +182,6 @@ public class TrackImpl extends ChannelImpl implements ITrack
     {
         // In Reaper you can throw everything on a track
         return true;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public int getNumSlots ()
-    {
-        return this.slots.length;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public ISlot getSlot (final int slotIndex)
-    {
-        return this.slots[slotIndex];
     }
 
 
@@ -330,53 +314,6 @@ public class TrackImpl extends ChannelImpl implements ITrack
 
     /** {@inheritDoc} */
     @Override
-    public void scrollClipPageBackwards ()
-    {
-        // Not supported
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void scrollClipPageForwards ()
-    {
-        // Not supported
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public ISlot [] getSelectedSlots ()
-    {
-        // Not supported but provide one to support e.g. clip duplication
-        return new ISlot []
-        {
-            this.slots[0]
-        };
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public ISlot getSelectedSlot ()
-    {
-        // Not supported but provide one to support e.g. clip duplication
-        return this.slots[0];
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public ISlot getEmptySlot (final int startFrom)
-    {
-        // There are no slots in Reaper but to make it possible to create a midi item on a track
-        // we return a fake slot.
-        return this.slots[0];
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public void changeCrossfadeModeAsNumber (final int control)
     {
         // Not supported
@@ -438,5 +375,21 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public void returnToArrangement ()
     {
         // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public ISlotBank getSlotBank ()
+    {
+        return this.slotBank;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void addNoteObserver (NoteObserver observer)
+    {
+        // TODO Auto-generated method stub
     }
 }

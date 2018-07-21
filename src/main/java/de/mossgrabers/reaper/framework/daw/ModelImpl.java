@@ -28,7 +28,7 @@ public class ModelImpl extends AbstractModel
 
     /**
      * Constructor.
-     * 
+     *
      * @param iniFiles The INI configuration files
      * @param sender The OSC sender
      * @param host The DAW host
@@ -57,20 +57,20 @@ public class ModelImpl extends AbstractModel
         this.effectTrackBank = null;
         this.masterTrack = new MasterTrackImpl (host, sender, valueChanger);
 
-        this.primaryDevice = new CursorDeviceImpl (sender, host, valueChanger, this.numSends, this.numParams, this.numDevicesInBank, this.numDeviceLayers, this.numDrumPadLayers);
-        this.cursorDevice = new CursorDeviceImpl (sender, host, valueChanger, this.numSends, this.numParams, this.numDevicesInBank, this.numDeviceLayers, this.numDrumPadLayers);
+        this.primaryDevice = new CursorDeviceImpl (host, sender, valueChanger, this.numSends, this.numParams, this.numDevicesInBank, this.numDeviceLayers, this.numDrumPadLayers);
+        this.cursorDevice = new CursorDeviceImpl (host, sender, valueChanger, this.numSends, this.numParams, this.numDevicesInBank, this.numDeviceLayers, this.numDrumPadLayers);
         if (this.numDrumPadLayers > 0)
-            this.drumDevice64 = new CursorDeviceImpl (sender, host, valueChanger, 0, 0, 0, 64, 64);
+            this.drumDevice64 = new CursorDeviceImpl (host, sender, valueChanger, 0, 0, 0, 64, 64);
         if (this.numResults > 0)
             this.browser = new BrowserImpl (sender, this.cursorDevice, this.numFilterColumnEntries, this.numResults);
 
-        this.application = new ApplicationImpl (sender, host);
+        this.application = new ApplicationImpl (host, sender);
         this.arranger = new ArrangerImpl ();
-        this.mixer = new MixerImpl (sender, host);
-        this.project = new ProjectImpl (sender);
-        this.transport = new TransportImpl (iniFiles, sender, host, this.trackBank, valueChanger);
+        this.mixer = new MixerImpl (host, sender);
+        this.project = new ProjectImpl (host, sender);
+        this.transport = new TransportImpl (host, sender, valueChanger, this.trackBank, iniFiles);
 
-        this.groove = new GrooveImpl (iniFiles, host, valueChanger);
+        this.groove = new GrooveImpl (host, sender, valueChanger, iniFiles);
 
         this.currentTrackBank = this.trackBank;
     }
@@ -89,7 +89,7 @@ public class ModelImpl extends AbstractModel
     @Override
     public ICursorClip getCursorClip (final int cols, final int rows)
     {
-        return this.cursorClips.computeIfAbsent (cols + "-" + rows, k -> new CursorClipImpl (this.transport, this.sender, this.valueChanger, cols, rows));
+        return this.cursorClips.computeIfAbsent (cols + "-" + rows, k -> new CursorClipImpl (this.host, this.sender, this.valueChanger, this.transport, cols, rows));
     }
 
 

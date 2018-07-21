@@ -28,7 +28,6 @@ public class EffectTrackBankImpl extends AbstractTrackBankImpl
     public EffectTrackBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numTracks, final int numScenes)
     {
         super (host, sender, valueChanger, numTracks, numScenes, 0);
-        this.init ();
     }
 
 

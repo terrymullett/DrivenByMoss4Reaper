@@ -4,6 +4,7 @@
 
 package de.mossgrabers.reaper.framework.device.column;
 
+import de.mossgrabers.framework.daw.data.AbstractItemImpl;
 import de.mossgrabers.framework.daw.data.IBrowserColumnItem;
 import de.mossgrabers.framework.utils.StringUtils;
 
@@ -13,11 +14,8 @@ import de.mossgrabers.framework.utils.StringUtils;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public abstract class BaseColumnItem implements IBrowserColumnItem
+public abstract class BaseColumnItem extends AbstractItemImpl implements IBrowserColumnItem
 {
-    protected final int index;
-
-
     /**
      * Constructor.
      *
@@ -25,15 +23,7 @@ public abstract class BaseColumnItem implements IBrowserColumnItem
      */
     protected BaseColumnItem (final int index)
     {
-        this.index = index;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void enableObservers (final boolean enable)
-    {
-        // Not used
+        super (index);
     }
 
 
@@ -41,7 +31,7 @@ public abstract class BaseColumnItem implements IBrowserColumnItem
     @Override
     public int getIndex ()
     {
-        return this.index + 1;
+        return super.getIndex () + 1;
     }
 
 

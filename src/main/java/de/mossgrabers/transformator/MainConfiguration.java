@@ -26,7 +26,7 @@ public class MainConfiguration extends PropertiesEx
 
     /**
      * Load the settings from the config file.
-     * 
+     *
      * @param path The path where the config file is stored
      * @throws IOException Could not load configuration file
      */

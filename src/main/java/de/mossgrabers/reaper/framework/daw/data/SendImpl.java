@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.controller.IValueChanger;
+import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.ISend;
 import de.mossgrabers.transformator.communication.MessageSender;
 
@@ -22,14 +23,15 @@ public class SendImpl extends ParameterImpl implements ISend
     /**
      * Constructor.
      *
+     * @param host The DAW host
      * @param sender The OSC sender
      * @param valueChanger The value changer
      * @param trackIndex The index of the track to which this send belongs
      * @param index The index of the send
      */
-    public SendImpl (final MessageSender sender, final IValueChanger valueChanger, final int trackIndex, final int index)
+    public SendImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int trackIndex, final int index)
     {
-        super (sender, valueChanger, index);
+        super (host, sender, valueChanger, index);
 
         this.trackIndex = trackIndex;
     }
@@ -50,14 +52,6 @@ public class SendImpl extends ParameterImpl implements ISend
         if (!this.doesExist ())
             return;
         this.value = (int) value;
-        this.sender.sendOSC ("/track/" + (this.trackIndex + 1) + "/send/" + (this.index + 1) + "/volume", Double.valueOf (this.valueChanger.toNormalizedValue (this.getValue ())));
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public int getIndex ()
-    {
-        return this.index;
+        this.sender.sendOSC ("/track/" + (this.trackIndex + 1) + "/send/" + (this.getIndex () + 1) + "/volume", Double.valueOf (this.valueChanger.toNormalizedValue (this.getValue ())));
     }
 }

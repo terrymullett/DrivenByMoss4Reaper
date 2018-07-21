@@ -23,11 +23,11 @@ public abstract class BaseImpl implements ObserverManagement
 
     /**
      * Constructor.
-     *
-     * @param sender The OSC sender
+     * 
      * @param host The DAW host
+     * @param sender The OSC sender
      */
-    public BaseImpl (final MessageSender sender, final IHost host)
+    public BaseImpl (final IHost host, final MessageSender sender)
     {
         this.sender = sender;
         this.host = host;

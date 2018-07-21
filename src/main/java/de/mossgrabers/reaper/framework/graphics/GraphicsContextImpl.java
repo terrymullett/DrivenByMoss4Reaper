@@ -119,6 +119,14 @@ public class GraphicsContextImpl implements IGraphicsContext
     @Override
     public void drawTextInBounds (final String text, final double x, final double y, final double width, final double height, final Align alignment, final ColorEx color, final double fontSize)
     {
+        this.drawTextInBounds (text, x, y, width, height, alignment, color, null, fontSize);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void drawTextInBounds (final String text, final double x, final double y, final double width, final double height, final Align alignment, final ColorEx color, final ColorEx backgroundColor, final double fontSize)
+    {
         if (text == null || text.length () == 0)
             return;
 
@@ -127,21 +135,29 @@ public class GraphicsContextImpl implements IGraphicsContext
 
         final Dimension dim = this.getTextDims (text);
         this.gc.clipRect ((int) x, (int) y, (int) width, (int) height);
-        final int pos;
+        final int posX;
         switch (alignment)
         {
             case LEFT:
-                pos = (int) x;
+                posX = (int) x;
                 break;
 
             case CENTER:
             default:
-                pos = (int) (x + (width - dim.width) / 2);
+                posX = (int) (x + (width - dim.width) / 2);
                 break;
         }
 
         final double textDescent = this.getTextDescent (text);
-        this.gc.drawString (text, pos, (int) (y + height - (height - dim.height) / 2 - textDescent));
+        final int posY = (int) (y + height - (height - dim.height) / 2 - textDescent);
+
+        if (backgroundColor != null)
+        {
+            final double inset = 12.0;
+            this.fillRoundedRectangle (posX - inset, posY - dim.height - inset, dim.width + 2 * inset, dim.height + 2 * inset, inset, backgroundColor);
+        }
+
+        this.gc.drawString (text, posX, posY);
         this.gc.setClip (null);
     }
 

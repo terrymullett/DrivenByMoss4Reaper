@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.daw.AbstractBrowser;
 import de.mossgrabers.framework.daw.ICursorDevice;
+import de.mossgrabers.framework.daw.data.AbstractItemImpl;
 import de.mossgrabers.framework.daw.data.IBrowserColumn;
 import de.mossgrabers.framework.daw.data.IBrowserColumnItem;
 import de.mossgrabers.framework.utils.StringUtils;
@@ -421,11 +422,8 @@ public class BrowserImpl extends AbstractBrowser
     }
 
     /** An item in the result column. */
-    private class ResultItem implements IBrowserColumnItem
+    private class ResultItem extends AbstractItemImpl implements IBrowserColumnItem
     {
-        private final int index;
-
-
         /**
          * Constructor.
          *
@@ -433,23 +431,7 @@ public class BrowserImpl extends AbstractBrowser
          */
         public ResultItem (final int index)
         {
-            this.index = index;
-        }
-
-
-        /** {@inheritDoc} */
-        @Override
-        public void enableObservers (final boolean enable)
-        {
-            // Not supported
-        }
-
-
-        /** {@inheritDoc} */
-        @Override
-        public int getIndex ()
-        {
-            return this.index;
+            super (index);
         }
 
 
@@ -458,8 +440,8 @@ public class BrowserImpl extends AbstractBrowser
         public boolean doesExist ()
         {
             if (BrowserImpl.this.isPresetContentType ())
-                return BrowserImpl.this.presets[this.index] != null;
-            return this.index < BrowserImpl.this.filteredDevices.size ();
+                return BrowserImpl.this.presets[this.getIndex ()] != null;
+            return this.getIndex () < BrowserImpl.this.filteredDevices.size ();
         }
 
 
@@ -467,9 +449,10 @@ public class BrowserImpl extends AbstractBrowser
         @Override
         public String getName ()
         {
+            final int index = this.getIndex ();
             if (BrowserImpl.this.isPresetContentType ())
-                return BrowserImpl.this.presets[this.index] == null ? "" : BrowserImpl.this.presets[this.index];
-            final int id = BrowserImpl.this.translateBankIndexToPageOfSelectedIndex (this.index);
+                return BrowserImpl.this.presets[index] == null ? "" : BrowserImpl.this.presets[index];
+            final int id = BrowserImpl.this.translateBankIndexToPageOfSelectedIndex (index);
             return id < BrowserImpl.this.filteredDevices.size () ? BrowserImpl.this.filteredDevices.get (id).getDisplayName () : "";
         }
 
@@ -486,7 +469,7 @@ public class BrowserImpl extends AbstractBrowser
         @Override
         public boolean isSelected ()
         {
-            return BrowserImpl.this.translateBankIndexToPageOfSelectedIndex (this.index) == BrowserImpl.this.selectedIndex;
+            return BrowserImpl.this.translateBankIndexToPageOfSelectedIndex (this.getIndex ()) == BrowserImpl.this.selectedIndex;
         }
 
 
@@ -500,7 +483,7 @@ public class BrowserImpl extends AbstractBrowser
 
         public Device getDevice ()
         {
-            final int id = BrowserImpl.this.translateBankIndexToPageOfSelectedIndex (this.index);
+            final int id = BrowserImpl.this.translateBankIndexToPageOfSelectedIndex (this.getIndex ());
             return id < BrowserImpl.this.filteredDevices.size () ? BrowserImpl.this.filteredDevices.get (id) : null;
         }
     }

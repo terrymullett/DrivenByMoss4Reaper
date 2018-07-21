@@ -24,7 +24,7 @@ public class DataModelUpdateExecutor
 
     /**
      * Constructor.
-     * 
+     *
      * @param updater The updater
      */
     public DataModelUpdateExecutor (final DataModelUpdater updater)

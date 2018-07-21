@@ -7,8 +7,8 @@ package de.mossgrabers.controller.sl.command.trigger;
 import de.mossgrabers.controller.sl.SLConfiguration;
 import de.mossgrabers.controller.sl.controller.SLControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
-import de.mossgrabers.framework.daw.IChannelBank;
 import de.mossgrabers.framework.daw.IModel;
+import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.mode.Mode;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
@@ -44,20 +44,20 @@ public class P2ButtonCommand extends AbstractTriggerCommand<SLControlSurface, SL
         if (event != ButtonEvent.DOWN)
             return;
 
-        final IChannelBank tb = this.model.getCurrentTrackBank ();
+        final ITrackBank tb = this.model.getCurrentTrackBank ();
         if (this.isUp)
         {
-            if (!tb.canScrollTracksDown ())
+            if (!tb.canScrollForwards ())
                 return;
-            tb.scrollTracksPageDown ();
+            tb.scrollPageForwards ();
         }
         else
         {
-            if (!tb.canScrollTracksUp ())
+            if (!tb.canScrollBackwards ())
                 return;
-            tb.scrollTracksPageUp ();
+            tb.scrollPageBackwards ();
         }
-        final Mode activeMode = this.surface.getModeManager ().getActiveMode ();
+        final Mode activeMode = this.surface.getModeManager ().getActiveOrTempMode ();
         if (activeMode != null)
             activeMode.selectTrack (0);
     }

@@ -6,7 +6,6 @@ package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;
-import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.transformator.communication.MessageSender;
 
 
@@ -15,7 +14,7 @@ import de.mossgrabers.transformator.communication.MessageSender;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class TrackBankImpl extends AbstractTrackBankImpl implements ITrackBank
+public class TrackBankImpl extends AbstractTrackBankImpl
 {
     /**
      * Constructor.
@@ -32,8 +31,6 @@ public class TrackBankImpl extends AbstractTrackBankImpl implements ITrackBank
     public TrackBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList)
     {
         super (host, sender, valueChanger, numTracks, numScenes, numSends);
-
-        this.init ();
     }
 
 
@@ -65,9 +62,9 @@ public class TrackBankImpl extends AbstractTrackBankImpl implements ITrackBank
     @Override
     public boolean canEditSend (final int sendIndex)
     {
-        for (int i = 0; i < this.getNumTracks (); i++)
+        for (int i = 0; i < this.getPageSize (); i++)
         {
-            if (this.getTrack (i).getSend (sendIndex).doesExist ())
+            if (this.getItem (i).getSendBank ().getItem (sendIndex).doesExist ())
                 return true;
         }
         return false;
@@ -79,5 +76,13 @@ public class TrackBankImpl extends AbstractTrackBankImpl implements ITrackBank
     public String getEditSendName (final int sendIndex)
     {
         return this.canEditSend (sendIndex) ? "Send " + (sendIndex + 1) : "";
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isClipRecording ()
+    {
+        return false;
     }
 }

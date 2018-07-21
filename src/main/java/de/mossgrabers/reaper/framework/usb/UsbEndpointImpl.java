@@ -89,9 +89,9 @@ public class UsbEndpointImpl implements IUsbEndpoint
         }
 
         if (this.isBulk)
-            LibUsb.fillBulkTransfer (this.activeTransfer, this.handle, this.endpointAddress, memoryBlock.createByteBuffer (), result -> handleAsyncResult (callback, result), null, timeout);
+            LibUsb.fillBulkTransfer (this.activeTransfer, this.handle, this.endpointAddress, memoryBlock.createByteBuffer (), result -> this.handleAsyncResult (callback, result), null, timeout);
         else
-            LibUsb.fillInterruptTransfer (this.activeTransfer, this.handle, this.endpointAddress, memoryBlock.createByteBuffer (), result -> handleAsyncResult (callback, result), null, timeout);
+            LibUsb.fillInterruptTransfer (this.activeTransfer, this.handle, this.endpointAddress, memoryBlock.createByteBuffer (), result -> this.handleAsyncResult (callback, result), null, timeout);
         final int result = LibUsb.submitTransfer (this.activeTransfer);
         if (result != LibUsb.SUCCESS)
             this.host.error ("Unable to submit USB async transfer: " + result);
@@ -107,13 +107,13 @@ public class UsbEndpointImpl implements IUsbEndpoint
         {
             if (this.activeTransfer == null)
                 return;
-            int result = LibUsb.cancelTransfer (this.activeTransfer);
+            final int result = LibUsb.cancelTransfer (this.activeTransfer);
             if (result != LibUsb.SUCCESS)
                 return;
         }
         try
         {
-            boolean await = this.clearLatch.await (10L, TimeUnit.SECONDS);
+            final boolean await = this.clearLatch.await (10L, TimeUnit.SECONDS);
             if (!await)
                 this.host.error ("Timed out waiting for LibUsb transfer cancelation.");
         }

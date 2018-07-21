@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.ICursorClip;
+import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.transformator.communication.MessageSender;
@@ -30,16 +31,17 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
 
     /**
      * Constructor.
-     *
-     * @param transport The transport
+     * 
+     * @param host The DAW host
      * @param sender The OSC sender
      * @param valueChanger The value changer
+     * @param transport The transport
      * @param numSteps The number of steps of the clip to monitor
      * @param numRows The number of note rows of the clip to monitor
      */
-    public CursorClipImpl (final ITransport transport, final MessageSender sender, final IValueChanger valueChanger, final int numSteps, final int numRows)
+    public CursorClipImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final ITransport transport, final int numSteps, final int numRows)
     {
-        super (sender, null);
+        super (host, sender);
 
         this.transport = transport;
         this.valueChanger = valueChanger;

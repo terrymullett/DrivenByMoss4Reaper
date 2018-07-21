@@ -5,9 +5,8 @@
 package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.controller.IValueChanger;
+import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IParameter;
-import de.mossgrabers.framework.utils.StringUtils;
-import de.mossgrabers.reaper.framework.daw.BaseImpl;
 import de.mossgrabers.transformator.communication.MessageSender;
 
 
@@ -16,12 +15,10 @@ import de.mossgrabers.transformator.communication.MessageSender;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class ParameterImpl extends BaseImpl implements IParameter
+public class ParameterImpl extends ItemImpl implements IParameter
 {
     protected IValueChanger valueChanger;
 
-    protected int           index;
-    private String          name              = "";
     private String          valueStr          = "";
     private boolean         isBeingTouched;
 
@@ -32,23 +29,15 @@ public class ParameterImpl extends BaseImpl implements IParameter
     /**
      * Constructor.
      *
+     * @param host The DAW host
      * @param sender The OSC sender
      * @param valueChanger The value changer
      * @param index The index of the parameters
      */
-    public ParameterImpl (final MessageSender sender, final IValueChanger valueChanger, final int index)
+    public ParameterImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int index)
     {
-        super (sender, null);
+        super (host, sender, index);
         this.valueChanger = valueChanger;
-        this.index = index;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean doesExist ()
-    {
-        return !this.name.isEmpty ();
     }
 
 
@@ -57,22 +46,6 @@ public class ParameterImpl extends BaseImpl implements IParameter
     public void inc (final double increment)
     {
         // Not supported
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public String getName ()
-    {
-        return this.name;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public String getName (final int limit)
-    {
-        return StringUtils.optimizeName (this.name, limit);
     }
 
 
@@ -116,7 +89,7 @@ public class ParameterImpl extends BaseImpl implements IParameter
         if (!this.doesExist ())
             return;
         this.value = (int) value;
-        this.sender.sendOSC ("/device/param/" + (this.index + 1) + "/value", Double.valueOf (this.valueChanger.toNormalizedValue (this.getValue ())));
+        this.sender.sendOSC ("/device/param/" + (this.getIndex () + 1) + "/value", Double.valueOf (this.valueChanger.toNormalizedValue (this.getValue ())));
     }
 
 
@@ -159,17 +132,6 @@ public class ParameterImpl extends BaseImpl implements IParameter
 
         this.value = this.lastReceivedValue;
         this.lastReceivedValue = -1;
-    }
-
-
-    /**
-     * Set the name of the parameter.
-     *
-     * @param name The name
-     */
-    public void setName (final String name)
-    {
-        this.name = name == null ? "" : name;
     }
 
 

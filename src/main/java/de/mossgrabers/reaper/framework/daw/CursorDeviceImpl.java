@@ -7,6 +7,7 @@ package de.mossgrabers.reaper.framework.daw;
 import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.DAWColors;
 import de.mossgrabers.framework.daw.ICursorDevice;
+import de.mossgrabers.framework.daw.IDeviceBank;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.data.IDrumPad;
@@ -24,7 +25,6 @@ import de.mossgrabers.transformator.communication.MessageSender;
 public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
 {
     private int           numParams;
-    private int           numDevicesInBank;
     private int           numDeviceLayers;
     private int           numDrumPadLayers;
 
@@ -34,9 +34,9 @@ public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
     private int           position;
     private boolean       isWindowOpen;
     private boolean       isExpanded;
-    private String []     siblings;
     private IParameter [] fxparams;
     private IDrumPad []   drumPadLayers;
+    private IDeviceBank   deviceBank;
 
     private int           selectedDevice        = 0;
     private int           selectedParameterPage = 0;
@@ -48,9 +48,9 @@ public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
 
     /**
      * Constructor.
-     *
-     * @param sender The OSC sender
+     * 
      * @param host The host
+     * @param sender The OSC sender
      * @param valueChanger The value changer
      * @param numSends The number of sends
      * @param numParams The number of parameters
@@ -58,27 +58,22 @@ public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
      * @param numDeviceLayers The number of layers
      * @param numDrumPadLayers The number of drum pad layers
      */
-    public CursorDeviceImpl (final MessageSender sender, final IHost host, final IValueChanger valueChanger, final int numSends, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
+    public CursorDeviceImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numSends, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
     {
-        super (sender, host);
+        super (host, sender);
 
         this.numParams = numParams >= 0 ? numParams : 8;
-        this.numDevicesInBank = numDevicesInBank >= 0 ? numDevicesInBank : 8;
+        final int numDevices = numDevicesInBank >= 0 ? numDevicesInBank : 8;
         this.numDeviceLayers = numDeviceLayers >= 0 ? numDeviceLayers : 8;
         this.numDrumPadLayers = numDrumPadLayers >= 0 ? numDrumPadLayers : 16;
 
-        if (this.numDevicesInBank > 0)
-        {
-            this.siblings = new String [this.numDevicesInBank];
-            for (int i = 0; i < this.numDevicesInBank; i++)
-                this.siblings[i] = "";
-        }
+        this.deviceBank = new DeviceBankImpl (host, sender, valueChanger, numDevices);
 
         if (this.numParams > 0)
         {
             this.fxparams = new IParameter [this.numParams];
             for (int i = 0; i < this.numParams; i++)
-                this.fxparams[i] = new ParameterImpl (sender, valueChanger, i);
+                this.fxparams[i] = new ParameterImpl (host, sender, valueChanger, i);
         }
 
         if (this.numDrumPadLayers > 0)
@@ -87,6 +82,14 @@ public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
             for (int i = 0; i < this.numDrumPadLayers; i++)
                 this.drumPadLayers[i] = new DrumPadImpl (host, sender, valueChanger, i, numSends);
         }
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public IDeviceBank getDeviceBank ()
+    {
+        return this.deviceBank;
     }
 
 
@@ -363,7 +366,7 @@ public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
     public void setSelectedParameterPage (final int index)
     {
         this.selectedParameterPage = index;
-        this.selectedParameterBank = this.selectedParameterPage / this.numDevicesInBank;
+        this.selectedParameterBank = this.selectedParameterPage / this.getDeviceBank ().getPageSize ();
     }
 
 
@@ -455,7 +458,7 @@ public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
     {
         // To support displaying the newly selected device
         if (this.selectedDevice > 0)
-            this.name = this.siblings[this.selectedDevice - 1];
+            this.name = this.deviceBank.getItem (this.selectedDevice - 1).getName ();
 
         this.sender.sendOSC ("/device/-", null);
     }
@@ -466,60 +469,10 @@ public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
     public void selectNext ()
     {
         // To support displaying the newly selected device
-        if (this.selectedDevice < this.numDevicesInBank - 1)
-            this.name = this.siblings[this.selectedDevice + 1];
+        if (this.selectedDevice < this.deviceBank.getPageSize () - 1)
+            this.name = this.deviceBank.getItem (this.selectedDevice + 1).getName ();
 
         this.sender.sendOSC ("/device/+", null);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean doesSiblingExist (final int index)
-    {
-        return !this.siblings[index].isEmpty ();
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public String getSiblingDeviceName (final int index)
-    {
-        return this.siblings[index];
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public String getSiblingDeviceName (final int index, final int limit)
-    {
-        final String sibling = this.siblings[index];
-        return sibling != null && sibling.length () >= limit ? sibling.substring (0, limit) : sibling;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void selectSibling (final int index)
-    {
-        this.selectedDevice = index;
-        this.sender.sendOSC ("/device/selected", Integer.valueOf (index + 1));
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void selectPreviousBank ()
-    {
-        this.sender.sendOSC ("/device/page/-", null);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void selectNextBank ()
-    {
-        this.sender.sendOSC ("/device/page/+", null);
     }
 
 
@@ -1444,14 +1397,6 @@ public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
 
     /** {@inheritDoc} */
     @Override
-    public int getNumDevices ()
-    {
-        return this.numDevicesInBank;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public int getNumDrumPads ()
     {
         return this.numDrumPadLayers;
@@ -1468,7 +1413,7 @@ public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
         if (position < 0)
             return;
         this.position = position;
-        this.selectedDevice = position % this.getNumDevices ();
+        this.selectedDevice = position % this.getDeviceBank ().getPageSize ();
     }
 
 
@@ -1528,18 +1473,6 @@ public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
 
 
     /**
-     * Set the name of one of the devices siblings.
-     *
-     * @param index The index of the sibling
-     * @param name The name
-     */
-    public void setSiblingDeviceName (final int index, final String name)
-    {
-        this.siblings[index] = removeTypeAndManufacturer (name);
-    }
-
-
-    /**
      * Set the number of devices of the channel.
      *
      * @param deviceCount The number of devices
@@ -1557,34 +1490,10 @@ public class CursorDeviceImpl extends BaseImpl implements ICursorDevice
      */
     public void setParameterCount (final int count)
     {
-        final int numOfPages = count / this.numDevicesInBank + (count % this.numDevicesInBank > 0 ? 1 : 0);
+        int pageSize = this.deviceBank.getPageSize ();
+        final int numOfPages = count / pageSize + (count % pageSize > 0 ? 1 : 0);
         this.parameterPageNames = new String [numOfPages];
         for (int i = 0; i < numOfPages; i++)
             this.parameterPageNames[i] = "Page " + (i + 1);
-    }
-
-
-    private static String removeTypeAndManufacturer (final String name)
-    {
-        if (name == null)
-            return "";
-        if (name.startsWith ("VSTi: "))
-            return removeManufacturer (name.substring (6));
-        if (name.startsWith ("VST: "))
-            return removeManufacturer (name.substring (5));
-        if (name.startsWith ("VST3i: "))
-            return removeManufacturer (name.substring (7));
-        if (name.startsWith ("VST3: "))
-            return removeManufacturer (name.substring (6));
-        if (name.startsWith ("JS: "))
-            return removeManufacturer (name.substring (4));
-        return name;
-    }
-
-
-    private static String removeManufacturer (final String name)
-    {
-        final int index = name.indexOf ('(');
-        return index > 1 ? name.substring (0, index).trim () : name;
     }
 }

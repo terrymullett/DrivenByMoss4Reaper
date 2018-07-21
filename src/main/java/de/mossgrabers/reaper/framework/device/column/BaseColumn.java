@@ -4,6 +4,7 @@
 
 package de.mossgrabers.reaper.framework.device.column;
 
+import de.mossgrabers.framework.daw.data.AbstractItemImpl;
 import de.mossgrabers.framework.daw.data.IBrowserColumn;
 import de.mossgrabers.framework.daw.data.IBrowserColumnItem;
 import de.mossgrabers.framework.utils.StringUtils;
@@ -14,13 +15,12 @@ import de.mossgrabers.framework.utils.StringUtils;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public abstract class BaseColumn implements IBrowserColumn
+public abstract class BaseColumn extends AbstractItemImpl implements IBrowserColumn
 {
     protected static final String         WILDCARD    = "All";
 
     protected final IBrowserColumnItem [] items;
 
-    private final int                     columnIndex;
     private final String                  name;
     private final int                     numItemsPerPage;
 
@@ -36,27 +36,12 @@ public abstract class BaseColumn implements IBrowserColumn
      */
     protected BaseColumn (final int columnIndex, final String name, final int numItemsPerPage)
     {
-        this.columnIndex = columnIndex;
+        super (columnIndex);
+
         this.name = name;
         this.numItemsPerPage = numItemsPerPage;
 
         this.items = new IBrowserColumnItem [numItemsPerPage];
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void enableObservers (final boolean enable)
-    {
-        // Not used
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public int getIndex ()
-    {
-        return this.columnIndex;
     }
 
 
@@ -73,6 +58,14 @@ public abstract class BaseColumn implements IBrowserColumn
     public String getName ()
     {
         return this.name;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public String getName (final int limit)
+    {
+        return StringUtils.optimizeName (this.getName (), limit);
     }
 
 

@@ -19,13 +19,13 @@ public class MixerImpl extends BaseImpl implements IMixer
 {
     /**
      * Constructor
-     *
-     * @param sender The OSC sender
+     * 
      * @param host The DAW host
+     * @param sender The OSC sender
      */
-    public MixerImpl (final MessageSender sender, final IHost host)
+    public MixerImpl (final IHost host, final MessageSender sender)
     {
-        super (sender, host);
+        super (host, sender);
     }
 
 

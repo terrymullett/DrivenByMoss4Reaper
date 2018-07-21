@@ -4,14 +4,11 @@
 
 package de.mossgrabers.controller.push.mode;
 
-import de.mossgrabers.controller.push.controller.DisplayMessage;
 import de.mossgrabers.controller.push.controller.PushControlSurface;
-import de.mossgrabers.controller.push.controller.PushDisplay;
+import de.mossgrabers.controller.push.controller.display.DisplayModel;
 import de.mossgrabers.controller.push.view.Views;
 import de.mossgrabers.framework.controller.color.ColorManager;
 import de.mossgrabers.framework.controller.display.Display;
-import de.mossgrabers.framework.daw.DAWColors;
-import de.mossgrabers.framework.daw.IChannelBank;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.ISceneBank;
 import de.mossgrabers.framework.daw.ITrackBank;
@@ -164,7 +161,7 @@ public class SessionMode extends BaseMode
                 if (this.rowDisplayMode == RowDisplayMode.LOWER)
                     sceneIndex += 32;
 
-                final IScene scene = sceneBank.getScene (sceneIndex);
+                final IScene scene = sceneBank.getItem (sceneIndex);
                 if (scene.doesExist ())
                     d.setCell (row, col, StringUtils.shortenAndFixASCII (scene.getName (8), 8));
             }
@@ -175,11 +172,11 @@ public class SessionMode extends BaseMode
 
     private void updateDisplay1Clips ()
     {
-        final IChannelBank tb = this.model.getCurrentTrackBank ();
+        final ITrackBank tb = this.model.getCurrentTrackBank ();
         final boolean flipSession = this.surface.getConfiguration ().isFlipSession ();
 
-        final int numTracks = tb.getNumTracks ();
-        final int numScenes = tb.getNumScenes ();
+        final int numTracks = tb.getPageSize ();
+        final int numScenes = tb.getSceneBank ().getPageSize ();
 
         final int maxCols = flipSession ? numScenes : numTracks;
         int maxRows = flipSession ? numTracks : numScenes;
@@ -202,7 +199,7 @@ public class SessionMode extends BaseMode
                         y += maxRows;
                 }
 
-                final ISlot slot = tb.getTrack (x).getSlot (y);
+                final ISlot slot = tb.getItem (x).getSlotBank ().getItem (y);
                 if (slot.doesExist ())
                 {
                     String optimizedName = StringUtils.shortenAndFixASCII (slot.getName (8), 8);
@@ -230,7 +227,7 @@ public class SessionMode extends BaseMode
         final int maxCols = 8;
         final int maxRows = this.rowDisplayMode == RowDisplayMode.ALL ? 8 : 4;
 
-        final DisplayMessage message = ((PushDisplay) this.surface.getDisplay ()).createMessage ();
+        final DisplayModel message = this.surface.getDisplay ().getModel ();
         for (int col = 0; col < maxCols; col++)
         {
             final String [] items = new String [maxRows];
@@ -242,9 +239,9 @@ public class SessionMode extends BaseMode
                 if (this.rowDisplayMode == RowDisplayMode.LOWER)
                     sceneIndex += 32;
 
-                final IScene scene = sceneBank.getScene (sceneIndex);
+                final IScene scene = sceneBank.getItem (sceneIndex);
                 items[row] = scene.doesExist () ? scene.getName () : "";
-                slotColors.add (scene.doesExist () ? DAWColors.getColorEntry (this.trackBank.getColorOfFirstClipInScene (sceneIndex)) : BLACK);
+                slotColors.add (scene.doesExist () ? scene.getColor () : BLACK);
             }
             message.addBoxListElement (items, slotColors);
         }
@@ -254,13 +251,13 @@ public class SessionMode extends BaseMode
 
     private void updateDisplay2Clips ()
     {
-        final IChannelBank tb = this.model.getCurrentTrackBank ();
-        final DisplayMessage message = ((PushDisplay) this.surface.getDisplay ()).createMessage ();
+        final ITrackBank tb = this.model.getCurrentTrackBank ();
+        final DisplayModel message = this.surface.getDisplay ().getModel ();
 
         final boolean flipSession = this.surface.getConfiguration ().isFlipSession ();
 
-        final int numTracks = tb.getNumTracks ();
-        final int numScenes = tb.getNumScenes ();
+        final int numTracks = tb.getPageSize ();
+        final int numScenes = tb.getSceneBank ().getPageSize ();
 
         final int maxCols = flipSession ? numScenes : numTracks;
         int maxRows = flipSession ? numTracks : numScenes;
@@ -285,7 +282,7 @@ public class SessionMode extends BaseMode
                         y += maxRows;
                 }
 
-                final ISlot slot = tb.getTrack (x).getSlot (y);
+                final ISlot slot = tb.getItem (x).getSlotBank ().getItem (y);
                 items[row] = slot.doesExist () ? slot.getName () : "";
                 slotColors.add (slot.getColor ());
             }

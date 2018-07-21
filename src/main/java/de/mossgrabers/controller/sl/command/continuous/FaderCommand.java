@@ -48,10 +48,10 @@ public class FaderCommand extends AbstractContinuousCommand<SLControlSurface, SL
                 masterTrack.setVolume (value);
         }
         else
-            this.model.getCurrentTrackBank ().getTrack (this.index).setVolume (value);
+            this.model.getCurrentTrackBank ().getItem (this.index).setVolume (value);
 
         final ModeManager modeManager = this.surface.getModeManager ();
-        if (!modeManager.isActiveMode (Modes.MODE_VOLUME))
+        if (!modeManager.isActiveOrTempMode (Modes.MODE_VOLUME))
             modeManager.setActiveMode (Modes.MODE_VOLUME);
     }
 }

@@ -4,18 +4,16 @@
 
 package de.mossgrabers.controller.push.mode.track;
 
-import de.mossgrabers.controller.push.controller.DisplayMessage;
 import de.mossgrabers.controller.push.controller.PushColors;
 import de.mossgrabers.controller.push.controller.PushControlSurface;
-import de.mossgrabers.controller.push.controller.PushDisplay;
-import de.mossgrabers.controller.push.mode.Modes;
+import de.mossgrabers.controller.push.controller.display.DisplayModel;
 import de.mossgrabers.controller.push.view.ColorView;
 import de.mossgrabers.controller.push.view.ColorView.SelectMode;
 import de.mossgrabers.controller.push.view.Views;
 import de.mossgrabers.framework.controller.display.Display;
-import de.mossgrabers.framework.daw.IChannelBank;
 import de.mossgrabers.framework.daw.ICursorClip;
 import de.mossgrabers.framework.daw.IModel;
+import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.utils.StringUtils;
@@ -29,7 +27,8 @@ import de.mossgrabers.framework.view.ViewManager;
  */
 public class ClipMode extends AbstractTrackMode
 {
-    private boolean displayMidiNotes = false;
+    private boolean displayMidiNotes  = false;
+    private boolean disableMidiEditor = true;
 
 
     /**
@@ -118,35 +117,37 @@ public class ClipMode extends AbstractTrackMode
     public void updateDisplay2 ()
     {
         final ICursorClip clip = this.model.getCursorClip ();
-        final PushDisplay display = (PushDisplay) this.surface.getDisplay ();
-        final DisplayMessage message = display.createMessage ();
+        final DisplayModel message = this.surface.getDisplay ().getModel ();
 
         if (this.displayMidiNotes)
         {
             message.setMidiClipElement (clip, this.model.getTransport ().getQuartersPerMeasure ());
-            display.send (message);
+            message.send ();
             return;
         }
 
-        final IChannelBank tb = this.model.getCurrentTrackBank ();
-        final ITrack t0 = tb.getTrack (0);
-        final ITrack t1 = tb.getTrack (1);
-        final ITrack t2 = tb.getTrack (2);
-        final ITrack t3 = tb.getTrack (3);
-        final ITrack t4 = tb.getTrack (4);
-        final ITrack t5 = tb.getTrack (5);
-        final ITrack t6 = tb.getTrack (6);
-        final ITrack t7 = tb.getTrack (7);
+        final ITrackBank tb = this.model.getCurrentTrackBank ();
+        final ITrack t0 = tb.getItem (0);
+        final ITrack t1 = tb.getItem (1);
+        final ITrack t2 = tb.getItem (2);
+        final ITrack t3 = tb.getItem (3);
+        final ITrack t4 = tb.getItem (4);
+        final ITrack t5 = tb.getItem (5);
+        final ITrack t6 = tb.getItem (6);
+        final ITrack t7 = tb.getItem (7);
 
-        message.addParameterElement (this.model.getHost ().hasClips () ? "Session" : "", this.displayMidiNotes, t0.getName (), t0.getType (), t0.getColor (), t0.isSelected (), "Play Start", -1, this.formatMeasures (clip.getPlayStart (), 1), this.isKnobTouched[0], -1);
-        message.addParameterElement ("Piano Roll", false, t1.getName (), t1.getType (), t1.getColor (), t1.isSelected (), "Play End", -1, this.formatMeasures (clip.getPlayEnd (), 1), this.isKnobTouched[1], -1);
+        if (this.disableMidiEditor)
+            message.addParameterElement ("", false, t0.getName (), t0.getType (), t0.getColor (), t0.isSelected (), "Play Start", -1, this.formatMeasures (clip.getPlayStart (), 1), this.isKnobTouched[0], -1);
+        else
+            message.addParameterElement ("Piano Roll", this.displayMidiNotes, t0.getName (), t0.getType (), t0.getColor (), t0.isSelected (), "Play Start", -1, this.formatMeasures (clip.getPlayStart (), 1), this.isKnobTouched[0], -1);
+        message.addParameterElement ("", false, t1.getName (), t1.getType (), t1.getColor (), t1.isSelected (), "Play End", -1, this.formatMeasures (clip.getPlayEnd (), 1), this.isKnobTouched[1], -1);
         message.addParameterElement ("", false, t2.getName (), t2.getType (), t2.getColor (), t2.isSelected (), "Loop Start", -1, this.formatMeasures (clip.getLoopStart (), 1), this.isKnobTouched[2], -1);
         message.addParameterElement ("", false, t3.getName (), t3.getType (), t3.getColor (), t3.isSelected (), "Loop Lngth", -1, this.formatMeasures (clip.getLoopLength (), 0), this.isKnobTouched[3], -1);
         message.addParameterElement ("", false, t4.getName (), t4.getType (), t4.getColor (), t4.isSelected (), "Loop", -1, clip.isLoopEnabled () ? "On" : "Off", this.isKnobTouched[4], -1);
         message.addParameterElement ("", false, t5.getName (), t5.getType (), t5.getColor (), t5.isSelected (), "", -1, "", false, -1);
         message.addParameterElement ("", false, t6.getName (), t6.getType (), t6.getColor (), t6.isSelected (), "Shuffle", -1, clip.isShuffleEnabled () ? "On" : "Off", this.isKnobTouched[6], -1);
         message.addParameterElement ("Select color", false, t7.getName (), t7.getType (), t7.getColor (), t7.isSelected (), "Accent", -1, clip.getFormattedAccent (), this.isKnobTouched[7], -1);
-        display.send (message);
+        message.send ();
     }
 
 
@@ -166,12 +167,11 @@ public class ClipMode extends AbstractTrackMode
         switch (index)
         {
             case 0:
-                if (this.model.getHost ().hasClips ())
-                    this.surface.getModeManager ().setActiveMode (Modes.MODE_SESSION);
-                break;
-            case 1:
-                if (this.isPush2)
-                    this.displayMidiNotes = !this.displayMidiNotes;
+                if (!this.disableMidiEditor)
+                {
+                    if (this.isPush2)
+                        this.displayMidiNotes = !this.displayMidiNotes;
+                }
                 break;
             case 7:
                 final ViewManager viewManager = this.surface.getViewManager ();
@@ -189,8 +189,11 @@ public class ClipMode extends AbstractTrackMode
     @Override
     public void updateSecondRow ()
     {
-        this.surface.updateButton (102, this.displayMidiNotes ? PushColors.PUSH2_COLOR_BLACK : PushColors.PUSH2_COLOR2_WHITE);
-        this.surface.updateButton (103, this.isPush2 && !this.displayMidiNotes ? PushColors.PUSH2_COLOR2_WHITE : PushColors.PUSH2_COLOR_BLACK);
+        if (this.disableMidiEditor)
+            this.surface.updateButton (102, PushColors.PUSH2_COLOR_BLACK);
+        else
+            this.surface.updateButton (102, this.isPush2 && !this.displayMidiNotes ? PushColors.PUSH2_COLOR2_WHITE : PushColors.PUSH2_COLOR_BLACK);
+        this.surface.updateButton (103, PushColors.PUSH2_COLOR_BLACK);
         this.surface.updateButton (104, PushColors.PUSH2_COLOR_BLACK);
         this.surface.updateButton (105, PushColors.PUSH2_COLOR_BLACK);
         this.surface.updateButton (106, PushColors.PUSH2_COLOR_BLACK);

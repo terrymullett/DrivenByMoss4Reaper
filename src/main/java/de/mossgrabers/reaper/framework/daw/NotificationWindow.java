@@ -97,7 +97,7 @@ public class NotificationWindow
     private void fitFontSize ()
     {
         final Bounds bounds = this.label.getBoundsInLocal ();
-        double scale = Math.min (FRAME_WIDTH / bounds.getWidth (), FRAME_HEIGHT / bounds.getHeight ());
+        final double scale = Math.min (FRAME_WIDTH / bounds.getWidth (), FRAME_HEIGHT / bounds.getHeight ());
         this.label.setScaleX (scale);
         this.label.setScaleY (scale);
     }

@@ -186,7 +186,7 @@ public class ControllerInstanceManager
      */
     public boolean areRunning ()
     {
-        for (IControllerInstance inst: this.instances)
+        for (final IControllerInstance inst: this.instances)
         {
             if (!inst.isRunning ())
                 return false;
