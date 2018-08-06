@@ -25,6 +25,7 @@ import de.mossgrabers.reaper.framework.daw.ApplicationImpl;
 import de.mossgrabers.reaper.framework.daw.BrowserImpl;
 import de.mossgrabers.reaper.framework.daw.CursorDeviceImpl;
 import de.mossgrabers.reaper.framework.daw.MarkerBankImpl;
+import de.mossgrabers.reaper.framework.daw.ParameterPageBankImpl;
 import de.mossgrabers.reaper.framework.daw.ProjectImpl;
 import de.mossgrabers.reaper.framework.daw.TransportImpl;
 import de.mossgrabers.reaper.framework.daw.data.ChannelImpl;
@@ -484,7 +485,10 @@ public class MessageParser
                             }
                             final String bankCmd = parts.poll ();
                             if ("selected".equals (bankCmd))
-                                this.cursorDevice.getParameterPageBank ().selectPage (Integer.parseInt (value) - 1);
+                            {
+                                final ParameterPageBankImpl parameterPageBank = (ParameterPageBankImpl) this.cursorDevice.getParameterPageBank ();
+                                parameterPageBank.storePosition (Integer.parseInt (value));
+                            }
                             else
                                 this.host.error ("Unhandled Device Param Bank parameter: " + cmd);
                             break;

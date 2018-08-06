@@ -153,7 +153,6 @@ public class GraphicsContextImpl implements IGraphicsContext
         if (text == null || text.length () == 0)
             return;
 
-        this.setColor (color);
         this.gc.setFont (FONT_CACHE.getFont ((int) fontSize));
 
         final Dimension dim = this.getTextDims (text);
@@ -177,9 +176,10 @@ public class GraphicsContextImpl implements IGraphicsContext
         if (backgroundColor != null)
         {
             final double inset = 12.0;
-            this.fillRoundedRectangle (posX - inset, posY - dim.height - inset, dim.width + 2 * inset, dim.height + 2 * inset, inset, backgroundColor);
+            this.fillRoundedRectangle (posX - inset, posY - dim.height - inset + textDescent, dim.width + 2 * inset, dim.height + 2 * inset, inset, backgroundColor);
         }
 
+        this.setColor (color);
         this.gc.drawString (text, posX, posY);
         this.gc.setClip (null);
     }

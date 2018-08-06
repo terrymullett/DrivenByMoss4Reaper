@@ -123,9 +123,19 @@ public class ParameterPageBankImpl implements IParameterPageBank
     @Override
     public void scrollTo (final int position)
     {
+        this.sender.sendOSC ("/device/param/bank/selected", Integer.valueOf (position + 1));
+    }
+
+
+    /**
+     * Store the position in the page and bank.
+     *
+     * @param position The position to store
+     */
+    public void storePosition (final int position)
+    {
         this.page = position % this.pageSize;
         this.bank = this.page / this.pageSize;
-        this.sender.sendOSC ("/device/param/bank/selected", Integer.valueOf (position));
     }
 
 
