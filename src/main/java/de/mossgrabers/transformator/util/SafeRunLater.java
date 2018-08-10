@@ -6,6 +6,8 @@ package de.mossgrabers.transformator.util;
 
 import javafx.application.Platform;
 
+import javax.swing.SwingUtilities;
+
 
 /**
  * Helper class to catch exception happening inside a Platforem.runLater call.
@@ -30,7 +32,7 @@ public class SafeRunLater
      */
     public static void execute (final Runnable runnable)
     {
-        Platform.runLater ( () -> {
+        SwingUtilities.invokeLater ( () -> {
             try
             {
                 runnable.run ();

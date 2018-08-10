@@ -7,7 +7,10 @@ import javafx.scene.control.Button;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+
+import java.awt.Panel;
 
 
 public class TransformatorFrame extends JFrame
@@ -23,24 +26,10 @@ public class TransformatorFrame extends JFrame
 
         this.iniPath = iniPath;
 
-        JFXPanel jfxPanel = new JFXPanel ();
-
-        this.add (jfxPanel);
-
-        this.setVisible (true);
-
-        Platform.runLater ( () -> setupJavaFXScene (jfxPanel));
-    }
-
-
-    private void setupJavaFXScene (JFXPanel jfxPanel)
-    {
-        Button btJavaFX = new Button ("JavaFX Button");
-
         TransformatorApplication app = new TransformatorApplication ();
-        Scene scene = app.start (this, this.iniPath);
+        JPanel panel = app.start (this, this.iniPath);
 
-        jfxPanel.setScene (scene);
+        this.add (panel);
 
         SwingUtilities.invokeLater (this::showSwingWindow);
     }
@@ -51,9 +40,4 @@ public class TransformatorFrame extends JFrame
         pack ();
         setVisible (true);
     }
-
-    // public static void main (String [] args)
-    // {
-    // SwingUtilities.invokeLater (TransformatorFrame::new);
-    // }
 }
