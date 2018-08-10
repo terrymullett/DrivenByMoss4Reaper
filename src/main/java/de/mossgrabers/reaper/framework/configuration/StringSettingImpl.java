@@ -8,7 +8,7 @@ import de.mossgrabers.framework.configuration.IStringSetting;
 import de.mossgrabers.transformator.util.PropertiesEx;
 import de.mossgrabers.transformator.util.SafeRunLater;
 
-import javafx.scene.control.TextField;
+import javax.swing.JTextField;
 
 
 /**
@@ -16,7 +16,7 @@ import javafx.scene.control.TextField;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class StringSettingImpl extends BaseSetting<TextField, String> implements IStringSetting
+public class StringSettingImpl extends BaseSetting<JTextField, String> implements IStringSetting
 {
     private String value;
 
@@ -30,10 +30,10 @@ public class StringSettingImpl extends BaseSetting<TextField, String> implements
      */
     public StringSettingImpl (final String label, final String category, final String initialValue)
     {
-        super (label, category, new TextField (initialValue));
+        super (label, category, new JTextField (initialValue));
         this.value = initialValue;
 
-        this.field.textProperty ().addListener ( (observable, oldValue, newValue) -> this.set (newValue));
+        this.field.addActionListener (event -> this.set (this.field.getText ()));
     }
 
 
@@ -45,9 +45,9 @@ public class StringSettingImpl extends BaseSetting<TextField, String> implements
         this.flush ();
 
         SafeRunLater.execute ( () -> {
-            final String v = this.field.textProperty ().get ();
+            final String v = this.field.getText ();
             if (v == null || !v.equals (this.value))
-                this.field.textProperty ().set (this.value);
+                this.field.setText (this.value);
         });
     }
 

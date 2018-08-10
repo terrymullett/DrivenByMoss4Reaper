@@ -15,13 +15,10 @@ import de.mossgrabers.framework.configuration.IStringSetting;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.utils.Pair;
 import de.mossgrabers.transformator.midi.Midi;
-import de.mossgrabers.transformator.midi.MidiDeviceConverter;
 import de.mossgrabers.transformator.util.PropertiesEx;
 
-import javafx.beans.value.ChangeListener;
-import javafx.scene.control.ComboBox;
-
 import javax.sound.midi.MidiDevice;
+import javax.swing.JComboBox;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +40,8 @@ public class SettingsUI implements ISettingsUI
     private final int                              numMidiOutPorts;
     private final List<Pair<String [], String []>> discoveryPairs;
 
-    private final List<ComboBox<MidiDevice>>       midiInputs      = new ArrayList<> ();
-    private final List<ComboBox<MidiDevice>>       midiOutputs     = new ArrayList<> ();
+    private final List<JComboBox<MidiDevice>>      midiInputs      = new ArrayList<> ();
+    private final List<JComboBox<MidiDevice>>      midiOutputs     = new ArrayList<> ();
 
     private final MidiDevice []                    selectedMidiInputs;
     private final MidiDevice []                    selectedMidiOutputs;
@@ -119,17 +116,20 @@ public class SettingsUI implements ISettingsUI
      *
      * @return All widgets
      */
-    public List<ComboBox<MidiDevice>> createMidiInputWidgets ()
+    public List<JComboBox<MidiDevice>> createMidiInputWidgets ()
     {
         this.midiInputs.clear ();
         for (int i = 0; i < this.numMidiInPorts; i++)
         {
-            final ComboBox<MidiDevice> midiInput = new ComboBox<> ();
-            midiInput.setConverter (new MidiDeviceConverter ());
-            midiInput.setMaxWidth (Double.MAX_VALUE);
+            final JComboBox<MidiDevice> midiInput = new JComboBox<> ();
+            // TODO
+            // midiInput.setConverter (new MidiDeviceConverter ());
+            // midiInput.setMaxWidth (Double.MAX_VALUE);
             this.midiInputs.add (midiInput);
             final int index = i;
-            midiInput.getSelectionModel ().selectedItemProperty ().addListener ((ChangeListener<MidiDevice>) (observable, oldValue, newValue) -> this.selectedMidiInputs[index] = newValue);
+            // TODO midiInput.getSelectionModel ().selectedItemProperty ().addListener
+            // ((ChangeListener<MidiDevice>) (observable, oldValue, newValue) ->
+            // this.selectedMidiInputs[index] = newValue);
         }
         return this.midiInputs;
     }
@@ -140,17 +140,20 @@ public class SettingsUI implements ISettingsUI
      *
      * @return All widgets
      */
-    public List<ComboBox<MidiDevice>> createMidiOutputWidgets ()
+    public List<JComboBox<MidiDevice>> createMidiOutputWidgets ()
     {
         this.midiOutputs.clear ();
         for (int i = 0; i < this.numMidiOutPorts; i++)
         {
-            final ComboBox<MidiDevice> midiOutput = new ComboBox<> ();
-            midiOutput.setConverter (new MidiDeviceConverter ());
-            midiOutput.setMaxWidth (Double.MAX_VALUE);
+            final JComboBox<MidiDevice> midiOutput = new JComboBox<> ();
+            // TODO
+            // midiOutput.setConverter (new MidiDeviceConverter ());
+            // midiOutput.setMaxWidth (Double.MAX_VALUE);
             this.midiOutputs.add (midiOutput);
             final int index = i;
-            midiOutput.getSelectionModel ().selectedItemProperty ().addListener ((ChangeListener<MidiDevice>) (observable, oldValue, newValue) -> this.selectedMidiOutputs[index] = newValue);
+            // midiOutput.getSelectionModel ().selectedItemProperty ().addListener
+            // ((ChangeListener<MidiDevice>) (observable, oldValue, newValue) ->
+            // this.selectedMidiOutputs[index] = newValue);
         }
         return this.midiOutputs;
     }

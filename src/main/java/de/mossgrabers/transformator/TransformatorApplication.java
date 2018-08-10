@@ -218,7 +218,6 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
         if (this.tray != null && this.trayIcon != null)
             this.tray.remove (this.trayIcon);
 
-        // Hardcore! No idea which thread is hanging, could be a JavaFX bug...
         System.exit (0);
     }
 
@@ -563,7 +562,7 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
             });
             popup.add (item);
         }
-        addButton.addActionListener (event -> popup.show (addButton, 0, 0));
+        addButton.addActionListener (event -> popup.show (addButton, 0, addButton.getHeight ()));
     }
 
 

@@ -8,7 +8,7 @@ import de.mossgrabers.framework.configuration.IIntegerSetting;
 import de.mossgrabers.transformator.util.PropertiesEx;
 import de.mossgrabers.transformator.util.SafeRunLater;
 
-import javafx.scene.control.TextField;
+import javax.swing.JTextField;
 
 
 /**
@@ -16,7 +16,7 @@ import javafx.scene.control.TextField;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class IntegerSettingImpl extends BaseSetting<TextField, Integer> implements IIntegerSetting
+public class IntegerSettingImpl extends BaseSetting<JTextField, Integer> implements IIntegerSetting
 {
     private final int minValue;
     private final int maxValue;
@@ -34,16 +34,16 @@ public class IntegerSettingImpl extends BaseSetting<TextField, Integer> implemen
      */
     public IntegerSettingImpl (final String label, final String category, final int initialValue, final int minValue, final int maxValue)
     {
-        super (label, category, new TextField (Integer.toString (initialValue)));
+        super (label, category, new JTextField (Integer.toString (initialValue)));
         this.value = initialValue;
         this.minValue = minValue;
         this.maxValue = maxValue;
 
         limitToNumbers (this.field, NUMBERS);
-        this.field.textProperty ().addListener ( (observable, oldValue, newValue) -> {
+        this.field.addActionListener (event -> {
             try
             {
-                this.set (Integer.parseInt (newValue));
+                this.set (Integer.parseInt (this.field.getText ()));
             }
             catch (final NumberFormatException ex)
             {
@@ -72,9 +72,9 @@ public class IntegerSettingImpl extends BaseSetting<TextField, Integer> implemen
         this.flush ();
 
         SafeRunLater.execute ( () -> {
-            final String v = this.field.textProperty ().get ();
+            final String v = this.field.getText ();
             if (!v.equals (Integer.toString (this.value)))
-                this.field.textProperty ().set (Integer.toString (this.value));
+                this.field.setText (Integer.toString (this.value));
         });
     }
 

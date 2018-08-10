@@ -13,7 +13,7 @@ import de.mossgrabers.reaper.framework.ReaperSetupFactory;
 import de.mossgrabers.transformator.communication.MessageSender;
 import de.mossgrabers.transformator.util.LogModel;
 
-import javafx.stage.Window;
+import java.awt.Window;
 
 
 /**

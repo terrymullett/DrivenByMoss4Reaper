@@ -4,10 +4,12 @@
 
 package de.mossgrabers.reaper.framework.configuration;
 
-import javafx.geometry.Orientation;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.layout.BorderPane;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
+
+import java.awt.BorderLayout;
 
 
 /**
@@ -15,10 +17,12 @@ import javafx.scene.layout.BorderPane;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class TitledSeparator extends BorderPane
+public class TitledSeparator extends JPanel
 {
-    private final Label     label     = new Label ();
-    private final Separator separator = new Separator (Orientation.HORIZONTAL);
+    private static final long serialVersionUID = -4307059969818219806L;
+
+    private final JLabel      label            = new JLabel ();
+    private final JSeparator  separator        = new JSeparator (SwingConstants.HORIZONTAL);
 
 
     /**
@@ -28,9 +32,10 @@ public class TitledSeparator extends BorderPane
      */
     public TitledSeparator (final String title)
     {
-        this.setCenter (this.separator);
-        this.setLeft (this.label);
+        super (new BorderLayout ());
+
+        this.add (this.separator, BorderLayout.CENTER);
+        this.add (this.label, BorderLayout.WEST);
         this.label.setText (title);
-        this.label.getStyleClass ().add ("titled-separator");
     }
 }

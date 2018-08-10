@@ -8,10 +8,8 @@ import de.mossgrabers.framework.configuration.IEnumSetting;
 import de.mossgrabers.transformator.util.PropertiesEx;
 import de.mossgrabers.transformator.util.SafeRunLater;
 
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.SingleSelectionModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 
 
 /**
@@ -19,7 +17,7 @@ import javafx.scene.control.SingleSelectionModel;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class EnumSettingImpl extends BaseSetting<ComboBox<String>, String> implements IEnumSetting
+public class EnumSettingImpl extends BaseSetting<JComboBox<String>, String> implements IEnumSetting
 {
     private String value;
 
@@ -35,13 +33,11 @@ public class EnumSettingImpl extends BaseSetting<ComboBox<String>, String> imple
      */
     public EnumSettingImpl (final String label, final String category, final String [] options, final String initialValue)
     {
-        super (label, category, new ComboBox<> (FXCollections.observableArrayList (options)));
+        super (label, category, new JComboBox<> (new DefaultComboBoxModel<> (options)));
         this.value = initialValue;
 
-        final SingleSelectionModel<String> selectionModel = this.field.getSelectionModel ();
-        selectionModel.select (this.value);
-        selectionModel.selectedItemProperty ().addListener ( (observable, oldValue, newValue) -> this.set (newValue));
-        this.field.setMaxWidth (Double.MAX_VALUE);
+        this.field.setSelectedItem (this.value);
+        this.field.addActionListener (event -> this.set ((String) this.field.getSelectedItem ()));
     }
 
 
@@ -53,10 +49,8 @@ public class EnumSettingImpl extends BaseSetting<ComboBox<String>, String> imple
         this.flush ();
 
         SafeRunLater.execute ( () -> {
-            final SingleSelectionModel<String> selectionModel = this.field.getSelectionModel ();
-            final ReadOnlyObjectProperty<String> selectedItemProperty = selectionModel.selectedItemProperty ();
-            if (this.value != null && !this.value.equals (selectedItemProperty.get ()))
-                selectionModel.select (this.value);
+            if (this.value != null && !this.value.equals (this.field.getSelectedItem ()))
+                this.field.setSelectedItem (this.value);
         });
     }
 
@@ -89,6 +83,6 @@ public class EnumSettingImpl extends BaseSetting<ComboBox<String>, String> imple
     @Override
     public void setEnabled (final boolean enable)
     {
-        this.field.disableProperty ().set (!enable);
+        this.field.setEnabled (enable);
     }
 }

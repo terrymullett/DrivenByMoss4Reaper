@@ -21,8 +21,7 @@ import de.mossgrabers.transformator.util.LogModel;
 import de.mossgrabers.transformator.util.PropertiesEx;
 import de.mossgrabers.transformator.util.SafeRunLater;
 
-import javafx.stage.Window;
-
+import java.awt.Window;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -217,7 +216,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
     @Override
     public void edit ()
     {
-        new ConfigurationDialog (this.logModel, this.window, this.settingsUI).showAndWait ();
+        new ConfigurationDialog (this.logModel, this.window, this.settingsUI).setVisible (true);
 
         try (final FileWriter writer = new FileWriter (this.getFileName ()))
         {

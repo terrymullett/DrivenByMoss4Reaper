@@ -8,7 +8,7 @@ import de.mossgrabers.framework.configuration.IBooleanSetting;
 import de.mossgrabers.transformator.util.PropertiesEx;
 import de.mossgrabers.transformator.util.SafeRunLater;
 
-import javafx.scene.control.CheckBox;
+import javax.swing.JCheckBox;
 
 
 /**
@@ -16,7 +16,7 @@ import javafx.scene.control.CheckBox;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class BooleanSettingImpl extends BaseSetting<CheckBox, Boolean> implements IBooleanSetting
+public class BooleanSettingImpl extends BaseSetting<JCheckBox, Boolean> implements IBooleanSetting
 {
     private boolean value;
 
@@ -30,10 +30,10 @@ public class BooleanSettingImpl extends BaseSetting<CheckBox, Boolean> implement
      */
     public BooleanSettingImpl (final String label, final String category, final boolean initialValue)
     {
-        super (label, category, new CheckBox ());
+        super (label, category, new JCheckBox ());
         this.value = initialValue;
 
-        this.field.selectedProperty ().addListener ( (observable, oldValue, newValue) -> this.set (newValue));
+        this.field.addActionListener (event -> this.set (this.field.isSelected ()));
     }
 
 
@@ -53,9 +53,9 @@ public class BooleanSettingImpl extends BaseSetting<CheckBox, Boolean> implement
         this.flush ();
 
         SafeRunLater.execute ( () -> {
-            final boolean v = this.field.selectedProperty ().get ();
+            final boolean v = this.field.isSelected ();
             if (v != this.value)
-                this.field.selectedProperty ().set (this.value);
+                this.field.setSelected (this.value);
         });
     }
 

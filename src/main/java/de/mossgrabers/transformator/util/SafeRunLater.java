@@ -4,8 +4,6 @@
 
 package de.mossgrabers.transformator.util;
 
-import javafx.application.Platform;
-
 import javax.swing.SwingUtilities;
 
 

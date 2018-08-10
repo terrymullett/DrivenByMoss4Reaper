@@ -8,7 +8,7 @@ import de.mossgrabers.framework.configuration.IDoubleSetting;
 import de.mossgrabers.transformator.util.PropertiesEx;
 import de.mossgrabers.transformator.util.SafeRunLater;
 
-import javafx.scene.control.TextField;
+import javax.swing.JTextField;
 
 
 /**
@@ -16,7 +16,7 @@ import javafx.scene.control.TextField;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class DoubleSettingImpl extends BaseSetting<TextField, Double> implements IDoubleSetting
+public class DoubleSettingImpl extends BaseSetting<JTextField, Double> implements IDoubleSetting
 {
     private double value;
 
@@ -30,14 +30,14 @@ public class DoubleSettingImpl extends BaseSetting<TextField, Double> implements
      */
     public DoubleSettingImpl (final String label, final String category, final double initialValue)
     {
-        super (label, category, new TextField (Double.toString (initialValue)));
+        super (label, category, new JTextField (Double.toString (initialValue)));
         this.value = initialValue;
 
         limitToNumbers (this.field, NUMBERS_AND_DOT);
-        this.field.textProperty ().addListener ( (observable, oldValue, newValue) -> {
+        this.field.addActionListener (event -> {
             try
             {
-                this.set (Double.parseDouble (newValue));
+                this.set (Double.parseDouble (this.field.getText ()));
             }
             catch (final NumberFormatException ex)
             {
@@ -63,9 +63,10 @@ public class DoubleSettingImpl extends BaseSetting<TextField, Double> implements
         this.flush ();
 
         SafeRunLater.execute ( () -> {
-            final String v = this.field.textProperty ().get ();
-            if (!v.equals (Double.toString (this.value)))
-                this.field.textProperty ().set (Double.toString (this.value));
+            final String v = this.field.getText ();
+            final String doubleStr = Double.toString (this.value);
+            if (!v.equals (doubleStr))
+                this.field.setText (doubleStr);
         });
     }
 

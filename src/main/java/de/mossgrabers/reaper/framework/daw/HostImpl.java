@@ -14,7 +14,6 @@ import de.mossgrabers.framework.osc.IOpenSoundControlServer;
 import de.mossgrabers.framework.usb.IUsbDevice;
 import de.mossgrabers.framework.usb.UsbException;
 import de.mossgrabers.framework.usb.UsbMatcher;
-import de.mossgrabers.reaper.framework.graphics.BitmapImpl;
 import de.mossgrabers.reaper.framework.graphics.SVGImage;
 import de.mossgrabers.reaper.framework.osc.OpenSoundControlMessageImpl;
 import de.mossgrabers.reaper.framework.osc.OpenSoundControlServerImpl;
@@ -26,9 +25,8 @@ import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCPortIn;
 import com.illposed.osc.OSCPortOut;
 
-import javafx.stage.Window;
-
 import java.awt.Color;
+import java.awt.Window;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -205,7 +203,7 @@ public class HostImpl implements IHost
     @Override
     public IBitmap createBitmap (final int width, final int height)
     {
-        return new BitmapImpl (this.owner, width, height);
+        return null; // TODO new BitmapImpl (this.owner, width, height);
     }
 
 

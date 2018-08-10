@@ -7,7 +7,7 @@ package de.mossgrabers.reaper.framework.configuration;
 import de.mossgrabers.framework.configuration.ISignalSetting;
 import de.mossgrabers.transformator.util.PropertiesEx;
 
-import javafx.scene.control.Button;
+import javax.swing.JButton;
 
 
 /**
@@ -15,7 +15,7 @@ import javafx.scene.control.Button;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class SignalSettingImpl extends BaseSetting<Button, Void> implements ISignalSetting
+public class SignalSettingImpl extends BaseSetting<JButton, Void> implements ISignalSetting
 {
     /**
      * Constructor.
@@ -26,10 +26,9 @@ public class SignalSettingImpl extends BaseSetting<Button, Void> implements ISig
      */
     public SignalSettingImpl (final String label, final String category, final String title)
     {
-        super (label, category, new Button (title));
+        super (label, category, new JButton (title));
 
-        this.field.setMaxWidth (Double.MAX_VALUE);
-        this.field.setOnAction (event -> this.notifyObservers (null));
+        this.field.addActionListener (event -> this.notifyObservers (null));
     }
 
 

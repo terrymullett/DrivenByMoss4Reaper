@@ -18,8 +18,8 @@ import javafx.scene.control.DialogPane;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
-import javafx.stage.Window;
 
+import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.nio.ByteBuffer;
@@ -52,7 +52,7 @@ public class BitmapImpl extends Dialog<Void> implements IBitmap
         this.bufferedImage = new BufferedImage (width, height, BufferedImage.TYPE_INT_ARGB);
 
         this.initModality (Modality.NONE);
-        this.initOwner (owner);
+        // this.initOwner (owner);
 
         final DialogPane dialogPane = this.getDialogPane ();
         dialogPane.getButtonTypes ().add (new ButtonType ("Close", ButtonData.CANCEL_CLOSE));

@@ -2,13 +2,8 @@ package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.transformator.util.SafeRunLater;
 
-import javafx.geometry.Bounds;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,8 +25,8 @@ public class NotificationWindow
     private final AtomicInteger            counter      = new AtomicInteger ();
     private final ScheduledExecutorService executor     = Executors.newSingleThreadScheduledExecutor ();
 
-    private final Stage                    popupStage   = new Stage ();
-    private final Text                     label        = new Text (0, 0, "");
+    private final JFrame                   popupStage   = new JFrame ();
+    private final JLabel                   label        = new JLabel ("");
 
 
     /**
@@ -39,17 +34,15 @@ public class NotificationWindow
      */
     public NotificationWindow ()
     {
-        this.popupStage.initModality (Modality.NONE);
         this.popupStage.setTitle ("Title of popup");
         this.popupStage.setAlwaysOnTop (true);
-        this.popupStage.initStyle (StageStyle.UNDECORATED);
-
-        final BorderPane root = new BorderPane (this.label);
-        final Scene scene = new Scene (root, FRAME_WIDTH, FRAME_HEIGHT);
-        this.popupStage.setScene (scene);
-        this.popupStage.sizeToScene ();
+        this.popupStage.setUndecorated (true);
         this.popupStage.setResizable (false);
-        this.popupStage.centerOnScreen ();
+
+        // TODO
+        // final BorderPane root = new BorderPane (this.label);
+        // final Scene scene = new Scene (root, FRAME_WIDTH, FRAME_HEIGHT);
+        // this.popupStage.centerOnScreen ();
 
         this.executor.scheduleAtFixedRate ( () -> {
             final int c = this.counter.get ();
@@ -57,7 +50,7 @@ public class NotificationWindow
                 return;
             if (this.counter.decrementAndGet () == 0)
             {
-                // Needs to be run on the JavaFX tread
+                // Needs to be run on the Swing tread
                 SafeRunLater.execute (this.popupStage::hide);
             }
         }, 1, 1, TimeUnit.SECONDS);
@@ -86,9 +79,7 @@ public class NotificationWindow
         this.fitFontSize ();
 
         if (!this.popupStage.isShowing ())
-        {
-            this.popupStage.show ();
-        }
+            this.popupStage.setVisible (true);
     }
 
 
@@ -97,9 +88,11 @@ public class NotificationWindow
      */
     private void fitFontSize ()
     {
-        final Bounds bounds = this.label.getBoundsInLocal ();
-        final double scale = Math.min (FRAME_WIDTH / bounds.getWidth (), FRAME_HEIGHT / bounds.getHeight ());
-        this.label.setScaleX (scale);
-        this.label.setScaleY (scale);
+        // TODO
+        // final Bounds bounds = this.label.getBoundsInLocal ();
+        // final double scale = Math.min (FRAME_WIDTH / bounds.getWidth (), FRAME_HEIGHT /
+        // bounds.getHeight ());
+        // this.label.setScaleX (scale);
+        // this.label.setScaleY (scale);
     }
 }

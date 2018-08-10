@@ -9,8 +9,9 @@ import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.transformator.util.PropertiesEx;
 import de.mossgrabers.transformator.util.SafeRunLater;
 
-import javafx.scene.control.ColorPicker;
-import javafx.scene.paint.Color;
+import javax.swing.JColorChooser;
+
+import java.awt.Color;
 
 
 /**
@@ -18,7 +19,7 @@ import javafx.scene.paint.Color;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class ColorSettingImpl extends BaseSetting<ColorPicker, double []> implements IColorSetting
+public class ColorSettingImpl extends BaseSetting<JColorChooser, double []> implements IColorSetting
 {
     private ColorEx value;
 
@@ -32,15 +33,16 @@ public class ColorSettingImpl extends BaseSetting<ColorPicker, double []> implem
      */
     public ColorSettingImpl (final String label, final String category, final ColorEx initialValue)
     {
-        super (label, category, new ColorPicker (Color.color (initialValue.getRed (), initialValue.getGreen (), initialValue.getBlue ())));
+        super (label, category, new JColorChooser (new Color ((float) initialValue.getRed (), (float) initialValue.getGreen (), (float) initialValue.getBlue ())));
         this.value = initialValue;
 
-        this.field.setMaxWidth (Double.MAX_VALUE);
-        this.field.setMinHeight (30);
-        this.field.setOnAction (event -> {
-            final Color color = this.field.getValue ();
-            this.set (color.getRed (), color.getGreen (), color.getBlue ());
-        });
+        // TODO
+        // this.field.setMaxWidth (Double.MAX_VALUE);
+        // this.field.setMinHeight (30);
+        // this.field.setOnAction (event -> {
+        // final Color color = this.field.getValue ();
+        // this.set (color.getRed (), color.getGreen (), color.getBlue ());
+        // });
     }
 
 
@@ -68,9 +70,12 @@ public class ColorSettingImpl extends BaseSetting<ColorPicker, double []> implem
         this.flush ();
 
         SafeRunLater.execute ( () -> {
-            final Color c = this.field.getValue ();
-            if (this.value.getRed () != c.getRed () || this.value.getGreen () != c.getGreen () || this.value.getBlue () != c.getBlue ())
-                this.field.setValue (Color.color (this.value.getRed (), this.value.getGreen (), this.value.getBlue ()));
+            final Color c = this.field.getColor ();
+            // TODO
+            // if (this.value.getRed () != c.getRed () || this.value.getGreen () != c.getGreen () ||
+            // this.value.getBlue () != c.getBlue ())
+            // this.field.setValue (Color.color (this.value.getRed (), this.value.getGreen (),
+            // this.value.getBlue ()));
         });
     }
 

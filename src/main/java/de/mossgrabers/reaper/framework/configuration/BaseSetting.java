@@ -7,10 +7,14 @@ package de.mossgrabers.reaper.framework.configuration;
 import de.mossgrabers.framework.configuration.IValueObserver;
 import de.mossgrabers.framework.utils.StringUtils;
 
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.PlainDocument;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +28,7 @@ import java.util.Set;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public abstract class BaseSetting<C extends Control, T> implements IfxSetting<T>
+public abstract class BaseSetting<C extends JComponent, T> implements IfxSetting<T>
 {
     protected static final String        NUMBERS                = "0123456789";
     protected static final String        SIGNED_NUMBERS         = "-0123456789";
@@ -33,7 +37,7 @@ public abstract class BaseSetting<C extends Control, T> implements IfxSetting<T>
 
     protected final C                    field;
 
-    private final Label                  labelWidget;
+    private final JLabel                 labelWidget;
     private final Set<IValueObserver<T>> observers              = new HashSet<> ();
     private final String                 label;
     private final String                 category;
@@ -51,7 +55,7 @@ public abstract class BaseSetting<C extends Control, T> implements IfxSetting<T>
         this.label = label;
         this.category = category;
         this.field = field;
-        this.labelWidget = new Label (this.label);
+        this.labelWidget = new JLabel (this.label);
     }
 
 
@@ -81,7 +85,7 @@ public abstract class BaseSetting<C extends Control, T> implements IfxSetting<T>
 
     /** {@inheritDoc} */
     @Override
-    public Label getLabelWidget ()
+    public JLabel getLabelWidget ()
     {
         return this.labelWidget;
     }
@@ -89,7 +93,7 @@ public abstract class BaseSetting<C extends Control, T> implements IfxSetting<T>
 
     /** {@inheritDoc} */
     @Override
-    public Control getWidget ()
+    public JComponent getWidget ()
     {
         return this.field;
     }
@@ -119,8 +123,8 @@ public abstract class BaseSetting<C extends Control, T> implements IfxSetting<T>
     @Override
     public void setEnabled (final boolean enable)
     {
-        this.labelWidget.disableProperty ().set (!enable);
-        this.field.disableProperty ().set (!enable);
+        this.labelWidget.setEnabled (enable);
+        this.field.setEnabled (enable);
     }
 
 
@@ -129,9 +133,7 @@ public abstract class BaseSetting<C extends Control, T> implements IfxSetting<T>
     public void setVisible (final boolean visible)
     {
         this.labelWidget.setVisible (visible);
-        this.labelWidget.setManaged (visible);
         this.field.setVisible (visible);
-        this.field.setManaged (visible);
     }
 
 
@@ -141,11 +143,60 @@ public abstract class BaseSetting<C extends Control, T> implements IfxSetting<T>
      * @param field The field to limit
      * @param characters The characters to limit to
      */
-    protected static void limitToNumbers (final TextField field, final String characters)
+    protected static void limitToNumbers (final JTextField field, final String characters)
     {
-        field.addEventFilter (KeyEvent.KEY_TYPED, keyEvent -> {
-            if (!characters.contains (keyEvent.getCharacter ()))
-                keyEvent.consume ();
-        });
+        final PlainDocument doc = (PlainDocument) field.getDocument ();
+        doc.setDocumentFilter (new IntegerFilter ());
+
+    }
+
+    static class IntegerFilter extends DocumentFilter
+    {
+        @Override
+        public void insertString (FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException
+        {
+            final Document doc = fb.getDocument ();
+            final StringBuilder sb = new StringBuilder (doc.getText (0, doc.getLength ()));
+            sb.insert (offset, string);
+            if (test (sb.toString ()))
+                super.insertString (fb, offset, string, attr);
+        }
+
+
+        private boolean test (final String text)
+        {
+            try
+            {
+                Integer.parseInt (text);
+                return true;
+            }
+            catch (NumberFormatException e)
+            {
+                return false;
+            }
+        }
+
+
+        @Override
+        public void replace (FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException
+        {
+            final Document doc = fb.getDocument ();
+            final StringBuilder sb = new StringBuilder (doc.getText (0, doc.getLength ()));
+            sb.replace (offset, offset + length, text);
+            if (test (sb.toString ()))
+                super.replace (fb, offset, length, text, attrs);
+
+        }
+
+
+        @Override
+        public void remove (FilterBypass fb, int offset, int length) throws BadLocationException
+        {
+            final Document doc = fb.getDocument ();
+            final StringBuilder sb = new StringBuilder (doc.getText (0, doc.getLength ()));
+            sb.delete (offset, offset + length);
+            if (test (sb.toString ()))
+                super.remove (fb, offset, length);
+        }
     }
 }

@@ -7,8 +7,8 @@ package de.mossgrabers.reaper.framework.configuration;
 import de.mossgrabers.framework.configuration.ISetting;
 import de.mossgrabers.transformator.util.PropertiesEx;
 
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 
 
 /**
@@ -55,7 +55,7 @@ public interface IfxSetting<T> extends ISetting<T>
      *
      * @return The label
      */
-    Label getLabelWidget ();
+    JLabel getLabelWidget ();
 
 
     /**
@@ -63,7 +63,7 @@ public interface IfxSetting<T> extends ISetting<T>
      *
      * @return The widget
      */
-    Control getWidget ();
+    JComponent getWidget ();
 
 
     /**
