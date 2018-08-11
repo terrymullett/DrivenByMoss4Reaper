@@ -1,0 +1,1 @@
+copy C:\Privat\Programming\Reaper\DrivenByMoss4Reaper\build\libs\DrivenByMoss4Reaper-*.jar C:\Users\mos\AppData\Roaming\Reaper\UserPlugins\drivenbymoss-libs

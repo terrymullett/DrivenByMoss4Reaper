@@ -5,15 +5,34 @@
 package de.mossgrabers.transformator;
 
 import de.mossgrabers.framework.configuration.ISettingsUI;
+import de.mossgrabers.reaper.framework.configuration.IfxSetting;
+import de.mossgrabers.reaper.framework.configuration.SettingsUI;
 import de.mossgrabers.transformator.midi.Midi;
+import de.mossgrabers.transformator.ui.BoxPanel;
+import de.mossgrabers.transformator.ui.TwoColsPanel;
+import de.mossgrabers.transformator.ui.widgets.JComboBoxX;
+import de.mossgrabers.transformator.ui.widgets.TitledSeparator;
 import de.mossgrabers.transformator.util.LogModel;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiUnavailableException;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.Window;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.List;
 
 
@@ -22,11 +41,14 @@ import java.util.List;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class ConfigurationDialog extends JDialog
+public class ConfigurationDialog extends BasicDialog
 {
-    private List<JComboBox<MidiDevice>> midiInputs;
-    private List<JComboBox<MidiDevice>> midiOutputs;
-    private final LogModel              model;
+    private static final long            serialVersionUID = -495747813993365661L;
+
+    private List<JComboBoxX<MidiDevice>> midiInputs;
+    private List<JComboBoxX<MidiDevice>> midiOutputs;
+    private final LogModel               model;
+    private ISettingsUI                  settings;
 
 
     /**
@@ -38,86 +60,104 @@ public class ConfigurationDialog extends JDialog
      */
     public ConfigurationDialog (final LogModel model, final Window owner, final ISettingsUI settings)
     {
-        super (owner, ModalityType.APPLICATION_MODAL);
+        super ((JFrame) owner, "Configuration", true, true);
 
-        this.setTitle ("Configuration");
+        this.setMinimumSize (new Dimension (400, 600));
 
         this.model = model;
+        this.settings = settings;
 
-        // TODO
-        //
-        // final DialogPane dialogPane = this.getDialogPane ();
-        // dialogPane.getButtonTypes ().add (new ButtonType ("Close", ButtonData.CANCEL_CLOSE));
-        //
-        // final GridPane grid = new GridPane ();
-        // grid.getStyleClass ().add ("grid");
-        // final ScrollPane scrollPane = new ScrollPane (grid);
-        // scrollPane.setFitToWidth (true);
-        // scrollPane.setFitToHeight (true);
-        // scrollPane.setHbarPolicy (ScrollBarPolicy.NEVER);
-        // scrollPane.setMaxHeight (Math.min (800, Toolkit.getDefaultToolkit ().getScreenSize
-        // ().getHeight ()));
-        // dialogPane.setContent (new BorderPane (scrollPane));
-        //
-        // int count = 2;
-        //
-        // grid.add (new TitledSeparator ("Midi Ports"), 1, 1, 2, 1);
-        // final SettingsUI settingsImpl = (SettingsUI) settings;
-        //
-        // int index = 1;
-        // final List<MidiDevice> inputDevices = Midi.getInputDevices ();
-        // this.midiInputs = settingsImpl.createMidiInputWidgets ();
-        // for (final JComboBox<MidiDevice> device: this.midiInputs)
-        // {
-        // grid.add (new Label ("Midi Input " + index), 1, count);
-        // grid.add (device, 2, count);
-        // device.getItems ().setAll (inputDevices);
-        // final MidiDevice selectedDevice = settingsImpl.getSelectedMidiInput (index - 1);
-        // if (selectedDevice != null)
-        // device.getSelectionModel ().select (selectedDevice);
-        // index++;
-        // count++;
-        // }
-        // index = 1;
-        // final List<MidiDevice> outputDevices = Midi.getOutputDevices ();
-        // this.midiOutputs = settingsImpl.createMidiOutputWidgets ();
-        // for (final JComboBox<MidiDevice> device: this.midiOutputs)
-        // {
-        // grid.add (new Label ("Midi Output " + index), 1, count);
-        // grid.add (device, 2, count);
-        // device.getItems ().setAll (outputDevices);
-        // final MidiDevice selectedDevice = settingsImpl.getSelectedMidiOutput (index - 1);
-        // if (selectedDevice != null)
-        // device.getSelectionModel ().select (selectedDevice);
-        // index++;
-        // count++;
-        // }
-        // this.updateMidiDevices ();
-        //
-        // final Button rescanButton = new Button ("Rescan Midi Devices");
-        // rescanButton.setOnAction (event -> this.updateMidiDevices ());
-        // rescanButton.setMaxWidth (Double.MAX_VALUE);
-        //
-        // grid.add (rescanButton, 2, count);
-        // count++;
-        //
-        // String category = null;
-        // for (final IfxSetting<?> s: settingsImpl.getSettings ())
-        // {
-        // if (category != s.getCategory ())
-        // {
-        // category = s.getCategory ();
-        // grid.add (new TitledSeparator (category), 1, count, 2, 1);
-        // count++;
-        // }
-        //
-        // final JLabel label = s.getLabelWidget ();
-        // final Node widget = s.getWidget ();
-        // label.setLabelFor (widget);
-        // grid.add (label, 1, count);
-        // grid.add (widget, 2, count);
-        // count++;
-        // }
+        this.basicInit ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected Container init () throws Exception
+    {
+        final JPanel contentPane = new JPanel (new BorderLayout ());
+
+        final TwoColsPanel mainColumn = new TwoColsPanel (true);
+        final JScrollPane scrollPane = new JScrollPane (mainColumn);
+        scrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy (ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        mainColumn.addComponent (new TitledSeparator ("Midi Ports"), BoxPanel.NORMAL);
+
+        contentPane.add (scrollPane, BorderLayout.CENTER);
+
+        final SettingsUI settingsImpl = (SettingsUI) this.settings;
+
+        int index = 1;
+        final List<MidiDevice> inputDevices = Midi.getInputDevices ();
+        this.midiInputs = settingsImpl.createMidiInputWidgets ();
+        for (final JComboBoxX<MidiDevice> device: this.midiInputs)
+        {
+            mainColumn.addComponent (device, new JLabel ("Midi Input " + index), null, BoxPanel.NORMAL);
+            device.setAll (inputDevices);
+            final MidiDevice selectedDevice = settingsImpl.getSelectedMidiInput (index - 1);
+            if (selectedDevice != null)
+                device.setSelectedItem (selectedDevice);
+            index++;
+        }
+
+        index = 1;
+        final List<MidiDevice> outputDevices = Midi.getOutputDevices ();
+        this.midiOutputs = settingsImpl.createMidiOutputWidgets ();
+        for (final JComboBoxX<MidiDevice> device: this.midiOutputs)
+        {
+            mainColumn.addComponent (device, new JLabel ("Midi Output " + index), null, BoxPanel.NORMAL);
+            device.setAll (outputDevices);
+            final MidiDevice selectedDevice = settingsImpl.getSelectedMidiOutput (index - 1);
+            if (selectedDevice != null)
+                device.setSelectedItem (selectedDevice);
+            index++;
+        }
+
+        final JButton rescanButton = new JButton ("Rescan Midi Devices");
+        rescanButton.addActionListener (event -> this.updateMidiDevices ());
+
+        mainColumn.addComponent (rescanButton, BoxPanel.NORMAL);
+
+        String category = null;
+        for (final IfxSetting<?> s: settingsImpl.getSettings ())
+        {
+            if (category != s.getCategory ())
+            {
+                category = s.getCategory ();
+                mainColumn.addComponent (new TitledSeparator (category), BoxPanel.NORMAL);
+            }
+
+            final JLabel label = s.getLabelWidget ();
+            final JComponent widget = s.getWidget ();
+
+            mainColumn.addComponent (widget, label, null, BoxPanel.NORMAL);
+        }
+
+        // Close button
+        final BoxPanel buttons = new BoxPanel (BoxLayout.X_AXIS, true);
+        buttons.createSpace (BoxPanel.GLUE);
+        this.setButtons (null, buttons.createButton ("Close", null, BoxPanel.NONE));
+        contentPane.add (buttons, BorderLayout.SOUTH);
+
+        this.addComponentListener (new ComponentAdapter ()
+        {
+            @Override
+            public void componentResized (ComponentEvent event)
+            {
+                final Rectangle b = getBounds ();
+                final Dimension screenSize = Toolkit.getDefaultToolkit ().getScreenSize ();
+                final int maxHeight = (int) screenSize.getHeight () - 200;
+                if (b.height > maxHeight)
+                {
+                    b.height = maxHeight;
+                    setBounds (b);
+                }
+                super.componentResized (event);
+            }
+        });
+
+        return contentPane;
     }
 
 
@@ -136,18 +176,23 @@ public class ConfigurationDialog extends JDialog
         try
         {
             Midi.readDeviceMetadata ();
-            final List<MidiDevice> inputDevices = Midi.getInputDevices ();
-            final List<MidiDevice> outputDevices = Midi.getOutputDevices ();
-
-            // TODO
-            // for (final JComboBox<MidiDevice> in: this.midiInputs)
-            // in.getItems ().setAll (inputDevices);
-            // for (final JComboBox<MidiDevice> out: this.midiOutputs)
-            // out.getItems ().setAll (outputDevices);
+            this.fillMidiDevices ();
         }
         catch (final MidiUnavailableException ex)
         {
             this.model.addLogMessage (ex.getLocalizedMessage ());
         }
+    }
+
+
+    private void fillMidiDevices ()
+    {
+        final List<MidiDevice> inputDevices = Midi.getInputDevices ();
+        final List<MidiDevice> outputDevices = Midi.getOutputDevices ();
+
+        for (final JComboBoxX<MidiDevice> in: this.midiInputs)
+            in.setAll (inputDevices);
+        for (final JComboBoxX<MidiDevice> out: this.midiOutputs)
+            out.setAll (outputDevices);
     }
 }

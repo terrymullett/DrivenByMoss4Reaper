@@ -6,15 +6,11 @@ package de.mossgrabers.reaper.framework.configuration;
 
 import de.mossgrabers.framework.configuration.IValueObserver;
 import de.mossgrabers.framework.utils.StringUtils;
+import de.mossgrabers.transformator.ui.WholeNumberDocument;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.DocumentFilter;
-import javax.swing.text.PlainDocument;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -145,58 +141,7 @@ public abstract class BaseSetting<C extends JComponent, T> implements IfxSetting
      */
     protected static void limitToNumbers (final JTextField field, final String characters)
     {
-        final PlainDocument doc = (PlainDocument) field.getDocument ();
-        doc.setDocumentFilter (new IntegerFilter ());
+        field.setDocument (new WholeNumberDocument ());
 
-    }
-
-    static class IntegerFilter extends DocumentFilter
-    {
-        @Override
-        public void insertString (FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException
-        {
-            final Document doc = fb.getDocument ();
-            final StringBuilder sb = new StringBuilder (doc.getText (0, doc.getLength ()));
-            sb.insert (offset, string);
-            if (test (sb.toString ()))
-                super.insertString (fb, offset, string, attr);
-        }
-
-
-        private boolean test (final String text)
-        {
-            try
-            {
-                Integer.parseInt (text);
-                return true;
-            }
-            catch (NumberFormatException e)
-            {
-                return false;
-            }
-        }
-
-
-        @Override
-        public void replace (FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException
-        {
-            final Document doc = fb.getDocument ();
-            final StringBuilder sb = new StringBuilder (doc.getText (0, doc.getLength ()));
-            sb.replace (offset, offset + length, text);
-            if (test (sb.toString ()))
-                super.replace (fb, offset, length, text, attrs);
-
-        }
-
-
-        @Override
-        public void remove (FilterBypass fb, int offset, int length) throws BadLocationException
-        {
-            final Document doc = fb.getDocument ();
-            final StringBuilder sb = new StringBuilder (doc.getText (0, doc.getLength ()));
-            sb.delete (offset, offset + length);
-            if (test (sb.toString ()))
-                super.remove (fb, offset, length);
-        }
     }
 }

@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.configuration;
 
 import de.mossgrabers.framework.configuration.IColorSetting;
 import de.mossgrabers.framework.controller.color.ColorEx;
+import de.mossgrabers.transformator.ui.widgets.ColoredButton;
 import de.mossgrabers.transformator.util.PropertiesEx;
 import de.mossgrabers.transformator.util.SafeRunLater;
 
@@ -19,7 +20,7 @@ import java.awt.Color;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class ColorSettingImpl extends BaseSetting<JColorChooser, double []> implements IColorSetting
+public class ColorSettingImpl extends BaseSetting<ColoredButton, double []> implements IColorSetting
 {
     private ColorEx value;
 
@@ -33,16 +34,15 @@ public class ColorSettingImpl extends BaseSetting<JColorChooser, double []> impl
      */
     public ColorSettingImpl (final String label, final String category, final ColorEx initialValue)
     {
-        super (label, category, new JColorChooser (new Color ((float) initialValue.getRed (), (float) initialValue.getGreen (), (float) initialValue.getBlue ())));
+        super (label, category, new ColoredButton ());
         this.value = initialValue;
 
-        // TODO
-        // this.field.setMaxWidth (Double.MAX_VALUE);
-        // this.field.setMinHeight (30);
-        // this.field.setOnAction (event -> {
-        // final Color color = this.field.getValue ();
-        // this.set (color.getRed (), color.getGreen (), color.getBlue ());
-        // });
+        this.field.setBackground (new Color ((float) initialValue.getRed (), (float) initialValue.getGreen (), (float) initialValue.getBlue ()));
+
+        this.field.addActionListener (event -> {
+            final Color color = JColorChooser.showDialog (this.field, "Pick color", this.field.getBackground ());
+            this.set (color.getRed () / 255.0, color.getGreen () / 255.0, color.getBlue () / 255.0);
+        });
     }
 
 
@@ -70,12 +70,7 @@ public class ColorSettingImpl extends BaseSetting<JColorChooser, double []> impl
         this.flush ();
 
         SafeRunLater.execute ( () -> {
-            final Color c = this.field.getColor ();
-            // TODO
-            // if (this.value.getRed () != c.getRed () || this.value.getGreen () != c.getGreen () ||
-            // this.value.getBlue () != c.getBlue ())
-            // this.field.setValue (Color.color (this.value.getRed (), this.value.getGreen (),
-            // this.value.getBlue ()));
+            this.field.setBackground (new Color ((float) this.value.getRed (), (float) this.value.getGreen (), (float) this.value.getBlue ()));
         });
     }
 

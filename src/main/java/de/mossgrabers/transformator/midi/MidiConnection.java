@@ -1,3 +1,7 @@
+// Written by Jürgen Moßgraber - mossgrabers.de
+// (c) 2017-2018
+// Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
+
 package de.mossgrabers.transformator.midi;
 
 import de.mossgrabers.transformator.util.LogModel;
@@ -17,8 +21,6 @@ import java.util.Set;
 
 /**
  * Handles a midi connection to a midi device which has an input and output.
- *
- * Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */

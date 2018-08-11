@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DataModelUpdateExecutor
 {
     /** Update interval in milliseconds. */
-    private static final int       UPDATE_INTERVAL   = 500;
+    private static final int       UPDATE_INTERVAL   = 100;
 
     private final AtomicBoolean    stopUpdaterSignal = new AtomicBoolean (false);
     private final AtomicBoolean    dumpSignal        = new AtomicBoolean (false);

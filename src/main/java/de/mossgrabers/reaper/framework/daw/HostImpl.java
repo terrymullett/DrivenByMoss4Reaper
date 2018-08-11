@@ -14,6 +14,7 @@ import de.mossgrabers.framework.osc.IOpenSoundControlServer;
 import de.mossgrabers.framework.usb.IUsbDevice;
 import de.mossgrabers.framework.usb.UsbException;
 import de.mossgrabers.framework.usb.UsbMatcher;
+import de.mossgrabers.reaper.framework.graphics.BitmapImpl;
 import de.mossgrabers.reaper.framework.graphics.SVGImage;
 import de.mossgrabers.reaper.framework.osc.OpenSoundControlMessageImpl;
 import de.mossgrabers.reaper.framework.osc.OpenSoundControlServerImpl;
@@ -203,7 +204,7 @@ public class HostImpl implements IHost
     @Override
     public IBitmap createBitmap (final int width, final int height)
     {
-        return null; // TODO new BitmapImpl (this.owner, width, height);
+        return new BitmapImpl (this.owner, width, height);
     }
 
 

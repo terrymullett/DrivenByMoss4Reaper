@@ -1,32 +1,31 @@
+// Written by Jürgen Moßgraber - mossgrabers.de
+// (c) 2017-2018
+// Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
+
 package de.mossgrabers.transformator.midi;
 
-import javafx.util.StringConverter;
-
 import javax.sound.midi.MidiDevice;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+
+import java.awt.Component;
 
 
 /**
  * Converter for MidiDevice objects to a string representation. Use with ListView or ComboBox.
  *
- * Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
- *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class MidiDeviceConverter extends StringConverter<MidiDevice>
+public class MidiDeviceConverter extends DefaultListCellRenderer
 {
-    /** {@inheritDoc} */
-    @Override
-    public String toString (final MidiDevice device)
-    {
-        return device == null ? null : device.getDeviceInfo ().getName ();
-    }
+    private static final long serialVersionUID = -8262443193380541011L;
 
 
     /** {@inheritDoc} */
     @Override
-    public MidiDevice fromString (final String string)
+    public Component getListCellRendererComponent (JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus)
     {
-        // Not used
-        return null;
+        final Object v = value instanceof MidiDevice ? ((MidiDevice) value).getDeviceInfo ().getName () : value;
+        return super.getListCellRendererComponent (list, v, index, isSelected, cellHasFocus);
     }
 }

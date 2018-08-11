@@ -8,9 +8,11 @@ import de.mossgrabers.framework.controller.IControllerSetup;
 import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IBrowser;
 import de.mossgrabers.framework.daw.ICursorClip;
+import de.mossgrabers.framework.daw.IDeviceBank;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.IMarkerBank;
 import de.mossgrabers.framework.daw.IModel;
+import de.mossgrabers.framework.daw.IParameterBank;
 import de.mossgrabers.framework.daw.IProject;
 import de.mossgrabers.framework.daw.ISendBank;
 import de.mossgrabers.framework.daw.ITrackBank;
@@ -220,7 +222,9 @@ public class MessageParser
         final String part = parts.poll ();
         try
         {
-            this.parseTrackValue (tb.getItem (Integer.parseInt (part) - 1), parts, value);
+            final int index = Integer.parseInt (part) - 1;
+            if (index < tb.getPageSize ())
+                this.parseTrackValue (tb.getItem (index), parts, value);
         }
         catch (final NumberFormatException ex)
         {
@@ -443,17 +447,21 @@ public class MessageParser
                 try
                 {
                     final int siblingNo = Integer.parseInt (parts.poll ()) - 1;
-                    switch (parts.poll ())
+                    final IDeviceBank deviceBank = this.cursorDevice.getDeviceBank ();
+                    if (siblingNo < deviceBank.getPageSize ())
                     {
-                        case "name":
-                            final ItemImpl sibling = (ItemImpl) this.cursorDevice.getDeviceBank ().getItem (siblingNo);
-                            sibling.setName (value);
-                            sibling.setExists (value != null && !value.isEmpty ());
-                            break;
+                        final ItemImpl sibling = (ItemImpl) deviceBank.getItem (siblingNo);
+                        switch (parts.poll ())
+                        {
+                            case "name":
+                                sibling.setName (value);
+                                sibling.setExists (value != null && !value.isEmpty ());
+                                break;
 
-                        default:
-                            this.host.error ("Unhandled device sibling parameter: " + command);
-                            return;
+                            default:
+                                this.host.error ("Unhandled device sibling parameter: " + command);
+                                return;
+                        }
                     }
                 }
                 catch (final NumberFormatException ex)
@@ -467,7 +475,9 @@ public class MessageParser
                 try
                 {
                     final int paramNo = Integer.parseInt (cmd) - 1;
-                    this.parseDeviceParamValue (this.cursorDevice.getParameterBank ().getItem (paramNo), parts, value);
+                    final IParameterBank parameterBank = this.cursorDevice.getParameterBank ();
+                    if (paramNo < parameterBank.getPageSize ())
+                        this.parseDeviceParamValue (parameterBank.getItem (paramNo), parts, value);
                 }
                 catch (final NumberFormatException ex)
                 {
@@ -572,7 +582,9 @@ public class MessageParser
         final String part = parts.poll ();
         try
         {
-            this.parseMarkerValue (markerBank.getItem (Integer.parseInt (part) - 1), parts, value);
+            final int index = Integer.parseInt (part) - 1;
+            if (index < markerBank.getPageSize ())
+                this.parseMarkerValue (markerBank.getItem (index), parts, value);
         }
         catch (final NumberFormatException ex)
         {

@@ -35,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.AWTException;
@@ -69,12 +70,16 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
     private final JList<IControllerInstance> controllerList    = new JList<> (new DefaultListModel<> ());
 
     private ControllerInstanceManager        instanceManager;
+    private final Timer                      animationTimer;
     private final DataModelUpdateExecutor    modelUpdater      = new DataModelUpdateExecutor (this);
     private String                           iniPath;
     private IniFiles                         iniFiles          = new IniFiles ();
 
     private TrayIcon                         trayIcon;
     private SystemTray                       tray;
+    private JButton                          addButton;
+    private JButton                          removeButton;
+    private JButton                          configButton;
 
 
     /**
@@ -109,6 +114,8 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
 
         this.createUI ();
         this.showStage (this);
+
+        this.animationTimer = new Timer (20, event -> this.flushToController ());
 
         if (this.iniPath != null)
         {
@@ -149,21 +156,21 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
         refreshButton.addActionListener (event -> this.sendRefreshCommand ());
 
         // Center pane with device configuration and logging
-        final JButton configButton = new JButton ("Configuration");
-        configButton.addActionListener (event -> this.editController ());
-        final JButton addButton = new JButton ("Add");
-        this.configureAddButton (addButton);
+        this.configButton = new JButton ("Configuration");
+        this.configButton.addActionListener (event -> this.editController ());
+        this.addButton = new JButton ("Add");
+        this.configureAddButton (this.addButton);
 
-        final JButton removeButton = new JButton ("Remove");
-        removeButton.addActionListener (event -> this.removeController ());
+        this.removeButton = new JButton ("Remove");
+        this.removeButton.addActionListener (event -> this.removeController ());
 
         final JPanel deviceButtonContainer = new JPanel ();
         deviceButtonContainer.setBorder (new EmptyBorder (0, GAP, 0, 0));
         deviceButtonContainer.setLayout (new GridLayout (4, 1, 0, GAP));
 
-        deviceButtonContainer.add (addButton);
-        deviceButtonContainer.add (removeButton);
-        deviceButtonContainer.add (configButton);
+        deviceButtonContainer.add (this.addButton);
+        deviceButtonContainer.add (this.removeButton);
+        deviceButtonContainer.add (this.configButton);
         deviceButtonContainer.add (refreshButton);
 
         this.controllerList.setMinimumSize (new Dimension (200, 200));
@@ -201,6 +208,9 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
         this.logModel.addLogMessage ("Exiting platform...");
 
         this.modelUpdater.stopUpdater ();
+
+        this.logModel.addLogMessage ("Stopping flush timer...");
+        this.animationTimer.stop ();
 
         this.instanceManager.stopAll ();
 
@@ -305,6 +315,8 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
      */
     private void startupInfrastructure ()
     {
+        this.startFlushTimer ();
+
         try
         {
             Midi.readDeviceMetadata ();
@@ -320,13 +332,28 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
 
         for (final IControllerInstance instance: this.instanceManager.getInstances ())
             items.addElement (instance);
-        if (!items.isEmpty ())
-            this.controllerList.getSelectionModel ().setLeadSelectionIndex (0);
+
+        this.updateWidgetStates ();
 
         // Start the loop to read data from Reaper
         this.modelUpdater.execute ();
 
         this.startControllers ();
+    }
+
+
+    private void updateWidgetStates ()
+    {
+        final boolean isEmpty = this.controllerList.getModel ().getSize () == 0;
+        boolean hasSelection = this.controllerList.getSelectedIndex () != -1;
+        if (!hasSelection && !isEmpty)
+        {
+            this.controllerList.setSelectedIndex (0);
+            hasSelection = true;
+        }
+
+        this.configButton.setEnabled (hasSelection);
+        this.removeButton.setEnabled (hasSelection);
     }
 
 
@@ -356,6 +383,15 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
     void flushToController ()
     {
         this.instanceManager.flushAll ();
+    }
+
+
+    /**
+     * Starts the controller flush loop for display updates.
+     */
+    private void startFlushTimer ()
+    {
+        this.animationTimer.start ();
     }
 
 
@@ -486,6 +522,7 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
             return;
         ((DefaultListModel<IControllerInstance>) this.controllerList.getModel ()).remove (selectedIndex);
         this.instanceManager.remove (selectedIndex);
+        this.updateWidgetStates ();
     }
 
 
@@ -529,8 +566,6 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
         {
             this.logModel.addLogMessage ("Native callback method not installed?!");
         }
-
-        this.flushToController ();
     }
 
 
@@ -557,6 +592,7 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
                 final IControllerInstance inst = this.instanceManager.instantiate (index);
                 ((DefaultListModel<IControllerInstance>) this.controllerList.getModel ()).addElement (inst);
                 this.controllerList.setSelectedValue (inst, true);
+                this.updateWidgetStates ();
                 inst.start ();
                 this.sendRefreshCommand ();
             });

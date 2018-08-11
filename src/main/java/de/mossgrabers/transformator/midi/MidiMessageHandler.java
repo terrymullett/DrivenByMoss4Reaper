@@ -1,3 +1,7 @@
+// Written by Jürgen Moßgraber - mossgrabers.de
+// (c) 2017-2018
+// Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
+
 package de.mossgrabers.transformator.midi;
 
 import javax.sound.midi.MidiMessage;
@@ -5,8 +9,6 @@ import javax.sound.midi.MidiMessage;
 
 /**
  * Callback interface for receiving midi messages.
- *
- * Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */

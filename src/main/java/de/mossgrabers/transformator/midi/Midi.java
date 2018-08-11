@@ -1,3 +1,7 @@
+// Written by Jürgen Moßgraber - mossgrabers.de
+// (c) 2017-2018
+// Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
+
 package de.mossgrabers.transformator.midi;
 
 import uk.co.xfactorylibrarians.coremidi4j.CoreMidiDeviceProvider;
@@ -14,8 +18,6 @@ import java.util.List;
 
 /**
  * Helper functions for looking up midi devices.
- *
- * Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */

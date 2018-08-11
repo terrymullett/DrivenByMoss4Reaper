@@ -6,19 +6,18 @@ package de.mossgrabers.reaper.framework.graphics;
 
 import de.mossgrabers.framework.graphics.IBitmap;
 import de.mossgrabers.framework.graphics.IRenderer;
+import de.mossgrabers.transformator.BasicDialog;
+import de.mossgrabers.transformator.ui.BoxPanel;
 
-import javafx.animation.AnimationTimer;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.DialogPane;
-import javafx.scene.image.WritableImage;
-import javafx.scene.layout.StackPane;
-import javafx.stage.Modality;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.Timer;
 
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -30,13 +29,28 @@ import java.nio.ByteBuffer;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class BitmapImpl extends Dialog<Void> implements IBitmap
+public class BitmapImpl extends BasicDialog implements IBitmap
 {
-    private final BufferedImage  bufferedImage;
-    private final Canvas         canvas  = new Canvas ();
-    private final AnimationTimer animationTimer;
+    private static final long serialVersionUID = -6034592629355700876L;
 
-    private WritableImage        fxImage = null;
+    final BufferedImage       bufferedImage;
+    private final JPanel      canvas           = new JPanel ()
+                                               {
+                                                   private static final long serialVersionUID = 971155807100338380L;
+
+
+                                                   @Override
+                                                   public void paintComponent (Graphics gc)
+                                                   {
+                                                       // Let UI Delegate paint first, which
+                                                       // includes background filling since
+                                                       // this component is opaque.
+
+                                                       super.paintComponent (gc);
+                                                       gc.drawImage (BitmapImpl.this.bufferedImage, 0, 0, this.getWidth (), this.getWidth () / 6, null);
+                                                   }
+                                               };
+    private final Timer       animationTimer;
 
 
     /**
@@ -49,32 +63,48 @@ public class BitmapImpl extends Dialog<Void> implements IBitmap
      */
     public BitmapImpl (final Window owner, final int width, final int height)
     {
+        super ((JFrame) owner, "", true, true);
+
         this.bufferedImage = new BufferedImage (width, height, BufferedImage.TYPE_INT_ARGB);
 
-        this.initModality (Modality.NONE);
-        // this.initOwner (owner);
+        final Dimension dim = new Dimension (width, height);
+        this.setMinimumSize (dim);
+        this.canvas.setMinimumSize (dim);
+        this.canvas.setMaximumSize (dim);
+        this.canvas.setSize (dim);
 
-        final DialogPane dialogPane = this.getDialogPane ();
-        dialogPane.getButtonTypes ().add (new ButtonType ("Close", ButtonData.CANCEL_CLOSE));
+        this.animationTimer = new Timer (60, evemt -> {
+            BitmapImpl.this.canvas.validate ();
+            BitmapImpl.this.canvas.repaint ();
+        });
 
-        this.canvas.widthProperty ().set (width);
-        this.canvas.heightProperty ().set (height);
+        this.basicInit ();
+    }
 
-        final StackPane canvasContainer = new StackPane (this.canvas);
-        canvasContainer.getStyleClass ().add ("display");
 
-        dialogPane.setContent (canvasContainer);
+    /** {@inheritDoc} */
+    @Override
+    protected Container init () throws Exception
+    {
+        final JPanel contentPane = new JPanel (new BorderLayout ());
 
-        this.animationTimer = new AnimationTimer ()
-        {
-            @Override
-            public void handle (final long now)
-            {
-                BitmapImpl.this.updateDisplay ();
-            }
-        };
+        contentPane.add (this.canvas, BorderLayout.CENTER);
 
-        this.setOnHidden (event -> this.animationTimer.stop ());
+        // Close button
+        final BoxPanel buttons = new BoxPanel (BoxLayout.X_AXIS, true);
+        buttons.createSpace (BoxPanel.GLUE);
+        this.setButtons (null, buttons.createButton ("Close", null, BoxPanel.NONE));
+        contentPane.add (buttons, BorderLayout.SOUTH);
+
+        return contentPane;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected void set () throws Exception
+    {
+        this.animationTimer.start ();
     }
 
 
@@ -121,7 +151,7 @@ public class BitmapImpl extends Dialog<Void> implements IBitmap
     {
         if (this.isShowing ())
             return;
-        this.show ();
+        this.setVisible (true);
         this.animationTimer.start ();
     }
 
@@ -134,13 +164,11 @@ public class BitmapImpl extends Dialog<Void> implements IBitmap
     }
 
 
-    /**
-     * Update the virtual and real display.
-     */
-    void updateDisplay ()
+    /** {@inheritDoc} */
+    @Override
+    protected boolean onCancel ()
     {
-        final GraphicsContext gc = this.canvas.getGraphicsContext2D ();
-        this.fxImage = SwingFXUtils.toFXImage (this.bufferedImage, this.fxImage);
-        gc.drawImage (this.fxImage, 0, 0, this.canvas.getWidth (), this.canvas.getWidth () / 6);
+        this.animationTimer.stop ();
+        return true;
     }
 }
