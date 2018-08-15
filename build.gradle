@@ -1,15 +1,12 @@
-import org.gradle.plugins.ide.eclipse.model.AccessRule
-
 plugins {
-    id 'com.github.jk1.dependency-license-report' version '0.7.1'
-    id 'com.github.ben-manes.versions' version '0.17.0'
+    id 'com.github.jk1.dependency-license-report' version '1.2'
+    id 'com.github.ben-manes.versions' version '0.20.0'
     id 'java' 
     id 'application'
     id 'eclipse'
 }
 
 version = '3.00'
-mainClassName = 'de.mossgrabers.transformator.Transformator'
 
 jar {
     manifest {
@@ -21,32 +18,32 @@ jar {
     }
 }
 
-startScripts {
-    // Remove the Console window after Java has been started
-    doLast {
-        unixScript.text = unixScript.text.replace("exec \"\$JAVACMD\" \"\$@\"", "exec \"\$JAVACMD\" \"\$@\" &")
-        windowsScript.text = windowsScript.text.replace("java.exe", "javaw.exe")
-        windowsScript.text = windowsScript.text.replace("\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%", "start \"\" \"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%")
-    }
-}
+distTar.enabled = false
+startScripts.enabled = false
 
-applicationDistribution.from('src/main/eel') {
-    into "eel"
+applicationDistribution.from('src/main/cpp') {
+    into "lib"
 }
 applicationDistribution.from('build/reports/dependency-license') {
     into "license/dependency"
 }
 
-tasks.withType(JavaCompile) {
-    options.encoding = 'UTF-8'
+installDist {
+    doLast {
+        File subdir = new File (destinationDir, '/lib/drivenbymoss-libs')
+        subdir.mkdirs ()
+        String sourceDir = new File (destinationDir, '/lib').getAbsolutePath()
+        String destDir = subdir.getAbsolutePath()
+        ant.move (todir: destDir) {
+            fileset(dir: sourceDir) {
+                include(name: '**.jar')
+            }
+        }
+    }
 }
 
-eclipse.classpath.file {
-	whenMerged { classpath ->
-        /** Define accessrules to allow JavaFX in standard execution environment. */
-        def jre = entries.find { it.path.contains 'org.eclipse.jdt.launching.JRE_CONTAINER' }
-            jre.accessRules.add(new AccessRule('accessible', 'javafx/**'))
-    }
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
 }
 
 repositories {
@@ -59,6 +56,6 @@ dependencies {
     compile group: 'org.usb4java', name: 'usb4java', version: '1.2.0'
     compile group: 'com.illposed.osc', name: 'javaosc-core', version: '0.4'
     compile group: 'uk.co.xfactory-librarians', name: 'coremidi4j', version: '1.1'
-		compile group: 'com.nikhaldimann', name: 'inieditor', version: 'r6'    
-		compile fileTree(dir: 'libs', include: '*.jar')
+	compile group: 'com.nikhaldimann', name: 'inieditor', version: 'r6'    
+	compile fileTree(dir: 'libs', include: '*.jar')
 }

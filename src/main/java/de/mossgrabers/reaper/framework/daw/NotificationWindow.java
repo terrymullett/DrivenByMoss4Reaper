@@ -72,6 +72,8 @@ public class NotificationWindow
     public void shutdown ()
     {
         this.executor.shutdown ();
+        if (this.popupStage.isShowing ())
+            this.popupStage.setVisible (false);
     }
 
 
@@ -82,6 +84,9 @@ public class NotificationWindow
      */
     public void displayMessage (final String message)
     {
+        if (this.executor.isShutdown ())
+            return;
+
         this.counter.set (TIMEOUT);
 
         this.label.setText (message);
