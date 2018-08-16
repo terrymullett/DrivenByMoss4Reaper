@@ -5,6 +5,7 @@
 package de.mossgrabers.transformator;
 
 import de.mossgrabers.framework.controller.IControllerDefinition;
+import de.mossgrabers.framework.utils.OperatingSystem;
 import de.mossgrabers.reaper.controller.ControllerInstanceManager;
 import de.mossgrabers.reaper.controller.IControllerInstance;
 import de.mossgrabers.reaper.framework.Actions;
@@ -90,6 +91,12 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
     public TransformatorApplication (final String iniPath)
     {
         this.iniPath = iniPath;
+
+        // To not again loose any exception from executors or delayed methods...
+        Thread.setDefaultUncaughtExceptionHandler ( (thread, throwable) -> {
+            throwable.printStackTrace ();
+            this.logModel.addLogMessage (throwable.getMessage ());
+        });
 
         this.instanceManager = new ControllerInstanceManager (this.logModel, this, this, this.iniFiles);
 
@@ -223,7 +230,10 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
         MidiConnection.cleanupUnusedDevices ();
 
         this.logModel.addLogMessage ("Shutting down USB...");
-        LibUsb.exit (null);
+        // Don't execute on Mac since it hangs in the function, the memory is cleaned up on exit
+        // anyway
+        if (OperatingSystem.get () != OperatingSystem.MAC)
+            LibUsb.exit (null);
 
         if (this.tray != null && this.trayIcon != null)
             this.tray.remove (this.trayIcon);
