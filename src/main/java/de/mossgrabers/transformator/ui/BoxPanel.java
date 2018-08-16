@@ -33,6 +33,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -115,31 +116,18 @@ public class BoxPanel extends JPanel
      */
     public void sizeEqual (final boolean isVert)
     {
-        final Component [] children = this.getComponents ();
-        final Dimension max = new Dimension (0, 0);
-        for (final Component element: children)
+        final List<JComponent> children = this.getJComponents ();
+        final Dimension max = calcMaxDimension (children);
+        for (final JComponent comp: children)
         {
-            if (!(element instanceof JComponent) || element instanceof javax.swing.Box.Filler)
-                continue;
-            final Dimension dim = element.getMinimumSize ();
-            if (max.width < dim.width)
-                max.width = dim.width;
-            if (max.height < dim.height)
-                max.height = dim.height;
-        }
-        for (final Component element: children)
-        {
-            if (element instanceof JComponent && !(element instanceof javax.swing.Box.Filler))
-            {
-                final Dimension dim = element.getPreferredSize ();
-                if (isVert)
-                    dim.width = max.width;
-                else
-                    dim.height = max.height;
-                ((JComponent) element).setMinimumSize (dim);
-                ((JComponent) element).setMaximumSize (dim);
-                ((JComponent) element).setPreferredSize (dim);
-            }
+            final Dimension dim = comp.getPreferredSize ();
+            if (isVert)
+                dim.width = max.width;
+            else
+                dim.height = max.height;
+            comp.setMinimumSize (dim);
+            comp.setMaximumSize (dim);
+            comp.setPreferredSize (dim);
         }
         this.invalidate ();
     }
@@ -236,25 +224,6 @@ public class BoxPanel extends JPanel
 
 
     /**
-     * Creates and adds a combobox to the panel.
-     *
-     * @param <E> The type of the combobox's content
-     * @param label The name of the label which is added to the combobox
-     * @param mnemonic A shortcut for the field
-     * @param space Add space after the element (NONE, SMALL, NORMAL, LARGE, GLUE)
-     * @param content The content of the combobox
-     * @return The created combobox
-     */
-    public <E> JComboBoxX<E> createComboBox (final String label, final String mnemonic, final int space, @SuppressWarnings("unchecked") final E... content)
-    {
-        final Collection<E> objects = new ArrayList<> (content.length);
-        for (final E o: content)
-            objects.add (o);
-        return this.createComboBox (label, mnemonic, space, objects);
-    }
-
-
-    /**
      * Creates and adds a listbox to the panel.
      *
      * @param <E> The type of the combobox's content
@@ -267,25 +236,6 @@ public class BoxPanel extends JPanel
     public <E> JListX<E> createListBox (final String label, final String mnemonic, final int space, final Collection<E> content)
     {
         return this.createListBox (label, mnemonic, space, new JListX<> (content));
-    }
-
-
-    /**
-     * Creates and adds a listbox to the panel.
-     *
-     * @param <E> The type of the combobox's content
-     * @param label The name of the label which is added to the listbox
-     * @param mnemonic A shortcut for the field
-     * @param space Add space after the element (NONE, SMALL, NORMAL, LARGE, GLUE)
-     * @param content The content of the listbox
-     * @return The created list box
-     */
-    public <E> JListX<E> createListBox (final String label, final String mnemonic, final int space, @SuppressWarnings("unchecked") final E... content)
-    {
-        final Collection<E> objects = new ArrayList<> (content.length);
-        for (final E o: content)
-            objects.add (o);
-        return this.createListBox (label, mnemonic, space, objects);
     }
 
 
@@ -992,5 +942,43 @@ public class BoxPanel extends JPanel
     {
         final String t = Functions.getText (text);
         return t.length () == 0 ? 0 : t.charAt (0);
+    }
+
+
+    /**
+     * Calculate the maximum dimension over a number of components.
+     *
+     * @param children The children from which to calculate the maximum dimension.
+     * @return The maximum width and height of the given elements
+     */
+    private static Dimension calcMaxDimension (final List<JComponent> children)
+    {
+        final Dimension max = new Dimension (0, 0);
+        for (final JComponent comp: children)
+        {
+            final Dimension dim = comp.getMinimumSize ();
+            if (max.width < dim.width)
+                max.width = dim.width;
+            if (max.height < dim.height)
+                max.height = dim.height;
+        }
+        return max;
+    }
+
+
+    /**
+     * Get all swing child components of the panel. Ignores Fillers.
+     *
+     * @return All Swing components except fillers
+     */
+    private List<JComponent> getJComponents ()
+    {
+        final List<JComponent> swingComponents = new ArrayList<> ();
+        for (final Component component: this.getComponents ())
+        {
+            if (component instanceof JComponent && !(component instanceof javax.swing.Box.Filler))
+                swingComponents.add ((JComponent) component);
+        }
+        return swingComponents;
     }
 }

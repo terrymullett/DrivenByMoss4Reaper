@@ -92,6 +92,12 @@ public class TransformatorApplication extends JFrame implements MessageSender, D
     {
         this.iniPath = iniPath;
 
+        // To not again loose any exception from executors or delayed methods...
+        Thread.setDefaultUncaughtExceptionHandler ( (thread, throwable) -> {
+            throwable.printStackTrace ();
+            this.logModel.addLogMessage (throwable.getMessage ());
+        });
+
         this.instanceManager = new ControllerInstanceManager (this.logModel, this, this, this.iniFiles);
 
         // Run the application as a tray icon if supported
