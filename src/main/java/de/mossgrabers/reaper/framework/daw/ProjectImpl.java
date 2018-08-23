@@ -73,4 +73,12 @@ public class ProjectImpl extends BaseImpl implements IProject
     {
         this.name = name;
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void save ()
+    {
+        this.sender.invokeAction (Actions.PROJECT_SAVE);
+    }
 }

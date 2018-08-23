@@ -7,7 +7,6 @@ package de.mossgrabers.reaper.framework.daw;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ObserverManagement;
 import de.mossgrabers.reaper.communication.MessageSender;
-import de.mossgrabers.reaper.framework.Actions;
 
 
 /**
@@ -49,10 +48,7 @@ public abstract class BaseImpl implements ObserverManagement
      */
     public void invokeAction (final String id)
     {
-        if ("slice_to_multi_sampler_track".equals (id) || "slice_to_drum_track".equals (id))
-            this.invokeAction (Actions.DYNAMIC_SPLIT);
-        else
-            this.sender.sendOSC ("/action_ex", id);
+        this.sender.invokeAction (id);
     }
 
 

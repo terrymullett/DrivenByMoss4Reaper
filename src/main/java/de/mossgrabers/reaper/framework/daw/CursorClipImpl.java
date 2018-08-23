@@ -435,6 +435,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public void duplicateContent ()
     {
+        // TODO Move to C++ (and wrap into Undo block)
         this.invokeAction (Actions.DUPLICATE_ITEMS);
         this.invokeAction (Actions.ADD_LEFT_ITEM_TO_SELECTION);
         this.invokeAction (Actions.GLUE_ITEMS);

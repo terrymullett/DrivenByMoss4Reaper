@@ -15,6 +15,8 @@ public final class Actions
     public static final int    PROJECT_TAB_PREVIOUS                   = 40862;
     /** Next project tab. */
     public static final int    PROJECT_TAB_NEXT                       = 40861;
+    /** Save project. */
+    public static final int    PROJECT_SAVE                           = 40026;
     /** Transport: Tap tempo. */
     public static final int    TRANSPORT_TAP_TEMPO                    = 1134;
 

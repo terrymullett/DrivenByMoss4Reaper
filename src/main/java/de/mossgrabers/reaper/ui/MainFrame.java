@@ -11,7 +11,6 @@ import de.mossgrabers.reaper.communication.DataModelUpdater;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.controller.ControllerInstanceManager;
 import de.mossgrabers.reaper.controller.IControllerInstance;
-import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.device.DeviceManager;
 import de.mossgrabers.reaper.framework.graphics.SVGImage;
@@ -515,10 +514,7 @@ public class MainFrame extends JFrame implements MessageSender, DataModelUpdater
     @Override
     public void invokeAction (final String id)
     {
-        if ("slice_to_multi_sampler_track".equals (id) || "slice_to_drum_track".equals (id))
-            this.invokeAction (Actions.DYNAMIC_SPLIT);
-        else
-            this.sendOSC ("/action_ex", id);
+        this.sendOSC ("/action_ex", id);
     }
 
 
