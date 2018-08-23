@@ -8,8 +8,8 @@ import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ISlotBank;
 import de.mossgrabers.framework.daw.data.ISlot;
+import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.daw.data.SlotImpl;
-import de.mossgrabers.transformator.communication.MessageSender;
 
 import java.util.Collections;
 import java.util.List;

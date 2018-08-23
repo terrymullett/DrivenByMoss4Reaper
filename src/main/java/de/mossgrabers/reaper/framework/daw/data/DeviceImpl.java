@@ -6,7 +6,7 @@ package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IDevice;
-import de.mossgrabers.transformator.communication.MessageSender;
+import de.mossgrabers.reaper.communication.MessageSender;
 
 
 /**

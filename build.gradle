@@ -15,6 +15,13 @@ jar {
             'Implementation-Vendor': 'Juergen Mossgraber'
         )
     }
+
+    doLast {
+        if (System.properties['os.name'].toLowerCase().contains('windows')) {
+            String destDir = 'C:\\Users\\' + System.properties['user.name'] + '\\AppData\\Roaming\\Reaper\\UserPlugins\\drivenbymoss-libs'
+            ant.copy (file: archivePath.getAbsolutePath(), todir: destDir)
+        }
+    }
 }
 
 distTar.enabled = false

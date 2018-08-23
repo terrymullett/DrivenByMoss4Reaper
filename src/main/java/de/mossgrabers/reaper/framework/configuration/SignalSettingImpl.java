@@ -5,7 +5,7 @@
 package de.mossgrabers.reaper.framework.configuration;
 
 import de.mossgrabers.framework.configuration.ISignalSetting;
-import de.mossgrabers.transformator.util.PropertiesEx;
+import de.mossgrabers.reaper.ui.utils.PropertiesEx;
 
 import javax.swing.JButton;
 

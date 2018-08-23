@@ -8,7 +8,7 @@ import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.AbstractBank;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IItem;
-import de.mossgrabers.transformator.communication.MessageSender;
+import de.mossgrabers.reaper.communication.MessageSender;
 
 
 /**

@@ -1,6 +1,6 @@
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.transformator.util.SafeRunLater;
+import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;

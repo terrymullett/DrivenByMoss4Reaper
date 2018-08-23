@@ -6,7 +6,7 @@ package de.mossgrabers.reaper.framework.configuration;
 
 import de.mossgrabers.framework.configuration.IValueObserver;
 import de.mossgrabers.framework.utils.StringUtils;
-import de.mossgrabers.transformator.ui.WholeNumberDocument;
+import de.mossgrabers.reaper.ui.widget.WholeNumberDocument;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;

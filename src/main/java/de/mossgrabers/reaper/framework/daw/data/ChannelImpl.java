@@ -9,9 +9,9 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ISendBank;
 import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.resource.ChannelType;
+import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.reaper.framework.daw.SendBankImpl;
-import de.mossgrabers.transformator.communication.MessageSender;
 
 
 /**

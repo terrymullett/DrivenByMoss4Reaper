@@ -5,7 +5,6 @@
 package de.mossgrabers.reaper.framework.midi;
 
 import de.mossgrabers.framework.daw.midi.IMidiOutput;
-import de.mossgrabers.transformator.midi.MidiConnection;
 
 
 /**

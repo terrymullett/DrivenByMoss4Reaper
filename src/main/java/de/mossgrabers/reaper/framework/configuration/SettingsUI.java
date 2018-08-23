@@ -14,10 +14,10 @@ import de.mossgrabers.framework.configuration.ISignalSetting;
 import de.mossgrabers.framework.configuration.IStringSetting;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.utils.Pair;
-import de.mossgrabers.transformator.midi.Midi;
-import de.mossgrabers.transformator.midi.MidiDeviceConverter;
-import de.mossgrabers.transformator.ui.widgets.JComboBoxX;
-import de.mossgrabers.transformator.util.PropertiesEx;
+import de.mossgrabers.reaper.framework.midi.Midi;
+import de.mossgrabers.reaper.framework.midi.MidiDeviceConverter;
+import de.mossgrabers.reaper.ui.utils.PropertiesEx;
+import de.mossgrabers.reaper.ui.widget.JComboBoxX;
 
 import javax.sound.midi.MidiDevice;
 

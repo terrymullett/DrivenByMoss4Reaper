@@ -19,8 +19,8 @@ import de.mossgrabers.reaper.framework.graphics.SVGImage;
 import de.mossgrabers.reaper.framework.osc.OpenSoundControlMessageImpl;
 import de.mossgrabers.reaper.framework.osc.OpenSoundControlServerImpl;
 import de.mossgrabers.reaper.framework.usb.UsbDeviceImpl;
-import de.mossgrabers.transformator.util.LogModel;
-import de.mossgrabers.transformator.util.SafeRunLater;
+import de.mossgrabers.reaper.ui.utils.LogModel;
+import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCPortIn;

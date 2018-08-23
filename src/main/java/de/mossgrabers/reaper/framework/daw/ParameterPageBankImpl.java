@@ -8,7 +8,7 @@ import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.IParameterPageBank;
 import de.mossgrabers.framework.daw.ItemSelectionObserver;
-import de.mossgrabers.transformator.communication.MessageSender;
+import de.mossgrabers.reaper.communication.MessageSender;
 
 import java.util.ArrayList;
 import java.util.Collections;

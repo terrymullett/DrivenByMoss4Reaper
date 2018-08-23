@@ -12,10 +12,10 @@ import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.ModelSetup;
 import de.mossgrabers.framework.daw.midi.IMidiAccess;
 import de.mossgrabers.framework.scale.Scales;
+import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.daw.ModelImpl;
 import de.mossgrabers.reaper.framework.midi.MidiAccessImpl;
-import de.mossgrabers.transformator.communication.MessageSender;
-import de.mossgrabers.transformator.util.LogModel;
+import de.mossgrabers.reaper.ui.utils.LogModel;
 
 import javax.sound.midi.MidiDevice;
 

@@ -11,9 +11,6 @@ import de.mossgrabers.controller.kontrol.usb.mkii.controller.Kontrol2ControlSurf
 import de.mossgrabers.controller.kontrol.usb.mkii.controller.Kontrol2Display;
 import de.mossgrabers.controller.kontrol.usb.mkii.controller.Kontrol2UsbDevice;
 import de.mossgrabers.controller.kontrol.usb.mkii.mode.Modes;
-import de.mossgrabers.controller.kontrol.usb.mkii.mode.ScaleMode;
-import de.mossgrabers.controller.kontrol.usb.mkii.mode.device.BrowseMode;
-import de.mossgrabers.controller.kontrol.usb.mkii.mode.device.ParamsMode;
 import de.mossgrabers.controller.kontrol.usb.mkii.mode.track.TrackMode;
 import de.mossgrabers.controller.kontrol.usb.mkii.mode.track.VolumeMode;
 import de.mossgrabers.controller.kontrol.usb.mkii.view.ControlView;
@@ -47,9 +44,6 @@ import de.mossgrabers.framework.view.ViewManager;
  */
 public class Kontrol2ControllerSetup extends AbstractControllerSetup<Kontrol2ControlSurface, Kontrol2Configuration>
 {
-    private Kontrol2UsbDevice usbDevice;
-
-
     /**
      * Constructor.
      *
@@ -82,8 +76,8 @@ public class Kontrol2ControllerSetup extends AbstractControllerSetup<Kontrol2Con
     {
         final IHost host = this.model.getHost ();
 
-        this.usbDevice = new Kontrol2UsbDevice (host);
-        this.usbDevice.init ();
+        final Kontrol2UsbDevice usbDevice = new Kontrol2UsbDevice (host);
+        usbDevice.init ();
 
         final IMidiAccess midiAccess = this.factory.createMidiAccess ();
         final IMidiInput input = midiAccess.createInput ("Komplete Kontrol 2",
@@ -91,10 +85,10 @@ public class Kontrol2ControllerSetup extends AbstractControllerSetup<Kontrol2Con
                 "B001??" /* Sustainpedal + Modulation */, "D0????" /* Channel Aftertouch */,
                 "E0????" /* Pitchbend */);
 
-        final Kontrol2ControlSurface surface = new Kontrol2ControlSurface (host, this.colorManager, this.configuration, input, this.usbDevice);
-        this.usbDevice.setCallback (surface);
+        final Kontrol2ControlSurface surface = new Kontrol2ControlSurface (host, this.colorManager, this.configuration, input, usbDevice);
+        usbDevice.setCallback (surface);
         this.surfaces.add (surface);
-        final Kontrol2Display display = new Kontrol2Display (host, this.configuration, this.usbDevice);
+        final Kontrol2Display display = new Kontrol2Display (host, this.configuration, usbDevice);
         surface.setDisplay (display);
 
         surface.getModeManager ().setDefaultMode (Modes.MODE_TRACK);
@@ -110,10 +104,6 @@ public class Kontrol2ControllerSetup extends AbstractControllerSetup<Kontrol2Con
 
         modeManager.registerMode (Modes.MODE_TRACK, new TrackMode (surface, this.model));
         modeManager.registerMode (Modes.MODE_VOLUME, new VolumeMode (surface, this.model));
-        modeManager.registerMode (Modes.MODE_PARAMS, new ParamsMode (surface, this.model));
-        modeManager.registerMode (Modes.MODE_BROWSER, new BrowseMode (surface, this.model));
-
-        modeManager.registerMode (Modes.MODE_SCALE, new ScaleMode (surface, this.model));
     }
 
 
@@ -132,6 +122,10 @@ public class Kontrol2ControllerSetup extends AbstractControllerSetup<Kontrol2Con
     protected void createObservers ()
     {
         this.createScaleObservers (this.configuration);
+
+        this.configuration.addSettingObserver (Kontrol2Configuration.DEBUG_WINDOW, () -> {
+            this.getSurface ().getDisplay ().showDebugWindow ();
+        });
     }
 
 

@@ -9,8 +9,7 @@ import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.daw.midi.INoteInput;
 import de.mossgrabers.framework.daw.midi.MidiShortCallback;
 import de.mossgrabers.framework.daw.midi.MidiSysExCallback;
-import de.mossgrabers.transformator.communication.MessageSender;
-import de.mossgrabers.transformator.midi.MidiConnection;
+import de.mossgrabers.reaper.communication.MessageSender;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;

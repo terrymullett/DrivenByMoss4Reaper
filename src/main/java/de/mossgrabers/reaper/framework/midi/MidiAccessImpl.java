@@ -8,9 +8,8 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.IMidiAccess;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.daw.midi.IMidiOutput;
-import de.mossgrabers.transformator.communication.MessageSender;
-import de.mossgrabers.transformator.midi.MidiConnection;
-import de.mossgrabers.transformator.util.LogModel;
+import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.ui.utils.LogModel;
 
 import javax.sound.midi.MidiDevice;
 

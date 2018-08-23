@@ -5,7 +5,7 @@
 package de.mossgrabers.reaper.framework.configuration;
 
 import de.mossgrabers.framework.configuration.ISetting;
-import de.mossgrabers.transformator.util.PropertiesEx;
+import de.mossgrabers.reaper.ui.utils.PropertiesEx;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;

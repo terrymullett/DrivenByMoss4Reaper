@@ -10,6 +10,7 @@ import de.mossgrabers.framework.daw.data.AbstractItemImpl;
 import de.mossgrabers.framework.daw.data.IBrowserColumn;
 import de.mossgrabers.framework.daw.data.IBrowserColumnItem;
 import de.mossgrabers.framework.utils.StringUtils;
+import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.device.Device;
 import de.mossgrabers.reaper.framework.device.DeviceCollection;
 import de.mossgrabers.reaper.framework.device.DeviceFileType;
@@ -24,7 +25,6 @@ import de.mossgrabers.reaper.framework.device.column.DeviceLocationFilterColumn;
 import de.mossgrabers.reaper.framework.device.column.DeviceTagsFilterColumn;
 import de.mossgrabers.reaper.framework.device.column.DeviceTypeFilterColumn;
 import de.mossgrabers.reaper.framework.device.column.EmptyFilterColumn;
-import de.mossgrabers.transformator.communication.MessageSender;
 
 import java.util.Collections;
 import java.util.List;

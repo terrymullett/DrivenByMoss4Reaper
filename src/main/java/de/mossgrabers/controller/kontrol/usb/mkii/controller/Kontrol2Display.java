@@ -5,42 +5,71 @@
 package de.mossgrabers.controller.kontrol.usb.mkii.controller;
 
 import de.mossgrabers.controller.kontrol.usb.mkii.Kontrol2Configuration;
-import de.mossgrabers.framework.controller.display.AbstractDisplay;
-import de.mossgrabers.framework.controller.display.Display;
-import de.mossgrabers.framework.controller.display.Format;
+import de.mossgrabers.framework.controller.display.GraphicDisplay;
 import de.mossgrabers.framework.daw.IHost;
+import de.mossgrabers.framework.daw.IMemoryBlock;
+import de.mossgrabers.framework.graphics.IBitmap;
+import de.mossgrabers.framework.graphics.IGraphicsDimensions;
+import de.mossgrabers.framework.graphics.display.VirtualDisplay;
+import de.mossgrabers.framework.graphics.grid.DefaultGraphicsDimensions;
+
+import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
- * The display of Kontrol 1.
+ * The display of Kontrol 2.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class Kontrol2Display extends AbstractDisplay
+public class Kontrol2Display extends GraphicDisplay
 {
-    private static final String [] SPACES =
+    private static final int            DISPLAY_WIDTH      = 480;
+    private static final int            DISPLAY_HEIGHT     = 360;
+    private static final int            DISPLAY_WIDTH_LINE = DISPLAY_WIDTH * 4;
+
+    private static final byte []        BLOCK_HEADER       =
     {
-        "",
-        " ",
-        "  ",
-        "   ",
-        "    ",
-        "     ",
-        "      ",
-        "       ",
-        "        ",
-        "         ",
-        "          ",
-        "           ",
-        "            ",
-        "             "
+        (byte) 0x02,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00
     };
 
-    private Kontrol2UsbDevice      usbDevice;
+    private static final byte []        FOOTER             =
+    {
+        (byte) 0x02,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x01,
+        (byte) 0x03,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x40,
+        (byte) 0x00,
+        (byte) 0x00,
+        (byte) 0x00
+    };
+
+    // One pixel is 16 bit
+    private static final int            NUM_OF_PIXELS      = 2 * DISPLAY_WIDTH * DISPLAY_HEIGHT;
+    private static final int            HEADER_SZ          = 16;
+    private static final int            DATA_SZ            = HEADER_SZ + FOOTER.length + NUM_OF_PIXELS + (NUM_OF_PIXELS / 6) * (BLOCK_HEADER.length + 1);
+
+    private final Kontrol2UsbDevice     usbDevice;
+    private final Kontrol2DisplayHeader header0;
+    private final Kontrol2DisplayHeader header1;
+    private final IMemoryBlock          imageBlock0;
+    private final IMemoryBlock          imageBlock1;
+    private final AtomicBoolean         isSending          = new AtomicBoolean (false);
 
 
     /**
-     * Constructor. 2 rows (0-1) with 9 blocks (0-8). Each block consists of 8 characters.
+     * Constructor.
      *
      * @param host The host
      * @param configuration The configuration
@@ -48,107 +77,62 @@ public class Kontrol2Display extends AbstractDisplay
      */
     public Kontrol2Display (final IHost host, final Kontrol2Configuration configuration, final Kontrol2UsbDevice usbDevice)
     {
-        super (host, null, 2 /* No of rows */, 9 /* No of cells */, 72 /* No of characters */);
+        super (host);
         this.usbDevice = usbDevice;
+
+        this.header0 = new Kontrol2DisplayHeader (host, true);
+        this.header1 = new Kontrol2DisplayHeader (host, false);
+
+        final IGraphicsDimensions dimensions = new DefaultGraphicsDimensions (2 * DISPLAY_WIDTH, DISPLAY_HEIGHT);
+        this.virtualDisplay = new VirtualDisplay (host, this.model, configuration, dimensions, "Kontrol mkII Display");
+
+        this.imageBlock0 = host.createMemoryBlock (DATA_SZ);
+        this.imageBlock1 = host.createMemoryBlock (DATA_SZ);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void shutdown ()
+    protected void send (final IBitmap image)
     {
-        this.usbDevice.shutdown ();
-    }
+        if (this.usbDevice == null || this.isSending.get ())
+            return;
 
+        this.isSending.set (true);
 
-    /** {@inheritDoc} */
-    @Override
-    public void flush ()
-    {
-        super.flush ();
-        this.usbDevice.sendDisplayData ();
-    }
+        final ByteBuffer buffer0 = this.imageBlock0.createByteBuffer ();
+        final ByteBuffer buffer1 = this.imageBlock1.createByteBuffer ();
 
+        image.encode ( (imageBuffer, width, height) -> {
+            buffer0.clear ();
+            buffer1.clear ();
 
-    /** {@inheritDoc} */
-    @Override
-    public Kontrol2Display clearRow (final int row)
-    {
-        for (int i = 0; i < this.noOfCells; i++)
-            this.clearCell (row, i);
-        return this;
-    }
+            for (int i = 0; i < imageBuffer.capacity (); i += 4)
+            {
+                if (i / DISPLAY_WIDTH_LINE == 0)
+                {
+                    buffer0.put (imageBuffer.get ());
+                    buffer0.put (imageBuffer.get ());
+                    buffer0.put (imageBuffer.get ());
+                    imageBuffer.get (); // Drop transparency
+                }
+                else
+                {
+                    buffer1.put (imageBuffer.get ());
+                    buffer1.put (imageBuffer.get ());
+                    buffer1.put (imageBuffer.get ());
+                    imageBuffer.get (); // Drop transparency
+                }
+            }
 
+            imageBuffer.rewind ();
+        });
 
-    /** {@inheritDoc} */
-    @Override
-    public Kontrol2Display clearCell (final int row, final int cell)
-    {
-        this.cells[row * this.noOfCells + cell] = "        ";
-        return this;
-    }
+        this.usbDevice.sendToDisplay (this.header0.getMemoryBlock ());
+        this.usbDevice.sendToDisplay (this.imageBlock0);
+        this.usbDevice.sendToDisplay (this.header1.getMemoryBlock ());
+        this.usbDevice.sendToDisplay (this.imageBlock1);
 
-
-    /** {@inheritDoc} */
-    @Override
-    public Kontrol2Display setBlock (final int row, final int block, final String value)
-    {
-        final int cell = 2 * block;
-        if (value.length () > 9)
-        {
-            this.cells[row * this.noOfCells + cell] = value.substring (0, 9);
-            this.cells[row * this.noOfCells + cell + 1] = pad (value.substring (9), 8);
-        }
-        else
-        {
-            this.cells[row * this.noOfCells + cell] = pad (value, 9);
-            this.clearCell (row, cell + 1);
-        }
-        return this;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public Display setCell (final int row, final int column, final int value, final Format format)
-    {
-        this.setCell (row, column, Integer.toString (value));
-        return this;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public Kontrol2Display setCell (final int row, final int cell, final String value)
-    {
-        this.cells[row * this.noOfCells + cell] = pad (value, 8);
-        return this;
-    }
-
-
-    /**
-     * Pad the given text with the given character until it reaches the given length.
-     *
-     * @param str The text to pad
-     * @param length The maximum length
-     * @return The padded text
-     */
-    public static String pad (final String str, final int length)
-    {
-        final String text = str == null ? "" : str;
-        final int diff = length - text.length ();
-        if (diff < 0)
-            return text.substring (0, length);
-        if (diff > 0)
-            return text + Kontrol2Display.SPACES[diff];
-        return text;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void writeLine (final int row, final String text)
-    {
-        // Not a line based display
+        this.isSending.set (false);
     }
 }

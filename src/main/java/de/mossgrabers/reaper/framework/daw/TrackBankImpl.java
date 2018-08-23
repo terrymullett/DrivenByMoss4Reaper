@@ -7,7 +7,7 @@ package de.mossgrabers.reaper.framework.daw;
 import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.ISend;
-import de.mossgrabers.transformator.communication.MessageSender;
+import de.mossgrabers.reaper.communication.MessageSender;
 
 
 /**

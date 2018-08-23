@@ -7,8 +7,8 @@ package de.mossgrabers.reaper.framework.daw;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ISceneBank;
 import de.mossgrabers.framework.daw.data.IScene;
+import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.daw.data.SceneImpl;
-import de.mossgrabers.transformator.communication.MessageSender;
 
 
 /**

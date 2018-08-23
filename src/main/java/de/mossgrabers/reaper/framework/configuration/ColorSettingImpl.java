@@ -6,9 +6,9 @@ package de.mossgrabers.reaper.framework.configuration;
 
 import de.mossgrabers.framework.configuration.IColorSetting;
 import de.mossgrabers.framework.controller.color.ColorEx;
-import de.mossgrabers.transformator.ui.widgets.ColoredButton;
-import de.mossgrabers.transformator.util.PropertiesEx;
-import de.mossgrabers.transformator.util.SafeRunLater;
+import de.mossgrabers.reaper.ui.utils.PropertiesEx;
+import de.mossgrabers.reaper.ui.utils.SafeRunLater;
+import de.mossgrabers.reaper.ui.widget.ColoredButton;
 
 import javax.swing.JColorChooser;
 

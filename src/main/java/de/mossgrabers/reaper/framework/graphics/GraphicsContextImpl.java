@@ -8,7 +8,7 @@ import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.graphics.Align;
 import de.mossgrabers.framework.graphics.IGraphicsContext;
 import de.mossgrabers.framework.graphics.IImage;
-import de.mossgrabers.transformator.util.FontCache;
+import de.mossgrabers.reaper.ui.utils.FontCache;
 
 import java.awt.BasicStroke;
 import java.awt.Color;

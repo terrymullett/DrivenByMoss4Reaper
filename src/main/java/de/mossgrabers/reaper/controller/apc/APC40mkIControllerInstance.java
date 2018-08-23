@@ -7,11 +7,11 @@ package de.mossgrabers.reaper.controller.apc;
 import de.mossgrabers.controller.apc.APCControllerDefinition;
 import de.mossgrabers.controller.apc.APCControllerSetup;
 import de.mossgrabers.framework.controller.IControllerSetup;
+import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.controller.AbstractControllerInstance;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.ReaperSetupFactory;
-import de.mossgrabers.transformator.communication.MessageSender;
-import de.mossgrabers.transformator.util.LogModel;
+import de.mossgrabers.reaper.ui.utils.LogModel;
 
 import java.awt.Window;
 

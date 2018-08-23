@@ -4,7 +4,7 @@
 
 package de.mossgrabers.reaper.framework;
 
-import de.mossgrabers.transformator.util.LogModel;
+import de.mossgrabers.reaper.ui.utils.LogModel;
 
 import com.nikhaldimann.inieditor.IniEditor;
 

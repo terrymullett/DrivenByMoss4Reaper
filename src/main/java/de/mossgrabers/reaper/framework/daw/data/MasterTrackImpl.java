@@ -9,7 +9,7 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ItemSelectionObserver;
 import de.mossgrabers.framework.daw.data.IMasterTrack;
 import de.mossgrabers.framework.daw.resource.ChannelType;
-import de.mossgrabers.transformator.communication.MessageSender;
+import de.mossgrabers.reaper.communication.MessageSender;
 
 import java.util.ArrayList;
 import java.util.List;

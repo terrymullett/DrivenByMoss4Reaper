@@ -8,10 +8,10 @@ import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IGroove;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IParameter;
+import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.data.GrooveParameter;
 import de.mossgrabers.reaper.framework.daw.data.ParameterImpl;
-import de.mossgrabers.transformator.communication.MessageSender;
 
 
 /**

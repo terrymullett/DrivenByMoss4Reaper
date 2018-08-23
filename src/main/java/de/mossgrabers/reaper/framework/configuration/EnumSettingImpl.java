@@ -5,8 +5,8 @@
 package de.mossgrabers.reaper.framework.configuration;
 
 import de.mossgrabers.framework.configuration.IEnumSetting;
-import de.mossgrabers.transformator.util.PropertiesEx;
-import de.mossgrabers.transformator.util.SafeRunLater;
+import de.mossgrabers.reaper.ui.utils.PropertiesEx;
+import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;

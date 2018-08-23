@@ -57,7 +57,7 @@ public class UsbDeviceImpl implements IUsbDevice
 
         this.handle = openDeviceWithVidPid (usbMatcher.getVendor (), usbMatcher.getProductID ());
         if (this.handle == null)
-            host.error ("USB Device not found.", new LibUsbException (LibUsb.ERROR_NO_DEVICE));
+            throw new UsbException ("USB Device not found.", new LibUsbException (LibUsb.ERROR_NO_DEVICE));
     }
 
 
