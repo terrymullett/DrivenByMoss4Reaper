@@ -66,9 +66,9 @@
       to make them visible.
 
    c) Linux (Ubuntu)
-      Look up the location at which you have installed Reaper. You find the
-      UserPlugins folder inside of the Reaper folder. E.g.
-          /opt/Reaper/UserPlugins
+      Look up the location at which you have installed Reaper. 
+      Install the *.so file into ~/.config/REAPER/UserPlugins or in the case of a 
+      portable install into REAPER/UserPlugins.
 
 4) Configuration
    a) Start Reaper

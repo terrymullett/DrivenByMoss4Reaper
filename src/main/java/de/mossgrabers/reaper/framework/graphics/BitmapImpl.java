@@ -136,6 +136,7 @@ public class BitmapImpl extends BasicDialog implements IBitmap
                 this.imageBuffer.put ((byte) 0);
             }
 
+            this.imageBuffer.rewind ();
             encoder.encode (this.imageBuffer, this.bufferedImage.getWidth (), this.bufferedImage.getHeight ());
         }
     }
