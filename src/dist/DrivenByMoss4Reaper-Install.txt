@@ -53,7 +53,8 @@
    Copy everything from the "lib" folder which you extracted above (the 
    3 library files reaper_drivenbymoss and the drivenbymoss-libs folder
    with all its contents).
-   You find the UserPlugins folder at the following locations:
+   You find the UserPlugins folder at the following locations (it should already 
+   contain the SWS library from Step 2):
 
    a) Windows 10
           C:\Users\<YOUR_USER_NAME>\AppData\Roaming\REAPER\UserPlugins
@@ -77,10 +78,9 @@
    d) Click on "Add"
    e) In the "Control surface mode" select "DrivenByMoss4Reaper" (if it is not 
       there, you put the reaper_drivenbymoss library file into a wrong location).
-   f) The application is run as a tray icon, which should appear now in your 
-      taskbar. Closing the app minimizes it to the tray. Double click the tray 
-      icon to show it again. Click on the tray icon (Right click on Windows) to 
-      show the context menu with the option to show the application.
+   f) The configuration displays the JAVA_HOME path for information and contains
+      a button to open the DrivenByMoss user interface. You can keep this user 
+      interface open if you want and only close the Reaper dialogs.
       Use the Add button in the window to add the device(s) you want to use.
       Select a device and click the configure button to change its settings.
       Your setup will automatically be loaded if you run Reaper and shutdown when 
