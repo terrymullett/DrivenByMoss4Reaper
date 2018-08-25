@@ -1,0 +1,119 @@
+package de.mossgrabers.reaper;
+
+import de.mossgrabers.framework.usb.UsbException;
+
+import org.usb4java.Device;
+import org.usb4java.DeviceDescriptor;
+import org.usb4java.DeviceHandle;
+import org.usb4java.DeviceList;
+import org.usb4java.LibUsb;
+import org.usb4java.LibUsbException;
+
+import java.util.Iterator;
+
+
+public class TestKontrol2USB
+{
+    public static void main (String [] args)
+    {
+        int result;
+        try
+        {
+            result = LibUsb.init (null);
+            if (result != LibUsb.SUCCESS)
+                throw new LibUsbException ("Unable to initialize libusb.", result);
+
+            // Print LibUsb errors and warnings
+            LibUsb.setDebug (null, LibUsb.LOG_LEVEL_WARNING);
+
+        }
+        catch (final LibUsbException ex)
+        {
+            ex.printStackTrace ();
+            return;
+        }
+
+        final DeviceHandle handle;
+        try
+        {
+            handle = openDeviceWithVidPid ((short) 0x17cc, (short) 0x1610);
+            if (handle == null)
+                return;
+        }
+        catch (final UsbException ex)
+        {
+            ex.printStackTrace ();
+            return;
+        }
+
+        result = LibUsb.setAutoDetachKernelDriver (handle, true);
+        if (result != LibUsb.SUCCESS && result != LibUsb.ERROR_NOT_SUPPORTED)
+            new LibUsbException (result).printStackTrace ();
+
+        result = LibUsb.claimInterface (handle, 0x03);
+        if (result != LibUsb.SUCCESS)
+        {
+            new LibUsbException (result).printStackTrace ();
+            return;
+        }
+
+        result = LibUsb.releaseInterface (handle, 0x03);
+        if (result != LibUsb.SUCCESS)
+            new LibUsbException (result).printStackTrace ();
+
+        LibUsb.close (handle);
+        LibUsb.exit (null);
+    }
+
+
+    private static DeviceHandle openDeviceWithVidPid (final short vendorId, final short productId) throws UsbException
+    {
+        final DeviceList list = new DeviceList ();
+        int result = LibUsb.getDeviceList (null, list);
+        if (result < LibUsb.SUCCESS)
+            throw new UsbException ("Unable to get device list.", new LibUsbException (result));
+
+        try
+        {
+            final Iterator<Device> iterator = list.iterator ();
+            while (iterator.hasNext ())
+            {
+                final Device device = iterator.next ();
+                final DeviceDescriptor descriptor = new DeviceDescriptor ();
+                result = LibUsb.getDeviceDescriptor (device, descriptor);
+                if (result != LibUsb.SUCCESS)
+                {
+                    new LibUsbException (result).printStackTrace ();
+                    // Continue, maybe there is a working device
+                    continue;
+                }
+                if (descriptor.idVendor () == vendorId && descriptor.idProduct () == productId)
+                {
+                    DeviceHandle handle = new DeviceHandle ();
+                    try
+                    {
+                        result = LibUsb.open (device, handle);
+                        if (result == LibUsb.SUCCESS)
+                            return handle;
+                        new LibUsbException (result).printStackTrace ();
+                    }
+                    catch (org.usb4java.LibUsbException ex)
+                    {
+                        ex.printStackTrace ();
+                    }
+
+                    // handle = LibUsb.openDeviceWithVidPid (null, vendorId, productId);
+
+                    // Continue, maybe there is a working device
+                }
+            }
+        }
+        finally
+        {
+            LibUsb.freeDeviceList (list, true);
+        }
+
+        return null;
+    }
+
+}
