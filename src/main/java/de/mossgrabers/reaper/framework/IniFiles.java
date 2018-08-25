@@ -19,15 +19,16 @@ import java.io.IOException;
  */
 public class IniFiles
 {
-    private static final String REAPER_MAIN     = "REAPER.ini";
-    private static final String VST_PLUGINS_64  = "reaper-vstplugins64.ini";
-    private static final String FX_TAGS         = "reaper-fxtags.ini";
-    private static final String FX_FOLDERS      = "reaper-fxfolders.ini";
+    private static final String OPTION_FORMAT_NO_SPACES = "%s%s%s";
+    private static final String REAPER_MAIN             = "REAPER.ini";
+    private static final String VST_PLUGINS_64          = "reaper-vstplugins64.ini";
+    private static final String FX_TAGS                 = "reaper-fxtags.ini";
+    private static final String FX_FOLDERS              = "reaper-fxfolders.ini";
 
-    private final IniEditor     iniReaperMain   = new IniEditor ();
-    private final IniEditor     iniVstPlugins64 = new IniEditor ();
-    private final IniEditor     iniFxTags       = new IniEditor ();
-    private final IniEditor     iniFxFolders    = new IniEditor ();
+    private final IniEditor     iniReaperMain           = new IniEditor ();
+    private final IniEditor     iniVstPlugins64         = new IniEditor ();
+    private final IniEditor     iniFxTags               = new IniEditor ();
+    private final IniEditor     iniFxFolders            = new IniEditor ();
 
     private String              iniPath;
 
@@ -36,6 +37,18 @@ public class IniFiles
     private boolean             isFxTagsPresent;
     private boolean             isFxFoldersPresent;
     private LogModel            logModel;
+
+
+    /**
+     * Constructor.
+     */
+    public IniFiles ()
+    {
+        this.iniReaperMain.setOptionFormatString (OPTION_FORMAT_NO_SPACES);
+        this.iniVstPlugins64.setOptionFormatString (OPTION_FORMAT_NO_SPACES);
+        this.iniFxTags.setOptionFormatString (OPTION_FORMAT_NO_SPACES);
+        this.iniFxFolders.setOptionFormatString (OPTION_FORMAT_NO_SPACES);
+    }
 
 
     /**
