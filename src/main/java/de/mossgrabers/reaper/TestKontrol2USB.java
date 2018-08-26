@@ -50,14 +50,16 @@ public class TestKontrol2USB
         if (result != LibUsb.SUCCESS && result != LibUsb.ERROR_NOT_SUPPORTED)
             new LibUsbException (result).printStackTrace ();
 
-        result = LibUsb.claimInterface (handle, 0x03);
+        final int interfaceID = 0x00;
+
+        result = LibUsb.claimInterface (handle, interfaceID);
         if (result != LibUsb.SUCCESS)
         {
             new LibUsbException (result).printStackTrace ();
             return;
         }
 
-        result = LibUsb.releaseInterface (handle, 0x03);
+        result = LibUsb.releaseInterface (handle, interfaceID);
         if (result != LibUsb.SUCCESS)
             new LibUsbException (result).printStackTrace ();
 
