@@ -1,5 +1,6 @@
 package de.mossgrabers.reaper;
 
+import de.mossgrabers.controller.kontrol.usb.mkii.controller.Kontrol2DisplayProtocol;
 import de.mossgrabers.framework.usb.UsbException;
 import de.mossgrabers.framework.utils.StringUtils;
 
@@ -9,6 +10,7 @@ import org.usb4java.DeviceHandle;
 import org.usb4java.DeviceList;
 import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
+import org.usb4java.Transfer;
 
 import javax.imageio.ImageIO;
 
@@ -23,7 +25,7 @@ import java.util.Iterator;
 
 public class TestKontrol2USB
 {
-    final static int interfaceID = 0x00;
+    final static int interfaceID = 0x03;
 
 
     public static void main (String [] args)
@@ -82,139 +84,54 @@ public class TestKontrol2USB
 
     private static void sendImage (DeviceHandle handle)
     {
-        // File imageFile = new File ("/home/mos/Schreibtisch/bitmaptest/red64.png");
-        // BufferedImage image;
-        // try
-        // {
-        // image = ImageIO.read (imageFile);
-        // }
-        // catch (IOException ex)
-        // {
-        // // TODO Auto-generated catch block
-        // ex.printStackTrace ();
-        // return;
-        // }
-        //
-        // int width = image.getWidth ();
-        // int height = image.getHeight ();128
-        
         ///////////////////////////////
         // Display is 480 x 270
 
-        int x = 448;            // 448 = letztes
-        int y = 269;            // 256 = letztes
-        int width = 32;         // 32 = letztes
-        int height = 1;        // 16 = letztes
+        int display = 0;
+        int x = 0; // 448 = letztes
+        int y = 0; // 256 = letztes
+        int width = 64; // 32 = letztes
+        int height = 64; // 16 = letztes
 
-        ByteBuffer buffer = ByteBuffer.allocateDirect (9724*100);
-
-        buffer.put ((byte) 0x84);
-        buffer.put ((byte) 0x00);
-        buffer.put ((byte) 0x01); // Screen
-
-        buffer.put ((byte) 0x60);
-        buffer.put ((byte) 0x00);
-        buffer.put ((byte) 0x00);
-        buffer.put ((byte) 0x00);
-        buffer.put ((byte) 0x00);
-        buffer.putShort ((short) x);
-        buffer.putShort ((short) y);
-
-        buffer.putShort ((short) width);
-        buffer.putShort ((short) height);
-
-//        final WritableRaster raster = image.getRaster ();
-//        final int [] data = raster.getPixels (0, 0, width, height, (int []) null);
-        final int [] data = new int[0];
-
-        boolean finished = false;
-        int i = 0;
-        int length = width * height;
-
-        while (!finished)
+        ByteBuffer data = ByteBuffer.allocateDirect (width * height * 3);
+        for (int i = 0; i < width * height; i++)
         {
-            if (length - i != 0)
-                buffer.put (StringUtils.fromHexStr ("02000000000000"));
-
-            if (length - i >= 22)
-            {
-                buffer.put (StringUtils.fromHexStr ("0b"));
-                for (int j = 0; j < 22; j++)
-                    convertPixel (buffer, data, i);
-                i += 22;
-            }
-            else if (length - i >= 12)
-            {
-                buffer.put (StringUtils.fromHexStr ("06"));
-                for (int j = 0; j < 12; j++)
-                    convertPixel (buffer, data, i);
-                i += 12;
-            }
-            else if (length - i >= 10)
-            {
-                buffer.put (StringUtils.fromHexStr ("05"));
-                for (int j = 0; j < 10; j++)
-                    convertPixel (buffer, data, i);
-                i += 10;
-            }
-            else if (length - i >= 8)
-            {
-                buffer.put (StringUtils.fromHexStr ("04"));
-                for (int j = 0; j < 8; j++)
-                    convertPixel (buffer, data, i);
-                i += 8;
-            }
-            else if (length - i >= 6)
-            {
-                buffer.put (StringUtils.fromHexStr ("03"));
-                for (int j = 0; j < 6; j++)
-                    convertPixel (buffer, data, i);
-                i += 6;
-            }
-            else if (length - i >= 2)
-            {
-                buffer.put (StringUtils.fromHexStr ("01"));
-                for (int j = 0; j < 2; j++)
-                    convertPixel (buffer, data, i);
-                i += 2;
-            }
-            else if (length - i == 1)
-            {
-                buffer.put (StringUtils.fromHexStr ("01"));
-                convertPixel (buffer, data, i);
-                buffer.put (StringUtils.fromHexStr ("0000"));
-                i += 1;
-            }
-            else
-            {
-                buffer.put (StringUtils.fromHexStr ("02000000030000"));
-                buffer.put (StringUtils.fromHexStr ("0040000000"));
-                finished = true;
-            }
-
+            data.put ((byte) 255);
+            data.put ((byte) 100);
+            data.put ((byte) 0);
         }
 
-        final IntBuffer transfered = IntBuffer.allocate (1);
+        final ByteBuffer buffer = ByteBuffer.allocateDirect (9712);
 
-        LibUsb.bulkTransfer (handle, (byte) 0x03, buffer, transfered, 1000);
+        // Kontrol2DisplayProtocol.fill (buffer, data, 1, x, y, width, height);
+        // final IntBuffer transfered = IntBuffer.allocate (1);
+        // LibUsb.bulkTransfer (handle, (byte) 0x03, buffer, transfered, 0);
+
+        for (int row = 0; row < 1; row++)
+        {
+            for (int col = 0; col < 1; col++)
+            {
+                data.rewind ();
+                buffer.clear ();
+                drawImage (handle, display, col * 64, row * 64, width, height, data, buffer);
+            }
+        }
     }
 
 
-    private static void convertPixel (ByteBuffer buffer, int [] data, int i)
+    private static void drawImage (DeviceHandle handle, int display, int x, int y, int width, int height, ByteBuffer data, ByteBuffer buffer)
     {
-        int pos = 3 * i;
-//        int red = data[pos];
-//        int green = data[pos + 1];
-//        int blue = data[pos + 2];
-        int red = 255;
-        int green = 0;
-        int blue = 0;
+        long start = System.currentTimeMillis ();
+        
+        Kontrol2DisplayProtocol.encodeImage (buffer, data, display, x, y, width, height);
 
-        int pixel = ((red * 0x1F / 0xFF) << 11) + ((green * 0x3F / 0xFF) << 5) + (blue * 0x1F / 0xFF);
-
-        // Bytes need to be swapped
-        buffer.put ((byte) ((pixel & 0xFF00) >> 8));
-        buffer.put ((byte) (pixel & 0x00FF));
+        System.out.println ("Encoding: " + (System.currentTimeMillis () - start));
+        start = System.currentTimeMillis ();
+        
+        final IntBuffer transfered = IntBuffer.allocate (1);
+        LibUsb.bulkTransfer (handle, (byte) 0x03, buffer, transfered, 0);
+        
+        System.out.println ("Transfer: " + (System.currentTimeMillis () - start));
     }
 
 
