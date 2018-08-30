@@ -82,7 +82,7 @@ public class TestKontrol2USB
         int display = 0;
         int x = 0;
         int y = 0;
-        int width = 2; // 480;
+        int width = 480;
         int height = 1; // 272;
 
         ByteBuffer data = ByteBuffer.allocateDirect (width * height * 3);
@@ -93,7 +93,21 @@ public class TestKontrol2USB
             data.put ((byte) 0);
         }
 
-        final ByteBuffer buffer = ByteBuffer.allocateDirect (32);
+        final ByteBuffer buffer = ByteBuffer.allocateDirect (24 + 2 * 480);
+
+        // {0x84, 0x00, displayIndex_, 0x60, 0x00, 0x00, 0x00, 0x00,
+        // 0x00, 0x00, (uint8_t)(row) << 8, (uint8_t)row, 0x01, 0xE0, 0x00, 0x01,
+
+        Kontrol2DisplayProtocol.writeHeader (buffer, (byte) display, (short) x, (short) y, (short) width, (short) height);
+
+        // 0x00, 0x00, 0x00, 0xF0},
+        // ptr, 480 * 2,
+        Kontrol2DisplayProtocol.transmitPixel (buffer, data);
+
+        // { 0x03, 0x00,0x00, 0x00, 0x40,0x00,0x00,0x00}
+
+        Kontrol2DisplayProtocol.blit (buffer);
+        Kontrol2DisplayProtocol.writeFooter (buffer, (byte) display);
 
         final IntBuffer transfered = IntBuffer.allocate (1);
 

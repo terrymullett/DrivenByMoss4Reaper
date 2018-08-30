@@ -282,7 +282,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public int getStep (final int step, final int row)
     {
-        // Not supported
+        // TODO Not supported - could be calculated from the play position and the note positions
         return 0;
     }
 
@@ -291,7 +291,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public void toggleStep (final int step, final int row, final int velocity)
     {
-        // Not supported
+        // TODO Not supported
     }
 
 
@@ -299,7 +299,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public void setStep (final int step, final int row, final int velocity, final double duration)
     {
-        // Not supported
+        // TODO Not supported
     }
 
 
@@ -307,7 +307,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public void clearStep (final int step, final int row)
     {
-        // Not supported
+        // TODO Not supported
     }
 
 
@@ -315,7 +315,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public void clearRow (final int row)
     {
-        // Not supported
+        // TODO Not supported
     }
 
 
@@ -323,7 +323,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public boolean hasRowData (final int row)
     {
-        // Not supported
+        // TODO Not supported
         return false;
     }
 
@@ -332,7 +332,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public int getLowerRowWithData ()
     {
-        // Not supported
+        // TODO Not supported
         return -1;
     }
 
@@ -341,7 +341,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public int getUpperRowWithData ()
     {
-        // Not supported
+        // TODO Not supported
         return -1;
     }
 
@@ -350,7 +350,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public void setStepLength (final double length)
     {
-        // Not supported
+        // TODO Not supported
     }
 
 
@@ -358,7 +358,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public double getStepLength ()
     {
-        // Not supported
+        // TODO Not supported
         return 1;
     }
 
@@ -367,7 +367,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public void scrollTo (final int step, final int row)
     {
-        // Not supported
+        // TODO Not supported
     }
 
 
@@ -375,7 +375,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public void scrollToPage (final int page)
     {
-        // Not supported
+        // TODO Not supported
     }
 
 
@@ -383,7 +383,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public int getEditPage ()
     {
-        // Not supported
+        // TODO Not supported
         return 0;
     }
 
@@ -392,7 +392,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public void scrollStepsPageBackwards ()
     {
-        // Not supported
+        // TODO Not supported
     }
 
 
@@ -400,7 +400,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public void scrollStepsPageForward ()
     {
-        // Not supported
+        // TODO Not supported
     }
 
 
@@ -408,7 +408,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public boolean canScrollStepsBackwards ()
     {
-        // Not supported
+        // TODO Not supported
         return false;
     }
 
@@ -417,7 +417,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public boolean canScrollStepsForwards ()
     {
-        // Not supported
+        // TODO Not supported
         return false;
     }
 
@@ -450,7 +450,7 @@ public class CursorClipImpl extends BaseImpl implements ICursorClip
     @Override
     public void transpose (final int semitones)
     {
-        // Not supported
+        // TODO Not supported
     }
 
 

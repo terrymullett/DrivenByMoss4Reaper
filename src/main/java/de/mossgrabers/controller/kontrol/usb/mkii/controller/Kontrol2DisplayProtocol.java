@@ -1,13 +1,21 @@
+// Written by Jürgen Moßgraber - mossgrabers.de
+// (c) 2017-2018
+// Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
+
 package de.mossgrabers.controller.kontrol.usb.mkii.controller;
 
 import java.nio.ByteBuffer;
 
 
+/**
+ * Implements the display protocol for the Kontrol 2.
+ *
+ * @author J&uuml;rgen Mo&szlig;graber
+ */
 public class Kontrol2DisplayProtocol
 {
     private static final byte COMMAND_TRANSMIT_PIXEL = (byte) 0x00;
     private static final byte COMMAND_REPEAT_PIXEL   = (byte) 0x01;
-
     private static final byte COMMAND_SKIP_PIXEL     = (byte) 0x02;
     private static final byte COMMAND_BLIT           = (byte) 0x03;
     private static final byte COMMAND_START_OF_DATA  = (byte) 0x84;
@@ -19,6 +27,7 @@ public class Kontrol2DisplayProtocol
     private static final int  LENGTH_SKIP_PIXELS     = 7;
 
 
+    // TODO Improve implementation
     public static void encodeImage (final ByteBuffer buffer, final ByteBuffer data, final int display, final int x, final int y, final int width, final int height)
     {
         writeHeader (buffer, (byte) display, (short) x, (short) y, (short) width, (short) height);
@@ -29,6 +38,7 @@ public class Kontrol2DisplayProtocol
     }
 
 
+    // TODO Remove
     public static void encodeImage2 (final ByteBuffer buffer, final ByteBuffer data, final int display, final int x, final int y, final int width, final int height)
     {
         writeHeader (buffer, (byte) display, (short) x, (short) y, (short) width, (short) height);
@@ -45,9 +55,9 @@ public class Kontrol2DisplayProtocol
 
         for (int i = 0; i < width * height - 1; i++)
         {
-            int redNew = Byte.toUnsignedInt (data.get ());
-            int greenNew = Byte.toUnsignedInt (data.get ());
-            int blueNew = Byte.toUnsignedInt (data.get ());
+            final int redNew = Byte.toUnsignedInt (data.get ());
+            final int greenNew = Byte.toUnsignedInt (data.get ());
+            final int blueNew = Byte.toUnsignedInt (data.get ());
 
             if (red == redNew && green == greenNew && blue == blueNew)
                 counter++;
@@ -61,6 +71,19 @@ public class Kontrol2DisplayProtocol
     }
 
 
+    /**
+     * Fill a rectangle on one of the displays with a specific color.
+     *
+     * @param buffer Where to add the data bytes of the command and data codes
+     * @param display The display (0 or 1)
+     * @param x The X offset of the rectangle (max. 479)
+     * @param y The Y offset of the rectangle (max. 271)
+     * @param width The width of the rectangle (max. 480)
+     * @param height The height of the rectangle (max. 272)
+     * @param red The red component of the fill color (0-255)
+     * @param green The green component of the fill color (0-255)
+     * @param blue The blue component of the fill color (0-255)
+     */
     public static void fill (final ByteBuffer buffer, final int display, final int x, final int y, final int width, final int height, final int red, final int green, final int blue)
     {
         writeHeader (buffer, (byte) display, (short) x, (short) y, (short) width, (short) height);
@@ -71,6 +94,16 @@ public class Kontrol2DisplayProtocol
     }
 
 
+    /**
+     * Clears a rectangle on one of the displays (fills it with black pixels).
+     *
+     * @param buffer Where to add the data bytes of the command and data codes
+     * @param display The display (0 or 1)
+     * @param x The X offset of the rectangle (max. 479)
+     * @param y The Y offset of the rectangle (max. 271)
+     * @param width The width of the rectangle (max. 480)
+     * @param height The height of the rectangle (max. 272)
+     */
     public static void clear (final ByteBuffer buffer, final int display, final int x, final int y, final int width, final int height)
     {
         writeHeader (buffer, (byte) display, (short) x, (short) y, (short) width, (short) height);
@@ -81,8 +114,21 @@ public class Kontrol2DisplayProtocol
     }
 
 
+    /**
+     * Write a display protocol header to the given buffer.
+     *
+     * @param buffer Where to add the header
+     * @param display The display (0 or 1)
+     * @param x The X offset of the rectangle (max. 479)
+     * @param y The Y offset of the rectangle (max. 271)
+     * @param width The width of the rectangle (max. 480)
+     * @param height The height of the rectangle (max. 272)
+     */
     public static void writeHeader (final ByteBuffer buffer, final byte display, final short x, final short y, final short width, final short height)
     {
+        if (x > 479 || y > 271 || width > 480 || height > 272)
+            throw new IllegalArgumentException ("Rectangle is out of bounds.");
+
         buffer.put (COMMAND_START_OF_DATA);
         buffer.put ((byte) 0x00);
         buffer.put (display);
@@ -100,6 +146,7 @@ public class Kontrol2DisplayProtocol
     }
 
 
+    // TODO Remove when transmitPixel works
     public static void writeImage (final ByteBuffer buffer, final ByteBuffer data)
     {
         final int length = data.limit () / 3;
@@ -107,39 +154,42 @@ public class Kontrol2DisplayProtocol
         int rest = length;
         while (rest > 0)
         {
-            skipPixel (buffer);
+            skipPixel (buffer, 0, 0);
             i += addPixels (buffer, data, rest);
             rest = length - i;
         }
     }
 
 
-    public static void writeImage2 (final ByteBuffer buffer, final ByteBuffer data)
+    /**
+     * Set several pixels at the current pixel output position.
+     *
+     * @param buffer The buffer where to add the encoded command
+     * @param data Reads 3 byte from the data for each pixel: the red component of the color
+     *            (0-255), the green component of the color (0-255), the blue component of the color
+     *            (0-255)
+     */
+    public static void transmitPixel (final ByteBuffer buffer, final ByteBuffer data)
     {
         buffer.put (COMMAND_TRANSMIT_PIXEL);
 
         final int length = data.limit () / 3;
+        final int l = length / 2;
 
-        buffer.put ((byte) (length >> 16));
-        buffer.putShort ((short) (length & 0x0000FFFF));
+        // TODO Correct?
+        buffer.put ((byte) (l >> 16));
+        buffer.putShort ((short) (l & 0x0000FFFF));
 
         for (int i = 0; i < length; i++)
-            convertPixel (buffer, data);
+            encodeColor565 (buffer, data);
     }
 
 
-    public static void transmitPixel (final ByteBuffer buffer)
-    {
-        buffer.put (COMMAND_TRANSMIT_PIXEL);
-
-        buffer.put ((byte) 0x00);
-        buffer.putShort ((short) 2);
-
-        convertPixel (buffer, 255, 0, 0);
-        convertPixel (buffer, 255, 0, 0);
-    }
-
-
+    /**
+     * Flush all drawing commands.
+     *
+     * @param buffer The buffer where to add the encoded command
+     */
     public static void blit (final ByteBuffer buffer)
     {
         buffer.put (COMMAND_BLIT);
@@ -148,25 +198,54 @@ public class Kontrol2DisplayProtocol
     }
 
 
+    /**
+     * Write the footer (end of data).
+     *
+     * @param buffer The buffer where to add the encoded data
+     * @param display The display (0/1)
+     */
     public static void writeFooter (final ByteBuffer buffer, final byte display)
     {
         buffer.put (COMMAND_END_OF_DATA);
         buffer.put ((byte) 0x00);
-        buffer.put (display);
+        buffer.put (display); // TODO 0x00 ???
         buffer.put ((byte) 0x00);
     }
 
 
-    public static void skipPixel (final ByteBuffer buffer)
+    /**
+     * Moves the pixel draw position in x- and y-direction relative to the current one.
+     *
+     * @param buffer The buffer where to add the encoded data
+     * @param skipX The number of pixels to skip in x-direction
+     * @param skipY The number of pixels to skip in y-direction
+     */
+    public static void skipPixel (final ByteBuffer buffer, final int skipX, final int skipY)
     {
         buffer.put (COMMAND_SKIP_PIXEL);
-        buffer.putShort ((short) 0x00);
-        // TODO numbers of pixels to skip
-        buffer.putShort ((short) 0x00);
-        buffer.putShort ((short) 0x00);
+
+        // TODO Correct?
+        buffer.put ((byte) (skipX >> 16));
+        buffer.putShort ((short) (skipX & 0x0000FFFF));
+
+        // TODO Correct? Can we skip in Y direction or are these 3 bytes always 0x00 ?
+        buffer.put ((byte) (skipY >> 16));
+        buffer.putShort ((short) (skipY & 0x0000FFFF));
     }
 
 
+    /**
+     * Draws a pixel tuple n-th times in the current rectangle.
+     *
+     * @param buffer The buffer where to add the encoded data
+     * @param noOfRepetitions The number of times to repeat the pixel
+     * @param red1 The red component of the first pixel color
+     * @param green1 The green component of the first pixel color
+     * @param blue1 The blue component of the first pixel color
+     * @param red2 The red component of the second pixel color
+     * @param green2 The green component of the second pixel color
+     * @param blue2 The blue component of the second pixel color
+     */
     public static void repeatPixel (final ByteBuffer buffer, final short noOfRepetitions, final int red1, final int green1, final int blue1, final int red2, final int green2, final int blue2)
     {
         buffer.put (COMMAND_REPEAT_PIXEL);
@@ -175,37 +254,63 @@ public class Kontrol2DisplayProtocol
         buffer.put ((byte) 0x00);
         buffer.putShort (noOfRepetitions);
 
-        convertPixel (buffer, red1, green1, blue1);
-        convertPixel (buffer, red2, green2, blue2);
+        encodeColor565 (buffer, red1, green1, blue1);
+        encodeColor565 (buffer, red2, green2, blue2);
     }
 
 
-    private static void convertPixel (ByteBuffer buffer, ByteBuffer data)
-    {
-        int red = Byte.toUnsignedInt (data.get ());
-        int green = Byte.toUnsignedInt (data.get ());
-        int blue = Byte.toUnsignedInt (data.get ());
-        convertPixel (buffer, red, green, blue);
-    }
-
-
-    private static void convertPixel (final ByteBuffer buffer, final int red, final int green, final int blue)
-    {
-        final int pixel = ((red * 0x1F / 0xFF) << 11) + ((green * 0x3F / 0xFF) << 5) + (blue * 0x1F / 0xFF);
-
-        // Bytes need to be swapped
-        buffer.put ((byte) ((pixel & 0xFF00) >> 8));
-        buffer.put ((byte) (pixel & 0x00FF));
-    }
-
-
+    /**
+     * Encodes the pixel data (3 bytes: red, green, blue) into 16 bit rgb565. The first byte
+     * contains the number of added pixels. Encodes up to 22 pixels.
+     *
+     * @param buffer The buffer where to add the encoded data
+     * @param data Reads 3 byte from the data for each pixel: the red component of the color
+     *            (0-255), the green component of the color (0-255), the blue component of the color
+     *            (0-255)
+     * @param rest The number of pixels left to encode
+     * @return The number of pixels left to encode
+     */
     private static int addPixels (final ByteBuffer buffer, final ByteBuffer data, final int rest)
     {
         final int bytesToAdd = Math.min (rest, 22);
 
         buffer.put ((byte) (bytesToAdd / 2));
         for (int j = 0; j < bytesToAdd; j++)
-            convertPixel (buffer, data);
+            encodeColor565 (buffer, data);
         return bytesToAdd;
+    }
+
+
+    /**
+     * Converts a color to RGB 5-6-5 format. 5 bit red, 6 bit green, 5 bit blue (16 bit).
+     *
+     * @param buffer The buffer where to add the encoded color
+     * @param data Reads 3 byte from the data: the red component of the color (0-255), the green
+     *            component of the color (0-255), the blue component of the color (0-255)
+     */
+    private static void encodeColor565 (final ByteBuffer buffer, final ByteBuffer data)
+    {
+        final int red = Byte.toUnsignedInt (data.get ());
+        final int green = Byte.toUnsignedInt (data.get ());
+        final int blue = Byte.toUnsignedInt (data.get ());
+        encodeColor565 (buffer, red, green, blue);
+    }
+
+
+    /**
+     * Converts a color to RGB 5-6-5 format. 5 bit red, 6 bit green, 5 bit blue (16 bit).
+     *
+     * @param buffer The buffer where to add the encoded color
+     * @param red The red component of the color (0-255)
+     * @param green The green component of the color (0-255)
+     * @param blue The blue component of the color (0-255)
+     */
+    private static void encodeColor565 (final ByteBuffer buffer, final int red, final int green, final int blue)
+    {
+        final int pixel = (red * 0x1F / 0xFF << 11) + (green * 0x3F / 0xFF << 5) + blue * 0x1F / 0xFF;
+
+        // Bytes need to be swapped
+        buffer.put ((byte) ((pixel & 0xFF00) >> 8));
+        buffer.put ((byte) (pixel & 0x00FF));
     }
 }
