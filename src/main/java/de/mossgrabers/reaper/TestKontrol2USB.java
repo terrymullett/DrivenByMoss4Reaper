@@ -79,7 +79,7 @@ public class TestKontrol2USB
         ///////////////////////////////
         // Display is 480 x 272
 
-        int display = 1;
+        int display = 0;
         int x = 0;
         int y = 0;
         int width = 480;
@@ -90,12 +90,12 @@ public class TestKontrol2USB
         {
             data.put ((byte) 255);
             data.put ((byte) 0);
-            data.put ((byte) 255);
+            data.put ((byte) 0);
         }
         data.rewind ();
 
         final ByteBuffer buffer = ByteBuffer.allocateDirect (28 + 2 * 480 * 272);
-        Kontrol2DisplayProtocol.encodeImage (buffer, data, (byte) display, (short) x, (short) y, (short) width, (short) height);
+        Kontrol2DisplayProtocol.pixelRectangle (buffer, data, display, x, y, width, height);
         final IntBuffer transfered = IntBuffer.allocate (1);
         LibUsb.bulkTransfer (handle, (byte) 0x03, buffer, transfered, 0);
     }
