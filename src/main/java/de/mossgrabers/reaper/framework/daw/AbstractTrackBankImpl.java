@@ -25,7 +25,8 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
     private int        numScenes;
     private int        numSends;
     private ISceneBank sceneBank;
-    private int        bankOffset = 0;
+
+    protected int      bankOffset = 0;
 
 
     /**
@@ -45,6 +46,22 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
         this.numSends = numSends;
 
         this.sceneBank = new SceneBankImpl (host, sender, this.numScenes);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean canScrollBackwards ()
+    {
+        return this.bankOffset - this.pageSize >= 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean canScrollForwards ()
+    {
+        return this.bankOffset + this.pageSize < this.getItemCount ();
     }
 
 
@@ -135,21 +152,6 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
     protected void sendTrackOSC (final String command, final Object value)
     {
         this.sender.sendOSC ("/track/" + command + "/", value);
-    }
-
-
-    /**
-     * Handles track changes. Notifies all track change observers.
-     *
-     * @param index The index of the newly de-/selected track
-     * @param isSelected True if selected
-     */
-    public void handleBankTrackSelection (final int index, final boolean isSelected)
-    {
-        if (index < 0)
-            return;
-        this.getItem (index).setSelected (isSelected);
-        this.notifySelectionObservers (index, isSelected);
     }
 
 

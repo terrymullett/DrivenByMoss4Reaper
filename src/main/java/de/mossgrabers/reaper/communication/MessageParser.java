@@ -266,7 +266,7 @@ public class MessageParser
                 else
                 {
                     track.setSelected (isSelected);
-                    ((AbstractTrackBankImpl) this.model.getCurrentTrackBank ()).handleBankTrackSelection (track.getIndex (), isSelected);
+                    ((TrackBankImpl) this.model.getCurrentTrackBank ()).handleBankTrackSelection (track, isSelected);
                 }
                 break;
 
