@@ -325,6 +325,8 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
     public void setParameterCount (final int count)
     {
         final int pageSize = this.deviceBank.getPageSize ();
+        if (pageSize == 0)
+            return;
         final int numOfPages = count / pageSize + (count % pageSize > 0 ? 1 : 0);
 
         final String [] parameterPageNames = new String [numOfPages];

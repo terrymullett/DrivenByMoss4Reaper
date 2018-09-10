@@ -55,6 +55,9 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     @Override
     public void selectChildren ()
     {
+        if (this.hasFlatTrackList)
+            return;
+
         for (final TreeNode<TrackImpl> node: this.currentFolder.getChildren ())
         {
             if (node.getData ().isSelected ())
@@ -73,6 +76,9 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     @Override
     public void selectParent ()
     {
+        if (this.hasFlatTrackList)
+            return;
+
         final TreeNode<TrackImpl> parent = this.currentFolder.getParent ();
         final TrackImpl data = this.currentFolder.getData ();
         this.currentFolder = parent == null ? this.rootTrack : parent;
@@ -84,6 +90,9 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     @Override
     public boolean hasParent ()
     {
+        if (this.hasFlatTrackList)
+            return false;
+
         return this.currentFolder.getParent () != null;
     }
 
@@ -96,16 +105,49 @@ public class TrackBankImpl extends AbstractTrackBankImpl
      */
     public void handleBankTrackSelection (final ITrack track, final boolean isSelected)
     {
-        final int position = track.getPosition ();
-
-        if (isSelected)
+        if (this.hasFlatTrackList)
         {
-            // Is track on current page? If not adjust the page
-            if (position < this.bankOffset || position >= this.bankOffset + this.pageSize)
-                this.bankOffset = position / this.pageSize * this.pageSize;
+            final int position = track.getPosition ();
+            if (isSelected)
+            {
+                // Is track on current page? If not adjust the page
+                if (position < this.bankOffset || position >= this.bankOffset + this.pageSize)
+                    this.bankOffset = position / this.pageSize * this.pageSize;
+            }
+        }
+        else
+        {
+            // Find the selected track in the tree, focus the page and select its parent as the new
+            // folder
+            findSelectedTrack (this.rootTrack);
         }
 
         this.notifySelectionObservers (track.getIndex (), isSelected);
+    }
+
+
+    private boolean findSelectedTrack (final TreeNode<TrackImpl> node)
+    {
+        final List<TreeNode<TrackImpl>> children = node.getChildren ();
+        for (int i = 0; i < children.size (); i++)
+        {
+            final TreeNode<TrackImpl> child = children.get (i);
+
+            final TrackImpl track = child.getData ();
+            if (track.isSelected ())
+            {
+                this.currentFolder = node;
+                this.bankOffset = i / this.pageSize * this.pageSize;
+                return true;
+            }
+
+            if (track.isGroup ())
+            {
+                if (findSelectedTrack (child))
+                    return true;
+            }
+        }
+        return false;
     }
 
 
@@ -202,27 +244,30 @@ public class TrackBankImpl extends AbstractTrackBankImpl
             final List<TreeNode<TrackImpl>> hierarchy = new ArrayList<> ();
             hierarchy.add (newRoot);
 
-            for (int i = 0; i < super.getItemCount (); i++)
+            synchronized (this.items)
             {
-                final TrackImpl track = (TrackImpl) this.items.get (i);
-
-                final int depth = track.getDepth ();
-
-                final TreeNode<TrackImpl> p = hierarchy.get (depth);
-                final TreeNode<TrackImpl> child = p.addChild (track);
-                final int childrenSize = p.getChildren ().size ();
-                track.setIndex (childrenSize - 1);
-
-                final int index = depth + 1;
-                if (index < hierarchy.size ())
-                    hierarchy.set (index, child);
-                else
-                    hierarchy.add (index, child);
-
-                if (track.isSelected ())
+                for (int i = 0; i < super.getItemCount (); i++)
                 {
-                    this.currentFolder = p;
-                    this.bankOffset = childrenSize / this.pageSize * this.pageSize;
+                    final TrackImpl track = this.getTrack (i);
+
+                    final int depth = track.getDepth ();
+
+                    final TreeNode<TrackImpl> p = hierarchy.get (depth);
+                    final TreeNode<TrackImpl> child = p.addChild (track);
+                    final int childrenSize = p.getChildren ().size ();
+                    track.setIndex ((childrenSize - 1) % this.pageSize);
+
+                    final int index = depth + 1;
+                    if (index < hierarchy.size ())
+                        hierarchy.set (index, child);
+                    else
+                        hierarchy.add (index, child);
+
+                    if (track.isSelected ())
+                    {
+                        this.currentFolder = p;
+                        this.bankOffset = childrenSize / this.pageSize * this.pageSize;
+                    }
                 }
             }
 

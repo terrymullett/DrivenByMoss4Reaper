@@ -472,7 +472,7 @@ public class MessageParser
                 {
                     final int paramNo = Integer.parseInt (cmd) - 1;
                     final IParameterBank parameterBank = this.cursorDevice.getParameterBank ();
-                    if (paramNo < parameterBank.getPageSize ())
+                    if (parameterBank != null && paramNo < parameterBank.getPageSize ())
                         this.parseDeviceParamValue (parameterBank.getItem (paramNo), parts, value);
                 }
                 catch (final NumberFormatException ex)
@@ -493,7 +493,8 @@ public class MessageParser
                             if ("selected".equals (bankCmd))
                             {
                                 final ParameterPageBankImpl parameterPageBank = (ParameterPageBankImpl) this.cursorDevice.getParameterPageBank ();
-                                parameterPageBank.storePosition (Integer.parseInt (value));
+                                if (parameterPageBank != null)
+                                    parameterPageBank.storePosition (Integer.parseInt (value));
                             }
                             else
                                 this.host.error ("Unhandled Device Param Bank parameter: " + cmd);
@@ -540,6 +541,9 @@ public class MessageParser
 
     private void parseBrowserValue (final Queue<String> parts, final String value)
     {
+        if (this.browser == null)
+            return;
+
         final String command = parts.poll ();
         switch (command)
         {
