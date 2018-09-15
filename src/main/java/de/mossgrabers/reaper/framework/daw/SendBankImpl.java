@@ -37,6 +37,7 @@ public class SendBankImpl extends AbstractBankImpl<ISend> implements ISendBank
         super (host, sender, valueChanger, numSends);
         this.channel = channel;
         this.initItems ();
+        this.itemCount = this.items.size ();
     }
 
 

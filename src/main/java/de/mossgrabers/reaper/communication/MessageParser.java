@@ -11,7 +11,6 @@ import de.mossgrabers.framework.daw.IDeviceBank;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.IMarkerBank;
 import de.mossgrabers.framework.daw.IModel;
-import de.mossgrabers.framework.daw.IParameterBank;
 import de.mossgrabers.framework.daw.IProject;
 import de.mossgrabers.framework.daw.ISendBank;
 import de.mossgrabers.framework.daw.data.IMarker;
@@ -25,7 +24,7 @@ import de.mossgrabers.reaper.framework.daw.BrowserImpl;
 import de.mossgrabers.reaper.framework.daw.CursorDeviceImpl;
 import de.mossgrabers.reaper.framework.daw.MarkerBankImpl;
 import de.mossgrabers.reaper.framework.daw.ModelImpl;
-import de.mossgrabers.reaper.framework.daw.ParameterPageBankImpl;
+import de.mossgrabers.reaper.framework.daw.ParameterBankImpl;
 import de.mossgrabers.reaper.framework.daw.ProjectImpl;
 import de.mossgrabers.reaper.framework.daw.TrackBankImpl;
 import de.mossgrabers.reaper.framework.daw.TransportImpl;
@@ -266,14 +265,9 @@ public class MessageParser
 
             case "select":
                 final boolean isSelected = Double.parseDouble (value) > 0;
-                // Is it the master track?
-                if (track instanceof IMasterTrack)
-                    track.setSelected (Double.parseDouble (value) > 0);
-                else
-                {
-                    track.setSelected (isSelected);
+                track.setSelected (isSelected);
+                if (!(track instanceof IMasterTrack))
                     ((TrackBankImpl) this.model.getCurrentTrackBank ()).handleBankTrackSelection (track, isSelected);
-                }
                 break;
 
             case "number":
@@ -470,10 +464,10 @@ public class MessageParser
                 final String cmd = parts.poll ();
                 try
                 {
-                    final int paramNo = Integer.parseInt (cmd) - 1;
-                    final IParameterBank parameterBank = this.cursorDevice.getParameterBank ();
-                    if (parameterBank != null && paramNo < parameterBank.getPageSize ())
-                        this.parseDeviceParamValue (parameterBank.getItem (paramNo), parts, value);
+                    final int paramNo = Integer.parseInt (cmd);
+                    final ParameterBankImpl parameterBank = (ParameterBankImpl) this.cursorDevice.getParameterBank ();
+                    if (parameterBank != null)
+                        this.parseDeviceParamValue (paramNo, parameterBank.getParameter (paramNo), parts, value);
                 }
                 catch (final NumberFormatException ex)
                 {
@@ -481,23 +475,6 @@ public class MessageParser
                     {
                         case "count":
                             this.cursorDevice.setParameterCount (Integer.parseInt (value));
-                            break;
-
-                        case "bank":
-                            if (parts.isEmpty ())
-                            {
-                                this.host.error ("Missing Device Param Bank parameter.");
-                                return;
-                            }
-                            final String bankCmd = parts.poll ();
-                            if ("selected".equals (bankCmd))
-                            {
-                                final ParameterPageBankImpl parameterPageBank = (ParameterPageBankImpl) this.cursorDevice.getParameterPageBank ();
-                                if (parameterPageBank != null)
-                                    parameterPageBank.storePosition (Integer.parseInt (value));
-                            }
-                            else
-                                this.host.error ("Unhandled Device Param Bank parameter: " + cmd);
                             break;
 
                         default:
@@ -515,21 +492,23 @@ public class MessageParser
     }
 
 
-    private void parseDeviceParamValue (final IParameter param, final Queue<String> parts, final String value)
+    private void parseDeviceParamValue (final int paramNo, final IParameter param, final Queue<String> parts, final String value)
     {
         final String command = parts.poll ();
+        final ParameterImpl p = (ParameterImpl) param;
         switch (command)
         {
             case "name":
-                ((ParameterImpl) param).setName (value);
-                ((ParameterImpl) param).setExists (value != null && !value.isEmpty ());
+                p.setName (value);
+                p.setPosition (paramNo);
+                p.setExists (value != null && !value.isEmpty ());
                 break;
 
             case "value":
                 if (parts.isEmpty ())
-                    ((ParameterImpl) param).setInternalValue (this.valueChanger.fromNormalizedValue (Double.parseDouble (value)));
+                    p.setInternalValue (this.valueChanger.fromNormalizedValue (Double.parseDouble (value)));
                 else if ("str".equals (parts.poll ()))
-                    ((ParameterImpl) param).setValueStr (value);
+                    p.setValueStr (value);
                 break;
 
             default:
@@ -582,9 +561,8 @@ public class MessageParser
         final String part = parts.poll ();
         try
         {
-            final int index = Integer.parseInt (part) - 1;
-            if (index < markerBank.getPageSize ())
-                this.parseMarkerValue (markerBank.getItem (index), parts, value);
+            final int index = Integer.parseInt (part);
+            this.parseMarkerValue (markerBank.getItem (index), parts, value);
         }
         catch (final NumberFormatException ex)
         {

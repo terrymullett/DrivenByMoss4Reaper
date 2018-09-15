@@ -31,7 +31,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
 
     private final IDeviceBank           deviceBank;
     private final ParameterPageBankImpl parameterPageBank;
-    private final IParameterBank        parameterBank;
+    private final ParameterBankImpl     parameterBank;
     private final ILayerBank            layerBank;
     private final IDrumPadBank          drumPadBank;
 
@@ -61,13 +61,13 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
 
         if (checkedNumParams > 0)
         {
-            this.parameterPageBank = new ParameterPageBankImpl (host, sender, valueChanger, checkedNumParams);
-            this.parameterBank = new ParameterBankImpl (host, sender, valueChanger, this.parameterPageBank, checkedNumParams);
+            this.parameterBank = new ParameterBankImpl (host, sender, valueChanger, checkedNumParams);
+            this.parameterPageBank = new ParameterPageBankImpl (host, valueChanger, checkedNumParams, this.parameterBank);
         }
         else
         {
-            this.parameterPageBank = null;
             this.parameterBank = null;
+            this.parameterPageBank = null;
         }
 
         // Always empty
@@ -324,15 +324,8 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
      */
     public void setParameterCount (final int count)
     {
-        final int pageSize = this.deviceBank.getPageSize ();
-        if (pageSize == 0)
-            return;
-        final int numOfPages = count / pageSize + (count % pageSize > 0 ? 1 : 0);
-
-        final String [] parameterPageNames = new String [numOfPages];
-        for (int i = 0; i < numOfPages; i++)
-            parameterPageNames[i] = "Page " + (i + 1);
-        this.parameterPageBank.setPageNames (parameterPageNames);
+        if (this.parameterBank != null)
+            this.parameterBank.setItemCount (count);
     }
 
 

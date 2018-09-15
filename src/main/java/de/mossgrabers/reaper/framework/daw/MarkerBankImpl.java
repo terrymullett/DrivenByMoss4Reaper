@@ -19,6 +19,10 @@ import de.mossgrabers.reaper.framework.daw.data.MarkerImpl;
  */
 public class MarkerBankImpl extends AbstractBankImpl<IMarker> implements IMarkerBank
 {
+    protected final IMarker emptyMarker;
+    protected int           bankOffset = 0;
+
+
     /**
      * Constructor.
      *
@@ -31,6 +35,8 @@ public class MarkerBankImpl extends AbstractBankImpl<IMarker> implements IMarker
     {
         super (host, sender, valueChanger, numMarkers);
         this.initItems ();
+
+        this.emptyMarker = new MarkerImpl (host, sender, -1);
     }
 
 
@@ -46,8 +52,23 @@ public class MarkerBankImpl extends AbstractBankImpl<IMarker> implements IMarker
     @Override
     protected void initItems ()
     {
-        for (int i = 0; i < this.pageSize; i++)
-            this.items.add (new MarkerImpl (this.host, this.sender, i));
+        // Items are added on the fly in getItem
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean canScrollBackwards ()
+    {
+        return this.bankOffset - this.pageSize >= 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean canScrollForwards ()
+    {
+        return this.bankOffset + this.pageSize < this.getItemCount ();
     }
 
 
@@ -55,7 +76,7 @@ public class MarkerBankImpl extends AbstractBankImpl<IMarker> implements IMarker
     @Override
     public void scrollPageBackwards ()
     {
-        this.sender.sendOSC ("/marker/bank/-", null);
+        this.bankOffset = Math.max (0, this.bankOffset - this.pageSize);
     }
 
 
@@ -63,7 +84,39 @@ public class MarkerBankImpl extends AbstractBankImpl<IMarker> implements IMarker
     @Override
     public void scrollPageForwards ()
     {
-        this.sender.sendOSC ("/marker/bank/+", null);
+        if (this.bankOffset + this.pageSize < this.getItemCount ())
+            this.bankOffset += this.pageSize;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public IMarker getItem (final int index)
+    {
+        final int id = this.bankOffset + index;
+        return id >= 0 && id < this.getItemCount () ? this.getMarker (id) : this.emptyMarker;
+    }
+
+
+    /**
+     * Get a marker from the marker list. No paging is applied.
+     *
+     * @param position The position of the marker
+     * @return The marker
+     */
+    public MarkerImpl getMarker (final int position)
+    {
+        synchronized (this.items)
+        {
+            final int size = this.items.size ();
+            final int diff = position - size + 1;
+            if (diff > 0)
+            {
+                for (int i = 0; i < diff; i++)
+                    this.items.add (new MarkerImpl (this.host, this.sender, this.pageSize == 0 ? 0 : (size + i) % this.pageSize));
+            }
+            return (MarkerImpl) this.items.get (position);
+        }
     }
 
 

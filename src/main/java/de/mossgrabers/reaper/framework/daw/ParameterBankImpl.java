@@ -7,7 +7,6 @@ package de.mossgrabers.reaper.framework.daw;
 import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.IParameterBank;
-import de.mossgrabers.framework.daw.IParameterPageBank;
 import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.daw.data.ParameterImpl;
@@ -20,7 +19,8 @@ import de.mossgrabers.reaper.framework.daw.data.ParameterImpl;
  */
 public class ParameterBankImpl extends AbstractBankImpl<IParameter> implements IParameterBank
 {
-    private IParameterPageBank pageBank;
+    protected final IParameter emptyParameter;
+    protected int              bankOffset = 0;
 
 
     /**
@@ -29,15 +29,15 @@ public class ParameterBankImpl extends AbstractBankImpl<IParameter> implements I
      * @param host The DAW host
      * @param sender The OSC sender
      * @param valueChanger The value changer
-     * @param pageBank The page bank
      * @param numParams The number of parameters in the page of the bank
      */
-    public ParameterBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final IParameterPageBank pageBank, final int numParams)
+    public ParameterBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numParams)
     {
         super (host, sender, valueChanger, numParams);
-        this.pageBank = pageBank;
 
         this.initItems ();
+
+        this.emptyParameter = new ParameterImpl (host, sender, valueChanger, -1);
     }
 
 
@@ -45,16 +45,7 @@ public class ParameterBankImpl extends AbstractBankImpl<IParameter> implements I
     @Override
     protected void initItems ()
     {
-        for (int i = 0; i < this.pageSize; i++)
-            this.items.add (new ParameterImpl (this.host, this.sender, this.valueChanger, i));
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public int getItemCount ()
-    {
-        return this.pageBank.getItemCount () * this.getPageSize ();
+        // Items are added on the fly in getItem
     }
 
 
@@ -62,7 +53,7 @@ public class ParameterBankImpl extends AbstractBankImpl<IParameter> implements I
     @Override
     public boolean canScrollBackwards ()
     {
-        return this.pageBank.canScrollBackwards ();
+        return this.bankOffset - this.pageSize >= 0;
     }
 
 
@@ -70,7 +61,7 @@ public class ParameterBankImpl extends AbstractBankImpl<IParameter> implements I
     @Override
     public boolean canScrollForwards ()
     {
-        return this.pageBank.canScrollForwards ();
+        return this.bankOffset + this.pageSize < this.getItemCount ();
     }
 
 
@@ -78,7 +69,7 @@ public class ParameterBankImpl extends AbstractBankImpl<IParameter> implements I
     @Override
     public void scrollBackwards ()
     {
-        this.pageBank.scrollBackwards ();
+        this.bankOffset = Math.max (0, this.bankOffset - this.pageSize);
     }
 
 
@@ -86,7 +77,8 @@ public class ParameterBankImpl extends AbstractBankImpl<IParameter> implements I
     @Override
     public void scrollForwards ()
     {
-        this.pageBank.scrollForwards ();
+        if (this.bankOffset + this.pageSize < this.getItemCount ())
+            this.bankOffset += this.pageSize;
     }
 
 
@@ -94,7 +86,8 @@ public class ParameterBankImpl extends AbstractBankImpl<IParameter> implements I
     @Override
     public void scrollPageBackwards ()
     {
-        this.pageBank.scrollPageBackwards ();
+        final int offset = this.pageSize * this.pageSize;
+        this.bankOffset = Math.max (0, this.bankOffset - offset);
     }
 
 
@@ -102,7 +95,9 @@ public class ParameterBankImpl extends AbstractBankImpl<IParameter> implements I
     @Override
     public void scrollPageForwards ()
     {
-        this.pageBank.scrollPageForwards ();
+        final int offset = this.pageSize * this.pageSize;
+        if (this.bankOffset + offset < this.getItemCount ())
+            this.bankOffset += offset;
     }
 
 
@@ -110,6 +105,57 @@ public class ParameterBankImpl extends AbstractBankImpl<IParameter> implements I
     @Override
     public void scrollTo (final int position)
     {
-        this.pageBank.scrollTo (position);
+        this.bankOffset = position;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public IParameter getItem (final int index)
+    {
+        final int id = this.bankOffset + index;
+        return id >= 0 && id < this.getItemCount () ? this.getParameter (id) : this.emptyParameter;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public int getScrollPosition ()
+    {
+        return this.bankOffset;
+    }
+
+
+    /**
+     * Get a track from the track list. No paging is applied.
+     *
+     * @param position The position of the track
+     * @return The track
+     */
+    public ParameterImpl getParameter (final int position)
+    {
+        synchronized (this.items)
+        {
+            final int size = this.items.size ();
+            final int diff = position - size + 1;
+            if (diff > 0)
+            {
+                for (int i = 0; i < diff; i++)
+                    this.items.add (new ParameterImpl (this.host, this.sender, this.valueChanger, (size + i) % this.pageSize));
+            }
+            return (ParameterImpl) this.items.get (position);
+        }
+    }
+
+
+    /**
+     * Set the number of parameters.
+     *
+     * @param count The number of parameters
+     */
+    public void setItemCount (final int count)
+    {
+        this.itemCount = count;
+        this.bankOffset = 0;
     }
 }

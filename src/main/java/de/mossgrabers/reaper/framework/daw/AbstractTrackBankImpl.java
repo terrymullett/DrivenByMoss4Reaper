@@ -121,21 +121,21 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
     /**
      * Get a track from the track list. No paging is applied.
      *
-     * @param index The index of the track
+     * @param position The position of the track
      * @return The track
      */
-    public TrackImpl getTrack (final int index)
+    public TrackImpl getTrack (final int position)
     {
         synchronized (this.items)
         {
             final int size = this.items.size ();
-            final int diff = index - size + 1;
+            final int diff = position - size + 1;
             if (diff > 0)
             {
                 for (int i = 0; i < diff; i++)
                     this.items.add (new TrackImpl (this.host, this.sender, this.valueChanger, size + i, this.getPageSize (), this.numSends, this.numScenes));
             }
-            return (TrackImpl) this.items.get (index);
+            return (TrackImpl) this.items.get (position);
         }
     }
 

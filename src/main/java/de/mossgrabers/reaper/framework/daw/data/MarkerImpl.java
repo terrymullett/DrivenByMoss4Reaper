@@ -82,6 +82,6 @@ public class MarkerImpl extends ItemImpl implements IMarker
 
     protected void sendMarkerOSC (final String command, final Object value)
     {
-        this.sender.sendOSC ("/marker/" + (this.getIndex () + 1) + "/" + command, value);
+        this.sender.sendOSC ("/marker/" + this.getPosition () + "/" + command, value);
     }
 }
