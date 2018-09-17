@@ -66,8 +66,6 @@ public class SlotBankImpl extends AbstractBankImpl<ISlot> implements ISlotBank
     @Override
     public ISlot getEmptySlot (final int startFrom)
     {
-        // TODO
-
         // There are no slots in Reaper but to make it possible to create a midi item on a track
         // we return a fake slot.
         return this.items.get (0);

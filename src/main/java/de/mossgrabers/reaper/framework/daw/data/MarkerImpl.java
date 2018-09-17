@@ -16,7 +16,12 @@ import de.mossgrabers.reaper.communication.MessageSender;
  */
 public class MarkerImpl extends ItemImpl implements IMarker
 {
-    private double [] color;
+    private double [] color = new double []
+    {
+        0.2,
+        0.2,
+        0.2
+    };
 
 
     /**
@@ -36,12 +41,7 @@ public class MarkerImpl extends ItemImpl implements IMarker
     @Override
     public double [] getColor ()
     {
-        return this.color == null ? new double []
-        {
-            0.2,
-            0.2,
-            0.2
-        } : this.color;
+        return this.color;
     }
 
 
@@ -52,7 +52,9 @@ public class MarkerImpl extends ItemImpl implements IMarker
      */
     public void setColorState (final double [] color)
     {
-        this.color = color;
+        this.color[0] = color[0];
+        this.color[1] = color[1];
+        this.color[2] = color[2];
     }
 
 

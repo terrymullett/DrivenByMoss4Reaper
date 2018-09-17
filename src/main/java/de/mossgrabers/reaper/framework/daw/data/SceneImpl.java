@@ -6,7 +6,6 @@ package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IScene;
-import de.mossgrabers.framework.utils.StringUtils;
 import de.mossgrabers.reaper.communication.MessageSender;
 
 
@@ -17,6 +16,14 @@ import de.mossgrabers.reaper.communication.MessageSender;
  */
 public class SceneImpl extends ItemImpl implements IScene
 {
+    private final double [] color = new double []
+    {
+        0,
+        0,
+        0
+    };
+
+
     /**
      * Constructor.
      *
@@ -33,30 +40,9 @@ public class SceneImpl extends ItemImpl implements IScene
 
     /** {@inheritDoc} */
     @Override
-    public String getName ()
-    {
-        return "Scene " + this.getIndex ();
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public String getName (final int limit)
-    {
-        return StringUtils.optimizeName (this.getName (), limit);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public double [] getColor ()
     {
-        return new double []
-        {
-            0,
-            0,
-            0
-        };
+        return this.color;
     }
 
 
@@ -64,7 +50,9 @@ public class SceneImpl extends ItemImpl implements IScene
     @Override
     public void setColor (final double red, final double green, final double blue)
     {
-        // Not supported
+        this.color[0] = red;
+        this.color[1] = green;
+        this.color[2] = blue;
     }
 
 
@@ -72,7 +60,7 @@ public class SceneImpl extends ItemImpl implements IScene
     @Override
     public void launch ()
     {
-        // Not supported
+        this.sendSceneOSC ("launch", null);
     }
 
 
@@ -80,7 +68,15 @@ public class SceneImpl extends ItemImpl implements IScene
     @Override
     public void remove ()
     {
-        // Not supported
+        this.sendSceneOSC ("remove", null);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void select ()
+    {
+        this.sendSceneOSC ("select", null);
     }
 
 
@@ -89,5 +85,11 @@ public class SceneImpl extends ItemImpl implements IScene
     public void duplicate ()
     {
         // Not supported
+    }
+
+
+    protected void sendSceneOSC (final String command, final Object value)
+    {
+        this.sender.sendOSC ("/scene/" + this.getPosition () + "/" + command, value);
     }
 }

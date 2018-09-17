@@ -12,10 +12,13 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.IMarkerBank;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.IProject;
+import de.mossgrabers.framework.daw.ISceneBank;
 import de.mossgrabers.framework.daw.ISendBank;
+import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.data.IMarker;
 import de.mossgrabers.framework.daw.data.IMasterTrack;
 import de.mossgrabers.framework.daw.data.IParameter;
+import de.mossgrabers.framework.daw.data.IScene;
 import de.mossgrabers.framework.daw.data.ISend;
 import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.reaper.framework.daw.AbstractTrackBankImpl;
@@ -26,18 +29,21 @@ import de.mossgrabers.reaper.framework.daw.MarkerBankImpl;
 import de.mossgrabers.reaper.framework.daw.ModelImpl;
 import de.mossgrabers.reaper.framework.daw.ParameterBankImpl;
 import de.mossgrabers.reaper.framework.daw.ProjectImpl;
+import de.mossgrabers.reaper.framework.daw.SceneBankImpl;
 import de.mossgrabers.reaper.framework.daw.TrackBankImpl;
 import de.mossgrabers.reaper.framework.daw.TransportImpl;
 import de.mossgrabers.reaper.framework.daw.data.ItemImpl;
 import de.mossgrabers.reaper.framework.daw.data.MarkerImpl;
 import de.mossgrabers.reaper.framework.daw.data.MasterTrackImpl;
 import de.mossgrabers.reaper.framework.daw.data.ParameterImpl;
+import de.mossgrabers.reaper.framework.daw.data.SceneImpl;
 import de.mossgrabers.reaper.framework.daw.data.SendImpl;
 import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
 
 import java.util.Collections;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 
 /**
@@ -137,6 +143,10 @@ public class MessageParser
 
             case "marker":
                 this.parseMarker (parts, value);
+                break;
+
+            case "scene":
+                this.parseScene (parts, value);
                 break;
 
             case "quantize":
@@ -581,31 +591,93 @@ public class MessageParser
     }
 
 
+    private void parseScene (final Queue<String> parts, final String value)
+    {
+        for (final ITrackBank tb: ((ModelImpl) this.model).getTrackBanks ())
+        {
+            final Queue<String> partsCopy = new LinkedBlockingDeque<> (parts);
+            final ISceneBank sceneBank = tb.getSceneBank ();
+            final String part = partsCopy.poll ();
+            try
+            {
+                final int index = Integer.parseInt (part);
+                this.parseSceneValue (sceneBank.getItem (index), partsCopy, value);
+            }
+            catch (final NumberFormatException ex)
+            {
+                switch (part)
+                {
+                    // The number of tracks
+                    case "count":
+                        ((SceneBankImpl) sceneBank).setSceneCount (Integer.parseInt (value));
+                        break;
+
+                    default:
+                        this.host.error ("Unhandled Scene command: " + part);
+                        return;
+                }
+            }
+        }
+    }
+
+
     private void parseMarkerValue (final IMarker marker, final Queue<String> parts, final String value)
     {
         final String command = parts.poll ();
+        final MarkerImpl markerImpl = (MarkerImpl) marker;
         switch (command)
         {
             case "exists":
-                ((MarkerImpl) marker).setExists (Double.parseDouble (value) > 0);
+                markerImpl.setExists (Double.parseDouble (value) > 0);
                 break;
 
             case "number":
-                ((MarkerImpl) marker).setPosition (Integer.parseInt (value));
+                markerImpl.setPosition (Integer.parseInt (value));
                 break;
 
             case "name":
-                ((MarkerImpl) marker).setName (value);
+                markerImpl.setName (value);
                 break;
 
             case "color":
                 final double [] color = ((ModelImpl) this.model).parseColor (value);
                 if (color != null)
-                    ((MarkerImpl) marker).setColorState (color);
+                    markerImpl.setColorState (color);
                 break;
 
             default:
                 this.host.error ("Unhandled Marker Parameter: " + command);
+                break;
+        }
+    }
+
+
+    private void parseSceneValue (final IScene scene, final Queue<String> parts, final String value)
+    {
+        final String command = parts.poll ();
+        final SceneImpl sceneImpl = (SceneImpl) scene;
+        switch (command)
+        {
+            case "exists":
+                sceneImpl.setExists (Double.parseDouble (value) > 0);
+                break;
+
+            case "number":
+                sceneImpl.setPosition (Integer.parseInt (value));
+                break;
+
+            case "name":
+                sceneImpl.setName (value);
+                break;
+
+            case "color":
+                final double [] color = ((ModelImpl) this.model).parseColor (value);
+                if (color != null)
+                    sceneImpl.setColor (color[0], color[1], color[2]);
+                break;
+
+            default:
+                this.host.error ("Unhandled Scene Parameter: " + command);
                 break;
         }
     }

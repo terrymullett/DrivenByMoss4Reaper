@@ -30,7 +30,8 @@ import java.util.List;
  */
 public class ModelImpl extends AbstractModel
 {
-    private MessageSender sender;
+    private final MessageSender    sender;
+    private final List<ITrackBank> trackBanks = new ArrayList<> ();
 
 
     /**
@@ -55,6 +56,7 @@ public class ModelImpl extends AbstractModel
         final int numScenes = modelSetup.getNumScenes ();
         final int numSends = modelSetup.getNumSends ();
         this.trackBank = new TrackBankImpl (host, sender, valueChanger, numTracks, numScenes, numSends, modelSetup.hasFlatTrackList ());
+        this.trackBanks.add (this.trackBank);
         this.effectTrackBank = null;
         this.masterTrack = new MasterTrackImpl (host, sender, valueChanger, numSends);
 
@@ -88,7 +90,9 @@ public class ModelImpl extends AbstractModel
     @Override
     public ITrackBank createSceneViewTrackBank (final int numTracks, final int numScenes)
     {
-        return new TrackBankImpl (this.host, this.sender, this.valueChanger, numTracks, numScenes, this.modelSetup.getNumSends (), true);
+        final TrackBankImpl tb = new TrackBankImpl (this.host, this.sender, this.valueChanger, numTracks, numScenes, this.modelSetup.getNumSends (), true);
+        this.trackBanks.add (tb);
+        return tb;
     }
 
 
@@ -309,5 +313,16 @@ public class ModelImpl extends AbstractModel
             Double.parseDouble (values[1]) / 255.0,
             Double.parseDouble (values[2]) / 255.0
         };
+    }
+
+
+    /**
+     * Get all track banks.
+     *
+     * @return The track banks
+     */
+    public List<ITrackBank> getTrackBanks ()
+    {
+        return this.trackBanks;
     }
 }
