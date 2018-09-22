@@ -1,5 +1,14 @@
+3.01
+- Fixed: Tracks without a name did not show up.
+- Fixed: New clip did sometimes not work.
+- Fixed: Notes in Sequencer were not updated when clip was deselected and selected again.
+
 3.00
 - New: Replaced the Reaper EEL backend with a C++ implementation.
+- New: Support for clips
+- New: Support for scenes
+- New: Support for markers
+- New: Support for sequencers
 
 2.10
 - New: If supported by the Java/OS platform the application is run as a tray icon.

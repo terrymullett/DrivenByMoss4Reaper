@@ -45,7 +45,7 @@ installDist {
                 include(name: '**.jar')
             }
         }
-        String zipFileName = 'build/DrivenByMoss-' + version + '.zip'
+        String zipFileName = 'build/DrivenByMoss4Reaper-' + version + '.zip'
         ant.zip (destfile: zipFileName, basedir: destinationDir)
     }
 }

@@ -49,8 +49,17 @@ public class SlotBankImpl extends AbstractBankImpl<ISlot> implements ISlotBank
     @Override
     public ISlot getSelectedItem ()
     {
-        // Not supported but provide one to support e.g. clip duplication
-        return this.items.get (0);
+        if (this.items.isEmpty ())
+            return null;
+
+        for (int i = 0; i < this.getPageSize (); i++)
+        {
+            final ISlot slot = this.getItem (i);
+            if (slot.isSelected ())
+                return slot;
+        }
+
+        return null;
     }
 
 
@@ -68,7 +77,7 @@ public class SlotBankImpl extends AbstractBankImpl<ISlot> implements ISlotBank
     {
         // There are no slots in Reaper but to make it possible to create a midi item on a track
         // we return a fake slot.
-        return this.items.get (0);
+        return this.emptySlot;
     }
 
 

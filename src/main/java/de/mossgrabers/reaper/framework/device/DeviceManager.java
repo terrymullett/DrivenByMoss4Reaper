@@ -42,8 +42,8 @@ public class DeviceManager
     private static final Set<String>     NON_CATEGORIES  = new HashSet<> ();
 
     private final List<Device>           devices         = new ArrayList<> ();
-    private final Set<String>            categories      = new TreeSet<> ();
-    private final Set<String>            vendors         = new TreeSet<> ();
+    private final List<String>           categories      = new ArrayList<> ();
+    private final List<String>           vendors         = new ArrayList<> ();
     private final List<DeviceCollection> collections     = new ArrayList<> ();
 
     static
@@ -231,12 +231,18 @@ public class DeviceManager
             if (iniFiles.isVstPresent ())
                 this.parseDevicesFile (iniFiles.getIniVstPlugins64 ());
 
+            final Set<String> categoriesSet = new TreeSet<> ();
+            final Set<String> vendorsSet = new TreeSet<> ();
+
             // Load categories and vendor information
             if (iniFiles.isFxTagsPresent ())
-                this.parseFXTagsFile (iniFiles.getIniFxTags ());
+                this.parseFXTagsFile (iniFiles.getIniFxTags (), categoriesSet, vendorsSet);
 
             // Load JS devices
-            this.loadJSDevices (iniFiles.getIniPath () + File.separator + "reaper-jsfx.ini", logModel);
+            this.loadJSDevices (iniFiles.getIniPath () + File.separator + "reaper-jsfx.ini", logModel, categoriesSet, vendorsSet);
+
+            this.categories.addAll (categoriesSet);
+            this.vendors.addAll (vendorsSet);
 
             // Load collection filters
             if (iniFiles.isFxFoldersPresent ())
@@ -252,7 +258,7 @@ public class DeviceManager
      *
      * @return The set with all categories
      */
-    public Set<String> getCategories ()
+    public List<String> getCategories ()
     {
         synchronized (this.devices)
         {
@@ -266,7 +272,7 @@ public class DeviceManager
      *
      * @return The set with all vendors
      */
-    public Set<String> getVendors ()
+    public List<String> getVendors ()
     {
         synchronized (this.devices)
         {
@@ -330,8 +336,10 @@ public class DeviceManager
      * Parses the FX tags file.
      *
      * @param iniFile The ini file from which to parse
+     * @param categoriesSet The categories set
+     * @param vendorsSet The vendors set
      */
-    private void parseFXTagsFile (final IniEditor iniFile)
+    private void parseFXTagsFile (final IniEditor iniFile, final Set<String> categoriesSet, final Set<String> vendorsSet)
     {
         for (final Device d: this.devices)
         {
@@ -340,14 +348,14 @@ public class DeviceManager
             {
                 final List<String> asList = Arrays.asList (categoriesStr.split ("\\|"));
                 d.setCategories (asList);
-                this.categories.addAll (asList);
+                categoriesSet.addAll (asList);
             }
 
             final String vendor = iniFile.get ("developer", d.getModule ());
             if (vendor == null)
                 continue;
             d.setVendor (vendor);
-            this.vendors.add (vendor);
+            vendorsSet.add (vendor);
         }
     }
 
@@ -458,14 +466,16 @@ public class DeviceManager
      *
      * @param filename The file from which to parse
      * @param logModel The host for logging
+     * @param categoriesSet The categories set
+     * @param vendorsSet The vendors set
      */
-    private void loadJSDevices (final String filename, final LogModel logModel)
+    private void loadJSDevices (final String filename, final LogModel logModel, final Set<String> categoriesSet, final Set<String> vendorsSet)
     {
         final Path path = Paths.get (filename);
         try
         {
             if (path.toFile ().exists ())
-                Files.readAllLines (path, Charset.forName ("UTF-8")).forEach (this::parseJSDevice);
+                Files.readAllLines (path, Charset.forName ("UTF-8")).forEach (line -> this.parseJSDevice (line, categoriesSet, vendorsSet));
             else
                 logModel.info (filename + " not present, skipped loading.");
         }
@@ -480,8 +490,10 @@ public class DeviceManager
      * Parses the information about a JS plugin.
      *
      * @param line The line to parse
+     * @param categoriesSet The categories set
+     * @param vendorsSet The vendors set
      */
-    private void parseJSDevice (final String line)
+    private void parseJSDevice (final String line, final Set<String> categoriesSet, final Set<String> vendorsSet)
     {
         final Matcher matcher = PATTERN_JSFX.matcher (line);
         if (!matcher.matches ())
@@ -498,12 +510,12 @@ public class DeviceManager
         if (NON_CATEGORIES.contains (o.toLowerCase ()))
         {
             device.setVendor (o);
-            this.vendors.add (o);
+            vendorsSet.add (o);
         }
         else
         {
             device.setCategories (Collections.singleton (o));
-            this.categories.add (o);
+            categoriesSet.add (o);
         }
     }
 }

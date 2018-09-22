@@ -6,8 +6,6 @@ package de.mossgrabers.reaper.framework.device.column;
 
 import de.mossgrabers.reaper.framework.device.DeviceManager;
 
-import java.util.ArrayList;
-
 
 /**
  * A filter column for device categories.
@@ -27,7 +25,7 @@ public class DeviceCategoryFilterColumn extends BaseColumn
         super (columnIndex, "Category", numFilterColumnEntries);
 
         for (int i = 0; i < numFilterColumnEntries; i++)
-            this.items[i] = new DeviceVendorBrowserColumnItem (i);
+            this.items[i] = new DeviceCategoryBrowserColumnItem (i);
     }
 
 
@@ -39,14 +37,14 @@ public class DeviceCategoryFilterColumn extends BaseColumn
     }
 
     /** An item of the column. */
-    private class DeviceVendorBrowserColumnItem extends BaseColumnItem
+    private class DeviceCategoryBrowserColumnItem extends BaseColumnItem
     {
         /**
          * Constructor.
          *
          * @param index The index of the item
          */
-        public DeviceVendorBrowserColumnItem (final int index)
+        public DeviceCategoryBrowserColumnItem (final int index)
         {
             super (index - 1);
         }
@@ -56,10 +54,9 @@ public class DeviceCategoryFilterColumn extends BaseColumn
         @Override
         public String getName ()
         {
-            final int index = this.getIndex ();
-            if (index < 0)
+            if (this.index < 0)
                 return WILDCARD;
-            return index < DeviceCategoryFilterColumn.this.getMaxNumItems () ? new ArrayList<> (DeviceManager.get ().getCategories ()).get (index) : "";
+            return this.index < DeviceCategoryFilterColumn.this.getMaxNumItems () ? DeviceManager.get ().getCategories ().get (this.index) : "";
         }
 
 
@@ -67,7 +64,7 @@ public class DeviceCategoryFilterColumn extends BaseColumn
         @Override
         public boolean isSelected ()
         {
-            return this.getIndex () + 1 == DeviceCategoryFilterColumn.this.selectedRow;
+            return this.index + 1 == DeviceCategoryFilterColumn.this.selectedRow;
         }
 
 
@@ -76,10 +73,9 @@ public class DeviceCategoryFilterColumn extends BaseColumn
         public int getHitCount ()
         {
             final DeviceManager deviceManager = DeviceManager.get ();
-            final int index = this.getIndex ();
-            if (index < 0)
+            if (this.index < 0)
                 return deviceManager.getNumDevices ();
-            return index < DeviceCategoryFilterColumn.this.getMaxNumItems () ? deviceManager.filterByCategory (new ArrayList<> (deviceManager.getCategories ()).get (index)).size () : 0;
+            return this.index < DeviceCategoryFilterColumn.this.getMaxNumItems () ? deviceManager.filterByCategory (deviceManager.getCategories ().get (this.index)).size () : 0;
         }
     }
 }

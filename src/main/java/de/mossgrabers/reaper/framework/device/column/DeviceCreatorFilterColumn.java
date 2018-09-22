@@ -6,8 +6,6 @@ package de.mossgrabers.reaper.framework.device.column;
 
 import de.mossgrabers.reaper.framework.device.DeviceManager;
 
-import java.util.ArrayList;
-
 
 /**
  * A filter column for device vendors.
@@ -58,7 +56,7 @@ public class DeviceCreatorFilterColumn extends BaseColumn
         {
             if (this.index < 0)
                 return WILDCARD;
-            return this.index < DeviceCreatorFilterColumn.this.getMaxNumItems () ? new ArrayList<> (DeviceManager.get ().getVendors ()).get (this.index) : "";
+            return this.index < DeviceCreatorFilterColumn.this.getMaxNumItems () ? DeviceManager.get ().getVendors ().get (this.index) : "";
         }
 
 
@@ -77,7 +75,7 @@ public class DeviceCreatorFilterColumn extends BaseColumn
             final DeviceManager deviceManager = DeviceManager.get ();
             if (this.index < 0)
                 return deviceManager.getNumDevices ();
-            return this.index < DeviceCreatorFilterColumn.this.getMaxNumItems () ? deviceManager.filterByVendor (new ArrayList<> (deviceManager.getVendors ()).get (this.index)).size () : 0;
+            return this.index < DeviceCreatorFilterColumn.this.getMaxNumItems () ? deviceManager.filterByVendor (deviceManager.getVendors ().get (this.index)).size () : 0;
         }
     }
 }

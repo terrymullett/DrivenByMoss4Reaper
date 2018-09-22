@@ -41,8 +41,8 @@
             <key>CFBundleExecutable</key>
             ...
           Adjust the version number to your installation.
-          NOTE: If you update Reaper this file will be overwritten! You have to 
-          configure it again.
+       NOTE: If you update Reaper this file will be overwritten! You have to 
+       configure it again.
     
     c) Linux
        On Linux you have several options to configure environment variables. 
