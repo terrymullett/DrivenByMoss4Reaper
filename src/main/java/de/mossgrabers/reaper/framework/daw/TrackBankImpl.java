@@ -194,7 +194,9 @@ public class TrackBankImpl extends AbstractTrackBankImpl
 
         this.recalcTree ();
         final List<TreeNode<TrackImpl>> children = this.currentFolder.getChildren ();
-        return index < children.size () ? children.get (index).getData () : this.emptyTrack;
+
+        final int id = this.bankOffset + index;
+        return id < children.size () ? children.get (id).getData () : this.emptyTrack;
     }
 
 

@@ -1,3 +1,6 @@
+3.02
+- Fixed: Scrolling tracks on Push 1/2 was broken when folders are in the project.
+
 3.01
 - Fixed: Tracks without a name did not show up.
 - Fixed: New clip did sometimes not work.
