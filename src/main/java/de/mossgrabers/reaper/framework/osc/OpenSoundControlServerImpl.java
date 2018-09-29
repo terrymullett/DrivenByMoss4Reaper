@@ -17,13 +17,13 @@ import java.util.List;
 
 
 /**
- * Implementation of a OSC server connection.
+ * Implementation of an OSC server connection.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
 public class OpenSoundControlServerImpl implements IOpenSoundControlServer
 {
-    private OSCPortOut connection;
+    private final OSCPortOut connection;
 
 
     /**

@@ -41,8 +41,15 @@
             <key>CFBundleExecutable</key>
             ...
           Adjust the version number to your installation.
+
        NOTE: If you update Reaper this file will be overwritten! You have to 
        configure it again.
+
+       If you cannot make this work, run this in terminal (replace with your JVM path):
+         launchctl setenv JAVA_HOME /Library/Java/JavaVirtualMachines/jdk-10.0.2.jdk/Contents/Home
+       You can then enter 'echo $JAVA_HOME' in terminal to confirm it's registered.
+       NOTE: If you restart your system this JAVA_HOME Environmentall variable will be lost and 
+       you have to re-run when next starting MacOS. But you can put that in a batch file as well.
     
     c) Linux
        On Linux you have several options to configure environment variables. 
@@ -85,3 +92,6 @@
       Select a device and click the configure button to change its settings.
       Your setup will automatically be loaded if you run Reaper and shutdown when 
       you close Reaper.
+   g) Make sure that all MIDI inputs and outputs you configure in DrivenByMoss are
+      fully disabled in the Reaper MIDI settings! Otherwise you will have strange 
+      effects.
