@@ -120,15 +120,6 @@ class MidiInputImpl implements IMidiInput
 
     /** {@inheritDoc} */
     @Override
-    public void toggleRepeat ()
-    {
-        // TODO Reaper We need the current track
-        this.sender.sendOSC ("/track/1/noterepeat", Integer.valueOf (1));
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public void sendRawMidiEvent (final int status, final int data1, final int data2)
     {
         final int code = status & 0xF0;

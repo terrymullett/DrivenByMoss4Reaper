@@ -371,11 +371,11 @@ public class MessageParser
                 break;
 
             case "repeatActive":
-                track.setInternalRepeat (Double.parseDouble (value) > 0);
+                track.setInternalNoteRepeat (Double.parseDouble (value) > 0);
                 break;
 
             case "noterepeatlength":
-                track.setInternalRepeatNoteLength (Integer.parseInt (value));
+                track.setInternalNoteRepeatLength (Double.parseDouble (value));
                 break;
 
             default:

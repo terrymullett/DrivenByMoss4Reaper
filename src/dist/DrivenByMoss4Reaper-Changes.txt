@@ -1,5 +1,8 @@
 3.10 (unreleased)
-- New: Integrated DrivenByMoss 3.20
+- New: Integrated DrivenByMoss 3.20.
+- New: Repeat can be enabled (this uses an Arp in the channel insert). Long press Repeat button to set the speed.
+- New: Using 'New' to create a clip does not start recording anymore for easier use with sequencers.
+- Fixed: Creating a new clip did not set the selection state correctly.
 
 3.02
 - Fixed: Scrolling tracks on Push 1/2 was broken when folders are in the project.
