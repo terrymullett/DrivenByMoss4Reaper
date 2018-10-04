@@ -1,4 +1,4 @@
-3.10 (unreleased)
+3.10
 - New: Integrated DrivenByMoss 3.20.
 - New: Repeat can be enabled (this uses an Arp in the channel insert). Long press Repeat button to set the speed.
 - New: Using 'New' to create a clip does not start recording anymore for easier use with sequencers.
