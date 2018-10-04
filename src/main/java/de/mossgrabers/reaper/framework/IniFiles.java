@@ -32,7 +32,6 @@ public class IniFiles
 
     private String              iniPath;
 
-    private boolean             isMainPresent;
     private boolean             isVstPresent;
     private boolean             isFxTagsPresent;
     private boolean             isFxFoldersPresent;
@@ -75,7 +74,7 @@ public class IniFiles
 
         synchronized (this.iniReaperMain)
         {
-            this.isMainPresent = loadINIFile (iniPath + File.separator + REAPER_MAIN, this.iniReaperMain, logModel);
+            loadINIFile (iniPath + File.separator + REAPER_MAIN, this.iniReaperMain, logModel);
         }
 
         this.isVstPresent = loadINIFile (iniPath + File.separator + VST_PLUGINS_64, this.iniVstPlugins64, logModel);
@@ -114,17 +113,6 @@ public class IniFiles
     public IniEditor getIniFxFolders ()
     {
         return this.iniFxFolders;
-    }
-
-
-    /**
-     * Is the main Reaper config file present?
-     *
-     * @return True if successfully loaded
-     */
-    public boolean isMainPresent ()
-    {
-        return this.isMainPresent;
     }
 
 

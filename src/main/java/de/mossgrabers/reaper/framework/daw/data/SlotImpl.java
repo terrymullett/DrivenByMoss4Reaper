@@ -111,7 +111,8 @@ public class SlotImpl extends ItemImpl implements ISlot
     @Override
     public void select ()
     {
-        this.sendTrackClipOSC ("select");
+        if (this.getIndex () >= 0)
+            this.sendTrackClipOSC ("select");
     }
 
 
@@ -119,7 +120,8 @@ public class SlotImpl extends ItemImpl implements ISlot
     @Override
     public void launch ()
     {
-        this.sendTrackClipOSC ("launch");
+        if (this.getIndex () >= 0)
+            this.sendTrackClipOSC ("launch");
     }
 
 
@@ -127,7 +129,8 @@ public class SlotImpl extends ItemImpl implements ISlot
     @Override
     public void record ()
     {
-        this.sendTrackClipOSC ("record");
+        if (this.getIndex () >= 0)
+            this.sendTrackClipOSC ("record");
     }
 
 
@@ -143,7 +146,8 @@ public class SlotImpl extends ItemImpl implements ISlot
     @Override
     public void remove ()
     {
-        this.sendTrackClipOSC ("remove");
+        if (this.getIndex () >= 0)
+            this.sendTrackClipOSC ("remove");
     }
 
 

@@ -44,9 +44,8 @@ public class TrackImpl extends ChannelImpl implements ITrack
     private boolean            autoMonitor;
     private String             automation       = AUTOMATION_TRIM;
     private final ISlotBank    slotBank;
-
-    private boolean            isRepeat;
-    private int                repeatNoteLength;
+    private boolean            isNoteRepeat;
+    private double             noteRepeatLength;
     private int                numTracks;
     private int                depth;
 
@@ -151,6 +150,38 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public boolean isAutoMonitor ()
     {
         return this.doesExist () && this.autoMonitor;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void toggleNoteRepeat ()
+    {
+        this.sendTrackOSC ("noterepeat", Integer.valueOf (this.isNoteRepeat ? 0 : 1));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isNoteRepeat ()
+    {
+        return this.isNoteRepeat;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setNoteRepeatLength (double length)
+    {
+        this.sendTrackOSC ("noterepeatlength", Double.valueOf (length));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public double getNoteRepeatLength ()
+    {
+        return this.noteRepeatLength;
     }
 
 
@@ -267,20 +298,9 @@ public class TrackImpl extends ChannelImpl implements ITrack
      *
      * @param enable True if enabled
      */
-    public void setInternalRepeat (final boolean enable)
+    public void setInternalNoteRepeat (final boolean enable)
     {
-        this.isRepeat = enable;
-    }
-
-
-    /**
-     * Get if repeat is enabled.
-     *
-     * @return True if repeat is enabled.
-     */
-    public boolean isRepeat ()
-    {
-        return this.isRepeat;
+        this.isNoteRepeat = enable;
     }
 
 
@@ -289,20 +309,9 @@ public class TrackImpl extends ChannelImpl implements ITrack
      *
      * @param length The length
      */
-    public void setInternalRepeatNoteLength (final int length)
+    public void setInternalNoteRepeatLength (final double length)
     {
-        this.repeatNoteLength = length;
-    }
-
-
-    /**
-     * Get the note length for note repeat.
-     *
-     * @return The length
-     */
-    public int getRepeatNoteLength ()
-    {
-        return this.repeatNoteLength;
+        this.noteRepeatLength = length;
     }
 
 

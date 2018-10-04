@@ -79,8 +79,9 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
             this.sendTrackOSC (selectedTrack.getPosition () + "/select", Integer.valueOf (0));
 
         // Select item on new page
-        final int selIndex = Math.min (this.getItemCount () - 1, this.bankOffset + this.pageSize - 1);
-        this.sendTrackOSC (selIndex + "/select", Integer.valueOf (1));
+        final int selIndex = this.pageSize - 1;
+        final int selPos = this.getItem (selIndex).getPosition ();
+        this.sendTrackOSC (selPos + "/select", Integer.valueOf (1));
     }
 
 
@@ -97,7 +98,8 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
             this.sendTrackOSC (selectedTrack.getPosition () + "/select", Integer.valueOf (0));
 
         // Select item on new page
-        this.sendTrackOSC (this.bankOffset + "/select", Integer.valueOf (1));
+        final int selPos = this.getItem (0).getPosition ();
+        this.sendTrackOSC (selPos + "/select", Integer.valueOf (1));
     }
 
 
