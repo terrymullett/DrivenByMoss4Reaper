@@ -47,7 +47,7 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
         this.numSends = numSends;
 
         this.emptyTrack = new TrackImpl (host, sender, valueChanger, -1, numTracks, numSends, numScenes);
-        this.sceneBank = new SceneBankImpl (host, sender, this.numScenes);
+        this.sceneBank = new SceneBankImpl (host, sender, this, this.numScenes);
     }
 
 

@@ -18,8 +18,9 @@ import de.mossgrabers.reaper.framework.daw.data.SceneImpl;
  */
 public class SceneBankImpl extends AbstractBankImpl<IScene> implements ISceneBank
 {
-    protected final IScene emptyScene;
-    protected int          bankOffset = 0;
+    private final AbstractTrackBankImpl trackBank;
+    private final IScene                emptyScene;
+    private int                         bankOffset = 0;
 
 
     /**
@@ -27,11 +28,15 @@ public class SceneBankImpl extends AbstractBankImpl<IScene> implements ISceneBan
      *
      * @param host The DAW host
      * @param sender The OSC sender
+     * @param trackBank The track bank to which the scene bank belongs
      * @param numScenes The number of scenes in the page of the bank
      */
-    public SceneBankImpl (final IHost host, final MessageSender sender, final int numScenes)
+    public SceneBankImpl (final IHost host, final MessageSender sender, final AbstractTrackBankImpl trackBank, final int numScenes)
     {
         super (host, sender, null, numScenes);
+
+        this.trackBank = trackBank;
+
         this.initItems ();
 
         this.emptyScene = new SceneImpl (host, sender, -1);
@@ -115,6 +120,26 @@ public class SceneBankImpl extends AbstractBankImpl<IScene> implements ISceneBan
             }
             return (SceneImpl) this.items.get (position);
         }
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public int getItemCount ()
+    {
+        int maxCount = this.itemCount;
+
+        // Since scenes (Reaper regions) are not related to the number of clips on a track we need
+        // to find the maximum
+
+        final int trackCount = this.trackBank.getItemCount ();
+        for (int position = 0; position < trackCount; position++)
+        {
+            final int size = this.trackBank.getTrack (position).getSlotBank ().getItemCount ();
+            if (size > maxCount)
+                maxCount = size;
+        }
+        return maxCount;
     }
 
 

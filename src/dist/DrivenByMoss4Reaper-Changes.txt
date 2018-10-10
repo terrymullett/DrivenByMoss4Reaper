@@ -1,4 +1,8 @@
-3.10
+3.21
+- Fixed: Push 2: Clip piano roll: Note texts could not be seen when notes were black.
+- Fixed: Scrolling of clips did not work.
+
+3.20
 - New: Integrated DrivenByMoss 3.20.
 - New: Repeat can be enabled (this uses an Arp in the channel insert). Long press Repeat button to set the speed.
 - New: Using 'New' to create a clip does not start recording anymore for easier use with sequencers.
