@@ -248,6 +248,21 @@ public class ModelImpl extends AbstractModel
 
 
     /**
+     * Set clip loop source value.
+     *
+     * @param isLoopEnabled True if loop source is enabled
+     */
+    public void setCursorClipLoopIsEnabled (final boolean isLoopEnabled)
+    {
+        synchronized (this.cursorClips)
+        {
+            for (final IClip clip: this.cursorClips.values ())
+                ((CursorClipImpl) clip).setLoopEnabledState (isLoopEnabled);
+        }
+    }
+
+
+    /**
      * Set all clips.
      *
      * @param clipsStr The encoded clips formatted like

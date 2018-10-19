@@ -707,6 +707,10 @@ public class MessageParser
                     modelImpl.setCursorClipColorValue (color);
                 break;
 
+            case "loop":
+                modelImpl.setCursorClipLoopIsEnabled (Double.parseDouble (value) > 0);
+                break;
+
             case "notes":
                 modelImpl.setCursorClipNotes (value);
                 break;

@@ -30,8 +30,7 @@ public class TestKontrol2USB
                 throw new LibUsbException ("Unable to initialize libusb.", result);
 
             // Print LibUsb errors and warnings
-            LibUsb.setDebug (null, LibUsb.LOG_LEVEL_WARNING);
-
+            LibUsb.setDebug (null, LibUsb.LOG_LEVEL_DEBUG);
         }
         catch (final LibUsbException ex)
         {
@@ -122,6 +121,12 @@ public class TestKontrol2USB
                     // Continue, maybe there is a working device
                     continue;
                 }
+
+                byte bDeviceClass = descriptor.bDeviceClass ();
+                System.out.println (bDeviceClass);
+
+                System.out.println ("0x" + Integer.toHexString (Short.toUnsignedInt (descriptor.idVendor ())) + " / 0x" + Integer.toHexString (Short.toUnsignedInt (descriptor.idProduct ())));
+
                 if (descriptor.idVendor () == vendorId && descriptor.idProduct () == productId)
                 {
                     final DeviceHandle handle = new DeviceHandle ();

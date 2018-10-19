@@ -1,3 +1,7 @@
+3.31
+- New: Clip Loop parameter turns on/off the media items "Loop item source" parameter.
+- Fixed: Recording Track Automation did not work.
+
 3.30
 - New: Integrated DrivenByMoss 3.30.
 - Fixed: Push 2: Clip piano roll: Note texts could not be seen when notes were black.

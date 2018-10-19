@@ -24,13 +24,16 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     private IValueChanger   valueChanger;
     private double          clipStart    = -1;
     private double          clipEnd      = -1;
-    private double          playPosition = -1;
+    private boolean         isLooped     = false;
+
     private final double [] color        = new double []
     {
         0,
         0,
         0
     };
+
+    private double          playPosition = -1;
     private int             numSteps;
     private int             numRows;
     private double          stepLength;
@@ -229,8 +232,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public boolean isLoopEnabled ()
     {
-        // No looping of clips in Reaper
-        return false;
+        return this.isLooped;
     }
 
 
@@ -238,7 +240,18 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void setLoopEnabled (final boolean enable)
     {
-        // No looping of clips in Reaper
+        this.sendClipOSC ("loop", Boolean.valueOf (enable));
+    }
+
+
+    /**
+     * Set the loop enabled state.
+     *
+     * @param isLoopEnabled True to enable
+     */
+    public void setLoopEnabledState (final boolean isLoopEnabled)
+    {
+        this.isLooped = isLoopEnabled;
     }
 
 
