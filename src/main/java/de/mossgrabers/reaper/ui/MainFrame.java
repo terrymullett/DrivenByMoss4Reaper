@@ -137,8 +137,7 @@ public class MainFrame extends JFrame implements MessageSender
                 throw new LibUsbException ("Unable to initialize libusb.", result);
 
             // Print LibUsb errors and warnings
-            LibUsb.setDebug (null, LibUsb.LOG_LEVEL_WARNING);
-
+            LibUsb.setOption (null, LibUsb.OPTION_LOG_LEVEL, LibUsb.LOG_LEVEL_WARNING);
         }
         catch (final LibUsbException ex)
         {
