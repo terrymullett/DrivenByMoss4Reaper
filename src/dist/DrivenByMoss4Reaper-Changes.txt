@@ -1,3 +1,6 @@
+3.32 (unreleased)
+- Integrated DrivenByMoss 3.21
+
 3.31
 - New: Clip Loop parameter turns on/off the media items "Loop item source" parameter.
 - Fixed: Recording Track Automation did not work.

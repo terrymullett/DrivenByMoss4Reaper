@@ -11,6 +11,7 @@ import de.mossgrabers.controller.generic.GenericFlexiControllerDefinition;
 import de.mossgrabers.controller.kontrol.osc.mkii.KontrolOSCControllerDefinition;
 import de.mossgrabers.controller.kontrol.usb.mki.Kontrol1ControllerDefinition;
 import de.mossgrabers.controller.launchpad.LaunchpadControllerDefinition;
+import de.mossgrabers.controller.maschine.mikro.mk3.MaschineMikroMk3ControllerDefinition;
 import de.mossgrabers.controller.mcu.MCUControllerDefinition;
 import de.mossgrabers.controller.osc.OSCControllerDefinition;
 import de.mossgrabers.controller.push.PushControllerDefinition;
@@ -30,6 +31,7 @@ import de.mossgrabers.reaper.controller.kontrol.usb.mki.KontrolMkIS61ControllerI
 import de.mossgrabers.reaper.controller.kontrol.usb.mki.KontrolMkIS88ControllerInstance;
 import de.mossgrabers.reaper.controller.launchpad.LaunchpadMkIIControllerInstance;
 import de.mossgrabers.reaper.controller.launchpad.LaunchpadProControllerInstance;
+import de.mossgrabers.reaper.controller.maschine.mikro.mk3.MaschineMikroMk3ControllerInstance;
 import de.mossgrabers.reaper.controller.mcu.MCU1ControllerInstance;
 import de.mossgrabers.reaper.controller.mcu.MCU2ControllerInstance;
 import de.mossgrabers.reaper.controller.mcu.MCU3ControllerInstance;
@@ -73,12 +75,10 @@ public class ControllerInstanceManager
         KontrolMkIS49ControllerInstance.class,
         KontrolMkIS61ControllerInstance.class,
         KontrolMkIS88ControllerInstance.class,
-        // TODO Reaper Not yet implemented at all
-        // KontrolMkIIS49ControllerInstance.class,
-        // KontrolMkIIS61ControllerInstance.class,
         KontrolMkIIControllerInstance.class,
         LaunchpadMkIIControllerInstance.class,
         LaunchpadProControllerInstance.class,
+        MaschineMikroMk3ControllerInstance.class,
         MCU1ControllerInstance.class,
         MCU2ControllerInstance.class,
         MCU3ControllerInstance.class,
@@ -102,12 +102,10 @@ public class ControllerInstanceManager
         new Kontrol1ControllerDefinition (1),
         new Kontrol1ControllerDefinition (2),
         new Kontrol1ControllerDefinition (3),
-        // TODO Reaper Not yet implemented at all
-        // new Kontrol2ControllerDefinition (0),
-        // new Kontrol2ControllerDefinition (1),
         new KontrolOSCControllerDefinition (),
         new LaunchpadControllerDefinition (true),
         new LaunchpadControllerDefinition (false),
+        new MaschineMikroMk3ControllerDefinition (),
         new MCUControllerDefinition (0),
         new MCUControllerDefinition (1),
         new MCUControllerDefinition (2),
