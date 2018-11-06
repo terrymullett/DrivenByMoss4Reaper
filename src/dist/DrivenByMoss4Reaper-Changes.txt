@@ -1,5 +1,11 @@
-3.32 (unreleased)
-- Integrated DrivenByMoss 3.21
+4.00
+- Integrated DrivenByMoss 4.00
+    * Mackie MCU - Changes 2.63
+        - Fixed: Crash if Marker mode was selected and Assignment display was enabled.
+    * Native Instruments Komplete Kontrol 2 S49, S61 - Changes 1.20
+        - Fixed: Mute and Solo did not work on Hybrid tracks
+    * Maschine Mikro Mk3
+        - Initial release
 
 3.31
 - New: Clip Loop parameter turns on/off the media items "Loop item source" parameter.
