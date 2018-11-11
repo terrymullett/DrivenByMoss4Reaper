@@ -197,7 +197,7 @@ public class ModelImpl extends AbstractModel
         synchronized (this.cursorClips)
         {
             for (final IClip clip: this.cursorClips.values ())
-                ((CursorClipImpl) clip).setPlayStart (start);
+                ((CursorClipImpl) clip).setPlayStartIntern (start);
         }
     }
 
@@ -212,7 +212,7 @@ public class ModelImpl extends AbstractModel
         synchronized (this.cursorClips)
         {
             for (final IClip clip: this.cursorClips.values ())
-                ((CursorClipImpl) clip).setPlayEnd (end);
+                ((CursorClipImpl) clip).setPlayEndIntern (end);
         }
     }
 

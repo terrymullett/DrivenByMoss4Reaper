@@ -1,3 +1,15 @@
+4.01
+- Integrated DrivenByMoss 4.01
+    * Ableton Push / Push 2 11.01
+        - New: Push 2: You can now use Delete+Touch knob in the Setup mode to reset the values to its default.
+    * Open Sound Control (OSC) protocol 6.11
+        - Fixed: Changed midi channel range for /vkb_midi to 1-16 to be consistent to all other numberings, which start with 1. Furthermore, fixed the documentation which indicated 0-16.
+    * Novation Launchpad Pro & MkII 3.44
+        - Fixed: Flipped session view triggered the wrong clips
+        - Fixed: Temporary modes Rec Arm, Track Select, Mute, Solo and Stop Clip did not return to previous views.
+- Fixed: Setting sequencer "loops" was broken.
+- Fixed: Push 2: Changing values in Setup mode was buggy.
+
 4.00
 - Integrated DrivenByMoss 4.00
     * Mackie MCU - Changes 2.63

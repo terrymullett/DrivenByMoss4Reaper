@@ -112,6 +112,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void setPlayStart (final double start)
     {
         this.clipStart = start;
+        this.sendClipOSC ("start", Double.valueOf (this.clipStart));
         this.updateNoteData ();
     }
 
@@ -123,7 +124,6 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         if (this.clipStart == -1)
             return;
         this.setPlayStart (Math.max (0, this.clipStart + this.valueChanger.calcKnobSpeed (control, this.valueChanger.isSlow () ? 0.1 : 1)));
-        this.sendClipOSC ("start", Double.valueOf (this.clipStart));
     }
 
 
@@ -140,6 +140,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void setPlayEnd (final double end)
     {
         this.clipEnd = end;
+        this.sendClipOSC ("end", Double.valueOf (this.clipEnd));
         this.updateNoteData ();
     }
 
@@ -152,7 +153,6 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
             return;
         final double speed = this.valueChanger.calcKnobSpeed (control, this.valueChanger.isSlow () ? 0.1 : 1);
         this.setPlayEnd (Math.max (0, this.clipEnd + speed));
-        this.sendClipOSC ("end", Double.valueOf (this.clipEnd));
     }
 
 
@@ -160,10 +160,9 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void setPlayRange (final double start, final double end)
     {
-        this.setPlayStart (start);
-        this.setPlayEnd (end);
-        this.sendClipOSC ("start", Double.valueOf (this.clipStart));
-        this.sendClipOSC ("end", Double.valueOf (this.clipEnd));
+        final double playStart = this.getPlayStart ();
+        this.setPlayStart (playStart + start);
+        this.setPlayEnd (playStart + end);
     }
 
 
@@ -192,7 +191,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void setLoopStart (final double start)
     {
-        this.setPlayStart (start);
+        this.setPlayStart (this.getPlayStart () + start);
     }
 
 
@@ -525,6 +524,30 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void setPlayPosition (final double playPosition)
     {
         this.playPosition = playPosition;
+    }
+
+
+    /**
+     * 
+     *
+     * @param start
+     */
+    public void setPlayStartIntern (final double start)
+    {
+        this.clipStart = start;
+        this.updateNoteData ();
+    }
+
+
+    /**
+     * 
+     *
+     * @param end
+     */
+    public void setPlayEndIntern (final double end)
+    {
+        this.clipEnd = end;
+        this.updateNoteData ();
     }
 
 
