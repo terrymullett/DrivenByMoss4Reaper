@@ -1,4 +1,4 @@
-4.03 (unreleased)
+4.03
 - Integrated DrivenByMoss 4.03
     * Ableton Push / Push 2 - 11.03
         - Fixed: Fixed resetting of Push 2 display colors.
