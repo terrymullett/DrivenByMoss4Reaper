@@ -21,7 +21,7 @@ import java.awt.Window;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class KontrolMkIIControllerInstance extends AbstractControllerInstance
+public class KontrolMkIIOSCControllerInstance extends AbstractControllerInstance
 {
     /**
      * Constructor.
@@ -31,7 +31,7 @@ public class KontrolMkIIControllerInstance extends AbstractControllerInstance
      * @param sender The sender
      * @param iniFiles The INI configuration files
      */
-    public KontrolMkIIControllerInstance (final LogModel logModel, final Window window, final MessageSender sender, final IniFiles iniFiles)
+    public KontrolMkIIOSCControllerInstance (final LogModel logModel, final Window window, final MessageSender sender, final IniFiles iniFiles)
     {
         super (new KontrolOSCControllerDefinition (), logModel, window, sender, iniFiles);
     }

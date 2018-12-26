@@ -189,10 +189,11 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     @Override
     public ITrack getItem (final int index)
     {
+        this.recalcTree ();
+
         if (this.hasFlatTrackList)
             return super.getItem (index);
 
-        this.recalcTree ();
         final List<TreeNode<TrackImpl>> children = this.currentFolder.getChildren ();
 
         final int id = this.bankOffset + index;
@@ -204,10 +205,11 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     @Override
     public int getItemCount ()
     {
+        this.recalcTree ();
+
         if (this.hasFlatTrackList)
             return super.getItemCount ();
 
-        this.recalcTree ();
         return this.currentFolder.getChildren ().size ();
     }
 
@@ -217,9 +219,6 @@ public class TrackBankImpl extends AbstractTrackBankImpl
      */
     public void markDirty ()
     {
-        if (this.hasFlatTrackList)
-            return;
-
         synchronized (this.isDirty)
         {
             this.isDirty.set (true);
@@ -228,55 +227,60 @@ public class TrackBankImpl extends AbstractTrackBankImpl
 
 
     /**
-     * Recalculate the track tree.
+     * Recalculate the track tree (and the flat numbering).
      */
     public void recalcTree ()
     {
-        if (this.hasFlatTrackList)
-            return;
-
         synchronized (this.isDirty)
         {
             if (!this.isDirty.get ())
                 return;
 
-            final TreeNode<TrackImpl> newRoot = new TreeNode<> ();
-            this.currentFolder = null;
-
-            final List<TreeNode<TrackImpl>> hierarchy = new ArrayList<> ();
-            hierarchy.add (newRoot);
-
             synchronized (this.items)
             {
-                for (int i = 0; i < super.getItemCount (); i++)
+                if (this.hasFlatTrackList)
                 {
-                    final TrackImpl track = this.getTrack (i);
+                    for (int i = 0; i < super.getItemCount (); i++)
+                        this.getTrack (i).setIndex (i % this.pageSize);
+                }
+                else
+                {
+                    final TreeNode<TrackImpl> newRoot = new TreeNode<> ();
+                    this.currentFolder = null;
 
-                    final int depth = track.getDepth ();
+                    final List<TreeNode<TrackImpl>> hierarchy = new ArrayList<> ();
+                    hierarchy.add (newRoot);
 
-                    final TreeNode<TrackImpl> p = hierarchy.get (depth);
-                    final TreeNode<TrackImpl> child = p.addChild (track);
-                    final int childrenSize = p.getChildren ().size ();
-                    track.setIndex ((childrenSize - 1) % this.pageSize);
-
-                    final int index = depth + 1;
-                    if (index < hierarchy.size ())
-                        hierarchy.set (index, child);
-                    else
-                        hierarchy.add (index, child);
-
-                    if (track.isSelected ())
+                    for (int i = 0; i < super.getItemCount (); i++)
                     {
-                        this.currentFolder = p;
-                        this.bankOffset = childrenSize / this.pageSize * this.pageSize;
+                        final TrackImpl track = this.getTrack (i);
+
+                        final int depth = track.getDepth ();
+
+                        final TreeNode<TrackImpl> p = hierarchy.get (depth);
+                        final TreeNode<TrackImpl> child = p.addChild (track);
+                        final int childrenSize = p.getChildren ().size ();
+                        track.setIndex ((childrenSize - 1) % this.pageSize);
+
+                        final int index = depth + 1;
+                        if (index < hierarchy.size ())
+                            hierarchy.set (index, child);
+                        else
+                            hierarchy.add (index, child);
+
+                        if (track.isSelected ())
+                        {
+                            this.currentFolder = p;
+                            this.bankOffset = childrenSize / this.pageSize * this.pageSize;
+                        }
                     }
+
+                    this.rootTrack = newRoot;
+
+                    if (this.currentFolder == null)
+                        this.currentFolder = newRoot;
                 }
             }
-
-            this.rootTrack = newRoot;
-
-            if (this.currentFolder == null)
-                this.currentFolder = newRoot;
 
             this.isDirty.set (false);
         }

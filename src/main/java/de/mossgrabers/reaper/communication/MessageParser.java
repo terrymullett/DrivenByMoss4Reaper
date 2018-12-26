@@ -287,9 +287,8 @@ public class MessageParser
                 break;
 
             case "number":
-                final int v = Integer.parseInt (value);
-                track.setIndex (v);
-                track.setPosition (v);
+                // Note: index is set in the tree (or flat) recalculation
+                track.setPosition (Integer.parseInt (value));
                 break;
 
             case "name":

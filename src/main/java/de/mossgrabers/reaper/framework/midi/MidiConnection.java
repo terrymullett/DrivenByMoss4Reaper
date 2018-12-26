@@ -34,6 +34,7 @@ public class MidiConnection
     private Transmitter                  transmitter;
 
     private LogModel                     model;
+    private final Object                 sendLock     = new Object ();
 
 
     /**
@@ -55,27 +56,30 @@ public class MidiConnection
      */
     public void setOutput (final MidiDevice device)
     {
-        if (this.receiver != null)
+        synchronized (this.sendLock)
         {
-            this.receiver.close ();
-            this.receiver = null;
-        }
+            if (this.receiver != null)
+            {
+                this.receiver.close ();
+                this.receiver = null;
+            }
 
-        if (device == null)
-            return;
+            if (device == null)
+                return;
 
-        USED_DEVICES.add (device);
+            USED_DEVICES.add (device);
 
-        try
-        {
-            this.midiOutputDevice = device;
-            if (!this.midiOutputDevice.isOpen ())
-                this.midiOutputDevice.open ();
-            this.receiver = this.midiOutputDevice.getReceiver ();
-        }
-        catch (final MidiUnavailableException ex)
-        {
-            this.model.error ("Midi not available.", ex);
+            try
+            {
+                this.midiOutputDevice = device;
+                if (!this.midiOutputDevice.isOpen ())
+                    this.midiOutputDevice.open ();
+                this.receiver = this.midiOutputDevice.getReceiver ();
+            }
+            catch (final MidiUnavailableException ex)
+            {
+                this.model.error ("Midi not available.", ex);
+            }
         }
     }
 
@@ -142,7 +146,7 @@ public class MidiConnection
             return;
         try
         {
-            this.receiver.send (new SysexMessage (data, data.length), -1);
+            this.send (new SysexMessage (data, data.length));
         }
         catch (final InvalidMidiDataException ex)
         {
@@ -163,7 +167,7 @@ public class MidiConnection
             return;
         try
         {
-            this.receiver.send (new ShortMessage (0xB0, cc, value), 0);
+            this.send (new ShortMessage (0xB0, cc, value));
         }
         catch (final InvalidMidiDataException ex)
         {
@@ -185,7 +189,7 @@ public class MidiConnection
             return;
         try
         {
-            this.receiver.send (new ShortMessage (0x90 + channel, note, velocity), 0);
+            this.send (new ShortMessage (0x90 + channel, note, velocity));
         }
         catch (final InvalidMidiDataException ex)
         {
@@ -205,7 +209,7 @@ public class MidiConnection
             return;
         try
         {
-            this.receiver.send (new ShortMessage (0xE0, 0, value), 0);
+            this.send (new ShortMessage (0xE0, 0, value));
         }
         catch (final InvalidMidiDataException ex)
         {
@@ -227,7 +231,7 @@ public class MidiConnection
             return;
         try
         {
-            this.receiver.send (new ShortMessage (status, data1, data2), 0);
+            this.send (new ShortMessage (status, data1, data2));
         }
         catch (final InvalidMidiDataException ex)
         {
@@ -243,7 +247,10 @@ public class MidiConnection
      */
     public boolean isOutputOpen ()
     {
-        return this.receiver != null && this.midiOutputDevice.isOpen ();
+        synchronized (this.sendLock)
+        {
+            return this.receiver != null && this.midiOutputDevice.isOpen ();
+        }
     }
 
 
@@ -263,8 +270,11 @@ public class MidiConnection
      */
     public void cleanup ()
     {
-        if (this.receiver != null)
-            this.receiver.close ();
+        synchronized (this.sendLock)
+        {
+            if (this.receiver != null)
+                this.receiver.close ();
+        }
         if (this.transmitter != null)
         {
             final Receiver r = this.transmitter.getReceiver ();
@@ -293,6 +303,15 @@ public class MidiConnection
     {
         for (final MidiDevice device: USED_DEVICES)
             device.close ();
+    }
+
+
+    private void send (final MidiMessage message)
+    {
+        synchronized (this.sendLock)
+        {
+            this.receiver.send (message, -1);
+        }
     }
 
     private final class InternalMidiReceiver implements Receiver

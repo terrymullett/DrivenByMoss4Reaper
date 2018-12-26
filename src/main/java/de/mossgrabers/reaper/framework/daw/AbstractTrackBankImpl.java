@@ -247,6 +247,54 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    public void selectNextItem ()
+    {
+        final ITrack sel = this.getSelectedItem ();
+        final int index = sel == null ? 0 : sel.getIndex () + 1;
+        if (index == this.pageSize)
+            this.selectNextPage ();
+        else
+            this.getItem (index).select ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void selectPreviousItem ()
+    {
+        final ITrack sel = this.getSelectedItem ();
+        final int index = sel == null ? 0 : sel.getIndex () - 1;
+        if (index == -1)
+            this.selectPreviousPage ();
+        else
+            this.getItem (index).select ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void selectPreviousPage ()
+    {
+        if (!this.canScrollBackwards ())
+            return;
+        this.scrollPageBackwards ();
+        this.host.scheduleTask ( () -> this.getItem (this.pageSize - 1).select (), 75);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void selectNextPage ()
+    {
+        if (!this.canScrollForwards ())
+            return;
+        this.scrollPageForwards ();
+        this.host.scheduleTask ( () -> this.getItem (0).select (), 75);
+    }
+
+
     protected void updateSlotBanks (final int slotBankOffset)
     {
         final int trackCount = this.items.size ();

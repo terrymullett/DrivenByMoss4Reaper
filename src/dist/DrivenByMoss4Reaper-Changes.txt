@@ -1,3 +1,11 @@
+4.03 (unreleased)
+- Integrated DrivenByMoss 4.03
+    * Ableton Push / Push 2 - 11.03
+        - Fixed: Fixed resetting of Push 2 display colors.
+    * Novation Launchpad Pro & MkII - 3.45
+        - Fixed: Transposing the piano view was broken
+- Fixed: New tracks with no name did sometimes not turn up until given a name
+
 4.02
 - Integrated DrivenByMoss 4.02
     * Ableton Push / Push 2 11.02
