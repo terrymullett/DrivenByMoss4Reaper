@@ -5,7 +5,7 @@ plugins {
     id 'application'
 }
 
-version = '4.03'
+version = '5.00'
 
 jar {
     manifest {
@@ -17,9 +17,11 @@ jar {
     }
 
     doLast {
-        if (System.properties['os.name'].toLowerCase().contains('windows')) {
-            String destDir = 'C:\\Users\\' + System.properties['user.name'] + '\\AppData\\Roaming\\Reaper\\UserPlugins\\drivenbymoss-libs'
-            ant.copy (file: archivePath.getAbsolutePath(), todir: destDir)
+        switch (OperatingSystem.get()) {
+            case OperatingSystem.WINDOWS:
+                String destDir = 'C:\\Users\\' + System.properties['user.name'] + '\\AppData\\Roaming\\Reaper\\UserPlugins\\drivenbymoss-libs'
+                ant.copy (file: archivePath.getAbsolutePath(), todir: destDir)
+                break;
         }
     }
 }
@@ -27,18 +29,17 @@ jar {
 distTar.enabled = false
 startScripts.enabled = false
 
-applicationDistribution.from('src/main/cpp') {
-    into "lib"
-}
 applicationDistribution.from('build/reports/dependency-license') {
     into "license/dependency"
 }
 
 installDist {
     doLast {
-        File subdir = new File (destinationDir, '/lib/drivenbymoss-libs')
+        File pluginFolder = new File (destinationDir, 'plugin')
+        new File (destinationDir, 'lib').renameTo(pluginFolder)
+        File subdir = new File (pluginFolder, 'drivenbymoss-libs')
         subdir.mkdirs ()
-        String sourceDir = new File (destinationDir, '/lib').getAbsolutePath()
+        String sourceDir = pluginFolder.getAbsolutePath()
         String destDir = subdir.getAbsolutePath()
         
         ant.delete () {
@@ -51,14 +52,35 @@ installDist {
                 include(name: 'libusb4java-1.3.0-win32-x86.jar')
             }
         }
-
         ant.move (todir: destDir) {
             fileset(dir: sourceDir) {
                 include(name: '**.jar')
             }
         }
-        String zipFileName = 'build/DrivenByMoss4Reaper-' + version + '.zip'
-        ant.zip (destfile: zipFileName, basedir: destinationDir)
+
+        // Windows
+        String zipFileName = 'build/DrivenByMoss4Reaper-' + version + '-Windows.zip'
+        String runtimeDir = new File ('runtime', 'windows').getAbsolutePath()
+        ant.zip (destfile: zipFileName) {
+            fileset(dir: destinationDir)
+            fileset(dir: runtimeDir)
+        }
+
+        // Mac
+        zipFileName = 'build/DrivenByMoss4Reaper-' + version + '-Macos.zip'
+        runtimeDir = new File ('runtime', 'macos').getAbsolutePath()
+        ant.zip (destfile: zipFileName) {
+            fileset(dir: destinationDir)
+            fileset(dir: runtimeDir)
+        }
+
+        // Linux
+        zipFileName = 'build/DrivenByMoss4Reaper-' + version + '-Linux.zip'
+        runtimeDir = new File ('runtime', 'linux').getAbsolutePath()
+        ant.zip (destfile: zipFileName) {
+            fileset(dir: destinationDir)
+            fileset(dir: runtimeDir)
+        }
     }
 }
 
@@ -80,4 +102,34 @@ dependencies {
 	compile group: 'com.nikhaldimann', name: 'inieditor', version: 'r6'
     compile group: 'net.java.dev.jna', name: 'jna', version: '5.2.0'
 	compile fileTree(dir: 'libs', include: '*.jar')
+}
+
+enum OperatingSystem
+{
+    WINDOWS,
+    LINUX,
+    MAC,
+    OTHER;
+
+    private static OperatingSystem os = OTHER;
+
+    static
+    {
+        String osName = System.getProperty ("os.name");
+        if (osName != null)
+        {
+            osName = osName.toLowerCase (Locale.ENGLISH);
+            if (osName.contains ("windows"))
+                os = WINDOWS;
+            else if (osName.contains ("linux"))
+                os = LINUX;
+            else if (osName.contains ("mac os x"))
+                os = MAC;
+        }
+    }
+
+    public static OperatingSystem get ()
+    {
+        return os;
+    }
 }
