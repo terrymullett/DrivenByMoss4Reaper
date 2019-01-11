@@ -5,6 +5,9 @@ plugins {
     id 'application'
 }
 
+sourceCompatibility = 11
+targetCompatibility = 11
+
 version = '5.00'
 
 jar {
