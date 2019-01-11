@@ -44,17 +44,6 @@ public abstract class BaseImpl implements ObserverManagement
     /**
      * Invokes the action for the given action identifier.
      *
-     * @param id the action identifier, must not be null
-     */
-    public void invokeAction (final String id)
-    {
-        this.sender.invokeAction (id);
-    }
-
-
-    /**
-     * Invokes the action for the given action identifier.
-     *
      * @param id The action identifier, must not be null
      */
     public void invokeAction (final int id)
