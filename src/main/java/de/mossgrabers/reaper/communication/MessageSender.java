@@ -23,14 +23,6 @@ public interface MessageSender
     /**
      * Invokes the action for the given action identifier.
      *
-     * @param id the action identifier, must not be null
-     */
-    void invokeAction (final String id);
-
-
-    /**
-     * Invokes the action for the given action identifier.
-     *
      * @param id The action identifier, must not be null
      */
     void invokeAction (final int id);

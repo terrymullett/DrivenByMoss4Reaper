@@ -1,5 +1,15 @@
-5.00 (Unreleased)
-- TODO
+5.00
+- Integrated DrivenByMoss 5.0
+    * Open Sound Control (OSC) protocol - 6.12
+        - Fixed: Potential synchronisation issue when sending OSC messages.
+    * Generic Flexi -  2.0
+        - New: Completely new settings user interface
+        - New: Support for modes: Track, Volume, Panorama, Send 1-8, Parameters
+        - New: Support for using Pitchbend as a controller
+        - New: Added command: "Master: Crossfader"
+        - Fixed: Blocking notes which are mapped to a command did only work after restart.
+        - Fixed: "Send value to device" did always send on midi channel 1.
+- Bundled Java Virtual Machine for easier installation
 
 4.03
 - Integrated DrivenByMoss 4.03

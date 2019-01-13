@@ -140,7 +140,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void toggleDevices ()
     {
-        this.sender.invokeAction (Actions.SHOW_FX_CHAIN_WINDOWS);
+        // Not supported
     }
 
 

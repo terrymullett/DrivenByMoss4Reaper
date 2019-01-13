@@ -477,14 +477,6 @@ public class MainFrame extends JFrame implements MessageSender
 
     /** {@inheritDoc} */
     @Override
-    public void invokeAction (final String id)
-    {
-        this.sendOSC ("/action_ex", id);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public void invokeAction (final int id)
     {
         this.sendOSC ("/action", Integer.valueOf (id));

@@ -1,6 +1,4 @@
-1) Install the Reaper SWS extension: http://www.sws-extension.org/
-
-2) Unzip the downloaded file "DrivenByMoss4Reaper-X.XX-PLATFORM.zip" to the 
+1) Unzip the downloaded file "DrivenByMoss4Reaper-X.XX-PLATFORM.zip" to the 
    Reaper UserPlugins folder (make sure you keep the folder structure of the ZIP 
    file intact!).
    You find the UserPlugins folder at the following locations:
@@ -20,7 +18,7 @@
       Install the *.so file into ~/.config/REAPER/UserPlugins or in the case of a 
       portable install into REAPER/UserPlugins.
 
-3) Configuration
+2) Configuration
    a) Start Reaper
    b) Open the Preferences (Ctrl+P)
    c) Scroll down and select "Control/OSC/web"
