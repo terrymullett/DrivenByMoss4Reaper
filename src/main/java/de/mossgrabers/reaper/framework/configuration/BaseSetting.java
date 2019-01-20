@@ -7,11 +7,9 @@ package de.mossgrabers.reaper.framework.configuration;
 import de.mossgrabers.framework.configuration.IValueObserver;
 import de.mossgrabers.framework.utils.StringUtils;
 import de.mossgrabers.reaper.ui.utils.LogModel;
-import de.mossgrabers.reaper.ui.widget.WholeNumberDocument;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JTextField;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,16 +25,11 @@ import java.util.Set;
  */
 public abstract class BaseSetting<C extends JComponent, T> implements IfxSetting<T>
 {
-    protected static final String        NUMBERS                = "0123456789";
-    protected static final String        SIGNED_NUMBERS         = "-0123456789";
-    protected static final String        NUMBERS_AND_DOT        = ".0123456789";
-    protected static final String        SIGNED_NUMBERS_AND_DOT = ".-0123456789";
-
     protected final LogModel             logModel;
     protected final C                    field;
 
     private final JLabel                 labelWidget;
-    private final Set<IValueObserver<T>> observers              = new HashSet<> ();
+    private final Set<IValueObserver<T>> observers = new HashSet<> ();
     private final String                 label;
     private final String                 category;
 
@@ -134,17 +127,5 @@ public abstract class BaseSetting<C extends JComponent, T> implements IfxSetting
     {
         this.labelWidget.setVisible (visible);
         this.field.setVisible (visible);
-    }
-
-
-    /**
-     * Limits the textfield to the given characters.
-     *
-     * @param field The field to limit
-     * @param characters The characters to limit to
-     */
-    protected static void limitToNumbers (final JTextField field, final String characters)
-    {
-        field.setDocument (new WholeNumberDocument ());
     }
 }

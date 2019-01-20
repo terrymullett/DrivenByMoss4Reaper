@@ -9,7 +9,9 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.PropertiesEx;
 import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
-import javax.swing.JTextField;
+import javax.swing.JFormattedTextField;
+
+import java.text.NumberFormat;
 
 
 /**
@@ -17,7 +19,7 @@ import javax.swing.JTextField;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class DoubleSettingImpl extends BaseSetting<JTextField, Double> implements IDoubleSetting
+public class DoubleSettingImpl extends BaseSetting<JFormattedTextField, Double> implements IDoubleSetting
 {
     private double value;
 
@@ -32,11 +34,11 @@ public class DoubleSettingImpl extends BaseSetting<JTextField, Double> implement
      */
     public DoubleSettingImpl (final LogModel logModel, final String label, final String category, final double initialValue)
     {
-        super (logModel, label, category, new JTextField (Double.toString (initialValue)));
+        super (logModel, label, category, new JFormattedTextField (NumberFormat.getNumberInstance ()));
 
         this.value = initialValue;
 
-        limitToNumbers (this.field, NUMBERS_AND_DOT);
+        this.field.setValue (Double.valueOf (initialValue));
         this.field.addActionListener (event -> {
             try
             {

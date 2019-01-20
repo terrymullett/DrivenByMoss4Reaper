@@ -43,7 +43,8 @@ public class ColorSettingImpl extends BaseSetting<ColoredButton, double []> impl
 
         this.field.addActionListener (event -> {
             final Color color = JColorChooser.showDialog (this.field, "Pick color", this.field.getBackground ());
-            this.set (color.getRed () / 255.0, color.getGreen () / 255.0, color.getBlue () / 255.0);
+            if (color != null)
+                this.set (color.getRed () / 255.0, color.getGreen () / 255.0, color.getBlue () / 255.0);
         });
     }
 
@@ -71,9 +72,7 @@ public class ColorSettingImpl extends BaseSetting<ColoredButton, double []> impl
         this.value = value;
         this.flush ();
 
-        SafeRunLater.execute (this.logModel, () -> {
-            this.field.setBackground (new Color ((float) this.value.getRed (), (float) this.value.getGreen (), (float) this.value.getBlue ()));
-        });
+        SafeRunLater.execute (this.logModel, () -> this.field.setBackground (new Color ((float) this.value.getRed (), (float) this.value.getGreen (), (float) this.value.getBlue ())));
     }
 
 

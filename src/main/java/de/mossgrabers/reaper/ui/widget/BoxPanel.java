@@ -39,23 +39,20 @@ import java.util.List;
  */
 public class BoxPanel extends JPanel
 {
-    private static final long serialVersionUID   = 4048792364380336179L;
+    private static final long serialVersionUID = 4048792364380336179L;
 
     /** GLUE space. */
-    public static final int   GLUE               = -1;
+    public static final int   GLUE             = -1;
     /** No space. */
-    public static final int   NONE               = 0;
+    public static final int   NONE             = 0;
     /** Small space. */
-    public static final int   SMALL              = 4;
+    public static final int   SMALL            = 4;
     /** Icon space. */
-    public static final int   ICON_SPACE         = 7;
+    public static final int   ICON_SPACE       = 7;
     /** Normal space. */
-    public static final int   NORMAL             = 12;
+    public static final int   NORMAL           = 12;
     /** Large space. */
-    public static final int   LARGE              = 17;
-
-    private static final int  INTEGER_MAX_LENGTH = Integer.toString (Integer.MAX_VALUE).length ();
-    private static final int  INTEGER_COLUMNS    = 6;
+    public static final int   LARGE            = 17;
 
     protected boolean         isVert;
     protected float           fieldAlignment;
@@ -349,69 +346,6 @@ public class BoxPanel extends JPanel
     public JCheckBox createCheckBox (final String label, final String mnemonic, final int space)
     {
         return (JCheckBox) this.addButton (new JCheckBox (), null, label, mnemonic, null, space);
-    }
-
-
-    /**
-     * Creates and adds a text field to the panel.
-     *
-     * @param label The name of the label which is added to the field
-     * @param mnemonic A shortcut for the field
-     * @param space Add space after the element (NONE, SMALL, NORMAL, LARGE, GLUE)
-     * @return The created text field
-     */
-    public JTextFieldX createPositiveIntegerField (final String label, final String mnemonic, final int space)
-    {
-        return this.createPositiveIntegerField (label, mnemonic, space, INTEGER_COLUMNS, INTEGER_MAX_LENGTH);
-    }
-
-
-    /**
-     * Creates and adds a text field to the panel.
-     *
-     * @param label The name of the label which is added to the field
-     * @param mnemonic A shortcut for the field
-     * @param space Add space after the element (NONE, SMALL, NORMAL, LARGE, GLUE)
-     * @param columns Columns of the textfield, if -1 a width of 6 is used
-     * @param maxLength The number of columns, if -1 the width is calculated from a maximum integer
-     * @return The created text field
-     */
-    public JTextFieldX createPositiveIntegerField (final String label, final String mnemonic, final int space, final int columns, final int maxLength)
-    {
-        return this.createIntegerField (label, mnemonic, space, columns, true, maxLength);
-    }
-
-
-    /**
-     * Creates and adds a text field to the panel.
-     *
-     * @param label The name of the label which is added to the field
-     * @param mnemonic A shortcut for the field
-     * @param space Add space after the element (NONE, SMALL, NORMAL, LARGE, GLUE)
-     * @return The created text field
-     */
-    public JTextFieldX createIntegerField (final String label, final String mnemonic, final int space)
-    {
-        return this.createIntegerField (label, mnemonic, space, INTEGER_COLUMNS, false, INTEGER_MAX_LENGTH + 1);
-    }
-
-
-    /**
-     * Creates and adds a text field to the panel.
-     *
-     * @param label The name of the label which is added to the field
-     * @param mnemonic A shortcut for the field
-     * @param space Add space after the element (NONE, SMALL, NORMAL, LARGE, GLUE)
-     * @param columns Columns of the textfield, if -1 a width of 6 is used
-     * @param onlyPositive Also forbids negative numbers
-     * @param maxLength The number of columns, if -1 the width is calculated from a maximum integer
-     * @return The created text field
-     */
-    public JTextFieldX createIntegerField (final String label, final String mnemonic, final int space, final int columns, final boolean onlyPositive, final int maxLength)
-    {
-        final JTextFieldX field = this.addField (new JTextFieldX (), label, mnemonic, space, columns == -1 ? INTEGER_COLUMNS : maxLength);
-        field.setDocument (new WholeNumberDocument (onlyPositive, maxLength == -1 ? INTEGER_MAX_LENGTH : maxLength));
-        return field;
     }
 
 

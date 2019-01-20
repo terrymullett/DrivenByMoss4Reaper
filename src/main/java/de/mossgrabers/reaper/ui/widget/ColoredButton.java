@@ -19,7 +19,7 @@ public class ColoredButton extends JButton
      */
     public ColoredButton ()
     {
-        this.setText ("xxxx");
+        this.setText ("Click to pick");
         this.setContentAreaFilled (false);
         this.setOpaque (true);
         this.setMargin (new Insets (0, 0, 0, 0));

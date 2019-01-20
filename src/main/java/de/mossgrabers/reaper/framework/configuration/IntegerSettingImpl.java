@@ -9,7 +9,9 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.PropertiesEx;
 import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
-import javax.swing.JTextField;
+import javax.swing.JFormattedTextField;
+
+import java.text.NumberFormat;
 
 
 /**
@@ -17,7 +19,7 @@ import javax.swing.JTextField;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class IntegerSettingImpl extends BaseSetting<JTextField, Integer> implements IIntegerSetting
+public class IntegerSettingImpl extends BaseSetting<JFormattedTextField, Integer> implements IIntegerSetting
 {
     private final int minValue;
     private final int maxValue;
@@ -36,13 +38,13 @@ public class IntegerSettingImpl extends BaseSetting<JTextField, Integer> impleme
      */
     public IntegerSettingImpl (final LogModel logModel, final String label, final String category, final int initialValue, final int minValue, final int maxValue)
     {
-        super (logModel, label, category, new JTextField (Integer.toString (initialValue)));
+        super (logModel, label, category, new JFormattedTextField (NumberFormat.getIntegerInstance ()));
 
         this.value = initialValue;
         this.minValue = minValue;
         this.maxValue = maxValue;
 
-        limitToNumbers (this.field, NUMBERS);
+        this.field.setValue (Integer.valueOf (initialValue));
         this.field.addActionListener (event -> {
             try
             {
