@@ -18,6 +18,7 @@ import de.mossgrabers.reaper.framework.midi.Midi;
 import de.mossgrabers.reaper.framework.midi.MidiDeviceConverter;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.PropertiesEx;
+import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 import de.mossgrabers.reaper.ui.widget.JComboBoxX;
 
 import javax.sound.midi.MidiDevice;
@@ -128,11 +129,11 @@ public class SettingsUI implements ISettingsUI
             midiInput.setRenderer (new MidiDeviceConverter ());
             midiInputs.add (midiInput);
             final int index = i;
-            midiInput.addActionListener (event -> {
+            midiInput.addItemListener (event -> SafeRunLater.execute (SettingsUI.this.logModel, () -> {
                 final MidiDevice selectedItem = midiInput.getSelectedItem ();
                 if (selectedItem != null)
                     this.selectedMidiInputs[index] = selectedItem;
-            });
+            }));
         }
         return midiInputs;
     }
@@ -152,11 +153,11 @@ public class SettingsUI implements ISettingsUI
             midiOutput.setRenderer (new MidiDeviceConverter ());
             midiOutputs.add (midiOutput);
             final int index = i;
-            midiOutput.addActionListener (event -> {
+            midiOutput.addActionListener (event -> SafeRunLater.execute (SettingsUI.this.logModel, () -> {
                 final MidiDevice selectedItem = midiOutput.getSelectedItem ();
                 if (selectedItem != null)
                     this.selectedMidiOutputs[index] = midiOutput.getSelectedItem ();
-            });
+            }));
         }
         return midiOutputs;
     }

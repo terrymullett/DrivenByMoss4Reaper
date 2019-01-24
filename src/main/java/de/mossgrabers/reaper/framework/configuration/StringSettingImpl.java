@@ -44,9 +44,7 @@ public class StringSettingImpl extends BaseSetting<JTextField, String> implement
             @Override
             public void keyTyped (final KeyEvent e)
             {
-                SafeRunLater.execute (StringSettingImpl.this.logModel, () -> {
-                    StringSettingImpl.this.set (StringSettingImpl.this.field.getText ());
-                });
+                SafeRunLater.execute (StringSettingImpl.this.logModel, () -> StringSettingImpl.this.set (StringSettingImpl.this.field.getText ()));
             }
         });
     }

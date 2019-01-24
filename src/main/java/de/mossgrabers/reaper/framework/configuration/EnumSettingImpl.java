@@ -39,7 +39,7 @@ public class EnumSettingImpl extends BaseSetting<JComboBox<String>, String> impl
         this.value = initialValue;
 
         this.field.setSelectedItem (this.value);
-        this.field.addActionListener (event -> this.set ((String) this.field.getSelectedItem ()));
+        this.field.addItemListener (event -> SafeRunLater.execute (EnumSettingImpl.this.logModel, () -> this.set ((String) this.field.getSelectedItem ())));
     }
 
 

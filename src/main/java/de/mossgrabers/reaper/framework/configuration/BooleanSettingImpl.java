@@ -36,7 +36,7 @@ public class BooleanSettingImpl extends BaseSetting<JCheckBox, Boolean> implemen
 
         this.value = initialValue;
 
-        this.field.addActionListener (event -> this.set (this.field.isSelected ()));
+        this.field.addActionListener (event -> SafeRunLater.execute (BooleanSettingImpl.this.logModel, () -> this.set (BooleanSettingImpl.this.field.isSelected ())));
     }
 
 
