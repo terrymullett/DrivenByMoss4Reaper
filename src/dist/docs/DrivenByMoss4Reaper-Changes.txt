@@ -1,3 +1,7 @@
+5.03
+- Fixed: MIDI editor is no longer closing when executing quantize from a controller, 
+         if it was already open.
+
 5.02
 - Fixed: Widgets in configuration dialog did not always update their values correctly.
 - Fixed: The integrated Java VM did not contain the accessibility module. Therefore,
