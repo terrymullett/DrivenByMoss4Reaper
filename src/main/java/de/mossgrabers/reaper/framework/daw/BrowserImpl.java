@@ -258,14 +258,14 @@ public class BrowserImpl extends AbstractBrowser
                     {
                         final Device device = result.getDevice ();
                         if (device != null)
-                            this.sender.sendOSC ("/device/add/" + this.insertPosition + "/", device.getCreationName ());
+                            this.sender.processStringArg ("device", "add/" + this.insertPosition + "/", device.getCreationName ());
                     }
                     break;
 
                 case CONTENTTYPE_PRESET:
                     final int index = this.getSelectedResultIndex ();
                     if (index != -1)
-                        this.sender.sendOSC ("/device/preset/", Integer.valueOf (index));
+                        this.sender.processIntArg ("device", "preset", index);
                     break;
             }
         }

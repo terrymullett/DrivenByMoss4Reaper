@@ -59,21 +59,27 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public void selectChildren ()
+    /**
+     * Enter the current folder if hierarchical track navigation is enabled.
+     */
+    public void enterCurrentFolder ()
     {
         if (this.hasFlatTrackList)
             return;
 
-        for (final TreeNode<TrackImpl> node: this.currentFolder.getChildren ())
+        final List<TreeNode<TrackImpl>> tracks = this.currentFolder.getChildren ();
+        // Find the selected track in the current children, which has to be a group
+        for (final TreeNode<TrackImpl> node: tracks)
         {
-            if (node.getData ().isSelected ())
+            final TrackImpl data = node.getData ();
+            if (data.isSelected () && data.isGroup ())
             {
+                // Make the found track the new current folder
                 this.currentFolder = node;
-                List<TreeNode<TrackImpl>> children = this.currentFolder.getChildren ();
-                if (!children.isEmpty ())
-                    children.get (0).getData ().select ();
+                List<TreeNode<TrackImpl>> children = node.getChildren ();
+                if (children.isEmpty ())
+                    break;
+                children.get (0).getData ().select ();
                 break;
             }
         }

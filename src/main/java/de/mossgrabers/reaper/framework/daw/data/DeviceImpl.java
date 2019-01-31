@@ -41,7 +41,7 @@ public class DeviceImpl extends ItemImpl implements IDevice
     @Override
     public void select ()
     {
-        this.sender.sendOSC ("/device/selected", Integer.valueOf (this.getIndex () + 1));
+        this.sender.processIntArg ("device", "selected", this.getIndex () + 1);
     }
 
 
@@ -49,7 +49,7 @@ public class DeviceImpl extends ItemImpl implements IDevice
     @Override
     public void remove ()
     {
-        this.sendDeviceOSC ("remove", null);
+        this.sendDeviceOSC ("remove");
     }
 
 
@@ -57,7 +57,7 @@ public class DeviceImpl extends ItemImpl implements IDevice
     @Override
     public void duplicate ()
     {
-        this.sendDeviceOSC ("duplicate", null);
+        this.sendDeviceOSC ("duplicate");
     }
 
 
@@ -86,8 +86,8 @@ public class DeviceImpl extends ItemImpl implements IDevice
     }
 
 
-    protected void sendDeviceOSC (final String command, final Object value)
+    protected void sendDeviceOSC (final String command)
     {
-        this.sender.sendOSC ("/device/" + (this.getIndex () + 1) + "/" + command, value);
+        this.sender.processNoArg ("device", (this.getIndex () + 1) + "/" + command);
     }
 }

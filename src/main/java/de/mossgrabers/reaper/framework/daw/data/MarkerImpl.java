@@ -62,7 +62,7 @@ public class MarkerImpl extends ItemImpl implements IMarker
     @Override
     public void launch (final boolean quantized)
     {
-        this.sendMarkerOSC ("launch", null);
+        this.sendMarkerOSC ("launch");
     }
 
 
@@ -70,7 +70,7 @@ public class MarkerImpl extends ItemImpl implements IMarker
     @Override
     public void removeMarker ()
     {
-        this.sendMarkerOSC ("remove", null);
+        this.sendMarkerOSC ("remove");
     }
 
 
@@ -78,12 +78,12 @@ public class MarkerImpl extends ItemImpl implements IMarker
     @Override
     public void select ()
     {
-        this.sendMarkerOSC ("select", null);
+        this.sendMarkerOSC ("select");
     }
 
 
-    protected void sendMarkerOSC (final String command, final Object value)
+    protected void sendMarkerOSC (final String command)
     {
-        this.sender.sendOSC ("/marker/" + this.getPosition () + "/" + command, value);
+        this.sender.processNoArg ("marker", this.getPosition () + "/" + command);
     }
 }

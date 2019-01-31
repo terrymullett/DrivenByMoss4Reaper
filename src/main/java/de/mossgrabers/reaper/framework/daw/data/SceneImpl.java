@@ -60,7 +60,7 @@ public class SceneImpl extends ItemImpl implements IScene
     @Override
     public void launch ()
     {
-        this.sendSceneOSC ("launch", null);
+        this.sendSceneOSC ("launch");
     }
 
 
@@ -68,7 +68,7 @@ public class SceneImpl extends ItemImpl implements IScene
     @Override
     public void remove ()
     {
-        this.sendSceneOSC ("remove", null);
+        this.sendSceneOSC ("remove");
     }
 
 
@@ -76,7 +76,7 @@ public class SceneImpl extends ItemImpl implements IScene
     @Override
     public void select ()
     {
-        this.sendSceneOSC ("select", null);
+        this.sendSceneOSC ("select");
     }
 
 
@@ -88,8 +88,8 @@ public class SceneImpl extends ItemImpl implements IScene
     }
 
 
-    protected void sendSceneOSC (final String command, final Object value)
+    protected void sendSceneOSC (final String command)
     {
-        this.sender.sendOSC ("/scene/" + this.getPosition () + "/" + command, value);
+        this.sender.processNoArg ("scene", this.getPosition () + "/" + command);
     }
 }

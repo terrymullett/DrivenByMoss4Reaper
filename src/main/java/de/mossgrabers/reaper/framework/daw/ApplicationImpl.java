@@ -45,7 +45,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void setEngineActive (final boolean active)
     {
-        this.sender.sendOSC ("/project/engine", Integer.valueOf (active ? 1 : 0));
+        this.sender.processBooleanArg ("project", "engine", active);
     }
 
 
@@ -196,7 +196,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void redo ()
     {
-        this.sender.sendOSC ("/redo", null);
+        this.sender.processNoArg ("redo");
     }
 
 
@@ -204,7 +204,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void undo ()
     {
-        this.sender.sendOSC ("/undo", null);
+        this.sender.processNoArg ("undo");
     }
 
 

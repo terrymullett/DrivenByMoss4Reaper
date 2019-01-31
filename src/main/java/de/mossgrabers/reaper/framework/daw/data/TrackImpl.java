@@ -11,7 +11,9 @@ import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.framework.observer.NoteObserver;
 import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.framework.daw.AbstractTrackBankImpl;
 import de.mossgrabers.reaper.framework.daw.SlotBankImpl;
+import de.mossgrabers.reaper.framework.daw.TrackBankImpl;
 
 
 /**
@@ -22,31 +24,32 @@ import de.mossgrabers.reaper.framework.daw.SlotBankImpl;
 public class TrackImpl extends ChannelImpl implements ITrack
 {
     /** Record monitoring is off. */
-    public static final int    MONITOR_OFF      = 0;
+    public static final int             MONITOR_OFF      = 0;
     /** Record monitoring is on. */
-    public static final int    MONITOR_ON       = 1;
+    public static final int             MONITOR_ON       = 1;
     /** Record monitoring is automatic. */
-    public static final int    MONITOR_AUTO     = 2;
+    public static final int             MONITOR_AUTO     = 2;
 
     /** Automation write is trim. */
-    public static final String AUTOMATION_TRIM  = "trim";
+    public static final String          AUTOMATION_TRIM  = "trim";
     /** Automation write is read. */
-    public static final String AUTOMATION_READ  = "read";
+    public static final String          AUTOMATION_READ  = "read";
     /** Automation write is touch. */
-    public static final String AUTOMATION_TOUCH = "touch";
+    public static final String          AUTOMATION_TOUCH = "touch";
     /** Automation write is latch. */
-    public static final String AUTOMATION_LATCH = "latch";
+    public static final String          AUTOMATION_LATCH = "latch";
     /** Automation write is write. */
-    public static final String AUTOMATION_WRITE = "write";
+    public static final String          AUTOMATION_WRITE = "write";
 
-    private boolean            isRecArm;
-    private boolean            monitor;
-    private boolean            autoMonitor;
-    private String             automation       = AUTOMATION_TRIM;
-    private final ISlotBank    slotBank;
-    private boolean            isNoteRepeat;
-    private double             noteRepeatLength;
-    private int                depth;
+    private final AbstractTrackBankImpl trackBank;
+    private boolean                     isRecArm;
+    private boolean                     monitor;
+    private boolean                     autoMonitor;
+    private String                      automation       = AUTOMATION_TRIM;
+    private final ISlotBank             slotBank;
+    private boolean                     isNoteRepeat;
+    private double                      noteRepeatLength;
+    private int                         depth;
 
 
     /**
@@ -54,15 +57,17 @@ public class TrackImpl extends ChannelImpl implements ITrack
      *
      * @param host The DAW host
      * @param sender The OSC sender
+     * @param trackBank The track bank for folder navigation
      * @param valueChanger The value changer
      * @param index The index of the track in the page
      * @param numTracks The number of tracks of a bank
      * @param numSends The number of sends of a bank
      * @param numScenes The number of scenes of a bank
      */
-    public TrackImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int index, final int numTracks, final int numSends, final int numScenes)
+    public TrackImpl (final IHost host, final MessageSender sender, final AbstractTrackBankImpl trackBank, final IValueChanger valueChanger, final int index, final int numTracks, final int numSends, final int numScenes)
     {
         super (host, sender, valueChanger, index, numSends);
+        this.trackBank = trackBank;
         this.slotBank = new SlotBankImpl (host, sender, valueChanger, index, numScenes);
     }
 
@@ -72,6 +77,31 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public void enableObservers (final boolean enable)
     {
         // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void enter ()
+    {
+        if (!(this.trackBank instanceof TrackBankImpl))
+            return;
+
+        // Only group tracks can be entered
+        if (!this.isGroup ())
+            return;
+
+        // If this track is already the cursor track, enter it straight away
+        if (this.isSelected ())
+        {
+            ((TrackBankImpl) this.trackBank).enterCurrentFolder ();
+            return;
+        }
+
+        // Make the track cursor track
+        this.select ();
+        // Delay the child selection a bit to ensure the track is selected
+        this.host.scheduleTask (((TrackBankImpl) this.trackBank)::enterCurrentFolder, 100);
     }
 
 
@@ -96,7 +126,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public void setRecArm (final boolean value)
     {
         this.setRecArmState (value);
-        this.sendTrackOSC ("recarm", Boolean.valueOf (value));
+        this.sendTrackOSC ("recarm", value);
     }
 
 
@@ -121,7 +151,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public void setMonitor (final boolean value)
     {
         this.setMonitorState (value);
-        this.sendTrackOSC ("monitor", Integer.valueOf (this.monitor ? 1 : 0));
+        this.sendTrackOSC ("monitor", this.monitor ? 1 : 0);
     }
 
 
@@ -145,7 +175,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     @Override
     public void toggleNoteRepeat ()
     {
-        this.sendTrackOSC ("noterepeat", Integer.valueOf (this.isNoteRepeat ? 0 : 1));
+        this.sendTrackOSC ("noterepeat", this.isNoteRepeat);
     }
 
 
@@ -161,7 +191,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     @Override
     public void setNoteRepeatLength (double length)
     {
-        this.sendTrackOSC ("noterepeatlength", Double.valueOf (length));
+        this.sendTrackOSC ("noterepeatlength", length);
     }
 
 
@@ -187,7 +217,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public void setAutoMonitor (final boolean value)
     {
         this.setAutoMonitorState (value);
-        this.sendTrackOSC ("autoMonitor", Integer.valueOf (this.autoMonitor ? 1 : 0));
+        this.sendTrackOSC ("autoMonitor", this.autoMonitor);
     }
 
 
@@ -222,7 +252,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public void select ()
     {
         if (this.doesExist ())
-            this.sendTrackOSC ("select", Integer.valueOf (1));
+            this.sendTrackOSC ("select", 1);
     }
 
 

@@ -112,7 +112,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void setPlayStart (final double start)
     {
         this.clipStart = start;
-        this.sendClipOSC ("start", Double.valueOf (this.clipStart));
+        this.sendClipOSC ("start", this.clipStart);
         this.updateNoteData ();
     }
 
@@ -140,7 +140,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void setPlayEnd (final double end)
     {
         this.clipEnd = end;
-        this.sendClipOSC ("end", Double.valueOf (this.clipEnd));
+        this.sendClipOSC ("end", this.clipEnd);
         this.updateNoteData ();
     }
 
@@ -239,7 +239,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void setLoopEnabled (final boolean enable)
     {
-        this.sendClipOSC ("loop", Boolean.valueOf (enable));
+        this.sendClipOSC ("loop", enable);
     }
 
 
@@ -368,8 +368,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void clearStep (final int step, final int row)
     {
-        final double pos = (step + this.editPage * this.numSteps) * this.stepLength;
-        this.sendClipOSC ("note/" + row + "/clear", Double.valueOf (pos));
+        this.sendClipOSC ("note/" + row + "/clear", (step + this.editPage * this.numSteps) * this.stepLength);
     }
 
 
@@ -377,7 +376,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void clearRow (final int row)
     {
-        this.sendClipOSC ("note/" + row + "/clear", null);
+        this.sendClipOSC ("note/" + row + "/clear");
     }
 
 
@@ -487,7 +486,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void duplicate ()
     {
-        this.sendClipOSC ("duplicate", null);
+        this.sendClipOSC ("duplicate");
     }
 
 
@@ -495,7 +494,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void duplicateContent ()
     {
-        this.sendClipOSC ("duplicateContent", null);
+        this.sendClipOSC ("duplicateContent");
     }
 
 
@@ -503,7 +502,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void quantize (final double amount)
     {
-        this.sender.sendOSC ("/quantize", null);
+        this.sender.processNoArg ("quantize");
     }
 
 
@@ -511,7 +510,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void transpose (final int semitones)
     {
-        this.sendClipOSC ("transpose", Integer.valueOf (semitones));
+        this.sendClipOSC ("transpose", semitones);
     }
 
 
@@ -602,8 +601,32 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     }
 
 
-    protected void sendClipOSC (final String command, final Object value)
+    protected void sendClipOSC (final String command)
     {
-        this.sender.sendOSC ("/clip/" + command, value);
+        this.sender.processNoArg ("clip", command);
+    }
+
+
+    protected void sendClipOSC (final String command, final int value)
+    {
+        this.sender.processIntArg ("clip", command, value);
+    }
+
+
+    protected void sendClipOSC (final String command, final double value)
+    {
+        this.sender.processDoubleArg ("clip", command, value);
+    }
+
+
+    protected void sendClipOSC (final String command, final String value)
+    {
+        this.sender.processStringArg ("clip", command, value);
+    }
+
+
+    protected void sendClipOSC (final String command, final boolean value)
+    {
+        this.sender.processBooleanArg ("clip", command, value);
     }
 }

@@ -86,7 +86,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void play ()
     {
-        this.sender.sendOSC ("/play", null);
+        this.sender.processNoArg ("play");
     }
 
 
@@ -110,7 +110,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void stop ()
     {
-        this.sender.sendOSC ("/stop", null);
+        this.sender.processNoArg ("stop");
     }
 
 
@@ -119,7 +119,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void stopAndRewind ()
     {
         this.stop ();
-        this.sender.sendOSC ("/time", Integer.valueOf (0));
+        this.sender.processIntArg ("time", 0);
     }
 
 
@@ -127,7 +127,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void record ()
     {
-        this.sender.sendOSC ("/record", null);
+        this.sender.processNoArg ("record");
     }
 
 
@@ -245,7 +245,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void changeMetronomeVolume (final int control)
     {
-        this.sender.sendOSC ("/metro_vol/" + (this.valueChanger.calcKnobSpeed (control) > 0 ? '+' : '-'), null);
+        this.sender.processNoArg ("metro_vol", this.valueChanger.calcKnobSpeed (control) > 0 ? "+" : "-");
     }
 
 
@@ -354,7 +354,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void setLoop (final boolean on)
     {
         if (on && !this.isLooping || !on && this.isLooping)
-            this.sender.sendOSC ("/repeat", Integer.valueOf (1));
+            this.sender.processIntArg ("repeat", 1);
     }
 
 
@@ -362,7 +362,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void toggleLoop ()
     {
-        this.sender.sendOSC ("/repeat", Integer.valueOf (1));
+        this.sender.processIntArg ("repeat", 1);
     }
 
 
@@ -408,7 +408,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     {
         final ITrack selectedTrack = this.trackBank.getSelectedItem ();
         if (selectedTrack != null)
-            this.sender.sendOSC ("/track/" + selectedTrack.getIndex () + "/auto" + mode, Double.valueOf (1));
+            this.sender.processIntArg ("track", selectedTrack.getIndex () + "/auto" + mode, 1);
     }
 
 
@@ -435,7 +435,8 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void resetAutomationOverrides ()
     {
-        this.sender.sendOSC ("/action_ex", "_S&M_REMOVE_ALLENVS");
+        // TODO
+        // this.sender.sendOSC ("/action_ex", "_S&M_REMOVE_ALLENVS");
     }
 
 
@@ -501,7 +502,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void setPosition (final double time)
     {
         this.position = time;
-        this.sender.sendOSC ("/time", Double.valueOf (this.position));
+        this.sender.processDoubleArg ("time", this.position);
     }
 
 
@@ -601,7 +602,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void changeTempo (final boolean increase)
     {
         final boolean isSlow = this.valueChanger.isSlow ();
-        this.sender.sendOSC ("/tempo/" + (increase ? isSlow ? "+" : "++" : isSlow ? "-" : "--"), null);
+        this.sender.processNoArg ("tempo", increase ? isSlow ? "+" : "++" : isSlow ? "-" : "--");
     }
 
 
@@ -620,7 +621,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void setTempo (final double tempo)
     {
-        this.sender.sendOSC ("/tempo", Double.valueOf (tempo));
+        this.sender.processDoubleArg ("tempo", tempo);
     }
 
 

@@ -419,70 +419,27 @@ public class MainFrame extends JFrame implements MessageSender
 
     /** {@inheritDoc} */
     @Override
-    public void sendOSC (final String command, final Object value)
-    {
-        if (value == null)
-            this.processNoArg (command);
-        else if (value instanceof String)
-            this.processStringArg (command, (String) value);
-        else if (value instanceof Integer)
-            this.processIntArg (command, ((Integer) value).intValue ());
-        else if (value instanceof Double)
-        {
-            final Double doubleValue = (Double) value;
-            if (value.toString ().endsWith (".0"))
-                this.processIntArg (command, doubleValue.intValue ());
-            else
-                this.processDoubleArg (command, doubleValue.doubleValue ());
-        }
-        else if (value instanceof Boolean)
-            this.processIntArg (command, ((Boolean) value).booleanValue () ? 1 : 0);
-        else
-            this.logModel.info ("Unsupported type: " + value.getClass ().toString ());
-    }
-
-
-    /**
-     * Call Reaper command in DLL.
-     *
-     * @param command The OSC path command
-     */
-    public native void processNoArg (final String command);
-
-
-    /**
-     * Call Reaper command in DLL.
-     *
-     * @param command The OSC path command
-     * @param value A string value
-     */
-    public native void processStringArg (final String command, final String value);
-
-
-    /**
-     * Call Reaper command in DLL.
-     *
-     * @param command The OSC path command
-     * @param value An integer value
-     */
-    public native void processIntArg (final String command, final int value);
-
-
-    /**
-     * Call Reaper command in DLL.
-     *
-     * @param command The OSC path command
-     * @param value A double value
-     */
-    public native void processDoubleArg (final String command, final double value);
+    public native void processNoArg (final String processor, final String command);
 
 
     /** {@inheritDoc} */
     @Override
-    public void invokeAction (final int id)
-    {
-        this.sendOSC ("/action", Integer.valueOf (id));
-    }
+    public native void processStringArg (final String processor, final String command, final String value);
+
+
+    /** {@inheritDoc} */
+    @Override
+    public native void processIntArg (final String processor, final String command, final int value);
+
+
+    /** {@inheritDoc} */
+    @Override
+    public native void processDoubleArg (final String processor, final String command, final double value);
+
+
+    /** {@inheritDoc} */
+    @Override
+    public native void processMidiArg (final int status, final int data1, final int data2);
 
 
     private void removeController ()
@@ -539,7 +496,7 @@ public class MainFrame extends JFrame implements MessageSender
 
     private void sendRefreshCommand ()
     {
-        this.sendOSC ("/refresh", null);
+        this.processNoArg ("refresh");
     }
 
 

@@ -44,7 +44,7 @@ public class MarkerBankImpl extends AbstractBankImpl<IMarker> implements IMarker
     @Override
     public void addMarker ()
     {
-        this.sender.sendOSC ("/marker/add", null);
+        this.sender.processNoArg ("marker", "add");
     }
 
 

@@ -5,19 +5,107 @@
 package de.mossgrabers.reaper.communication;
 
 /**
- * Send an OSC message to the DAW.
+ * Interface to communicate with the C++ DLL.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
 public interface MessageSender
 {
     /**
-     * Sends an OSC message.
+     * Call Reaper command in DLL.
      *
-     * @param command The command to send
-     * @param value The value to send, may be null
+     * @param processor The processor ID
      */
-    void sendOSC (final String command, final Object value);
+    default void processNoArg (final String processor)
+    {
+        this.processNoArg (processor, null);
+    }
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param processor The processor ID
+     * @param command The command ID
+     */
+    void processNoArg (final String processor, final String command);
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param processor The processor ID
+     * @param command The command ID
+     * @param value A string value
+     */
+    void processStringArg (final String processor, final String command, final String value);
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param processor The processor ID
+     * @param value An integer value
+     */
+    default void processIntArg (final String processor, final int value)
+    {
+        this.processIntArg (processor, null, value);
+    }
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param processor The processor ID
+     * @param command The command ID
+     * @param value An integer value
+     */
+    void processIntArg (final String processor, final String command, final int value);
+
+
+    /**
+     * Call Reaper command in DLL.
+     * 
+     * @param processor The processor ID
+     * @param value A double value
+     */
+    default void processDoubleArg (final String processor, final double value)
+    {
+        this.processDoubleArg (processor, null, value);
+    }
+
+
+    /**
+     * Call Reaper command in DLL.
+     * 
+     * @param processor The processor ID
+     * @param command The command ID
+     * @param value A double value
+     */
+    void processDoubleArg (final String processor, final String command, final double value);
+
+
+    /**
+     * Call Reaper command in DLL.
+     * 
+     * @param processor The processor ID
+     * @param command The command ID
+     * @param value A boolean value
+     */
+    default void processBooleanArg (final String processor, final String command, final boolean value)
+    {
+        this.processIntArg (processor, command, value ? 1 : 0);
+    }
+
+
+    /**
+     * Call Reaper MIDI command in DLL.
+     * 
+     * @param status MIDI status byte
+     * @param data1 MIDI data byte 1
+     * @param data2 MIDI data byte 2
+     */
+    void processMidiArg (int status, int data1, int data2);
 
 
     /**
@@ -25,5 +113,8 @@ public interface MessageSender
      *
      * @param id The action identifier, must not be null
      */
-    void invokeAction (final int id);
+    default void invokeAction (int id)
+    {
+        this.processIntArg ("action", "", id);
+    }
 }

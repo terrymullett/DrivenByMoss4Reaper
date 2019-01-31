@@ -47,7 +47,7 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
         this.numScenes = numScenes;
         this.numSends = numSends;
 
-        this.emptyTrack = new TrackImpl (host, sender, valueChanger, -1, numTracks, numSends, numScenes);
+        this.emptyTrack = new TrackImpl (host, sender, this, valueChanger, -1, numTracks, numSends, numScenes);
         this.sceneBank = new SceneBankImpl (host, sender, this, this.numScenes);
     }
 
@@ -77,12 +77,12 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
         // Deselect previous selected track (if any)
         final ITrack selectedTrack = this.getSelectedItem ();
         if (selectedTrack != null)
-            this.sendTrackOSC (selectedTrack.getPosition () + "/select", Integer.valueOf (0));
+            this.sendTrackOSC (selectedTrack.getPosition () + "/select", 0);
 
         // Select item on new page
         final int selIndex = this.pageSize - 1;
         final int selPos = this.getItem (selIndex).getPosition ();
-        this.sendTrackOSC (selPos + "/select", Integer.valueOf (1));
+        this.sendTrackOSC (selPos + "/select", 1);
     }
 
 
@@ -96,11 +96,11 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
         // Deselect previous selected track (if any)
         final ITrack selectedTrack = this.getSelectedItem ();
         if (selectedTrack != null)
-            this.sendTrackOSC (selectedTrack.getPosition () + "/select", Integer.valueOf (0));
+            this.sendTrackOSC (selectedTrack.getPosition () + "/select", 0);
 
         // Select item on new page
         final int selPos = this.getItem (0).getPosition ();
-        this.sendTrackOSC (selPos + "/select", Integer.valueOf (1));
+        this.sendTrackOSC (selPos + "/select", 1);
     }
 
 
@@ -136,7 +136,7 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
             if (diff > 0)
             {
                 for (int i = 0; i < diff; i++)
-                    this.items.add (new TrackImpl (this.host, this.sender, this.valueChanger, size + i, this.getPageSize (), this.numSends, this.numScenes));
+                    this.items.add (new TrackImpl (this.host, this.sender, this, this.valueChanger, size + i, this.getPageSize (), this.numSends, this.numScenes));
             }
             return (TrackImpl) this.items.get (position);
         }
@@ -154,17 +154,15 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
     }
 
 
-    protected void sendTrackOSC (final String command, final Object value)
+    protected void sendTrackOSC (final String command, final int value)
     {
-        this.sender.sendOSC ("/track/" + command + "/", value);
+        this.sender.processIntArg ("track", command, value);
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public void selectChildren ()
+    protected void sendTrackOSC (final String command)
     {
-        // Intentionally empty
+        this.sender.processNoArg ("track", command);
     }
 
 
@@ -253,7 +251,7 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
             return;
         final int pageSize = this.getPageSize ();
         final int pos = adjustPage ? position / pageSize * pageSize : position;
-        this.sendTrackOSC (pos + "/scrollto", null);
+        this.sendTrackOSC (pos + "/scrollto");
     }
 
 
