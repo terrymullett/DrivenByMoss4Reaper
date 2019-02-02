@@ -117,7 +117,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
     @Override
     public boolean isPlugin ()
     {
-        // Not supported
+        // All are plugins (no native)
         return true;
     }
 
@@ -228,7 +228,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
     @Override
     public void toggleWindowOpen ()
     {
-        this.sender.processBooleanArg ("device", "window", this.isWindowOpen);
+        this.sender.processBooleanArg ("device", "window", !this.isWindowOpen);
     }
 
 

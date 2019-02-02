@@ -9,6 +9,10 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.Actions;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
+
 
 /**
  * Proxy to the Application object.
@@ -19,6 +23,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
 {
     private String  panelLayout  = IApplication.PANEL_LAYOUT_ARRANGE;
     private boolean engineActive = true;
+    private Robot   robot;
 
 
     /**
@@ -30,6 +35,15 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     public ApplicationImpl (final IHost host, final MessageSender sender)
     {
         super (host, sender);
+
+        try
+        {
+            this.robot = new Robot ();
+        }
+        catch (final AWTException ex)
+        {
+            host.println ("Sending key presses not supported on this platform.");
+        }
     }
 
 
@@ -304,7 +318,8 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void enter ()
     {
-        // Not supported
+        this.robot.keyPress (KeyEvent.VK_ENTER);
+        this.robot.keyRelease (KeyEvent.VK_ENTER);
     }
 
 
@@ -312,7 +327,8 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void escape ()
     {
-        // Not supported
+        this.robot.keyPress (KeyEvent.VK_ESCAPE);
+        this.robot.keyRelease (KeyEvent.VK_ESCAPE);
     }
 
 

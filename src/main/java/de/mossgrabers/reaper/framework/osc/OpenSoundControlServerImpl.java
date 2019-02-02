@@ -4,6 +4,7 @@
 
 package de.mossgrabers.reaper.framework.osc;
 
+import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.osc.IOpenSoundControlMessage;
 import de.mossgrabers.framework.osc.IOpenSoundControlServer;
 
@@ -12,6 +13,9 @@ import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPortOut;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,17 +27,29 @@ import java.util.List;
  */
 public class OpenSoundControlServerImpl implements IOpenSoundControlServer
 {
-    private final OSCPortOut connection;
+    private OSCPortOut connection;
+    private boolean    isClosed = true;
 
 
     /**
      * Constructor.
-     *
-     * @param connection The OSC connection
+     * 
+     * @param host The host
+     * @param serverAddress The address of the server to connect to
+     * @param serverPort The port of the server to connect to
      */
-    public OpenSoundControlServerImpl (final OSCPortOut connection)
+    public OpenSoundControlServerImpl (final IHost host, final String serverAddress, final int serverPort)
     {
-        this.connection = connection;
+        try
+        {
+            this.connection = new OSCPortOut (InetAddress.getByName (serverAddress), serverPort);
+            this.isClosed = false;
+        }
+        catch (final SocketException | UnknownHostException ex)
+        {
+            this.connection = null;
+            host.error ("Could not connect to OSC server.", ex);
+        }
     }
 
 
@@ -41,7 +57,7 @@ public class OpenSoundControlServerImpl implements IOpenSoundControlServer
     @Override
     public void sendMessage (final IOpenSoundControlMessage message) throws IOException
     {
-        if (this.connection == null)
+        if (this.isClosed)
             return;
 
         final String address = message.getAddress ();
@@ -54,6 +70,9 @@ public class OpenSoundControlServerImpl implements IOpenSoundControlServer
     @Override
     public void sendBundle (final List<IOpenSoundControlMessage> messages) throws IOException
     {
+        if (this.isClosed)
+            return;
+
         int pos = 0;
         OSCBundle oscBundle = new OSCBundle ();
         for (final IOpenSoundControlMessage message: messages)
@@ -72,5 +91,17 @@ public class OpenSoundControlServerImpl implements IOpenSoundControlServer
         }
         if (!oscBundle.getPackets ().isEmpty ())
             this.connection.send (oscBundle);
+    }
+
+
+    /**
+     * Close the wrapped osc client and free resources.
+     */
+    public void close ()
+    {
+        this.isClosed = true;
+
+        if (this.connection != null)
+            this.connection.close ();
     }
 }

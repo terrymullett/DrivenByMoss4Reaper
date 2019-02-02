@@ -102,7 +102,9 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void restart ()
     {
-        // Not supported
+        if (this.isPlaying)
+            this.stop ();
+        this.play ();
     }
 
 
@@ -435,8 +437,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void resetAutomationOverrides ()
     {
-        // TODO
-        // this.sender.sendOSC ("/action_ex", "_S&M_REMOVE_ALLENVS");
+        // Not supported
     }
 
 

@@ -45,7 +45,7 @@ public class ParameterImpl extends ItemImpl implements IParameter
     @Override
     public void inc (final double increment)
     {
-        // Not supported
+        this.setValue (Math.max (0, Math.min (this.getValue () + increment, this.valueChanger.getUpperBound () - 1)));
     }
 
 

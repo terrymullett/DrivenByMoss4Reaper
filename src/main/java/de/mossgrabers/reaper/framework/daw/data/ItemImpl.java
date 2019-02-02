@@ -167,6 +167,6 @@ public abstract class ItemImpl extends BaseImpl implements IItem
     @Override
     public void select ()
     {
-        // Not supported
+        // Intentionally empty
     }
 }

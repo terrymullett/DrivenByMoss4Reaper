@@ -16,6 +16,8 @@ import de.mossgrabers.reaper.framework.midi.Midi;
 import de.mossgrabers.reaper.framework.midi.MidiConnection;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.SafeRunLater;
+import de.mossgrabers.reaper.ui.widget.CheckboxListItem;
+import de.mossgrabers.reaper.ui.widget.CheckboxListRenderer;
 
 import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
@@ -63,7 +65,7 @@ public class MainFrame extends JFrame implements MessageSender
 
     protected final MainConfiguration           mainConfiguration = new MainConfiguration ();
 
-    private final JList<IControllerInstance>    controllerList    = new JList<> (new DefaultListModel<> ());
+    private final JList<CheckboxListItem>       controllerList    = new JList<> (new DefaultListModel<> ());
 
     private transient ControllerInstanceManager instanceManager;
     private final Timer                         animationTimer;
@@ -72,6 +74,7 @@ public class MainFrame extends JFrame implements MessageSender
 
     private JButton                             removeButton;
     private JButton                             configButton;
+    private JButton                             enableButton;
 
 
     /**
@@ -164,16 +167,21 @@ public class MainFrame extends JFrame implements MessageSender
         this.removeButton = new JButton ("Remove");
         this.removeButton.addActionListener (event -> this.removeController ());
 
+        this.enableButton = new JButton ("Dis-/enable");
+        this.enableButton.addActionListener (event -> this.toggleEnableController ());
+
         final JPanel deviceButtonContainer = new JPanel ();
         deviceButtonContainer.setBorder (new EmptyBorder (0, GAP, 0, 0));
-        deviceButtonContainer.setLayout (new GridLayout (4, 1, 0, GAP));
+        deviceButtonContainer.setLayout (new GridLayout (5, 1, 0, GAP));
 
         deviceButtonContainer.add (addButton);
         deviceButtonContainer.add (this.removeButton);
         deviceButtonContainer.add (this.configButton);
+        deviceButtonContainer.add (this.enableButton);
         deviceButtonContainer.add (refreshButton);
 
         this.controllerList.setMinimumSize (new Dimension (300, 200));
+        this.controllerList.setCellRenderer (new CheckboxListRenderer ());
         final JScrollPane controllerListPane = new JScrollPane (this.controllerList);
 
         final JPanel controllerConfigurationPane = new JPanel (new BorderLayout ());
@@ -320,11 +328,11 @@ public class MainFrame extends JFrame implements MessageSender
         }
 
         this.instanceManager.load (this.mainConfiguration);
-        final DefaultListModel<IControllerInstance> items = (DefaultListModel<IControllerInstance>) this.controllerList.getModel ();
+        final DefaultListModel<CheckboxListItem> items = this.getControllerListModel ();
         items.clear ();
 
         for (final IControllerInstance instance: this.instanceManager.getInstances ())
-            items.addElement (instance);
+            items.addElement (new CheckboxListItem (instance));
 
         this.updateWidgetStates ();
 
@@ -447,9 +455,38 @@ public class MainFrame extends JFrame implements MessageSender
         final int selectedIndex = this.controllerList.getSelectionModel ().getLeadSelectionIndex ();
         if (selectedIndex < 0)
             return;
-        ((DefaultListModel<IControllerInstance>) this.controllerList.getModel ()).remove (selectedIndex);
+        this.getControllerListModel ().remove (selectedIndex);
         this.instanceManager.remove (selectedIndex);
         this.updateWidgetStates ();
+    }
+
+
+    private void toggleEnableController ()
+    {
+        final int selectedIndex = this.controllerList.getSelectionModel ().getLeadSelectionIndex ();
+        if (selectedIndex < 0)
+            return;
+        final DefaultListModel<CheckboxListItem> controllerListModel = this.getControllerListModel ();
+        final CheckboxListItem item = controllerListModel.getElementAt (selectedIndex);
+        item.setSelected (!item.isSelected ());
+        // Force a redraw
+        controllerListModel.setElementAt (item, selectedIndex);
+        final IControllerInstance controller = item.getItem ();
+        controller.storeConfiguration ();
+
+        if (controller.isEnabled ())
+        {
+            controller.start ();
+            this.sendRefreshCommand ();
+        }
+        else
+            controller.stop ();
+    }
+
+
+    private DefaultListModel<CheckboxListItem> getControllerListModel ()
+    {
+        return (DefaultListModel<CheckboxListItem>) this.controllerList.getModel ();
     }
 
 
@@ -519,11 +556,12 @@ public class MainFrame extends JFrame implements MessageSender
                     this.logModel.info ("Only one instance of a controller type is supported!");
                     return;
                 }
-                final IControllerInstance inst = this.instanceManager.instantiate (index);
-                ((DefaultListModel<IControllerInstance>) this.controllerList.getModel ()).addElement (inst);
+                final IControllerInstance controllerInstance = this.instanceManager.instantiate (index);
+                final CheckboxListItem inst = new CheckboxListItem (controllerInstance);
+                this.getControllerListModel ().addElement (inst);
                 this.controllerList.setSelectedValue (inst, true);
                 this.updateWidgetStates ();
-                inst.start ();
+                controllerInstance.start ();
                 this.sendRefreshCommand ();
             });
             menu.add (item);

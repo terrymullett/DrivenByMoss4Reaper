@@ -67,7 +67,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void enter ()
     {
-        // Not supported
+        // Intentionally empty
     }
 
 
