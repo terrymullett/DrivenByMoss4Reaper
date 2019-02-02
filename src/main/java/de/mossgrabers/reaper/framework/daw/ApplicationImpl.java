@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.daw.IApplication;
 import de.mossgrabers.framework.daw.IHost;
+import de.mossgrabers.framework.utils.OperatingSystem;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.Actions;
 
@@ -21,9 +22,32 @@ import java.awt.event.KeyEvent;
  */
 public class ApplicationImpl extends BaseImpl implements IApplication
 {
+    private static Robot   robot;
+
     private String  panelLayout  = IApplication.PANEL_LAYOUT_ARRANGE;
     private boolean engineActive = true;
-    private Robot   robot;
+    
+    
+    static Robot getRobot ()
+    {
+    	if (robot == null)
+    	{
+	        try
+	        {
+	        	// Freezes Reaper UI on Linux
+	        	if (OperatingSystem.get() != OperatingSystem.LINUX)
+	        	{
+		            robot = new Robot ();
+		            robot.setAutoDelay (250);
+	        	}
+	        }
+	        catch (final AWTException ex)
+	        {
+	        	robot = null;
+	        }
+    	}
+        return robot;
+    }
 
 
     /**
@@ -35,15 +59,6 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     public ApplicationImpl (final IHost host, final MessageSender sender)
     {
         super (host, sender);
-
-        try
-        {
-            this.robot = new Robot ();
-        }
-        catch (final AWTException ex)
-        {
-            host.println ("Sending key presses not supported on this platform.");
-        }
     }
 
 
@@ -318,8 +333,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void enter ()
     {
-        this.robot.keyPress (KeyEvent.VK_ENTER);
-        this.robot.keyRelease (KeyEvent.VK_ENTER);
+    	this.sendKey (KeyEvent.VK_ENTER);
     }
 
 
@@ -327,8 +341,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void escape ()
     {
-        this.robot.keyPress (KeyEvent.VK_ESCAPE);
-        this.robot.keyRelease (KeyEvent.VK_ESCAPE);
+    	this.sendKey (KeyEvent.VK_ESCAPE);
     }
 
 
@@ -356,5 +369,19 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     public void setInternalEngineActive (final boolean active)
     {
         this.engineActive = active;
+    }
+    
+    
+    private void sendKey (final int key)
+    {
+    	final Robot rob = getRobot ();
+    	if (rob == null)
+    	{
+            host.println ("Sending key presses not supported on this platform.");
+            return;
+    	}
+    	
+        rob.keyPress (key);
+        rob.keyRelease (key);
     }
 }
