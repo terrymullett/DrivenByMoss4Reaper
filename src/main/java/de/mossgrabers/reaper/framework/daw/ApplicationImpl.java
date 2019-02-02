@@ -9,6 +9,10 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.Actions;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
+
 
 /**
  * Proxy to the Application object.
@@ -19,6 +23,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
 {
     private String  panelLayout  = IApplication.PANEL_LAYOUT_ARRANGE;
     private boolean engineActive = true;
+    private Robot   robot;
 
 
     /**
@@ -30,6 +35,15 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     public ApplicationImpl (final IHost host, final MessageSender sender)
     {
         super (host, sender);
+
+        try
+        {
+            this.robot = new Robot ();
+        }
+        catch (final AWTException ex)
+        {
+            host.println ("Sending key presses not supported on this platform.");
+        }
     }
 
 
@@ -45,7 +59,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void setEngineActive (final boolean active)
     {
-        this.sender.sendOSC ("/project/engine", Integer.valueOf (active ? 1 : 0));
+        this.sender.processBooleanArg ("project", "engine", active);
     }
 
 
@@ -196,7 +210,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void redo ()
     {
-        this.sender.sendOSC ("/redo", null);
+        this.sender.processNoArg ("redo");
     }
 
 
@@ -204,7 +218,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void undo ()
     {
-        this.sender.sendOSC ("/undo", null);
+        this.sender.processNoArg ("undo");
     }
 
 
@@ -304,7 +318,8 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void enter ()
     {
-        // Not supported
+        this.robot.keyPress (KeyEvent.VK_ENTER);
+        this.robot.keyRelease (KeyEvent.VK_ENTER);
     }
 
 
@@ -312,7 +327,8 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void escape ()
     {
-        // Not supported
+        this.robot.keyPress (KeyEvent.VK_ESCAPE);
+        this.robot.keyRelease (KeyEvent.VK_ESCAPE);
     }
 
 

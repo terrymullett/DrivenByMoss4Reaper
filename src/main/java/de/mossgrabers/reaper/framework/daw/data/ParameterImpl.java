@@ -45,7 +45,7 @@ public class ParameterImpl extends ItemImpl implements IParameter
     @Override
     public void inc (final double increment)
     {
-        // Not supported
+        this.setValue (Math.max (0, Math.min (this.getValue () + increment, this.valueChanger.getUpperBound () - 1)));
     }
 
 
@@ -90,7 +90,7 @@ public class ParameterImpl extends ItemImpl implements IParameter
         if (!this.doesExist ())
             return;
         this.value = (int) value;
-        this.sender.sendOSC ("/device/param/" + this.getPosition () + "/value", Double.valueOf (this.valueChanger.toNormalizedValue (this.getValue ())));
+        this.sender.processDoubleArg ("device", "param/" + this.getPosition () + "/value", this.valueChanger.toNormalizedValue (this.getValue ()));
     }
 
 

@@ -138,7 +138,7 @@ public class SlotImpl extends ItemImpl implements ISlot
     @Override
     public void create (final int length)
     {
-        this.sender.sendOSC ("/track/" + this.trackIndex + "/createClip", Integer.valueOf (length));
+        this.sender.processIntArg ("track", this.trackIndex + "/createClip", length);
     }
 
 
@@ -155,7 +155,7 @@ public class SlotImpl extends ItemImpl implements ISlot
     @Override
     public void duplicate ()
     {
-        this.sender.sendOSC ("/clip/duplicate", null);
+        this.sender.processNoArg ("clip", "duplicate");
     }
 
 
@@ -169,7 +169,7 @@ public class SlotImpl extends ItemImpl implements ISlot
 
     private void sendTrackClipOSC (final String command)
     {
-        this.sender.sendOSC ("/track/" + this.trackIndex + "/clip/" + this.getPosition () + "/" + command, null);
+        this.sender.processNoArg ("track", this.trackIndex + "/clip/" + this.getPosition () + "/" + command);
     }
 
 

@@ -24,14 +24,11 @@ import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
 import com.illposed.osc.OSCListener;
 import com.illposed.osc.OSCPortIn;
-import com.illposed.osc.OSCPortOut;
 
 import java.awt.Color;
 import java.awt.Window;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -46,14 +43,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class HostImpl implements IHost
 {
-    private final Window                   owner;
-    private final LogModel                 logModel;
-    private final ScheduledExecutorService executor       = Executors.newSingleThreadScheduledExecutor ();
-    private final List<UsbMatcher>         usbDeviceInfos = new ArrayList<> ();
-    private final List<IUsbDevice>         usbDevices     = new ArrayList<> ();
-    private OSCPortOut                     oscSender;
-    private OSCPortIn                      oscReceiver;
-    private final NotificationWindow       notificationWindow;
+    private final Window                           owner;
+    private final LogModel                         logModel;
+    private final ScheduledExecutorService         executor       = Executors.newScheduledThreadPool (10);
+    private final List<UsbMatcher>                 usbDeviceInfos = new ArrayList<> ();
+    private final List<IUsbDevice>                 usbDevices     = new ArrayList<> ();
+    private final List<OpenSoundControlServerImpl> oscSenders     = new ArrayList<> ();
+    private OSCPortIn                              oscReceiver;
+    private final NotificationWindow               notificationWindow;
 
 
     /**
@@ -251,18 +248,9 @@ public class HostImpl implements IHost
     @Override
     public IOpenSoundControlServer connectToOSCServer (final String serverAddress, final int serverPort)
     {
-        try
-        {
-            if (this.oscSender != null)
-                this.oscSender.close ();
-            this.oscSender = new OSCPortOut (InetAddress.getByName (serverAddress), serverPort);
-            return new OpenSoundControlServerImpl (this.oscSender);
-        }
-        catch (SocketException | UnknownHostException ex)
-        {
-            this.error ("Could not connect to OSC server.", ex);
-            return new OpenSoundControlServerImpl (null);
-        }
+        final OpenSoundControlServerImpl server = new OpenSoundControlServerImpl (this, serverAddress, serverPort);
+        this.oscSenders.add (server);
+        return server;
     }
 
 
@@ -307,7 +295,7 @@ public class HostImpl implements IHost
             this.oscReceiver.stopListening ();
             this.oscReceiver.close ();
         }
-        if (this.oscSender != null)
-            this.oscSender.close ();
+        for (final OpenSoundControlServerImpl sender: this.oscSenders)
+            sender.close ();
     }
 }

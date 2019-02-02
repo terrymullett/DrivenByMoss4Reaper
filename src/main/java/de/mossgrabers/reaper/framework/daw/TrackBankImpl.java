@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TrackBankImpl extends AbstractTrackBankImpl
 {
     private final boolean       hasFlatTrackList;
+    private final boolean       hasFullFlatTrackList;
     private final ITrack        master;
     private final AtomicBoolean isDirty       = new AtomicBoolean (false);
     private TreeNode<TrackImpl> rootTrack     = new TreeNode<> ();
@@ -44,32 +45,41 @@ public class TrackBankImpl extends AbstractTrackBankImpl
      * @param numSends The number of sends in a bank page
      * @param hasFlatTrackList True if group navigation should not be supported, instead all tracks
      *            are flat
+     * @param hasFullFlatTrackList True if the track navigation should include effect and master
+     *            tracks if flat
      * @param master If set the track navigation should include master tracks if flat
      */
-    public TrackBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final ITrack master)
+    public TrackBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final boolean hasFullFlatTrackList, final ITrack master)
     {
         super (host, sender, valueChanger, numTracks, numScenes, numSends);
 
         this.hasFlatTrackList = hasFlatTrackList;
+        this.hasFullFlatTrackList = hasFullFlatTrackList;
         this.master = master;
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public void selectChildren ()
+    /**
+     * Enter the current folder if hierarchical track navigation is enabled.
+     */
+    public void enterCurrentFolder ()
     {
         if (this.hasFlatTrackList)
             return;
 
-        for (final TreeNode<TrackImpl> node: this.currentFolder.getChildren ())
+        final List<TreeNode<TrackImpl>> tracks = this.currentFolder.getChildren ();
+        // Find the selected track in the current children, which has to be a group
+        for (final TreeNode<TrackImpl> node: tracks)
         {
-            if (node.getData ().isSelected ())
+            final TrackImpl data = node.getData ();
+            if (data.isSelected () && data.isGroup ())
             {
+                // Make the found track the new current folder
                 this.currentFolder = node;
-                List<TreeNode<TrackImpl>> children = this.currentFolder.getChildren ();
-                if (!children.isEmpty ())
-                    children.get (0).getData ().select ();
+                List<TreeNode<TrackImpl>> children = node.getChildren ();
+                if (children.isEmpty ())
+                    break;
+                children.get (0).getData ().select ();
                 break;
             }
         }
@@ -160,11 +170,8 @@ public class TrackBankImpl extends AbstractTrackBankImpl
                 return true;
             }
 
-            if (track.isGroup ())
-            {
-                if (findSelectedTrack (child))
-                    return true;
-            }
+            if (track.isGroup () && findSelectedTrack (child))
+                return true;
         }
         return false;
     }
@@ -214,7 +221,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
 
         if (this.hasFlatTrackList)
         {
-            if (this.master != null && super.getItemCount () == id)
+            if (this.hasFullFlatTrackList && this.master != null && super.getItemCount () == id)
                 return this.master;
             return super.getItem (index);
         }
@@ -233,7 +240,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
         if (this.hasFlatTrackList)
         {
             int size = super.getItemCount ();
-            if (this.master != null)
+            if (this.hasFullFlatTrackList && this.master != null)
                 size++;
             return size;
         }

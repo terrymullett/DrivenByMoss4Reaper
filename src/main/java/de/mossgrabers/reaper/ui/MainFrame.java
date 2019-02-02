@@ -16,6 +16,8 @@ import de.mossgrabers.reaper.framework.midi.Midi;
 import de.mossgrabers.reaper.framework.midi.MidiConnection;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.SafeRunLater;
+import de.mossgrabers.reaper.ui.widget.CheckboxListItem;
+import de.mossgrabers.reaper.ui.widget.CheckboxListRenderer;
 
 import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
@@ -27,6 +29,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -43,6 +46,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 /**
@@ -52,24 +57,24 @@ import java.net.URL;
  */
 public class MainFrame extends JFrame implements MessageSender
 {
-    private static final long                serialVersionUID  = 4251131641194938848L;
-    private static final int                 GAP               = 14;
+    private static final long                   serialVersionUID  = 4251131641194938848L;
+    private static final int                    GAP               = 14;
 
-    private JTextArea                        loggingTextArea   = new JTextArea ();
-    private final LogModel                   logModel          = new LogModel (this.loggingTextArea);
+    private JTextArea                           loggingTextArea   = new JTextArea ();
+    private final transient LogModel            logModel          = new LogModel (this.loggingTextArea);
 
-    protected final MainConfiguration        mainConfiguration = new MainConfiguration ();
+    protected final MainConfiguration           mainConfiguration = new MainConfiguration ();
 
-    private final JList<IControllerInstance> controllerList    = new JList<> (new DefaultListModel<> ());
+    private final JList<CheckboxListItem>       controllerList    = new JList<> (new DefaultListModel<> ());
 
-    private ControllerInstanceManager        instanceManager;
-    private final Timer                      animationTimer;
-    private String                           iniPath;
-    private IniFiles                         iniFiles          = new IniFiles ();
+    private transient ControllerInstanceManager instanceManager;
+    private final Timer                         animationTimer;
+    private String                              iniPath;
+    private final transient IniFiles            iniFiles          = new IniFiles ();
 
-    private JButton                          addButton;
-    private JButton                          removeButton;
-    private JButton                          configButton;
+    private JButton                             removeButton;
+    private JButton                             configButton;
+    private JButton                             enableButton;
 
 
     /**
@@ -156,22 +161,27 @@ public class MainFrame extends JFrame implements MessageSender
         // Center pane with device configuration and logging
         this.configButton = new JButton ("Configuration");
         this.configButton.addActionListener (event -> this.editController ());
-        this.addButton = new JButton ("Add");
-        this.configureAddButton (this.addButton);
+        final JButton addButton = new JButton ("Add");
+        this.configureAddButton (addButton);
 
         this.removeButton = new JButton ("Remove");
         this.removeButton.addActionListener (event -> this.removeController ());
 
+        this.enableButton = new JButton ("Dis-/enable");
+        this.enableButton.addActionListener (event -> this.toggleEnableController ());
+
         final JPanel deviceButtonContainer = new JPanel ();
         deviceButtonContainer.setBorder (new EmptyBorder (0, GAP, 0, 0));
-        deviceButtonContainer.setLayout (new GridLayout (4, 1, 0, GAP));
+        deviceButtonContainer.setLayout (new GridLayout (5, 1, 0, GAP));
 
-        deviceButtonContainer.add (this.addButton);
+        deviceButtonContainer.add (addButton);
         deviceButtonContainer.add (this.removeButton);
         deviceButtonContainer.add (this.configButton);
+        deviceButtonContainer.add (this.enableButton);
         deviceButtonContainer.add (refreshButton);
 
         this.controllerList.setMinimumSize (new Dimension (300, 200));
+        this.controllerList.setCellRenderer (new CheckboxListRenderer ());
         final JScrollPane controllerListPane = new JScrollPane (this.controllerList);
 
         final JPanel controllerConfigurationPane = new JPanel (new BorderLayout ());
@@ -318,11 +328,11 @@ public class MainFrame extends JFrame implements MessageSender
         }
 
         this.instanceManager.load (this.mainConfiguration);
-        final DefaultListModel<IControllerInstance> items = (DefaultListModel<IControllerInstance>) this.controllerList.getModel ();
+        final DefaultListModel<CheckboxListItem> items = this.getControllerListModel ();
         items.clear ();
 
         for (final IControllerInstance instance: this.instanceManager.getInstances ())
-            items.addElement (instance);
+            items.addElement (new CheckboxListItem (instance));
 
         this.updateWidgetStates ();
 
@@ -417,70 +427,27 @@ public class MainFrame extends JFrame implements MessageSender
 
     /** {@inheritDoc} */
     @Override
-    public void sendOSC (final String command, final Object value)
-    {
-        if (value == null)
-            this.processNoArg (command);
-        else if (value instanceof String)
-            this.processStringArg (command, (String) value);
-        else if (value instanceof Integer)
-            this.processIntArg (command, ((Integer) value).intValue ());
-        else if (value instanceof Double)
-        {
-            final Double doubleValue = (Double) value;
-            if (value.toString ().endsWith (".0"))
-                this.processIntArg (command, doubleValue.intValue ());
-            else
-                this.processDoubleArg (command, doubleValue.doubleValue ());
-        }
-        else if (value instanceof Boolean)
-            this.processIntArg (command, ((Boolean) value).booleanValue () ? 1 : 0);
-        else
-            this.logModel.info ("Unsupported type: " + value.getClass ().toString ());
-    }
-
-
-    /**
-     * Call Reaper command in DLL.
-     *
-     * @param command The OSC path command
-     */
-    public native void processNoArg (final String command);
-
-
-    /**
-     * Call Reaper command in DLL.
-     *
-     * @param command The OSC path command
-     * @param value A string value
-     */
-    public native void processStringArg (final String command, final String value);
-
-
-    /**
-     * Call Reaper command in DLL.
-     *
-     * @param command The OSC path command
-     * @param value An integer value
-     */
-    public native void processIntArg (final String command, final int value);
-
-
-    /**
-     * Call Reaper command in DLL.
-     *
-     * @param command The OSC path command
-     * @param value A double value
-     */
-    public native void processDoubleArg (final String command, final double value);
+    public native void processNoArg (final String processor, final String command);
 
 
     /** {@inheritDoc} */
     @Override
-    public void invokeAction (final int id)
-    {
-        this.sendOSC ("/action", Integer.valueOf (id));
-    }
+    public native void processStringArg (final String processor, final String command, final String value);
+
+
+    /** {@inheritDoc} */
+    @Override
+    public native void processIntArg (final String processor, final String command, final int value);
+
+
+    /** {@inheritDoc} */
+    @Override
+    public native void processDoubleArg (final String processor, final String command, final double value);
+
+
+    /** {@inheritDoc} */
+    @Override
+    public native void processMidiArg (final int status, final int data1, final int data2);
 
 
     private void removeController ()
@@ -488,9 +455,38 @@ public class MainFrame extends JFrame implements MessageSender
         final int selectedIndex = this.controllerList.getSelectionModel ().getLeadSelectionIndex ();
         if (selectedIndex < 0)
             return;
-        ((DefaultListModel<IControllerInstance>) this.controllerList.getModel ()).remove (selectedIndex);
+        this.getControllerListModel ().remove (selectedIndex);
         this.instanceManager.remove (selectedIndex);
         this.updateWidgetStates ();
+    }
+
+
+    private void toggleEnableController ()
+    {
+        final int selectedIndex = this.controllerList.getSelectionModel ().getLeadSelectionIndex ();
+        if (selectedIndex < 0)
+            return;
+        final DefaultListModel<CheckboxListItem> controllerListModel = this.getControllerListModel ();
+        final CheckboxListItem item = controllerListModel.getElementAt (selectedIndex);
+        item.setSelected (!item.isSelected ());
+        // Force a redraw
+        controllerListModel.setElementAt (item, selectedIndex);
+        final IControllerInstance controller = item.getItem ();
+        controller.storeConfiguration ();
+
+        if (controller.isEnabled ())
+        {
+            controller.start ();
+            this.sendRefreshCommand ();
+        }
+        else
+            controller.stop ();
+    }
+
+
+    private DefaultListModel<CheckboxListItem> getControllerListModel ()
+    {
+        return (DefaultListModel<CheckboxListItem>) this.controllerList.getModel ();
     }
 
 
@@ -537,17 +533,22 @@ public class MainFrame extends JFrame implements MessageSender
 
     private void sendRefreshCommand ()
     {
-        this.sendOSC ("/refresh", null);
+        this.processNoArg ("refresh");
     }
 
 
     private void configureAddButton (final JButton addButton)
     {
+        final Map<String, JMenu> menus = new TreeMap<> ();
+
         final JPopupMenu popup = new JPopupMenu ();
         final IControllerDefinition [] definitions = this.instanceManager.getDefinitions ();
         for (int i = 0; i < definitions.length; i++)
         {
-            final JMenuItem item = new JMenuItem (definitions[i].toString ());
+            final String vendor = definitions[i].getHardwareVendor ();
+            final JMenu menu = menus.computeIfAbsent (vendor, JMenu::new);
+
+            final JMenuItem item = new JMenuItem (new StringBuilder (definitions[i].getHardwareModel ()).append (" (").append (definitions[i].getVersion ()).append (')').toString ());
             final int index = i;
             item.addActionListener (event -> {
                 if (this.instanceManager.isInstantiated (index))
@@ -555,15 +556,18 @@ public class MainFrame extends JFrame implements MessageSender
                     this.logModel.info ("Only one instance of a controller type is supported!");
                     return;
                 }
-                final IControllerInstance inst = this.instanceManager.instantiate (index);
-                ((DefaultListModel<IControllerInstance>) this.controllerList.getModel ()).addElement (inst);
+                final IControllerInstance controllerInstance = this.instanceManager.instantiate (index);
+                final CheckboxListItem inst = new CheckboxListItem (controllerInstance);
+                this.getControllerListModel ().addElement (inst);
                 this.controllerList.setSelectedValue (inst, true);
                 this.updateWidgetStates ();
-                inst.start ();
+                controllerInstance.start ();
                 this.sendRefreshCommand ();
             });
-            popup.add (item);
+            menu.add (item);
         }
+        for (final JMenu menu: menus.values ())
+            popup.add (menu);
         addButton.addActionListener (event -> popup.show (addButton, 0, addButton.getHeight ()));
     }
 

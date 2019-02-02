@@ -99,7 +99,7 @@ public abstract class AbstractTrackMode extends BaseMode
                 // If it is a group display child channels of group, otherwise jump into device
                 // mode
                 if (selTrack.isGroup ())
-                    tb.selectChildren ();
+                    selTrack.enter ();
                 else
                     this.surface.getViewManager ().getActiveView ().executeTriggerCommand (Commands.COMMAND_DEVICE, ButtonEvent.DOWN);
             }
@@ -445,7 +445,8 @@ public abstract class AbstractTrackMode extends BaseMode
         for (int i = 0; i < (isShiftPressed ? 4 : 3); i++)
         {
             final String sendName = tb.getEditSendName (sendOffset + i);
-            this.menu.get (4 + i).set (sendName.isEmpty () ? " " : sendName, Boolean.valueOf (4 + i == selectedMenu - 1));
+            final boolean exists = !sendName.isEmpty ();
+            this.menu.get (4 + i).set (exists ? sendName : " ", Boolean.valueOf (exists && 4 + i == selectedMenu - 1));
         }
 
         if (isShiftPressed)

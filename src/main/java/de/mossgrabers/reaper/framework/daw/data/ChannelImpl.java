@@ -67,7 +67,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void enter ()
     {
-        // Not supported
+        // Intentionally empty
     }
 
 
@@ -125,7 +125,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     public void setVolume (final double value)
     {
         this.volume = (int) value;
-        this.sendTrackOSC ("volume", Double.valueOf (this.valueChanger.toNormalizedValue (this.getVolume ())));
+        this.sendTrackOSC ("volume", this.valueChanger.toNormalizedValue (this.getVolume ()));
     }
 
 
@@ -141,7 +141,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void touchVolume (final boolean isBeingTouched)
     {
-        this.sendTrackOSC ("volume/touch", Integer.valueOf (isBeingTouched ? 1 : 0));
+        this.sendTrackOSC ("volume/touch", isBeingTouched);
         this.handleVolumeTouch (isBeingTouched);
     }
 
@@ -218,7 +218,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     public void setPan (final double value)
     {
         this.pan = (int) value;
-        this.sendTrackOSC ("pan", Double.valueOf (this.valueChanger.toNormalizedValue (this.getPan ())));
+        this.sendTrackOSC ("pan", this.valueChanger.toNormalizedValue (this.getPan ()));
     }
 
 
@@ -234,7 +234,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void touchPan (final boolean isBeingTouched)
     {
-        this.sendTrackOSC ("pan/touch", Integer.valueOf (isBeingTouched ? 1 : 0));
+        this.sendTrackOSC ("pan/touch", isBeingTouched);
         this.handlePanTouch (isBeingTouched);
     }
 
@@ -339,7 +339,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     public void setIsActivated (final boolean enable)
     {
         this.isActivated = enable;
-        this.sendTrackOSC ("active", Boolean.valueOf (enable));
+        this.sendTrackOSC ("active", enable);
     }
 
 
@@ -356,7 +356,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     public void setMute (final boolean value)
     {
         this.setMuteState (value);
-        this.sendTrackOSC ("mute", Boolean.valueOf (value));
+        this.sendTrackOSC ("mute", value);
     }
 
 
@@ -373,7 +373,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     public void setSolo (final boolean value)
     {
         this.setSoloState (value);
-        this.sendTrackOSC ("solo", Boolean.valueOf (value));
+        this.sendTrackOSC ("solo", value);
     }
 
 
@@ -533,7 +533,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void remove ()
     {
-        this.sendTrackOSC ("remove", null);
+        this.sendTrackOSC ("remove");
     }
 
 
@@ -545,8 +545,32 @@ public class ChannelImpl extends ItemImpl implements IChannel
     }
 
 
-    protected void sendTrackOSC (final String command, final Object value)
+    protected void sendTrackOSC (final String command)
     {
-        this.sender.sendOSC ("/track/" + this.getPosition () + "/" + command, value);
+        this.sender.processNoArg ("track", this.getPosition () + "/" + command);
+    }
+
+
+    protected void sendTrackOSC (final String command, final int value)
+    {
+        this.sender.processIntArg ("track", this.getPosition () + "/" + command, value);
+    }
+
+
+    protected void sendTrackOSC (final String command, final boolean value)
+    {
+        this.sender.processIntArg ("track", this.getPosition () + "/" + command, value ? 1 : 0);
+    }
+
+
+    protected void sendTrackOSC (final String command, final double value)
+    {
+        this.sender.processDoubleArg ("track", this.getPosition () + "/" + command, value);
+    }
+
+
+    protected void sendTrackOSC (final String command, final String value)
+    {
+        this.sender.processStringArg ("track", this.getPosition () + "/" + command, value);
     }
 }

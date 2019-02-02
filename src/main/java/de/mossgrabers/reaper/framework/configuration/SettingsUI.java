@@ -18,6 +18,7 @@ import de.mossgrabers.reaper.framework.midi.Midi;
 import de.mossgrabers.reaper.framework.midi.MidiDeviceConverter;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.PropertiesEx;
+import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 import de.mossgrabers.reaper.ui.widget.JComboBoxX;
 
 import javax.sound.midi.MidiDevice;
@@ -33,6 +34,7 @@ import java.util.List;
  */
 public class SettingsUI implements ISettingsUI
 {
+    private static final String                    TAG_IS_ENABLED  = "TAG_IS_ENABLED";
     private static final String                    TAG_MIDI_INPUT  = "MIDI_INPUT";
     private static final String                    TAG_MIDI_OUTPUT = "MIDI_OUTPUT";
 
@@ -42,6 +44,8 @@ public class SettingsUI implements ISettingsUI
     private final int                              numMidiInPorts;
     private final int                              numMidiOutPorts;
     private final List<Pair<String [], String []>> discoveryPairs;
+
+    private boolean                                isEnabled       = true;
 
     private final MidiDevice []                    selectedMidiInputs;
     private final MidiDevice []                    selectedMidiOutputs;
@@ -65,6 +69,28 @@ public class SettingsUI implements ISettingsUI
 
         this.selectedMidiInputs = new MidiDevice [this.numMidiInPorts];
         this.selectedMidiOutputs = new MidiDevice [this.numMidiOutPorts];
+    }
+
+
+    /**
+     * Get if the controller is enabled.
+     *
+     * @return True if enabled
+     */
+    public boolean isEnabled ()
+    {
+        return this.isEnabled;
+    }
+
+
+    /**
+     * Set if the controller is enabled.
+     *
+     * @param isEnabled True if enabled
+     */
+    public void setEnabled (final boolean isEnabled)
+    {
+        this.isEnabled = isEnabled;
     }
 
 
@@ -128,11 +154,11 @@ public class SettingsUI implements ISettingsUI
             midiInput.setRenderer (new MidiDeviceConverter ());
             midiInputs.add (midiInput);
             final int index = i;
-            midiInput.addActionListener (event -> {
+            midiInput.addItemListener (event -> SafeRunLater.execute (SettingsUI.this.logModel, () -> {
                 final MidiDevice selectedItem = midiInput.getSelectedItem ();
                 if (selectedItem != null)
                     this.selectedMidiInputs[index] = selectedItem;
-            });
+            }));
         }
         return midiInputs;
     }
@@ -152,11 +178,11 @@ public class SettingsUI implements ISettingsUI
             midiOutput.setRenderer (new MidiDeviceConverter ());
             midiOutputs.add (midiOutput);
             final int index = i;
-            midiOutput.addActionListener (event -> {
+            midiOutput.addActionListener (event -> SafeRunLater.execute (SettingsUI.this.logModel, () -> {
                 final MidiDevice selectedItem = midiOutput.getSelectedItem ();
                 if (selectedItem != null)
                     this.selectedMidiOutputs[index] = midiOutput.getSelectedItem ();
-            });
+            }));
         }
         return midiOutputs;
     }
@@ -187,6 +213,8 @@ public class SettingsUI implements ISettingsUI
      */
     public void load (final PropertiesEx properties)
     {
+        this.isEnabled = properties.getBoolean (TAG_IS_ENABLED, true);
+
         for (int i = 0; i < this.numMidiInPorts; i++)
         {
             this.selectedMidiInputs[i] = Midi.getInputDevice (properties.getString (TAG_MIDI_INPUT + i));
@@ -224,6 +252,8 @@ public class SettingsUI implements ISettingsUI
      */
     public void store (final PropertiesEx properties)
     {
+        properties.putBoolean (TAG_IS_ENABLED, this.isEnabled);
+
         for (int i = 0; i < this.numMidiInPorts; i++)
         {
             final MidiDevice midiDevice = this.getSelectedMidiInput (i);

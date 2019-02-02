@@ -1,5 +1,19 @@
+5.03
+- New: Controllers can be deactivated so they do not use any resources when they are 
+       not connected.
+- New: Speed up of Java/C++ communication; fixes lag of controller playing
+- New: Menu for adding controllers is now hierarchical
+- New: Improved folder navigation
+- New: Implemented sending of Escape and Enter key to Reaper (used by MCU protocol)
+- New: Implemented transport restart function (used by Generic Flexi and OSC)
+- Fixed: Toggling of plugin window did not work
+- Fixed: MIDI editor is no longer closing when executing quantize from a controller, 
+         if it was already open.
+
 5.02
-- Fixed: Textfields in configuration dialog did not update their values.
+- Fixed: Widgets in configuration dialog did not always update their values correctly.
+- Fixed: The integrated Java VM did not contain the accessibility module. Therefore,
+         DrivenByMoss crashed on system with enabled accessibility support.
 
 5.01
 - Fixed: "error -99" on Macos with Push 2.

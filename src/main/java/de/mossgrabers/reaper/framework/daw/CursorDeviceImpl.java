@@ -117,7 +117,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
     @Override
     public boolean isPlugin ()
     {
-        // Not supported
+        // All are plugins (no native)
         return true;
     }
 
@@ -220,7 +220,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
     @Override
     public void toggleEnabledState ()
     {
-        this.sender.sendOSC ("/device/bypass", Integer.valueOf (this.isEnabled ? 1 : 0));
+        this.sender.processBooleanArg ("device", "bypass", this.isEnabled);
     }
 
 
@@ -228,7 +228,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
     @Override
     public void toggleWindowOpen ()
     {
-        this.sender.sendOSC ("/device/window", Integer.valueOf (this.isWindowOpen ? 0 : 1));
+        this.sender.processBooleanArg ("device", "window", !this.isWindowOpen);
     }
 
 
@@ -240,7 +240,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
         final int index = this.getIndex ();
         if (index > 0)
             this.setName (this.deviceBank.getItem (index - 1).getName ());
-        this.sender.sendOSC ("/device/-", null);
+        this.sender.processNoArg ("device", "-");
     }
 
 
@@ -252,7 +252,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
         final int index = this.getIndex ();
         if (index < this.deviceBank.getPageSize () - 1)
             this.setName (this.deviceBank.getItem (index + 1).getName ());
-        this.sender.sendOSC ("/device/+", null);
+        this.sender.processNoArg ("device", "+");
     }
 
 
@@ -261,7 +261,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
     public void toggleExpanded ()
     {
         this.isExpanded = !this.isExpanded;
-        this.sender.sendOSC ("/device/expand", Integer.valueOf (this.isExpanded ? 1 : 0));
+        this.sender.processBooleanArg ("device", "expand", this.isExpanded);
     }
 
 

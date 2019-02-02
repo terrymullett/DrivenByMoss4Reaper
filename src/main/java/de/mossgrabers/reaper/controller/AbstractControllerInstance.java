@@ -92,66 +92,29 @@ public abstract class AbstractControllerInstance implements IControllerInstance
             if (this.isRunning)
                 return;
 
-            this.logModel.info ("Starting controller '" + this.controllerDefinition.toString () + "'");
-
             this.host = new HostImpl (this.logModel, this.window);
             this.settingsUI = new SettingsUI (this.logModel, this.controllerDefinition.getNumMidiInPorts (), this.controllerDefinition.getNumMidiOutPorts (), this.controllerDefinition.getMidiDiscoveryPairs (OperatingSystem.get ()));
 
-            final File configFile = this.getFileName ();
-            if (configFile.exists ())
+            this.loadConfiguration ();
+            this.settingsUI.load (this.controllerConfiguration);
+
+            if (!this.isEnabled ())
             {
-                try (final FileReader reader = new FileReader (configFile))
-                {
-                    this.controllerConfiguration.load (reader);
-                }
-                catch (final IOException ex)
-                {
-                    this.logModel.error ("Could not load controller configuration file.", ex);
-                }
+                this.logModel.info (this.controllerDefinition.toString () + ": Deactivated.");
+                return;
             }
+
+            this.logModel.info (this.controllerDefinition.toString () + ": Starting...");
 
             final UsbMatcher matcher = this.controllerDefinition.claimUSBDevice ();
             if (matcher != null)
                 this.host.addUSBDeviceInfo (matcher);
 
-            this.settingsUI.load (this.controllerConfiguration);
-
             this.setupFactory = new ReaperSetupFactory (this.iniFiles, this.sender, this.host, this.logModel, this.settingsUI.getSelectedMidiInputs (), this.settingsUI.getSelectedMidiOutputs ());
             this.controllerSetup = this.createControllerSetup (this.setupFactory);
 
-            SafeRunLater.execute (this.logModel, () -> {
-                this.controllerSetup.init ();
-
-                this.settingsUI.load (this.controllerConfiguration);
-
-                this.controllerSetup.getConfiguration ().addSettingObserver (AbstractConfiguration.QUANTIZE_AMOUNT, this::storeQuantizeAmount);
-
-                this.oscParser = new MessageParser (this.controllerSetup);
-
-                this.settingsUI.flush ();
-
-                this.host.scheduleTask ( () -> {
-                    try
-                    {
-                        this.controllerSetup.startup ();
-                    }
-                    catch (final RuntimeException ex)
-                    {
-                        this.logModel.error ("Could not start controller.", ex);
-                    }
-                }, 1000);
-
-                this.isRunning = true;
-            });
+            SafeRunLater.execute (this.logModel, this::delayedStart);
         }
-    }
-
-
-    private void storeQuantizeAmount ()
-    {
-        final Configuration configuration = this.controllerSetup.getConfiguration ();
-        this.iniFiles.setMainIniInteger ("midiedit", "quantstrength", configuration.getQuantizeAmount ());
-        this.iniFiles.saveMainFile ();
     }
 
 
@@ -217,16 +180,23 @@ public abstract class AbstractControllerInstance implements IControllerInstance
     public void edit ()
     {
         new ConfigurationDialog (this.logModel, this.window, this.settingsUI).setVisible (true);
+        this.storeConfiguration ();
+    }
 
-        try (final FileWriter writer = new FileWriter (this.getFileName ()))
-        {
-            this.settingsUI.store (this.controllerConfiguration);
-            this.controllerConfiguration.store (writer, "");
-        }
-        catch (final IOException ex)
-        {
-            this.logModel.error ("Could not load controller configuration file.", ex);
-        }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEnabled ()
+    {
+        return this.settingsUI != null && this.settingsUI.isEnabled ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setEnabled (final boolean isEnabled)
+    {
+        this.settingsUI.setEnabled (isEnabled);
     }
 
 
@@ -241,5 +211,76 @@ public abstract class AbstractControllerInstance implements IControllerInstance
     private File getFileName ()
     {
         return new File (this.iniFiles.getIniPath (), "DrivenByMoss4Reaper-" + this.controllerDefinition.getHardwareModel ().replace (' ', '-') + ".config");
+    }
+
+
+    private void delayedStart ()
+    {
+        this.controllerSetup.init ();
+
+        // 2nd load to also load the settings
+        this.settingsUI.load (this.controllerConfiguration);
+
+        this.controllerSetup.getConfiguration ().addSettingObserver (AbstractConfiguration.QUANTIZE_AMOUNT, this::storeQuantizeAmount);
+
+        this.oscParser = new MessageParser (this.controllerSetup);
+
+        this.settingsUI.flush ();
+
+        this.host.scheduleTask ( () -> {
+            try
+            {
+                this.controllerSetup.startup ();
+            }
+            catch (final RuntimeException ex)
+            {
+                this.logModel.error (this.controllerDefinition.toString () + ": Could not start controller.", ex);
+            }
+        }, 1000);
+
+        this.isRunning = true;
+
+        this.logModel.info (this.controllerDefinition.toString () + ": Running.");
+    }
+
+
+    private void storeQuantizeAmount ()
+    {
+        final Configuration configuration = this.controllerSetup.getConfiguration ();
+        this.iniFiles.setMainIniInteger ("midiedit", "quantstrength", configuration.getQuantizeAmount ());
+        this.iniFiles.saveMainFile ();
+    }
+
+
+    private void loadConfiguration ()
+    {
+        final File configFile = this.getFileName ();
+        if (!configFile.exists ())
+            return;
+
+        try (final FileReader reader = new FileReader (configFile))
+        {
+            this.controllerConfiguration.load (reader);
+        }
+        catch (final IOException ex)
+        {
+            this.logModel.error ("Could not load controller configuration file.", ex);
+        }
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void storeConfiguration ()
+    {
+        try (final FileWriter writer = new FileWriter (this.getFileName ()))
+        {
+            this.settingsUI.store (this.controllerConfiguration);
+            this.controllerConfiguration.store (writer, "");
+        }
+        catch (final IOException ex)
+        {
+            this.logModel.error ("Could not load controller configuration file.", ex);
+        }
     }
 }

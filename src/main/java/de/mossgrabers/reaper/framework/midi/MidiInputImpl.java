@@ -26,9 +26,6 @@ import java.util.List;
  */
 class MidiInputImpl implements IMidiInput
 {
-    private static final String       VKB_MIDI   = "/vkb_midi/";
-
-    private final IHost               host;
     private final MessageSender       sender;
     private final MidiConnection      midiConnection;
     private final MidiDevice          device;
@@ -53,7 +50,6 @@ class MidiInputImpl implements IMidiInput
      */
     public MidiInputImpl (final IHost host, final MessageSender sender, final MidiConnection midiConnection, final MidiDevice device, final String [] filters)
     {
-        this.host = host;
         this.sender = sender;
         this.midiConnection = midiConnection;
         this.device = device;
@@ -122,37 +118,7 @@ class MidiInputImpl implements IMidiInput
     @Override
     public void sendRawMidiEvent (final int status, final int data1, final int data2)
     {
-        final int code = status & 0xF0;
-        final int channel = status & 0x0F;
-
-        switch (code)
-        {
-            case 0xA0:
-            case 0xD0:
-                this.sender.sendOSC (VKB_MIDI + channel + "/aftertouch/" + data1, Integer.valueOf (data2));
-                break;
-
-            case 0xB0:
-                this.sender.sendOSC (VKB_MIDI + channel + "/cc/" + data1, Integer.valueOf (data2));
-                break;
-
-            case 0xC0:
-                this.sender.sendOSC (VKB_MIDI + channel + "/program", Integer.valueOf (data1));
-                break;
-
-            case 0xE0:
-                this.sender.sendOSC (VKB_MIDI + channel + "/pitch", Integer.valueOf (data2 * 128 + data1));
-                break;
-
-            case 0x80:
-            case 0x90:
-                this.sender.sendOSC (VKB_MIDI + channel + "/note/" + data1, Integer.valueOf (data2));
-                break;
-
-            default:
-                this.host.println ("sendRawMidiEvent not implemented for status: " + status);
-                break;
-        }
+        this.sender.processMidiArg (status, data1, data2);
     }
 
 

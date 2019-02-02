@@ -32,6 +32,22 @@ public interface IControllerInstance
 
 
     /**
+     * Get if the controller is enabled.
+     *
+     * @return True if enabled
+     */
+    boolean isEnabled ();
+
+
+    /**
+     * Set if the controller is enabled.
+     *
+     * @param isEnabled True if enabled
+     */
+    void setEnabled (boolean isEnabled);
+
+
+    /**
      * Flush out the settings to the controller device.
      */
     void flush ();
@@ -50,4 +66,10 @@ public interface IControllerInstance
      * Edit the settings of the controller instance.
      */
     void edit ();
+
+
+    /**
+     * Store the controllers configuration settings.
+     */
+    void storeConfiguration ();
 }

@@ -8,7 +8,7 @@ plugins {
 sourceCompatibility = 11
 targetCompatibility = 11
 
-version = '5.01'
+version = '5.03'
 
 jar {
     manifest {
@@ -87,6 +87,7 @@ installDist {
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    options.headerOutputDirectory = file("build/headers/java/main")
 }
 
 repositories {

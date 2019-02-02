@@ -5,6 +5,7 @@
 package de.mossgrabers.framework.daw;
 
 import de.mossgrabers.framework.daw.data.ITrack;
+import de.mossgrabers.framework.observer.IIndexedValueObserver;
 
 
 /**
@@ -14,12 +15,6 @@ import de.mossgrabers.framework.daw.data.ITrack;
  */
 public interface ITrackBank extends IChannelBank<ITrack>
 {
-    /**
-     * Selects the first child if this is a group track.
-     */
-    void selectChildren ();
-
-
     /**
      * Selects the parent track if any (track must be inside a group).
      */
@@ -59,4 +54,12 @@ public interface ITrackBank extends IChannelBank<ITrack>
      * @return The name to display
      */
     String getEditSendName (int sendIndex);
+
+
+    /**
+     * Add an observer for the items name.
+     *
+     * @param observer The observer to notify on a name change
+     */
+    void addNameObserver (IIndexedValueObserver<String> observer);
 }
