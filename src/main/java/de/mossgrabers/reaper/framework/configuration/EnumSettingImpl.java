@@ -47,13 +47,19 @@ public class EnumSettingImpl extends BaseSetting<JComboBox<String>, String> impl
     @Override
     public void set (final String value)
     {
-        this.value = value;
-        this.flush ();
+        this.setInternal (value);
 
         SafeRunLater.execute (this.logModel, () -> {
             if (this.value != null && !this.value.equals (this.field.getSelectedItem ()))
                 this.field.setSelectedItem (this.value);
         });
+    }
+
+
+    private void setInternal (final String value)
+    {
+        this.value = value;
+        this.flush ();
     }
 
 
