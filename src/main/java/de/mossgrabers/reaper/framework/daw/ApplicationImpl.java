@@ -26,6 +26,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
 
     private String       panelLayout  = IApplication.PANEL_LAYOUT_ARRANGE;
     private boolean      engineActive = true;
+    private int          windowLayout = 0;
 
 
     static Robot getRobot ()
@@ -94,12 +95,15 @@ public class ApplicationImpl extends BaseImpl implements IApplication
         switch (panelLayout)
         {
             case "ARRANGE":
+                this.windowLayout = 0;
                 this.sender.invokeAction (Actions.LOAD_WINDOW_SET_1);
                 break;
             case "MIX":
+                this.windowLayout = 1;
                 this.sender.invokeAction (Actions.LOAD_WINDOW_SET_2);
                 break;
             case "EDIT":
+                this.windowLayout = 2;
                 this.sender.invokeAction (Actions.LOAD_WINDOW_SET_3);
                 break;
             default:
@@ -114,6 +118,24 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     public String getPanelLayout ()
     {
         return this.panelLayout;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void previousPanelLayout ()
+    {
+        this.windowLayout = (3 + this.windowLayout - 1) % 3;
+        this.sender.invokeAction (Actions.LOAD_WINDOW_SET_1 + this.windowLayout);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void nextPanelLayout ()
+    {
+        this.windowLayout = (this.windowLayout + 1) % 3;
+        this.sender.invokeAction (Actions.LOAD_WINDOW_SET_1 + this.windowLayout);
     }
 
 

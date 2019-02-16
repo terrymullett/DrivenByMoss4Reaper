@@ -18,6 +18,7 @@ import de.mossgrabers.controller.osc.OSCControllerDefinition;
 import de.mossgrabers.controller.push.PushControllerDefinition;
 import de.mossgrabers.controller.sl.SLControllerDefinition;
 import de.mossgrabers.controller.utilities.UtilitiesDefinition;
+import de.mossgrabers.controller.xbox.XboxControllerDefinition;
 import de.mossgrabers.framework.controller.IControllerDefinition;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.controller.apc.APC40mkIControllerInstance;
@@ -45,6 +46,7 @@ import de.mossgrabers.reaper.controller.push.Push2ControllerInstance;
 import de.mossgrabers.reaper.controller.sl.SLMkIControllerInstance;
 import de.mossgrabers.reaper.controller.sl.SLMkIIControllerInstance;
 import de.mossgrabers.reaper.controller.utilities.UtilitiesInstance;
+import de.mossgrabers.reaper.controller.xbox.XboxControllerInstance;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.PropertiesEx;
@@ -91,7 +93,8 @@ public class ControllerInstanceManager
         MCU4ControllerInstance.class,
         OSCControllerInstance.class,
         SLMkIControllerInstance.class,
-        SLMkIIControllerInstance.class
+        SLMkIIControllerInstance.class,
+        XboxControllerInstance.class
     };
 
     private static final IControllerDefinition [] DEFINITIONS             =
@@ -120,7 +123,8 @@ public class ControllerInstanceManager
         new MCUControllerDefinition (3),
         new OSCControllerDefinition (),
         new SLControllerDefinition (false),
-        new SLControllerDefinition (true)
+        new SLControllerDefinition (true),
+        new XboxControllerDefinition ()
     };
 
     private static final Class<?> []              CONSTRUCTOR_TYPES       =

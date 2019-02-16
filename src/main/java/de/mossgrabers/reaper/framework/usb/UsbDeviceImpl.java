@@ -161,7 +161,7 @@ public class UsbDeviceImpl implements IUsbDevice
         final DeviceHandle handle = new DeviceHandle ();
         result = LibUsb.open (device, handle);
         if (result != LibUsb.SUCCESS)
-            throw new UsbException ("Unable to read device descriptor.", new LibUsbException (result));
+            throw new UsbException ("Unable to open device.", new LibUsbException (result));
 
         return handle;
     }
