@@ -10,6 +10,7 @@ import de.mossgrabers.framework.daw.AbstractModel;
 import de.mossgrabers.framework.daw.IClip;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.INoteClip;
+import de.mossgrabers.framework.daw.ISceneBank;
 import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.ModelSetup;
 import de.mossgrabers.framework.scale.Scales;
@@ -20,7 +21,9 @@ import de.mossgrabers.reaper.framework.daw.data.SlotImpl;
 import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -30,8 +33,9 @@ import java.util.List;
  */
 public class ModelImpl extends AbstractModel
 {
-    private final MessageSender    sender;
-    private final List<ITrackBank> trackBanks = new ArrayList<> ();
+    private final MessageSender            sender;
+    private final List<ITrackBank>         trackBanks = new ArrayList<> ();
+    private final Map<Integer, ISceneBank> sceneBanks = new HashMap<> (1);
 
 
     /**
@@ -88,11 +92,13 @@ public class ModelImpl extends AbstractModel
 
     /** {@inheritDoc} */
     @Override
-    public ITrackBank createSceneViewTrackBank (final int numTracks, final int numScenes)
+    public ISceneBank createSceneBank (final int numScenes)
     {
-        final TrackBankImpl tb = new TrackBankImpl (this.host, this.sender, this.valueChanger, numTracks, numScenes, this.modelSetup.getNumSends (), true, false, null);
-        this.trackBanks.add (tb);
-        return tb;
+        return this.sceneBanks.computeIfAbsent (Integer.valueOf (numScenes), key -> {
+            final TrackBankImpl tb = new TrackBankImpl (this.host, this.sender, this.valueChanger, 1, numScenes, this.modelSetup.getNumSends (), true, false, null);
+            this.trackBanks.add (tb);
+            return tb.getSceneBank ();
+        });
     }
 
 
@@ -354,5 +360,21 @@ public class ModelImpl extends AbstractModel
     public List<ITrackBank> getTrackBanks ()
     {
         return this.trackBanks;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void deactivateSolo ()
+    {
+        ((TrackBankImpl) this.trackBank).deactivateSolo ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void deactivateMute ()
+    {
+        ((TrackBankImpl) this.trackBank).deactivateMute ();
     }
 }

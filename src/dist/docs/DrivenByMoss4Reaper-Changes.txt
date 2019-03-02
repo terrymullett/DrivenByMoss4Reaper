@@ -1,3 +1,15 @@
+5.70
+
+- Launchpad
+    * New: The Bootloader and Firmware version is now logged to the console
+    * New: Pro: The user button acts now like the Shift button
+- MCU
+    * New: Option + one of the Mute buttons: Deactivate all mutes
+    * New: Option + one of the Solo buttons: Deactivate all solos
+- Push 1/2
+    * New: Select + Mute: Deactivate all mutes
+    * New: Select + Solo: Deactivate all solos
+
 5.60
 - MCU
     * Fixed: Removed unescessary clip indication.

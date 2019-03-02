@@ -308,4 +308,24 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
         for (int position = 0; position < trackCount; position++)
             ((SlotBankImpl) this.getTrack (position).getSlotBank ()).setBankOffset (slotBankOffset);
     }
+
+
+    /**
+     * Deactivate all solo states of all tracks.
+     */
+    public void deactivateSolo ()
+    {
+        for (int i = 0; i < this.items.size (); i++)
+            this.items.get (i).setSolo (false);
+    }
+
+
+    /**
+     * Deactivate all mute states of all tracks.
+     */
+    public void deactivateMute ()
+    {
+        for (int i = 0; i < this.items.size (); i++)
+            this.items.get (i).setMute (false);
+    }
 }
