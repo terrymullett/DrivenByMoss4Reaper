@@ -39,13 +39,13 @@ public class FaderTouchCommand extends SelectCommand
         final MCUConfiguration configuration = this.surface.getConfiguration ();
         if (this.index < 8)
         {
+            final ModeManager modeManager = this.surface.getModeManager ();
             if (configuration.useFadersAsKnobs ())
             {
-                this.surface.getModeManager ().getActiveOrTempMode ().onKnobTouch (this.index, event == ButtonEvent.DOWN);
+                modeManager.getActiveOrTempMode ().onKnobTouch (this.index, event == ButtonEvent.DOWN);
                 return;
             }
 
-            final ModeManager modeManager = this.surface.getModeManager ();
             if (event == ButtonEvent.DOWN)
                 modeManager.setActiveMode (Modes.MODE_VOLUME);
             else if (event == ButtonEvent.UP)

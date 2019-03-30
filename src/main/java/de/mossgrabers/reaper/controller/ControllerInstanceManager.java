@@ -9,8 +9,9 @@ import de.mossgrabers.controller.apcmini.APCminiControllerDefinition;
 import de.mossgrabers.controller.autocolor.AutoColorDefinition;
 import de.mossgrabers.controller.beatstep.BeatstepControllerDefinition;
 import de.mossgrabers.controller.generic.GenericFlexiControllerDefinition;
-import de.mossgrabers.controller.kontrol.osc.mkii.KontrolOSCControllerDefinition;
-import de.mossgrabers.controller.kontrol.usb.mki.Kontrol1ControllerDefinition;
+import de.mossgrabers.controller.hui.HUIControllerDefinition;
+import de.mossgrabers.controller.kontrol.mki.Kontrol1ControllerDefinition;
+import de.mossgrabers.controller.kontrol.mkii.KontrolMkIIControllerDefinition;
 import de.mossgrabers.controller.launchpad.LaunchpadControllerDefinition;
 import de.mossgrabers.controller.maschine.mikro.mk3.MaschineMikroMk3ControllerDefinition;
 import de.mossgrabers.controller.mcu.MCUControllerDefinition;
@@ -27,11 +28,12 @@ import de.mossgrabers.reaper.controller.autocolor.AutoColorInstance;
 import de.mossgrabers.reaper.controller.beatstep.BeatstepControllerInstance;
 import de.mossgrabers.reaper.controller.beatstep.BeatstepProControllerInstance;
 import de.mossgrabers.reaper.controller.generic.GenericFlexiControllerInstance;
-import de.mossgrabers.reaper.controller.kontrol.osc.mkii.KontrolMkIIOSCControllerInstance;
-import de.mossgrabers.reaper.controller.kontrol.usb.mki.KontrolMkIS25ControllerInstance;
-import de.mossgrabers.reaper.controller.kontrol.usb.mki.KontrolMkIS49ControllerInstance;
-import de.mossgrabers.reaper.controller.kontrol.usb.mki.KontrolMkIS61ControllerInstance;
-import de.mossgrabers.reaper.controller.kontrol.usb.mki.KontrolMkIS88ControllerInstance;
+import de.mossgrabers.reaper.controller.hui.HUIControllerInstance;
+import de.mossgrabers.reaper.controller.kontrol.mki.KontrolMkIS25ControllerInstance;
+import de.mossgrabers.reaper.controller.kontrol.mki.KontrolMkIS49ControllerInstance;
+import de.mossgrabers.reaper.controller.kontrol.mki.KontrolMkIS61ControllerInstance;
+import de.mossgrabers.reaper.controller.kontrol.mki.KontrolMkIS88ControllerInstance;
+import de.mossgrabers.reaper.controller.kontrol.mkii.KontrolMkIIControllerInstance;
 import de.mossgrabers.reaper.controller.launchpad.LaunchpadMkIIControllerInstance;
 import de.mossgrabers.reaper.controller.launchpad.LaunchpadProControllerInstance;
 import de.mossgrabers.reaper.controller.maschine.mikro.mk3.MaschineMikroMk3ControllerInstance;
@@ -67,21 +69,19 @@ public class ControllerInstanceManager
 
     private static final Class<?> []              CLASSES                 =
     {
-        Push1ControllerInstance.class,
-        Push2ControllerInstance.class,
+        AutoColorInstance.class,
         APC40mkIControllerInstance.class,
         APC40mkIIControllerInstance.class,
         APCminiControllerInstance.class,
         BeatstepControllerInstance.class,
         BeatstepProControllerInstance.class,
         GenericFlexiControllerInstance.class,
-        AutoColorInstance.class,
+        HUIControllerInstance.class,
         KontrolMkIS25ControllerInstance.class,
         KontrolMkIS49ControllerInstance.class,
         KontrolMkIS61ControllerInstance.class,
         KontrolMkIS88ControllerInstance.class,
-        // KontrolMkIIControllerInstance.class,
-        KontrolMkIIOSCControllerInstance.class,
+        KontrolMkIIControllerInstance.class,
         LaunchpadMkIIControllerInstance.class,
         LaunchpadProControllerInstance.class,
         MaschineMikroMk3ControllerInstance.class,
@@ -91,27 +91,27 @@ public class ControllerInstanceManager
         MCU3ControllerInstance.class,
         MCU4ControllerInstance.class,
         OSCControllerInstance.class,
+        Push1ControllerInstance.class,
+        Push2ControllerInstance.class,
         SLMkIControllerInstance.class,
         SLMkIIControllerInstance.class
     };
 
     private static final IControllerDefinition [] DEFINITIONS             =
     {
-        new PushControllerDefinition (false),
-        new PushControllerDefinition (true),
+        new AutoColorDefinition (),
         new APCControllerDefinition (false),
         new APCControllerDefinition (true),
         new APCminiControllerDefinition (),
         new BeatstepControllerDefinition (false),
         new BeatstepControllerDefinition (true),
         new GenericFlexiControllerDefinition (),
-        new AutoColorDefinition (),
+        new HUIControllerDefinition (),
         new Kontrol1ControllerDefinition (0),
         new Kontrol1ControllerDefinition (1),
         new Kontrol1ControllerDefinition (2),
         new Kontrol1ControllerDefinition (3),
-        // new KontrolMkIIControllerDefinition (),
-        new KontrolOSCControllerDefinition (),
+        new KontrolMkIIControllerDefinition (),
         new LaunchpadControllerDefinition (true),
         new LaunchpadControllerDefinition (false),
         new MaschineMikroMk3ControllerDefinition (),
@@ -121,6 +121,8 @@ public class ControllerInstanceManager
         new MCUControllerDefinition (2),
         new MCUControllerDefinition (3),
         new OSCControllerDefinition (),
+        new PushControllerDefinition (false),
+        new PushControllerDefinition (true),
         new SLControllerDefinition (false),
         new SLControllerDefinition (true)
     };

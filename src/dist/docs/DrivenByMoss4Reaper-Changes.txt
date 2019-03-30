@@ -1,5 +1,9 @@
-5.90
+5.91 (unreleased)
+- OSC
+    * Fixed: Reduced the size of a OSC bundles to stay below 64 Kb, which is the maximum for an
+      UDP packet.
 
+5.90
 - Beatstep
     * Fixed: Track and Device mode selection did not work.
 - Maschine Mikro Mk3

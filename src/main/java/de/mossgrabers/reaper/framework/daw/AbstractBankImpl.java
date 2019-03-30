@@ -20,7 +20,6 @@ import de.mossgrabers.reaper.communication.MessageSender;
  */
 public abstract class AbstractBankImpl<T extends IItem> extends AbstractBank<T>
 {
-    protected final IHost         host;
     protected final MessageSender sender;
     protected final IValueChanger valueChanger;
 
@@ -37,8 +36,7 @@ public abstract class AbstractBankImpl<T extends IItem> extends AbstractBank<T>
      */
     public AbstractBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int pageSize)
     {
-        super (pageSize);
-        this.host = host;
+        super (host, pageSize);
         this.sender = sender;
         this.valueChanger = valueChanger;
     }

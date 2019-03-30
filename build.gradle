@@ -1,6 +1,6 @@
 plugins {
-    id 'com.github.jk1.dependency-license-report' version '1.5'
-    id 'com.github.ben-manes.versions' version '0.20.0'
+    id 'com.github.jk1.dependency-license-report' version '1.6'
+    id 'com.github.ben-manes.versions' version '0.21.0'
     id 'java' 
     id 'application'
 }
@@ -8,7 +8,7 @@ plugins {
 sourceCompatibility = 11
 targetCompatibility = 11
 
-version = '5.9'
+version = '6.0'
 
 jar {
     manifest {
@@ -92,6 +92,10 @@ tasks.withType(JavaCompile) {
 
 repositories {
     jcenter()
+}
+
+configurations {
+    all*.exclude module: 'xml-apis'
 }
 
 dependencies {

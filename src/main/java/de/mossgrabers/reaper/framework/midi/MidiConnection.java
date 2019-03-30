@@ -221,7 +221,10 @@ public class MidiConnection
         synchronized (this.sendLock)
         {
             if (this.receiver != null)
+            {
                 this.receiver.close ();
+                this.receiver = null;
+            }
         }
         if (this.transmitter != null)
         {
@@ -230,6 +233,7 @@ public class MidiConnection
                 r.close ();
             this.transmitter.setReceiver (null);
             this.transmitter.close ();
+            this.transmitter = null;
         }
         if (this.midiInputDevice != null)
         {
