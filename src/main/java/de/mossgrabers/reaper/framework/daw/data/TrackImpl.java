@@ -175,7 +175,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     @Override
     public void toggleNoteRepeat ()
     {
-        this.sendTrackOSC ("noterepeat", this.isNoteRepeat);
+        this.sendTrackOSC ("noterepeat", !this.isNoteRepeat);
     }
 
 

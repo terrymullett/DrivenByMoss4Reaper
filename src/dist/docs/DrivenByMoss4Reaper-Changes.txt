@@ -1,11 +1,16 @@
 6.1
+- Generic Flexi
+  * Fixed: Exception when Send volume was mapped/changed and a FX or the Master track was selected.
 - Komplete Kontrol
   * New: Added information about mute state due to soloed track(s)
   * New: Added more selected track information to confirm to updated protocol
   * New: Added scene navigation and play
+  * New: Slowed down knob change rate on MkII
 - OSC
   * New: You can now configure the value range. So far, this was 128. Now you can increase the range to 1024 or 16384. Note that you also need to configure the widgets in your OSC client accordingly.
-- Fixed a NullPointerException on hierarchical track navigation
+- Fixed: NullPointerException on hierarchical track navigation
+- Fixed: A Jar file was missing in the 6.0 release.
+- Fixed: Toggling Note Repeat did not work
 
 6.0
 - Generic Flexi
