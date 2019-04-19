@@ -1,4 +1,7 @@
-6.2 (unreleased)
+6.2
+- APC40
+  * New: Shift mode stays active until you release the Shift key.
+  * Fixed: Clip indicator was not displayed.
 - Launchpad Pro
   * Improved 2 colors.
 - Komplete Kontrol
@@ -6,6 +9,8 @@
 - Midi Monitor
   * New: Log system realtime events
   * New: Setting to filter system realtime events
+- Push 1/2
+  * New: You can now tweak the speed of the knobs in the settings (Workflow -> Knob Speed Normal / Knob Speed Slow)
 - Fixed: Did crash Reaper on startup if UserPlugins folder was located in a path with non-ASCII characters.
 
 6.1
