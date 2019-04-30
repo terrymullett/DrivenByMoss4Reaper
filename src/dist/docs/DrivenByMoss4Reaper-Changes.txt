@@ -8,7 +8,7 @@
   * New: Added setting to set the length of new clips
   * New: Added setting to set the behaviour on transport stop
   * New: Added M32 to the extension name
-
+- Fixed: Navigation from and to master track was reversed.
 
 6.2
 - APC40
