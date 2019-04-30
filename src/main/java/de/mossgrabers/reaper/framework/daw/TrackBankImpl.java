@@ -28,7 +28,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
 {
     private final boolean       hasFlatTrackList;
     private final boolean       hasFullFlatTrackList;
-    private final ITrack        master;
+    private ITrack              master;
     private final AtomicBoolean isDirty       = new AtomicBoolean (false);
     private TreeNode<TrackImpl> rootTrack     = new TreeNode<> ();
     private TreeNode<TrackImpl> currentFolder = this.rootTrack;
@@ -47,14 +47,23 @@ public class TrackBankImpl extends AbstractTrackBankImpl
      *            are flat
      * @param hasFullFlatTrackList True if the track navigation should include effect and master
      *            tracks if flat
-     * @param master If set the track navigation should include master tracks if flat
      */
-    public TrackBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final boolean hasFullFlatTrackList, final ITrack master)
+    public TrackBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final boolean hasFullFlatTrackList)
     {
         super (host, sender, valueChanger, numTracks, numScenes, numSends);
 
         this.hasFlatTrackList = hasFlatTrackList;
         this.hasFullFlatTrackList = hasFullFlatTrackList;
+    }
+
+
+    /**
+     * Set the related master track.
+     *
+     * @param master If set the track navigation should include master tracks if flat
+     */
+    public void setMasterTrack (final ITrack master)
+    {
         this.master = master;
     }
 

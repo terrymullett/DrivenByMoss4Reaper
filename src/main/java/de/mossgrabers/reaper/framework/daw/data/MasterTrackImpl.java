@@ -10,6 +10,7 @@ import de.mossgrabers.framework.daw.data.IMasterTrack;
 import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.framework.observer.ItemSelectionObserver;
 import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.framework.daw.TrackBankImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,16 +30,26 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
      * Constructor.
      *
      * @param host The DAW host
+     * @param trackBank The trackbank for calculating the index
      * @param sender The OSC sender
      * @param valueChanger The valueChanger
      * @param numSends The number of sends on a page
      */
-    public MasterTrackImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numSends)
+    public MasterTrackImpl (final IHost host, final TrackBankImpl trackBank, final MessageSender sender, final IValueChanger valueChanger, final int numSends)
     {
-        super (host, sender, null, valueChanger, 0, 1, numSends, 0);
+        super (host, sender, trackBank, valueChanger, 0, 1, numSends, 0);
+
         // Master channel does always exist
         this.setExists (true);
         this.valueChanger = valueChanger;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public int getIndex ()
+    {
+        return (this.trackBank.getItemCount () - 1) % this.trackBank.getPageSize ();
     }
 
 

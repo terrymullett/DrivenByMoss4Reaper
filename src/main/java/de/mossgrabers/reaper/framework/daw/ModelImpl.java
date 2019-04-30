@@ -59,8 +59,10 @@ public class ModelImpl extends AbstractModel
         final int numTracks = modelSetup.getNumTracks ();
         final int numScenes = modelSetup.getNumScenes ();
         final int numSends = modelSetup.getNumSends ();
-        this.masterTrack = new MasterTrackImpl (host, sender, valueChanger, numSends);
-        this.trackBank = new TrackBankImpl (host, sender, valueChanger, numTracks, numScenes, numSends, modelSetup.hasFlatTrackList (), modelSetup.hasFullFlatTrackList (), this.masterTrack);
+        final TrackBankImpl trackBankImpl = new TrackBankImpl (host, sender, valueChanger, numTracks, numScenes, numSends, modelSetup.hasFlatTrackList (), modelSetup.hasFullFlatTrackList ());
+        this.trackBank = trackBankImpl;
+        this.masterTrack = new MasterTrackImpl (host, trackBankImpl, sender, valueChanger, numSends);
+        trackBankImpl.setMasterTrack (this.masterTrack);
         this.trackBanks.add (this.trackBank);
         this.effectTrackBank = null;
 
@@ -95,7 +97,7 @@ public class ModelImpl extends AbstractModel
     public ISceneBank createSceneBank (final int numScenes)
     {
         return this.sceneBanks.computeIfAbsent (Integer.valueOf (numScenes), key -> {
-            final TrackBankImpl tb = new TrackBankImpl (this.host, this.sender, this.valueChanger, 1, numScenes, this.modelSetup.getNumSends (), true, false, null);
+            final TrackBankImpl tb = new TrackBankImpl (this.host, this.sender, this.valueChanger, 1, numScenes, this.modelSetup.getNumSends (), true, false);
             this.trackBanks.add (tb);
             return tb.getSceneBank ();
         });

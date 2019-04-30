@@ -24,32 +24,33 @@ import de.mossgrabers.reaper.framework.daw.TrackBankImpl;
 public class TrackImpl extends ChannelImpl implements ITrack
 {
     /** Record monitoring is off. */
-    public static final int             MONITOR_OFF      = 0;
+    public static final int               MONITOR_OFF      = 0;
     /** Record monitoring is on. */
-    public static final int             MONITOR_ON       = 1;
+    public static final int               MONITOR_ON       = 1;
     /** Record monitoring is automatic. */
-    public static final int             MONITOR_AUTO     = 2;
+    public static final int               MONITOR_AUTO     = 2;
 
     /** Automation write is trim. */
-    public static final String          AUTOMATION_TRIM  = "trim";
+    public static final String            AUTOMATION_TRIM  = "trim";
     /** Automation write is read. */
-    public static final String          AUTOMATION_READ  = "read";
+    public static final String            AUTOMATION_READ  = "read";
     /** Automation write is touch. */
-    public static final String          AUTOMATION_TOUCH = "touch";
+    public static final String            AUTOMATION_TOUCH = "touch";
     /** Automation write is latch. */
-    public static final String          AUTOMATION_LATCH = "latch";
+    public static final String            AUTOMATION_LATCH = "latch";
     /** Automation write is write. */
-    public static final String          AUTOMATION_WRITE = "write";
+    public static final String            AUTOMATION_WRITE = "write";
 
-    private final AbstractTrackBankImpl trackBank;
-    private boolean                     isRecArm;
-    private boolean                     monitor;
-    private boolean                     autoMonitor;
-    private String                      automation       = AUTOMATION_TRIM;
-    private final ISlotBank             slotBank;
-    private boolean                     isNoteRepeat;
-    private double                      noteRepeatLength;
-    private int                         depth;
+    protected final AbstractTrackBankImpl trackBank;
+
+    private boolean                       isRecArm;
+    private boolean                       monitor;
+    private boolean                       autoMonitor;
+    private String                        automation       = AUTOMATION_TRIM;
+    private final ISlotBank               slotBank;
+    private boolean                       isNoteRepeat;
+    private double                        noteRepeatLength;
+    private int                           depth;
 
 
     /**
