@@ -1,3 +1,10 @@
+7.03 (unreleased)
+- Novation Remote SL Mk III
+  * Fixed: Drawing of track and device modes were wrong when no track was selected (2nd try).
+  * Fixed: Another crash in the browser.
+- New: Support for displaying and setting the color of the master track.
+- New: Support for Automation modes on master track.
+
 7.02
 - Novation Remote SL Mk II
   * Fixed: Drum pads did not work

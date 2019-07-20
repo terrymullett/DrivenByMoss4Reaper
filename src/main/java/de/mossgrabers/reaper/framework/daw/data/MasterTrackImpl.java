@@ -42,6 +42,9 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
         // Master channel does always exist
         this.setExists (true);
         this.valueChanger = valueChanger;
+
+        this.setName ("Master");
+        this.setType (ChannelType.MASTER);
     }
 
 
@@ -71,63 +74,11 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
 
     /** {@inheritDoc} */
     @Override
-    public String getName ()
-    {
-        return "Master";
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public ChannelType getType ()
-    {
-        return ChannelType.MASTER;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void setVolume (final int value)
-    {
-        this.volume = this.valueChanger.toNormalizedValue (value);
-        this.sender.processDoubleArg ("master", "volume", this.volume);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public void setSelected (final boolean isSelected)
     {
         super.setSelected (isSelected);
         for (final ItemSelectionObserver observer: this.observers)
             observer.call (-1, isSelected);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void touchVolume (final boolean isBeingTouched)
-    {
-        this.sender.processBooleanArg ("master", "volume/touch", isBeingTouched);
-        this.handleVolumeTouch (isBeingTouched);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void setPan (final int value)
-    {
-        this.pan = this.valueChanger.toNormalizedValue (value);
-        this.sender.processDoubleArg ("master", "pan", this.pan);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void touchPan (final boolean isBeingTouched)
-    {
-        this.sender.processBooleanArg ("master", "pan/touch", isBeingTouched);
-        this.handlePanTouch (isBeingTouched);
     }
 
 
@@ -144,24 +95,6 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
     public void toggleIsActivated ()
     {
         // Not supported
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void setMute (final boolean value)
-    {
-        this.setMuteState (value);
-        this.sender.processBooleanArg ("master", "mute", value);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void setSolo (final boolean value)
-    {
-        this.setSoloState (value);
-        this.sender.processBooleanArg ("master", "solo", value);
     }
 
 
@@ -207,8 +140,16 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
 
     /** {@inheritDoc} */
     @Override
-    public void select ()
+    protected String getProcessor ()
     {
-        this.sender.processIntArg ("master", "select", 1);
+        return "master";
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected String createCommand (final String command)
+    {
+        return command;
     }
 }

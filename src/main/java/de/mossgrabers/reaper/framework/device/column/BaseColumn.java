@@ -166,7 +166,7 @@ public abstract class BaseColumn extends ItemImpl implements IBrowserColumn
     @Override
     public void setCursorIndex (final int index)
     {
-        this.selectedRow = Math.max (0, Math.min (index, this.getMaxNumItems ()));
+        this.selectedRow = Math.max (0, Math.min (index, this.getMaxNumItems () - 1));
         this.notifyListeners ();
     }
 

@@ -549,30 +549,42 @@ public class ChannelImpl extends ItemImpl implements IChannel
 
     protected void sendTrackOSC (final String command)
     {
-        this.sender.processNoArg (PATH_TRACK, this.getPosition () + "/" + command);
+        this.sender.processNoArg (this.getProcessor (), createCommand (command));
     }
 
 
     protected void sendTrackOSC (final String command, final int value)
     {
-        this.sender.processIntArg (PATH_TRACK, this.getPosition () + "/" + command, value);
+        this.sender.processIntArg (this.getProcessor (), createCommand (command), value);
     }
 
 
     protected void sendTrackOSC (final String command, final boolean value)
     {
-        this.sender.processIntArg (PATH_TRACK, this.getPosition () + "/" + command, value ? 1 : 0);
+        this.sender.processIntArg (this.getProcessor (), createCommand (command), value ? 1 : 0);
     }
 
 
     protected void sendTrackOSC (final String command, final double value)
     {
-        this.sender.processDoubleArg (PATH_TRACK, this.getPosition () + "/" + command, value);
+        this.sender.processDoubleArg (this.getProcessor (), createCommand (command), value);
     }
 
 
     protected void sendTrackOSC (final String command, final String value)
     {
-        this.sender.processStringArg (PATH_TRACK, this.getPosition () + "/" + command, value);
+        this.sender.processStringArg (this.getProcessor (), createCommand (command), value);
+    }
+
+
+    protected String getProcessor ()
+    {
+        return PATH_TRACK;
+    }
+
+
+    protected String createCommand (final String command)
+    {
+        return this.getPosition () + "/" + command;
     }
 }

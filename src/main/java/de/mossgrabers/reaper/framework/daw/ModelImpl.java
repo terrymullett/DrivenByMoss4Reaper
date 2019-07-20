@@ -83,7 +83,7 @@ public class ModelImpl extends AbstractModel
         this.arranger = new ArrangerImpl ();
         this.mixer = new MixerImpl (host, sender);
         this.project = new ProjectImpl (host, sender);
-        this.transport = new TransportImpl (host, sender, valueChanger, this.trackBank, iniFiles);
+        this.transport = new TransportImpl (host, sender, valueChanger, this.trackBank, this.masterTrack, iniFiles);
 
         this.groove = new GrooveImpl (host, sender, valueChanger, iniFiles);
         this.markerBank = new MarkerBankImpl (host, sender, valueChanger, modelSetup.getNumMarkers ());

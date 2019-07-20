@@ -9,6 +9,7 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.daw.constants.TransportConstants;
+import de.mossgrabers.framework.daw.data.IMasterTrack;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.Actions;
@@ -36,6 +37,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     private static final double INC_FRACTION_TIME_SLOW = 1.0 / 20;
 
     private ITrackBank          trackBank;
+    private IMasterTrack        master;
     private IValueChanger       valueChanger;
     private IniFiles            iniFiles;
 
@@ -63,16 +65,18 @@ public class TransportImpl extends BaseImpl implements ITransport
      * @param host The DAW host
      * @param sender The OSC sender
      * @param valueChanger The value changer
-     * @param trackBank
+     * @param trackBank The track bank
+     * @param master The master track
      * @param iniFiles The INI configuration files
      */
-    public TransportImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final ITrackBank trackBank, final IniFiles iniFiles)
+    public TransportImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final ITrackBank trackBank, final IMasterTrack master, final IniFiles iniFiles)
     {
         super (host, sender);
 
         this.iniFiles = iniFiles;
         this.trackBank = trackBank;
         this.valueChanger = valueChanger;
+        this.master = master;
     }
 
 
@@ -394,8 +398,10 @@ public class TransportImpl extends BaseImpl implements ITransport
     public String getAutomationWriteMode ()
     {
         // Get from selected track
-        final TrackImpl selectedTrack = (TrackImpl) this.trackBank.getSelectedItem ();
-        return selectedTrack == null ? "" : selectedTrack.getAutomation ();
+        TrackImpl selectedTrack = (TrackImpl) this.trackBank.getSelectedItem ();
+        if (selectedTrack == null)
+            selectedTrack = (TrackImpl) this.master;
+        return selectedTrack.getAutomation ();
     }
 
 
@@ -404,7 +410,9 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void setAutomationWriteMode (final String mode)
     {
         final ITrack selectedTrack = this.trackBank.getSelectedItem ();
-        if (selectedTrack != null)
+        if (selectedTrack == null)
+            this.sender.processIntArg ("master", "auto" + mode, 1);
+        else
             this.sender.processIntArg ("track", selectedTrack.getIndex () + "/auto" + mode, 1);
     }
 
