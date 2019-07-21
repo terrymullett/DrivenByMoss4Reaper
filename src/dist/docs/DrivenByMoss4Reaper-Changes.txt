@@ -1,7 +1,11 @@
 7.03 (unreleased)
+- APC40
+  * Fixed: All views except Play View were drawn wrong.
 - Novation Remote SL Mk III
   * Fixed: Drawing of track and device modes were wrong when no track was selected (2nd try).
   * Fixed: Another crash in the browser.
+- OSC
+  * Fixed: Open Stage Control template produced a crash if the master volume was changed.
 - New: Support for displaying and setting the color of the master track.
 - New: Support for Automation modes on master track.
 
