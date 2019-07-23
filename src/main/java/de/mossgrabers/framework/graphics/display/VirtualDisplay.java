@@ -49,16 +49,7 @@ public class VirtualDisplay
         this.image = host.createBitmap (dimensions.getWidth (), dimensions.getHeight ());
         this.image.setDisplayWindowTitle (windowTitle);
 
-        this.model.addGridElementChangeListener (this::redrawGrid);
-    }
-
-
-    /**
-     * Redraw the display.
-     */
-    public void redrawGrid ()
-    {
-        this.drawGrid (this.image);
+        this.model.addGridElementChangeListener ( () -> this.drawGrid (this.image));
     }
 
 
