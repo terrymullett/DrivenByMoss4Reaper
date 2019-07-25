@@ -99,6 +99,15 @@ public interface MessageSender
 
 
     /**
+     * Delay updates for a specific processor. Use to prevents that Reaper sends old values before
+     * the latest ones are applied.
+     *
+     * @param processor The processor to delay.
+     */
+    void delayUpdates (final String processor);
+
+
+    /**
      * Call Reaper MIDI command in DLL.
      *
      * @param status MIDI status byte

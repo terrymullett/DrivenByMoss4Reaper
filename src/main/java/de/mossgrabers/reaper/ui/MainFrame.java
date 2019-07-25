@@ -451,6 +451,11 @@ public class MainFrame extends JFrame implements MessageSender
 
     /** {@inheritDoc} */
     @Override
+    public native void delayUpdates (final String processor);
+
+
+    /** {@inheritDoc} */
+    @Override
     public native void processMidiArg (final int status, final int data1, final int data2);
 
 

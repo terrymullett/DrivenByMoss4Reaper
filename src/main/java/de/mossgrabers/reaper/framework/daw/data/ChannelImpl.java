@@ -22,6 +22,7 @@ import de.mossgrabers.reaper.framework.daw.SendBankImpl;
 public class ChannelImpl extends ItemImpl implements IChannel
 {
     private static final String PATH_TRACK         = "track";
+    private static final Object UPDATE_LOCK        = new Object ();
 
     protected IValueChanger     valueChanger;
 
@@ -126,8 +127,12 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void setVolume (final int value)
     {
-        this.volume = this.valueChanger.toNormalizedValue (value);
-        this.sendTrackOSC ("volume", this.volume);
+        synchronized (UPDATE_LOCK)
+        {
+            this.sender.delayUpdates ("track");
+            this.volume = this.valueChanger.toNormalizedValue (value);
+            this.sendTrackOSC ("volume", this.volume);
+        }
     }
 
 
@@ -219,8 +224,12 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void setPan (final int value)
     {
-        this.pan = this.valueChanger.toNormalizedValue (value);
-        this.sendTrackOSC ("pan", this.pan);
+        synchronized (UPDATE_LOCK)
+        {
+            this.sender.delayUpdates ("track");
+            this.pan = this.valueChanger.toNormalizedValue (value);
+            this.sendTrackOSC ("pan", this.pan);
+        }
     }
 
 
@@ -357,8 +366,12 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void setMute (final boolean value)
     {
-        this.setMuteState (value);
-        this.sendTrackOSC ("mute", value);
+        synchronized (UPDATE_LOCK)
+        {
+            this.sender.delayUpdates ("track");
+            this.setMuteState (value);
+            this.sendTrackOSC ("mute", value);
+        }
     }
 
 

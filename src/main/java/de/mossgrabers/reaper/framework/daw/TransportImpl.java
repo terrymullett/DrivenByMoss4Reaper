@@ -31,6 +31,8 @@ public class TransportImpl extends BaseImpl implements ITransport
     private static final int    PUNCH_ITEMS            = 1;
     private static final int    PUNCH_LOOP             = 2;
 
+    private static final Object UPDATE_LOCK            = new Object ();
+
     /** 1 beat. */
     private static final double INC_FRACTION_TIME      = 1.0;
     /** 1/20th of a beat. */
@@ -41,7 +43,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     private IValueChanger       valueChanger;
     private IniFiles            iniFiles;
 
-    private double              position               = 0;        // Time
+    private double              position               = 0;            // Time
     private String              positionStr            = "";
     private double              tempo                  = 120.0;
     private String              beatsStr               = "";
@@ -505,8 +507,12 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void setPosition (final double time)
     {
-        this.position = time;
-        this.sender.processDoubleArg ("time", this.position);
+        synchronized (UPDATE_LOCK)
+        {
+            this.sender.delayUpdates ("transport");
+            this.position = time;
+            this.sender.processDoubleArg ("time", this.position);
+        }
     }
 
 

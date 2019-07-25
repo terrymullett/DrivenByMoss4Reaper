@@ -18,7 +18,9 @@ import de.mossgrabers.reaper.communication.MessageSender;
  */
 public class SendImpl extends ParameterImpl implements ISend
 {
-    private IChannel channel;
+    private static final Object UPDATE_LOCK = new Object ();
+
+    private IChannel            channel;
 
 
     /**
@@ -52,8 +54,12 @@ public class SendImpl extends ParameterImpl implements ISend
     {
         if (!this.doesExist ())
             return;
-        this.value = this.valueChanger.toNormalizedValue (value);
-        final StringBuilder command = new StringBuilder ().append (this.channel.getPosition ()).append ("/send/").append (this.getIndex () + 1).append ("/volume");
-        this.sender.processDoubleArg ("track", command.toString (), this.value);
+        synchronized (UPDATE_LOCK)
+        {
+            this.value = this.valueChanger.toNormalizedValue (value);
+            final StringBuilder command = new StringBuilder ().append (this.channel.getPosition ()).append ("/send/").append (this.getIndex () + 1).append ("/volume");
+            this.sender.delayUpdates ("track");
+            this.sender.processDoubleArg ("track", command.toString (), this.value);
+        }
     }
 }
