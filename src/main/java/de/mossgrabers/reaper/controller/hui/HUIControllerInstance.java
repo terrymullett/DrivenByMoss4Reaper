@@ -46,6 +46,6 @@ public class HUIControllerInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new HUIControllerSetup (this.host, setupFactory, this.settingsUI);
+        return new HUIControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI);
     }
 }

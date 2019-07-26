@@ -46,6 +46,6 @@ public class OSCControllerInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new OSCControllerSetup (this.host, setupFactory, this.settingsUI);
+        return new OSCControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI);
     }
 }

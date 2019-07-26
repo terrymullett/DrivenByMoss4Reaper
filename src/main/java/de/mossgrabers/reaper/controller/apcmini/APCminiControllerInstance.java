@@ -46,6 +46,6 @@ public class APCminiControllerInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new APCminiControllerSetup (this.host, setupFactory, this.settingsUI);
+        return new APCminiControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI);
     }
 }

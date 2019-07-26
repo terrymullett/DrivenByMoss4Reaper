@@ -46,6 +46,6 @@ public class BeatstepProControllerInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new BeatstepControllerSetup (this.host, setupFactory, this.settingsUI, true);
+        return new BeatstepControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI, true);
     }
 }

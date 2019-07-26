@@ -46,6 +46,6 @@ public class MaschineMikroMk3ControllerInstance extends AbstractControllerInstan
     @Override
     protected IControllerSetup createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new MaschineMikroMk3ControllerSetup (this.host, setupFactory, this.settingsUI);
+        return new MaschineMikroMk3ControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI);
     }
 }

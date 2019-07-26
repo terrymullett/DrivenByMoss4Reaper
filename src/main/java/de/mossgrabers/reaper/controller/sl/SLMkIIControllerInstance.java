@@ -46,6 +46,6 @@ public class SLMkIIControllerInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new SLControllerSetup (this.host, setupFactory, this.settingsUI, true);
+        return new SLControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI, true);
     }
 }

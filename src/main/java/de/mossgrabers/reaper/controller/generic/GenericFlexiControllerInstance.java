@@ -46,6 +46,6 @@ public class GenericFlexiControllerInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new GenericFlexiControllerSetup (this.host, setupFactory, this.settingsUI);
+        return new GenericFlexiControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI);
     }
 }

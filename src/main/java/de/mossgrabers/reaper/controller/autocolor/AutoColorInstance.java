@@ -46,6 +46,6 @@ public class AutoColorInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new AutoColorSetup (this.host, setupFactory, this.settingsUI);
+        return new AutoColorSetup (this.host, setupFactory, this.settingsUI, this.settingsUI);
     }
 }
