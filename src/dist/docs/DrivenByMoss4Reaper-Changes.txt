@@ -1,4 +1,4 @@
-7.04 (unreleased)
+7.04
 - All devices
   * New: Note feedback is implemented. Playing notes from MIDI clips are shown in play and drum views.
   * Fixed: Parameter updates are only slowed down if automation writing is enabled
