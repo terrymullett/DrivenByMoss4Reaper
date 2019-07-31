@@ -4,10 +4,8 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IParameter;
-import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.framework.daw.DataSetup;
 
 
 /**
@@ -17,27 +15,22 @@ import de.mossgrabers.reaper.communication.MessageSender;
  */
 public class ParameterImpl extends ItemImpl implements IParameter
 {
-    protected IValueChanger valueChanger;
+    private String   valueStr          = "";
+    private boolean  isBeingTouched;
 
-    private String          valueStr          = "";
-    private boolean         isBeingTouched;
-
-    protected double        value;
-    protected double        lastReceivedValue = -1;
+    protected double value;
+    protected double lastReceivedValue = -1;
 
 
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param index The index of the parameters
      */
-    public ParameterImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int index)
+    public ParameterImpl (final DataSetup dataSetup, final int index)
     {
-        super (host, sender, index);
-        this.valueChanger = valueChanger;
+        super (dataSetup, index);
     }
 
 

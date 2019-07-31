@@ -41,7 +41,7 @@ public abstract class BaseColumn extends ItemImpl implements IBrowserColumn
      */
     protected BaseColumn (final int columnIndex, final String name, final int numItemsPerPage)
     {
-        super (null, null, columnIndex);
+        super (null, columnIndex);
 
         this.name = name;
         this.numItemsPerPage = numItemsPerPage;

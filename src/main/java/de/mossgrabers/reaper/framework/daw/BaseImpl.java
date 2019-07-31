@@ -4,7 +4,9 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
+import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IHost;
+import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.observer.ObserverManagement;
 import de.mossgrabers.reaper.communication.MessageSender;
 
@@ -16,20 +18,23 @@ import de.mossgrabers.reaper.communication.MessageSender;
  */
 public abstract class BaseImpl implements ObserverManagement
 {
-    protected final MessageSender sender;
+    protected final DataSetup     dataSetup;
     protected final IHost         host;
+    protected final MessageSender sender;
+    protected final IValueChanger valueChanger;
 
 
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
+     * @param dataSetup Some configuration variables
      */
-    public BaseImpl (final IHost host, final MessageSender sender)
+    public BaseImpl (final DataSetup dataSetup)
     {
-        this.sender = sender;
-        this.host = host;
+        this.dataSetup = dataSetup;
+        this.host = dataSetup != null ? dataSetup.getHost () : null;
+        this.sender = dataSetup != null ? dataSetup.getSender () : null;
+        this.valueChanger = dataSetup != null ? dataSetup.getValueChanger () : null;
     }
 
 
@@ -49,5 +54,17 @@ public abstract class BaseImpl implements ObserverManagement
     public void invokeAction (final int id)
     {
         this.sender.invokeAction (id);
+    }
+
+
+    /**
+     * Check if automation recording is enable and currently recording.
+     *
+     * @return True if automation recording is enable and currently recording
+     */
+    public boolean isAutomationRecActive ()
+    {
+        final ITransport transport = this.dataSetup.getTransport ();
+        return transport != null && transport.isWritingArrangerAutomation ();
     }
 }

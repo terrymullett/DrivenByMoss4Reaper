@@ -4,12 +4,11 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IItem;
 import de.mossgrabers.framework.observer.IValueObserver;
 import de.mossgrabers.framework.utils.StringUtils;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.daw.BaseImpl;
+import de.mossgrabers.reaper.framework.daw.DataSetup;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -33,13 +32,12 @@ public abstract class ItemImpl extends BaseImpl implements IItem
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
+     * @param dataSetup Some configuration variables
      * @param index The index
      */
-    public ItemImpl (final IHost host, final MessageSender sender, final int index)
+    public ItemImpl (final DataSetup dataSetup, final int index)
     {
-        super (host, sender);
+        super (dataSetup);
 
         this.index = index;
     }

@@ -4,9 +4,8 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IScene;
-import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.framework.daw.DataSetup;
 
 
 /**
@@ -24,13 +23,12 @@ public class SceneImpl extends ItemImpl implements IScene
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
+     * @param dataSetup Some configuration variables
      * @param index The index of the slot
      */
-    public SceneImpl (final IHost host, final MessageSender sender, final int index)
+    public SceneImpl (final DataSetup dataSetup, final int index)
     {
-        super (host, sender, index);
+        super (dataSetup, index);
         this.setExists (false);
     }
 

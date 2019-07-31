@@ -1,3 +1,18 @@
+7.04 (unreleased)
+- All devices
+  * New: Note feedback is implemented. Playing notes from MIDI clips are shown in play and drum views.
+  * Fixed: Parameter updates are only slowed down if automation writing is enabled
+  * Fixed: Setting automation mode sometimes addressed the wrong track  
+- Ableton Push 2
+  * Fixed: Improved stability writing the color palette
+- Komplete Kontrol MkII
+  * New: Added Send mode (CLEAR button to toggle). Edit all sends of the selected channel.
+  * New: Add track number to mixer view channels
+  * New: Added Recording Option: Toggle Rec Arm State of selected track
+  * New: Now, first checks if the selected device on the selected channel is a Komplete 
+    Kontrol devcice, if not the first instrument device is checked. This way you can edit 
+    multiple Komplete Kontrol instances on a channel.
+
 7.03
 - All devices
   * New: Reflect automation changes on device (Volume, Pan, Mute, Send Volume)
@@ -11,6 +26,9 @@
   * Fixed: All views except Play View were drawn wrong.
 - Komplete Kontrol MkII
   * New: Added a parameter/device mode (CLEAR button to toggle)!
+- Maschine Mikro MkIII
+  * Fixed: Display warning when no device is selected in parameter mode
+  * Fixed: Indicate non-existing parameters as "None" in parameter mode
 - MCU
   * Fixed: Jogwheel jumped back one step after movement ended
 - Novation Remote SL Mk III

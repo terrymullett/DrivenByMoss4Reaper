@@ -4,17 +4,13 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.controller.color.ColorManager;
 import de.mossgrabers.framework.daw.AbstractModel;
 import de.mossgrabers.framework.daw.IClip;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.INoteClip;
 import de.mossgrabers.framework.daw.ISceneBank;
 import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.ModelSetup;
 import de.mossgrabers.framework.scale.Scales;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.data.MasterTrackImpl;
 import de.mossgrabers.reaper.framework.daw.data.SlotImpl;
@@ -33,35 +29,41 @@ import java.util.Map;
  */
 public class ModelImpl extends AbstractModel
 {
-    private final MessageSender            sender;
+    private final DataSetup                dataSetup;
     private final List<ITrackBank>         trackBanks = new ArrayList<> ();
     private final Map<Integer, ISceneBank> sceneBanks = new HashMap<> (1);
 
 
     /**
      * Constructor.
-     *
-     * @param iniFiles The INI configuration files
-     * @param sender The OSC sender
-     * @param host The DAW host
-     * @param colorManager The color manager
-     * @param valueChanger The value changer
-     * @param scales The scales object
+     * 
      * @param modelSetup The configuration parameters for the model
+     * @param dataSetup Some setup variables
+     * @param scales The scales object
+     * @param iniFiles The INI configuration files
      */
-    public ModelImpl (final IniFiles iniFiles, final MessageSender sender, final IHost host, final ColorManager colorManager, final IValueChanger valueChanger, final Scales scales, final ModelSetup modelSetup)
+    public ModelImpl (final ModelSetup modelSetup, final DataSetup dataSetup, final Scales scales, final IniFiles iniFiles)
     {
-        super (colorManager, valueChanger, scales, modelSetup);
+        super (dataSetup.getHost (), dataSetup.getColorManager (), dataSetup.getValueChanger (), scales, modelSetup);
 
-        this.sender = sender;
-        this.host = host;
+        this.dataSetup = dataSetup;
+
+        this.application = new ApplicationImpl (dataSetup);
+        this.arranger = new ArrangerImpl ();
+        this.mixer = new MixerImpl (dataSetup);
+        this.project = new ProjectImpl (dataSetup);
+        this.transport = new TransportImpl (dataSetup, this, iniFiles);
+        this.groove = new GrooveImpl (dataSetup, iniFiles);
+        this.markerBank = new MarkerBankImpl (dataSetup, modelSetup.getNumMarkers ());
+
+        dataSetup.setTransport (this.transport);
 
         final int numTracks = modelSetup.getNumTracks ();
         final int numScenes = modelSetup.getNumScenes ();
         final int numSends = modelSetup.getNumSends ();
-        final TrackBankImpl trackBankImpl = new TrackBankImpl (host, sender, valueChanger, numTracks, numScenes, numSends, modelSetup.hasFlatTrackList (), modelSetup.hasFullFlatTrackList ());
+        final TrackBankImpl trackBankImpl = new TrackBankImpl (dataSetup, numTracks, numScenes, numSends, modelSetup.hasFlatTrackList (), modelSetup.hasFullFlatTrackList ());
         this.trackBank = trackBankImpl;
-        this.masterTrack = new MasterTrackImpl (host, trackBankImpl, sender, valueChanger, numSends);
+        this.masterTrack = new MasterTrackImpl (dataSetup, trackBankImpl, numSends);
         trackBankImpl.setMasterTrack (this.masterTrack);
         this.trackBanks.add (this.trackBank);
         this.effectTrackBank = null;
@@ -70,23 +72,14 @@ public class ModelImpl extends AbstractModel
         final int numParams = modelSetup.getNumParams ();
         final int numDeviceLayers = modelSetup.getNumDeviceLayers ();
         final int numDrumPadLayers = modelSetup.getNumDrumPadLayers ();
-        this.instrumentDevice = new CursorDeviceImpl (host, sender, valueChanger, numSends, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
-        this.cursorDevice = new CursorDeviceImpl (host, sender, valueChanger, numSends, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
+        this.instrumentDevice = new CursorDeviceImpl (dataSetup, numSends, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
+        this.cursorDevice = new CursorDeviceImpl (dataSetup, numSends, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
         if (numDrumPadLayers > 0)
-            this.drumDevice64 = new CursorDeviceImpl (host, sender, valueChanger, 0, 0, 0, 64, 64);
+            this.drumDevice64 = new CursorDeviceImpl (dataSetup, 0, 0, 0, 64, 64);
 
         final int numResults = modelSetup.getNumResults ();
         if (numResults > 0)
-            this.browser = new BrowserImpl (sender, this.cursorDevice, modelSetup.getNumFilterColumnEntries (), numResults);
-
-        this.application = new ApplicationImpl (host, sender);
-        this.arranger = new ArrangerImpl ();
-        this.mixer = new MixerImpl (host, sender);
-        this.project = new ProjectImpl (host, sender);
-        this.transport = new TransportImpl (host, sender, valueChanger, this.trackBank, this.masterTrack, iniFiles);
-
-        this.groove = new GrooveImpl (host, sender, valueChanger, iniFiles);
-        this.markerBank = new MarkerBankImpl (host, sender, valueChanger, modelSetup.getNumMarkers ());
+            this.browser = new BrowserImpl (this.cursorDevice, modelSetup.getNumFilterColumnEntries (), numResults);
 
         this.currentTrackBank = this.trackBank;
     }
@@ -97,7 +90,7 @@ public class ModelImpl extends AbstractModel
     public ISceneBank createSceneBank (final int numScenes)
     {
         return this.sceneBanks.computeIfAbsent (Integer.valueOf (numScenes), key -> {
-            final TrackBankImpl tb = new TrackBankImpl (this.host, this.sender, this.valueChanger, 1, numScenes, this.modelSetup.getNumSends (), true, false);
+            final TrackBankImpl tb = new TrackBankImpl (this.dataSetup, 1, numScenes, this.modelSetup.getNumSends (), true, false);
             this.trackBanks.add (tb);
             return tb.getSceneBank ();
         });
@@ -110,7 +103,7 @@ public class ModelImpl extends AbstractModel
     {
         synchronized (this.cursorClips)
         {
-            return (INoteClip) this.cursorClips.computeIfAbsent (cols + "-" + rows, k -> new CursorClipImpl (this.host, this.sender, this.valueChanger, cols, rows));
+            return (INoteClip) this.cursorClips.computeIfAbsent (cols + "-" + rows, k -> new CursorClipImpl (this.dataSetup, cols, rows));
         }
     }
 
@@ -169,24 +162,10 @@ public class ModelImpl extends AbstractModel
     /**
      * Store all notes of the cursor clip.
      *
-     * @param notesStr Formatted like start1:end1:pitch1:velocity1;...;startN:endN:pitchN:velocityN;
+     * @param notes The notes to store
      */
-    public void setCursorClipNotes (final String notesStr)
+    public void setCursorClipNotes (final List<Note> notes)
     {
-        final List<NoteImpl> notes = new ArrayList<> ();
-        if (notesStr != null)
-        {
-            for (final String part: notesStr.trim ().split (";"))
-            {
-                final String [] noteParts = part.split (":");
-                final double start = Double.parseDouble (noteParts[0]);
-                final double end = Double.parseDouble (noteParts[1]);
-                final int pitch = Integer.parseInt (noteParts[2]);
-                final int velocity = Integer.parseInt (noteParts[3]);
-                notes.add (new NoteImpl (start, end, pitch, velocity));
-            }
-        }
-
         synchronized (this.cursorClips)
         {
             for (final IClip clip: this.cursorClips.values ())
@@ -288,14 +267,14 @@ public class ModelImpl extends AbstractModel
         while (pos < clipParts.length)
         {
             final int trackIndex = Integer.parseInt (clipParts[pos++]);
-            final TrackImpl track = tb.getTrack (trackIndex);
+            final TrackImpl track = tb.getUnpagedItem (trackIndex);
             final SlotBankImpl slotBank = (SlotBankImpl) track.getSlotBank ();
             slotBank.setTrack (trackIndex);
 
             final int numClips = Integer.parseInt (clipParts[pos++]);
             if (numClips > maxSlotCount)
                 maxSlotCount = numClips;
-            slotBank.setSlotCount (numClips);
+            slotBank.setItemCount (numClips);
 
             for (int i = 0; i < numClips; i++)
             {
@@ -303,7 +282,7 @@ public class ModelImpl extends AbstractModel
                 final boolean isSelected = Integer.parseInt (clipParts[pos++]) > 0;
                 final double [] color = this.parseColor (clipParts[pos++]);
 
-                final SlotImpl slot = slotBank.getSlot (i);
+                final SlotImpl slot = slotBank.getUnpagedItem (i);
                 slot.setPosition (i);
                 slot.setSelected (isSelected);
                 slot.setName (name);
@@ -317,7 +296,7 @@ public class ModelImpl extends AbstractModel
         final int size = tb.getItemCount ();
         for (int i = 0; i < size; i++)
         {
-            final TrackImpl track = tb.getTrack (i);
+            final TrackImpl track = tb.getUnpagedItem (i);
             final SlotBankImpl slotBank = (SlotBankImpl) track.getSlotBank ();
             slotBank.setMaxSlotCount (maxSlotCount);
         }

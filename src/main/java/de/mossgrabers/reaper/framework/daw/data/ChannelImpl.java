@@ -4,13 +4,11 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ISendBank;
 import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.resource.ChannelType;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.Actions;
+import de.mossgrabers.reaper.framework.daw.DataSetup;
 import de.mossgrabers.reaper.framework.daw.SendBankImpl;
 
 
@@ -23,8 +21,6 @@ public class ChannelImpl extends ItemImpl implements IChannel
 {
     private static final String PATH_TRACK         = "track";
     private static final Object UPDATE_LOCK        = new Object ();
-
-    protected IValueChanger     valueChanger;
 
     private ChannelType         type;
     protected double            volume;
@@ -49,20 +45,17 @@ public class ChannelImpl extends ItemImpl implements IChannel
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param index The index of the channel in the page
      * @param numSends The number of sends of a bank
      */
-    public ChannelImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int index, final int numSends)
+    public ChannelImpl (final DataSetup dataSetup, final int index, final int numSends)
     {
-        super (host, sender, index);
-        this.valueChanger = valueChanger;
+        super (dataSetup, index);
 
         this.setName ("Track");
 
-        this.sendBank = new SendBankImpl (host, sender, valueChanger, this, numSends);
+        this.sendBank = new SendBankImpl (dataSetup, this, numSends);
     }
 
 
@@ -129,7 +122,8 @@ public class ChannelImpl extends ItemImpl implements IChannel
     {
         synchronized (UPDATE_LOCK)
         {
-            this.sender.delayUpdates ("track");
+            if (this.isAutomationRecActive ())
+                this.sender.delayUpdates ("track");
             this.volume = this.valueChanger.toNormalizedValue (value);
             this.sendTrackOSC ("volume", this.volume);
         }
@@ -226,7 +220,8 @@ public class ChannelImpl extends ItemImpl implements IChannel
     {
         synchronized (UPDATE_LOCK)
         {
-            this.sender.delayUpdates ("track");
+            if (this.isAutomationRecActive ())
+                this.sender.delayUpdates ("track");
             this.pan = this.valueChanger.toNormalizedValue (value);
             this.sendTrackOSC ("pan", this.pan);
         }
@@ -368,7 +363,8 @@ public class ChannelImpl extends ItemImpl implements IChannel
     {
         synchronized (UPDATE_LOCK)
         {
-            this.sender.delayUpdates ("track");
+            if (this.isAutomationRecActive ())
+                this.sender.delayUpdates ("track");
             this.setMuteState (value);
             this.sendTrackOSC ("mute", value);
         }

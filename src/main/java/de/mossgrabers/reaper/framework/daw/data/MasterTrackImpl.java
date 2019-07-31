@@ -4,12 +4,10 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IMasterTrack;
 import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.framework.observer.ItemSelectionObserver;
-import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.framework.daw.DataSetup;
 import de.mossgrabers.reaper.framework.daw.TrackBankImpl;
 
 import java.util.ArrayList;
@@ -29,19 +27,16 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
     /**
      * Constructor.
      *
-     * @param host The DAW host
+     * @param dataSetup Some configuration variables
      * @param trackBank The trackbank for calculating the index
-     * @param sender The OSC sender
-     * @param valueChanger The valueChanger
      * @param numSends The number of sends on a page
      */
-    public MasterTrackImpl (final IHost host, final TrackBankImpl trackBank, final MessageSender sender, final IValueChanger valueChanger, final int numSends)
+    public MasterTrackImpl (final DataSetup dataSetup, final TrackBankImpl trackBank, final int numSends)
     {
-        super (host, sender, trackBank, valueChanger, 0, 1, numSends, 0);
+        super (dataSetup, trackBank, 0, 1, numSends, 0);
 
         // Master channel does always exist
         this.setExists (true);
-        this.valueChanger = valueChanger;
 
         this.setName ("Master");
         this.setType (ChannelType.MASTER);

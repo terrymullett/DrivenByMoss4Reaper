@@ -4,9 +4,8 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.ISlot;
-import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.framework.daw.DataSetup;
 
 
 /**
@@ -25,14 +24,13 @@ public class SlotImpl extends ItemImpl implements ISlot
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
+     * @param dataSetup Some configuration variables
      * @param trackIndex The track index
      * @param index The index of the slot
      */
-    public SlotImpl (final IHost host, final MessageSender sender, final int trackIndex, final int index)
+    public SlotImpl (final DataSetup dataSetup, final int trackIndex, final int index)
     {
-        super (host, sender, index);
+        super (dataSetup, index);
 
         this.trackIndex = trackIndex;
     }

@@ -4,12 +4,10 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ISendBank;
 import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.data.ISend;
-import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.framework.daw.data.empty.EmptySend;
 import de.mossgrabers.reaper.framework.daw.data.SendImpl;
 
 
@@ -18,7 +16,7 @@ import de.mossgrabers.reaper.framework.daw.data.SendImpl;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class SendBankImpl extends AbstractBankImpl<ISend> implements ISendBank
+public class SendBankImpl extends AbstractPagedBankImpl<SendImpl, ISend> implements ISendBank
 {
     private final IChannel channel;
 
@@ -26,26 +24,22 @@ public class SendBankImpl extends AbstractBankImpl<ISend> implements ISendBank
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param channel The track to which the send bank belongs
      * @param numSends The number of sends in the page of the bank
      */
-    public SendBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final IChannel channel, final int numSends)
+    public SendBankImpl (final DataSetup dataSetup, final IChannel channel, final int numSends)
     {
-        super (host, sender, valueChanger, numSends);
+        super (dataSetup, numSends, EmptySend.INSTANCE);
+
         this.channel = channel;
-        this.initItems ();
-        this.itemCount = this.items.size ();
     }
 
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc}} */
     @Override
-    protected void initItems ()
+    protected SendImpl createItem (final int position)
     {
-        for (int i = 0; i < this.pageSize; i++)
-            this.items.add (new SendImpl (this.host, this.sender, this.valueChanger, this.channel, i));
+        return new SendImpl (this.dataSetup, this.channel, position);
     }
 }

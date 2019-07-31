@@ -4,11 +4,9 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ISlotBank;
 import de.mossgrabers.framework.daw.data.ISlot;
-import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.framework.daw.data.empty.EmptySlot;
 import de.mossgrabers.reaper.framework.daw.data.SlotImpl;
 
 import java.util.Collections;
@@ -20,28 +18,29 @@ import java.util.List;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class SlotBankImpl extends AbstractBankImpl<ISlot> implements ISlotBank
+public class SlotBankImpl extends AbstractPagedBankImpl<SlotImpl, ISlot> implements ISlotBank
 {
-    protected final ISlot emptySlot;
-    protected int         bankOffset = 0;
-    private int           trackIndex;
+    private int trackIndex;
 
 
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param trackIndex The track index to which the slot bank belongs
      * @param numSlots The number of slots in the page of the bank
      */
-    public SlotBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int trackIndex, final int numSlots)
+    public SlotBankImpl (final DataSetup dataSetup, final int trackIndex, final int numSlots)
     {
-        super (host, sender, valueChanger, numSlots);
-        this.initItems ();
+        super (dataSetup, numSlots, EmptySlot.INSTANCE);
+    }
 
-        this.emptySlot = new SlotImpl (host, sender, trackIndex, -1);
+
+    /** {@inheritDoc}} */
+    @Override
+    protected SlotImpl createItem (final int position)
+    {
+        return new SlotImpl (this.dataSetup, this.trackIndex, this.pageSize == 0 ? 0 : position % this.pageSize);
     }
 
 
@@ -75,23 +74,7 @@ public class SlotBankImpl extends AbstractBankImpl<ISlot> implements ISlotBank
     @Override
     public ISlot getEmptySlot (final int startFrom)
     {
-        return new SlotImpl (this.host, this.sender, this.trackIndex, -1);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean canScrollPageBackwards ()
-    {
-        return this.bankOffset - this.pageSize >= 0;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean canScrollPageForwards ()
-    {
-        return this.bankOffset + this.pageSize < this.getItemCount ();
+        return new SlotImpl (this.dataSetup, this.trackIndex, -1);
     }
 
 
@@ -111,48 +94,6 @@ public class SlotBankImpl extends AbstractBankImpl<ISlot> implements ISlotBank
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public ISlot getItem (final int index)
-    {
-        final int id = this.bankOffset + index;
-        return id >= 0 && id < this.getItemCount () ? this.getSlot (id) : this.emptySlot;
-    }
-
-
-    /**
-     * Get a slot from the slot list. No paging is applied.
-     *
-     * @param position The position of the slot
-     * @return The slot
-     */
-    public SlotImpl getSlot (final int position)
-    {
-        synchronized (this.items)
-        {
-            final int size = this.items.size ();
-            final int diff = position - size + 1;
-            if (diff > 0)
-            {
-                for (int i = 0; i < diff; i++)
-                    this.items.add (new SlotImpl (this.host, this.sender, this.trackIndex, this.pageSize == 0 ? 0 : (size + i) % this.pageSize));
-            }
-            return (SlotImpl) this.items.get (position);
-        }
-    }
-
-
-    /**
-     * Sets the number of slots.
-     *
-     * @param slotCount The number of slots
-     */
-    public void setSlotCount (final int slotCount)
-    {
-        this.itemCount = slotCount;
-    }
-
-
     /**
      * Sets the maximum number of slots over all tracks.
      *
@@ -165,14 +106,6 @@ public class SlotBankImpl extends AbstractBankImpl<ISlot> implements ISlotBank
             this.items.remove (this.items.size () - 1);
 
         this.itemCount = maxSlotCount;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    protected void initItems ()
-    {
-        // Items are added on the fly in getItem
     }
 
 
@@ -189,16 +122,5 @@ public class SlotBankImpl extends AbstractBankImpl<ISlot> implements ISlotBank
             for (final ISlot slot: this.items)
                 ((SlotImpl) slot).setTrack (trackIndex);
         }
-    }
-
-
-    /**
-     * Set the bank offset. Used for keeping in sync with scene bank.
-     *
-     * @param bankOffset The bank offset
-     */
-    public void setBankOffset (final int bankOffset)
-    {
-        this.bankOffset = bankOffset;
     }
 }

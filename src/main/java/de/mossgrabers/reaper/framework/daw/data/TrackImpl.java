@@ -4,14 +4,11 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ISlotBank;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.resource.ChannelType;
-import de.mossgrabers.framework.observer.NoteObserver;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.daw.AbstractTrackBankImpl;
+import de.mossgrabers.reaper.framework.daw.DataSetup;
 import de.mossgrabers.reaper.framework.daw.SlotBankImpl;
 import de.mossgrabers.reaper.framework.daw.TrackBankImpl;
 
@@ -56,20 +53,20 @@ public class TrackImpl extends ChannelImpl implements ITrack
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
+     * @param dataSetup Some configuration variables
      * @param trackBank The track bank for folder navigation
-     * @param valueChanger The value changer
      * @param index The index of the track in the page
      * @param numTracks The number of tracks of a bank
      * @param numSends The number of sends of a bank
      * @param numScenes The number of scenes of a bank
      */
-    public TrackImpl (final IHost host, final MessageSender sender, final AbstractTrackBankImpl trackBank, final IValueChanger valueChanger, final int index, final int numTracks, final int numSends, final int numScenes)
+    public TrackImpl (final DataSetup dataSetup, final AbstractTrackBankImpl trackBank, final int index, final int numTracks, final int numSends, final int numScenes)
     {
-        super (host, sender, valueChanger, index, numSends);
+        super (dataSetup, index, numSends);
+
         this.trackBank = trackBank;
-        this.slotBank = new SlotBankImpl (host, sender, valueChanger, index, numScenes);
+
+        this.slotBank = new SlotBankImpl (dataSetup, index, numScenes);
     }
 
 
@@ -405,14 +402,6 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public ISlotBank getSlotBank ()
     {
         return this.slotBank;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void addNoteObserver (final NoteObserver observer)
-    {
-        // Monitoring played notes from the DAW is not supported
     }
 
 

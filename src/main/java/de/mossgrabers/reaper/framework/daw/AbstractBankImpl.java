@@ -6,7 +6,6 @@ package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.AbstractBank;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IItem;
 import de.mossgrabers.reaper.communication.MessageSender;
 
@@ -20,6 +19,7 @@ import de.mossgrabers.reaper.communication.MessageSender;
  */
 public abstract class AbstractBankImpl<T extends IItem> extends AbstractBank<T>
 {
+    protected final DataSetup     dataSetup;
     protected final MessageSender sender;
     protected final IValueChanger valueChanger;
 
@@ -29,16 +29,16 @@ public abstract class AbstractBankImpl<T extends IItem> extends AbstractBank<T>
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param pageSize The number of elements in a page of the bank
      */
-    public AbstractBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int pageSize)
+    public AbstractBankImpl (final DataSetup dataSetup, final int pageSize)
     {
-        super (host, pageSize);
-        this.sender = sender;
-        this.valueChanger = valueChanger;
+        super (dataSetup == null ? null : dataSetup.getHost (), pageSize);
+
+        this.dataSetup = dataSetup;
+        this.sender = dataSetup != null ? dataSetup.getSender () : null;
+        this.valueChanger = dataSetup != null ? dataSetup.getValueChanger () : null;
     }
 
 

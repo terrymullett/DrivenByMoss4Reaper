@@ -4,9 +4,8 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IMarker;
-import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.framework.daw.DataSetup;
 
 
 /**
@@ -27,13 +26,12 @@ public class MarkerImpl extends ItemImpl implements IMarker
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
+     * @param dataSetup Some configuration variables
      * @param index The index of the marker
      */
-    public MarkerImpl (final IHost host, final MessageSender sender, final int index)
+    public MarkerImpl (final DataSetup dataSetup, final int index)
     {
-        super (host, sender, index);
+        super (dataSetup, index);
     }
 
 

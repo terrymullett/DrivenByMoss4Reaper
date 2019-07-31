@@ -4,14 +4,11 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.DAWColors;
 import de.mossgrabers.framework.daw.IDrumPadBank;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ISceneBank;
 import de.mossgrabers.framework.daw.data.IDrumPad;
 import de.mossgrabers.framework.daw.data.ILayer;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.daw.data.DrumPadImpl;
 
 
@@ -28,15 +25,14 @@ public class DrumPadBankImpl extends AbstractBankImpl<IDrumPad> implements IDrum
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param numLayers The number of layers in the page of the bank
      * @param numSends The number of sends
      */
-    public DrumPadBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numLayers, final int numSends)
+    public DrumPadBankImpl (final DataSetup dataSetup, final int numLayers, final int numSends)
     {
-        super (host, sender, valueChanger, numLayers);
+        super (dataSetup, numLayers);
+
         this.numSends = numSends;
         this.initItems ();
     }
@@ -47,7 +43,7 @@ public class DrumPadBankImpl extends AbstractBankImpl<IDrumPad> implements IDrum
     protected void initItems ()
     {
         for (int i = 0; i < this.pageSize; i++)
-            this.items.add (new DrumPadImpl (this.host, this.sender, this.valueChanger, i, this.numSends));
+            this.items.add (new DrumPadImpl (this.dataSetup, i, this.numSends));
     }
 
 

@@ -4,14 +4,12 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.DAWColors;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ISceneBank;
 import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.data.ITrack;
+import de.mossgrabers.framework.daw.data.empty.EmptyTrack;
 import de.mossgrabers.framework.observer.IIndexedValueObserver;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
 
 
@@ -20,113 +18,37 @@ import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> implements ITrackBank
+public abstract class AbstractTrackBankImpl extends AbstractPagedBankImpl<TrackImpl, ITrack> implements ITrackBank
 {
-    protected final ITrack emptyTrack;
-
-    private int            numScenes;
-    private int            numSends;
-    private ISceneBank     sceneBank;
-
-    protected int          bankOffset = 0;
+    private int        numScenes;
+    private int        numSends;
+    private ISceneBank sceneBank;
 
 
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param numTracks The number of tracks of a bank page
      * @param numScenes The number of scenes of a bank page
      * @param numSends The number of sends of a bank page
      */
-    public AbstractTrackBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numTracks, final int numScenes, final int numSends)
+    public AbstractTrackBankImpl (final DataSetup dataSetup, final int numTracks, final int numScenes, final int numSends)
     {
-        super (host, sender, valueChanger, numTracks);
+        super (dataSetup, numTracks, EmptyTrack.INSTANCE);
+
         this.numScenes = numScenes;
         this.numSends = numSends;
 
-        this.emptyTrack = new TrackImpl (host, sender, this, valueChanger, -1, numTracks, numSends, numScenes);
-        this.sceneBank = new SceneBankImpl (host, sender, this, this.numScenes);
+        this.sceneBank = new SceneBankImpl (dataSetup, this, this.numScenes);
     }
 
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc}} */
     @Override
-    public boolean canScrollPageBackwards ()
+    protected TrackImpl createItem (final int position)
     {
-        return this.bankOffset - this.pageSize >= 0;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean canScrollPageForwards ()
-    {
-        return this.bankOffset + this.pageSize < this.getItemCount ();
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    protected void initItems ()
-    {
-        // Items are added on the fly in getItem
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public ITrack getItem (final int index)
-    {
-        final int id = this.bankOffset + index;
-        return id >= 0 && id < this.getItemCount () ? this.getTrack (id) : this.emptyTrack;
-    }
-
-
-    /**
-     * Get a track from the track list. No paging is applied.
-     *
-     * @param position The position of the track
-     * @return The track
-     */
-    public TrackImpl getTrack (final int position)
-    {
-        synchronized (this.items)
-        {
-            final int size = this.items.size ();
-            final int diff = position - size + 1;
-            if (diff > 0)
-            {
-                for (int i = 0; i < diff; i++)
-                    this.items.add (new TrackImpl (this.host, this.sender, this, this.valueChanger, size + i, this.getPageSize (), this.numSends, this.numScenes));
-            }
-            return (TrackImpl) this.items.get (position);
-        }
-    }
-
-
-    /**
-     * Sets the number of tracks.
-     *
-     * @param trackCount The number of tracks
-     */
-    public void setTrackCount (final int trackCount)
-    {
-        this.itemCount = trackCount;
-    }
-
-
-    protected void sendTrackOSC (final String command, final int value)
-    {
-        this.sender.processIntArg ("track", command, value);
-    }
-
-
-    protected void sendTrackOSC (final String command)
-    {
-        this.sender.processNoArg ("track", command);
+        return new TrackImpl (this.dataSetup, this, position, this.getPageSize (), this.numSends, this.numScenes);
     }
 
 
@@ -196,7 +118,7 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
     {
         for (int index = 0; index < this.getPageSize (); index++)
         {
-            final TrackImpl track = this.getTrack (index);
+            final ITrack track = this.getUnpagedItem (index);
             track.addNameObserver (value -> observer.update (track.getIndex (), value));
         }
     }
@@ -224,55 +146,9 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
 
     /** {@inheritDoc} */
     @Override
-    public void selectNextItem ()
-    {
-        final ITrack sel = this.getSelectedItem ();
-        final int index = sel == null ? 0 : sel.getIndex () + 1;
-        if (index == this.pageSize)
-            this.selectNextPage ();
-        else
-            this.getItem (index).select ();
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void selectPreviousItem ()
-    {
-        final ITrack sel = this.getSelectedItem ();
-        final int index = sel == null ? 0 : sel.getIndex () - 1;
-        if (index == -1)
-            this.selectPreviousPage ();
-        else
-            this.getItem (index).select ();
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void selectPreviousPage ()
-    {
-        if (!this.canScrollPageBackwards ())
-            return;
-        this.scrollPageBackwards ();
-        this.host.scheduleTask ( () -> this.getItem (this.pageSize - 1).select (), 75);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void selectNextPage ()
-    {
-        if (!this.canScrollPageForwards ())
-            return;
-        this.scrollPageForwards ();
-        this.host.scheduleTask ( () -> this.getItem (0).select (), 75);
-    }
-
-
     protected void scrollPageBackwards ()
     {
-        this.bankOffset = Math.max (0, this.bankOffset - this.pageSize);
+        super.scrollPageBackwards ();
 
         // Deselect previous selected track (if any)
         final ITrack selectedTrack = this.getSelectedItem ();
@@ -286,10 +162,11 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
     }
 
 
+    /** {@inheritDoc} */
+    @Override
     protected void scrollPageForwards ()
     {
-        if (this.bankOffset + this.pageSize < this.getItemCount ())
-            this.bankOffset += this.pageSize;
+        super.scrollPageForwards ();
 
         // Deselect previous selected track (if any)
         final ITrack selectedTrack = this.getSelectedItem ();
@@ -306,7 +183,7 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
     {
         final int trackCount = this.items.size ();
         for (int position = 0; position < trackCount; position++)
-            ((SlotBankImpl) this.getTrack (position).getSlotBank ()).setBankOffset (slotBankOffset);
+            ((SlotBankImpl) this.getUnpagedItem (position).getSlotBank ()).setBankOffset (slotBankOffset);
     }
 
 
@@ -343,5 +220,17 @@ public abstract class AbstractTrackBankImpl extends AbstractBankImpl<ITrack> imp
     {
         for (int i = 0; i < this.items.size (); i++)
             this.items.get (i).setMute (false);
+    }
+
+
+    protected void sendTrackOSC (final String command, final int value)
+    {
+        this.sender.processIntArg ("track", command, value);
+    }
+
+
+    protected void sendTrackOSC (final String command)
+    {
+        this.sender.processNoArg ("track", command);
     }
 }

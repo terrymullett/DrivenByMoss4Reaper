@@ -4,9 +4,7 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.IHost;
-import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.framework.observer.NoteObserver;
 
 
 /**
@@ -19,15 +17,13 @@ public class EffectTrackBankImpl extends AbstractTrackBankImpl
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param numTracks The number of track of a bank page
      * @param numScenes The number of scenes of a bank page
      */
-    public EffectTrackBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numTracks, final int numScenes)
+    public EffectTrackBankImpl (final DataSetup dataSetup, final int numTracks, final int numScenes)
     {
-        super (host, sender, valueChanger, numTracks, numScenes, 0);
+        super (dataSetup, numTracks, numScenes, 0);
     }
 
 
@@ -44,5 +40,13 @@ public class EffectTrackBankImpl extends AbstractTrackBankImpl
     public String getEditSendName (final int sendIndex)
     {
         return "";
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void addNoteObserver (NoteObserver observer)
+    {
+        // No notes on FX tracks
     }
 }

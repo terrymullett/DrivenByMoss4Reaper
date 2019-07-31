@@ -4,9 +4,7 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.IMixer;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.Actions;
 
 
@@ -20,12 +18,11 @@ public class MixerImpl extends BaseImpl implements IMixer
     /**
      * Constructor
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
+     * @param dataSetup Some configuration variables
      */
-    public MixerImpl (final IHost host, final MessageSender sender)
+    public MixerImpl (final DataSetup dataSetup)
     {
-        super (host, sender);
+        super (dataSetup);
     }
 
 

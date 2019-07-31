@@ -4,12 +4,16 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 /**
  * Implementation of a note.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class NoteImpl
+public class Note
 {
     private double start;
     private double end;
@@ -25,7 +29,7 @@ public class NoteImpl
      * @param pitch The pitch of the note
      * @param velocity The velocity of the note
      */
-    public NoteImpl (final double start, final double end, final int pitch, final int velocity)
+    public Note (final double start, final double end, final int pitch, final int velocity)
     {
         this.start = start;
         this.end = end;
@@ -75,5 +79,26 @@ public class NoteImpl
     public int getVelocity ()
     {
         return this.velocity;
+    }
+
+
+    /**
+     * Parses notes from a string.
+     *
+     * @param notesStr Formatted like start1:end1:pitch1:velocity1;...;startN:endN:pitchN:velocityN;
+     * @return The parsed notes
+     */
+    public static List<Note> parseNotes (final String notesStr)
+    {
+        final List<Note> notes = new ArrayList<> ();
+        if (notesStr != null)
+        {
+            for (final String part: notesStr.trim ().split (";"))
+            {
+                final String [] noteParts = part.split (":");
+                notes.add (new Note (Double.parseDouble (noteParts[0]), Double.parseDouble (noteParts[1]), Integer.parseInt (noteParts[2]), Integer.parseInt (noteParts[3])));
+            }
+        }
+        return notes;
     }
 }

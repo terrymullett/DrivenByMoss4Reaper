@@ -4,17 +4,14 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IChannelBank;
 import de.mossgrabers.framework.daw.ICursorDevice;
 import de.mossgrabers.framework.daw.IDeviceBank;
 import de.mossgrabers.framework.daw.IDrumPadBank;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ILayerBank;
 import de.mossgrabers.framework.daw.IParameterBank;
 import de.mossgrabers.framework.daw.IParameterPageBank;
 import de.mossgrabers.framework.daw.data.IDevice;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.daw.data.DeviceImpl;
 
 
@@ -40,30 +37,28 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
     /**
      * Constructor.
      *
-     * @param host The host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param numSends The number of sends
      * @param numParams The number of parameters
      * @param numDevicesInBank The number of devices
      * @param numDeviceLayers The number of layers
      * @param numDrumPadLayers The number of drum pad layers
      */
-    public CursorDeviceImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numSends, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
+    public CursorDeviceImpl (final DataSetup dataSetup, final int numSends, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
     {
-        super (host, sender, -1);
+        super (dataSetup, -1);
 
         final int checkedNumParams = numParams >= 0 ? numParams : 8;
         final int checkedNumDevices = numDevicesInBank >= 0 ? numDevicesInBank : 8;
         final int checkedNumDeviceLayers = numDeviceLayers >= 0 ? numDeviceLayers : 8;
         final int checkedNumDrumPadLayers = numDrumPadLayers >= 0 ? numDrumPadLayers : 16;
 
-        this.deviceBank = new DeviceBankImpl (host, sender, valueChanger, checkedNumDevices);
+        this.deviceBank = new DeviceBankImpl (dataSetup, checkedNumDevices);
 
         if (checkedNumParams > 0)
         {
-            this.parameterBank = new ParameterBankImpl (host, sender, valueChanger, checkedNumParams);
-            this.parameterPageBank = new ParameterPageBankImpl (host, valueChanger, checkedNumParams, this.parameterBank);
+            this.parameterBank = new ParameterBankImpl (dataSetup, checkedNumParams);
+            this.parameterPageBank = new ParameterPageBankImpl (checkedNumParams, this.parameterBank);
         }
         else
         {
@@ -75,7 +70,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
         this.layerBank = new LayerBankImpl (checkedNumDeviceLayers);
 
         // Monitor the drum pad layers of a container device (if any)
-        this.drumPadBank = new DrumPadBankImpl (host, sender, valueChanger, checkedNumDrumPadLayers, numSends);
+        this.drumPadBank = new DrumPadBankImpl (dataSetup, checkedNumDrumPadLayers, numSends);
     }
 
 
@@ -85,7 +80,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
     {
         if (this.parameterBank == null || this.parameterBank.getItemCount () == 0)
             return "";
-        final String name = this.parameterBank.getParameter (0).getName ();
+        final String name = this.parameterBank.getUnpagedItem (0).getName ();
         return name == null ? "" : name;
     }
 

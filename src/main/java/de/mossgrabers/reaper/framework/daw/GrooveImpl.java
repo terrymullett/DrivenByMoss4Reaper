@@ -4,11 +4,8 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IGroove;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IParameter;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.data.GrooveParameter;
 
@@ -26,17 +23,15 @@ public class GrooveImpl extends BaseImpl implements IGroove
     /**
      * Constructor
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param iniFiles The INI configuration files
      */
-    public GrooveImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final IniFiles iniFiles)
+    public GrooveImpl (final DataSetup dataSetup, final IniFiles iniFiles)
     {
-        super (host, sender);
+        super (dataSetup);
 
         for (int i = 0; i < this.parameters.length; i++)
-            this.parameters[i] = new GrooveParameter (host, sender, valueChanger, i, iniFiles);
+            this.parameters[i] = new GrooveParameter (dataSetup, i, iniFiles);
     }
 
 

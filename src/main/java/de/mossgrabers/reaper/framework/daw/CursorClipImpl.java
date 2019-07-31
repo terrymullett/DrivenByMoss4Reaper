@@ -4,10 +4,7 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.INoteClip;
-import de.mossgrabers.reaper.communication.MessageSender;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,7 +20,6 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 {
     private static final String PATH_NOTE    = "note/";
 
-    private IValueChanger       valueChanger;
     private double              clipStart    = -1;
     private double              clipEnd      = -1;
     private boolean             isLooped     = false;
@@ -34,7 +30,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     private int                 numSteps;
     private int                 numRows;
     private double              stepLength;
-    private List<NoteImpl>      notes        = new ArrayList<> ();
+    private List<Note>      notes        = new ArrayList<> ();
     private final int [] []     data;
     private int                 editPage     = 0;
     private int                 maxPage      = 1;
@@ -43,17 +39,13 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param numSteps The number of steps of the clip to monitor
      * @param numRows The number of note rows of the clip to monitor
      */
-    public CursorClipImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numSteps, final int numRows)
+    public CursorClipImpl (final DataSetup dataSetup, final int numSteps, final int numRows)
     {
-        super (host, sender);
-
-        this.valueChanger = valueChanger;
+        super (dataSetup);
 
         this.numSteps = numSteps;
         this.numRows = numRows;
@@ -557,7 +549,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
      *
      * @param notes Notes array
      */
-    public void setNotes (final List<NoteImpl> notes)
+    public void setNotes (final List<Note> notes)
     {
         synchronized (this.notes)
         {
@@ -579,7 +571,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
                     this.data[step][row] = 0;
             }
 
-            for (final NoteImpl note: this.notes)
+            for (final Note note: this.notes)
             {
                 // Is the note on the current page window?
                 final int row = note.getPitch ();

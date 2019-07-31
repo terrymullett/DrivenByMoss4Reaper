@@ -23,7 +23,7 @@ public abstract class BaseColumnItem extends ItemImpl implements IBrowserColumnI
      */
     protected BaseColumnItem (final int index)
     {
-        super (null, null, index);
+        super (null, index);
     }
 
 

@@ -4,10 +4,9 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ISceneBank;
 import de.mossgrabers.framework.daw.data.IScene;
-import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.framework.daw.data.empty.EmptyScene;
 import de.mossgrabers.reaper.framework.daw.data.SceneImpl;
 
 
@@ -16,30 +15,31 @@ import de.mossgrabers.reaper.framework.daw.data.SceneImpl;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class SceneBankImpl extends AbstractBankImpl<IScene> implements ISceneBank
+public class SceneBankImpl extends AbstractPagedBankImpl<SceneImpl, IScene> implements ISceneBank
 {
     private final AbstractTrackBankImpl trackBank;
-    private final IScene                emptyScene;
-    private int                         bankOffset = 0;
 
 
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
+     * @param dataSetup Some configuration variables
      * @param trackBank The track bank to which the scene bank belongs
      * @param numScenes The number of scenes in the page of the bank
      */
-    public SceneBankImpl (final IHost host, final MessageSender sender, final AbstractTrackBankImpl trackBank, final int numScenes)
+    public SceneBankImpl (final DataSetup dataSetup, final AbstractTrackBankImpl trackBank, final int numScenes)
     {
-        super (host, sender, null, numScenes);
+        super (dataSetup, numScenes, EmptyScene.INSTANCE);
 
         this.trackBank = trackBank;
+    }
 
-        this.initItems ();
 
-        this.emptyScene = new SceneImpl (host, sender, -1);
+    /** {@inheritDoc}} */
+    @Override
+    protected SceneImpl createItem (final int position)
+    {
+        return new SceneImpl (this.dataSetup, this.pageSize == 0 ? 0 : position % this.pageSize);
     }
 
 
@@ -48,31 +48,6 @@ public class SceneBankImpl extends AbstractBankImpl<IScene> implements ISceneBan
     public void stop ()
     {
         // Intentionally empty
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    protected void initItems ()
-    {
-        // Items are added on the fly in getItem
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean canScrollPageBackwards ()
-    {
-        return this.bankOffset - 1 >= 0;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean canScrollPageForwards ()
-    {
-        final int calculatedCount = this.getItemCount ();
-        return this.bankOffset + 1 < calculatedCount;
     }
 
 
@@ -120,37 +95,6 @@ public class SceneBankImpl extends AbstractBankImpl<IScene> implements ISceneBan
 
     /** {@inheritDoc} */
     @Override
-    public IScene getItem (final int index)
-    {
-        final int id = this.bankOffset + index;
-        return id >= 0 && id < this.getItemCount () ? this.getScene (id) : this.emptyScene;
-    }
-
-
-    /**
-     * Get a scene from the scene list. No paging is applied.
-     *
-     * @param position The position of the scene
-     * @return The scene
-     */
-    public SceneImpl getScene (final int position)
-    {
-        synchronized (this.items)
-        {
-            final int size = this.items.size ();
-            final int diff = position - size + 1;
-            if (diff > 0)
-            {
-                for (int i = 0; i < diff; i++)
-                    this.items.add (new SceneImpl (this.host, this.sender, this.pageSize == 0 ? 0 : (size + i) % this.pageSize));
-            }
-            return (SceneImpl) this.items.get (position);
-        }
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public int getItemCount ()
     {
         int maxCount = this.itemCount;
@@ -161,21 +105,10 @@ public class SceneBankImpl extends AbstractBankImpl<IScene> implements ISceneBan
         final int trackCount = this.trackBank.getItemCount ();
         for (int position = 0; position < trackCount; position++)
         {
-            final int size = this.trackBank.getTrack (position).getSlotBank ().getItemCount ();
+            final int size = this.trackBank.getUnpagedItem (position).getSlotBank ().getItemCount ();
             if (size > maxCount)
                 maxCount = size;
         }
         return maxCount;
-    }
-
-
-    /**
-     * Sets the number of scenes.
-     *
-     * @param sceneCount The number of scenes
-     */
-    public void setSceneCount (final int sceneCount)
-    {
-        this.itemCount = sceneCount;
     }
 }

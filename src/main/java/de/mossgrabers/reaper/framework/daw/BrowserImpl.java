@@ -76,16 +76,13 @@ public class BrowserImpl extends AbstractBrowser
     /**
      * Constructor.
      *
-     * @param sender The OSC sender
      * @param cursorDevice The cursor device
      * @param numFilterColumnEntries The number of entries in a filter column page
      * @param numResults The number of entries in a results column page
      */
-    public BrowserImpl (final MessageSender sender, final ICursorDevice cursorDevice, final int numFilterColumnEntries, final int numResults)
+    public BrowserImpl (final ICursorDevice cursorDevice, final int numFilterColumnEntries, final int numResults)
     {
         super (cursorDevice, numFilterColumnEntries, numResults);
-
-        this.sender = sender;
 
         this.deviceCollectionFilterColumn = new DeviceCollectionFilterColumn (0, numFilterColumnEntries);
         this.deviceLocationFilterColumn = new DeviceLocationFilterColumn (1, numFilterColumnEntries);
@@ -433,7 +430,7 @@ public class BrowserImpl extends AbstractBrowser
          */
         public ResultItem (final int index)
         {
-            super (null, null, index);
+            super (null, index);
         }
 
 

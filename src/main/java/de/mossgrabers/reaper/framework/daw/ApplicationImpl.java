@@ -5,9 +5,7 @@
 package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.daw.IApplication;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.utils.OperatingSystem;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.Actions;
 
 import java.awt.AWTException;
@@ -53,13 +51,12 @@ public class ApplicationImpl extends BaseImpl implements IApplication
 
     /**
      * Constructor.
-     *
-     * @param host The DAW host
-     * @param sender The OSC sender
+     * 
+     * @param dataSetup Some configuration variables
      */
-    public ApplicationImpl (final IHost host, final MessageSender sender)
+    public ApplicationImpl (final DataSetup dataSetup)
     {
-        super (host, sender);
+        super (dataSetup);
     }
 
 

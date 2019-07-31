@@ -4,11 +4,8 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
 import de.mossgrabers.framework.daw.IDeviceBank;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IDevice;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.daw.data.DeviceImpl;
 
 
@@ -22,14 +19,12 @@ public class DeviceBankImpl extends AbstractBankImpl<IDevice> implements IDevice
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param numDevices The number of devices in the page of the bank
      */
-    public DeviceBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numDevices)
+    public DeviceBankImpl (final DataSetup dataSetup, final int numDevices)
     {
-        super (host, sender, valueChanger, numDevices);
+        super (dataSetup, numDevices);
         this.initItems ();
     }
 
@@ -39,7 +34,7 @@ public class DeviceBankImpl extends AbstractBankImpl<IDevice> implements IDevice
     protected void initItems ()
     {
         for (int i = 0; i < this.pageSize; i++)
-            this.items.add (new DeviceImpl (this.host, this.sender, i));
+            this.items.add (new DeviceImpl (this.dataSetup, i));
     }
 
 

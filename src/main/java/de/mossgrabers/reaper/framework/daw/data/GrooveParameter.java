@@ -4,10 +4,8 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.IHost;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.IniFiles;
+import de.mossgrabers.reaper.framework.daw.DataSetup;
 
 
 /**
@@ -39,15 +37,13 @@ public class GrooveParameter extends ParameterImpl
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param index The index of the parameters
      * @param iniFiles The INI file where the values are stored
      */
-    public GrooveParameter (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int index, final IniFiles iniFiles)
+    public GrooveParameter (final DataSetup dataSetup, final int index, final IniFiles iniFiles)
     {
-        super (host, sender, valueChanger, index);
+        super (dataSetup, index);
 
         this.iniFiles = iniFiles;
 

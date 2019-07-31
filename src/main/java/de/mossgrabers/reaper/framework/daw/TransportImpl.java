@@ -4,14 +4,9 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.IHost;
-import de.mossgrabers.framework.daw.ITrackBank;
+import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.daw.constants.TransportConstants;
-import de.mossgrabers.framework.daw.data.IMasterTrack;
-import de.mossgrabers.framework.daw.data.ITrack;
-import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
@@ -38,9 +33,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     /** 1/20th of a beat. */
     private static final double INC_FRACTION_TIME_SLOW = 1.0 / 20;
 
-    private ITrackBank          trackBank;
-    private IMasterTrack        master;
-    private IValueChanger       valueChanger;
+    private final IModel        model;
     private IniFiles            iniFiles;
 
     private double              position               = 0;            // Time
@@ -64,21 +57,16 @@ public class TransportImpl extends BaseImpl implements ITransport
     /**
      * Constructor
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
-     * @param trackBank The track bank
-     * @param master The master track
+     * @param dataSetup Some configuration variables
+     * @param model The DAW model
      * @param iniFiles The INI configuration files
      */
-    public TransportImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final ITrackBank trackBank, final IMasterTrack master, final IniFiles iniFiles)
+    public TransportImpl (final DataSetup dataSetup, final IModel model, final IniFiles iniFiles)
     {
-        super (host, sender);
+        super (dataSetup);
 
         this.iniFiles = iniFiles;
-        this.trackBank = trackBank;
-        this.valueChanger = valueChanger;
-        this.master = master;
+        this.model = model;
     }
 
 
@@ -400,9 +388,9 @@ public class TransportImpl extends BaseImpl implements ITransport
     public String getAutomationWriteMode ()
     {
         // Get from selected track
-        TrackImpl selectedTrack = (TrackImpl) this.trackBank.getSelectedItem ();
+        TrackImpl selectedTrack = (TrackImpl) this.model.getCurrentTrackBank ().getSelectedItem ();
         if (selectedTrack == null)
-            selectedTrack = (TrackImpl) this.master;
+            selectedTrack = (TrackImpl) this.model.getMasterTrack ();
         return selectedTrack.getAutomation ();
     }
 
@@ -411,11 +399,11 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void setAutomationWriteMode (final String mode)
     {
-        final ITrack selectedTrack = this.trackBank.getSelectedItem ();
+        final TrackImpl selectedTrack = (TrackImpl) this.model.getCurrentTrackBank ().getSelectedItem ();
         if (selectedTrack == null)
             this.sender.processIntArg ("master", "auto" + mode, 1);
         else
-            this.sender.processIntArg ("track", selectedTrack.getIndex () + "/auto" + mode, 1);
+            this.sender.processIntArg ("track", selectedTrack.getPosition () + "/auto" + mode, 1);
     }
 
 
@@ -509,7 +497,8 @@ public class TransportImpl extends BaseImpl implements ITransport
     {
         synchronized (UPDATE_LOCK)
         {
-            this.sender.delayUpdates ("transport");
+            if (this.isAutomationRecActive ())
+                this.sender.delayUpdates ("transport");
             this.position = time;
             this.sender.processDoubleArg ("time", this.position);
         }

@@ -4,18 +4,18 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ISendBank;
 import de.mossgrabers.framework.daw.data.IMasterTrack;
 import de.mossgrabers.framework.daw.data.ISend;
 import de.mossgrabers.framework.daw.data.ITrack;
-import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.framework.observer.NoteObserver;
 import de.mossgrabers.reaper.framework.TreeNode;
 import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
@@ -26,20 +26,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class TrackBankImpl extends AbstractTrackBankImpl
 {
-    private final boolean       hasFlatTrackList;
-    private final boolean       hasFullFlatTrackList;
-    private ITrack              master;
-    private final AtomicBoolean isDirty       = new AtomicBoolean (false);
-    private TreeNode<TrackImpl> rootTrack     = new TreeNode<> ();
-    private TreeNode<TrackImpl> currentFolder = this.rootTrack;
+    protected static final int      NOTE_OFF      = 0;
+    protected static final int      NOTE_ON       = 1;
+    protected static final int      NOTE_ON_NEW   = 2;
+
+    private final boolean           hasFlatTrackList;
+    private final boolean           hasFullFlatTrackList;
+    private final AtomicBoolean     isDirty       = new AtomicBoolean (false);
+    private final Set<NoteObserver> noteObservers = new HashSet<> ();
+    private final int []            noteCache     = new int [128];
+
+    private ITrack                  master;
+    private TreeNode<TrackImpl>     rootTrack     = new TreeNode<> ();
+    private TreeNode<TrackImpl>     currentFolder = this.rootTrack;
 
 
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param sender The OSC sender
-     * @param valueChanger The value changer
+     * @param dataSetup Some configuration variables
      * @param numTracks The number of tracks in a bank page
      * @param numScenes The number of scenes in a bank page
      * @param numSends The number of sends in a bank page
@@ -48,9 +53,9 @@ public class TrackBankImpl extends AbstractTrackBankImpl
      * @param hasFullFlatTrackList True if the track navigation should include effect and master
      *            tracks if flat
      */
-    public TrackBankImpl (final IHost host, final MessageSender sender, final IValueChanger valueChanger, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final boolean hasFullFlatTrackList)
+    public TrackBankImpl (final DataSetup dataSetup, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final boolean hasFullFlatTrackList)
     {
-        super (host, sender, valueChanger, numTracks, numScenes, numSends);
+        super (dataSetup, numTracks, numScenes, numSends);
 
         this.hasFlatTrackList = hasFlatTrackList;
         this.hasFullFlatTrackList = hasFullFlatTrackList;
@@ -137,7 +142,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
                 {
                     final int position = super.getItemCount ();
                     // Is mastertrack on current page? If not adjust the page
-                    if (position < this.bankOffset || position >= this.bankOffset + this.pageSize)
+                    if (this.isOnSelectedPage (position))
                         this.bankOffset = position / this.pageSize * this.pageSize;
                 }
                 return;
@@ -147,7 +152,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
             {
                 final int position = track.getPosition ();
                 // Is track on current page? If not adjust the page
-                if (position < this.bankOffset || position >= this.bankOffset + this.pageSize)
+                if (this.isOnSelectedPage (position))
                     this.bankOffset = position / this.pageSize * this.pageSize;
             }
         }
@@ -237,7 +242,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
         }
 
         final List<TreeNode<TrackImpl>> children = this.currentFolder.getChildren ();
-        return id < children.size () ? children.get (id).getData () : this.emptyTrack;
+        return id < children.size () ? children.get (id).getData () : this.emptyItem;
     }
 
 
@@ -256,6 +261,50 @@ public class TrackBankImpl extends AbstractTrackBankImpl
         }
 
         return this.currentFolder.getChildren ().size ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected boolean isOnSelectedPage (final int position)
+    {
+        if (this.hasFlatTrackList)
+            return super.isOnSelectedPage (position);
+
+        // If groups are part of the active page, the numbering is not equally increasing, each item
+        // needs to be checked individually
+        for (int i = 0; i < this.getPageSize (); i++)
+        {
+            if (this.getItem (i).getPosition () == position)
+                return true;
+        }
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void addNoteObserver (final NoteObserver observer)
+    {
+        this.noteObservers.add (observer);
+    }
+
+
+    /**
+     * Notify all registered note observers.
+     *
+     * @param trackPosition The track position
+     * @param note The note which is playing or stopped
+     * @param velocity The velocity of the note, note is stopped if 0
+     */
+    protected void notifyNoteObservers (final int trackPosition, final int note, final int velocity)
+    {
+        if (!this.isOnSelectedPage (trackPosition))
+            return;
+
+        final int trackIndex = this.getUnpagedItem (trackPosition).getIndex ();
+        for (final NoteObserver noteObserver: this.noteObservers)
+            noteObserver.call (trackIndex, note, velocity);
     }
 
 
@@ -286,7 +335,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
                 if (this.hasFlatTrackList)
                 {
                     for (int i = 0; i < super.getItemCount (); i++)
-                        this.getTrack (i).setIndex (i % this.pageSize);
+                        this.getUnpagedItem (i).setIndex (i % this.pageSize);
                 }
                 else
                 {
@@ -298,7 +347,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
 
                     for (int i = 0; i < super.getItemCount (); i++)
                     {
-                        final TrackImpl track = this.getTrack (i);
+                        final TrackImpl track = this.getUnpagedItem (i);
 
                         final int depth = track.getDepth ();
 
@@ -328,6 +377,39 @@ public class TrackBankImpl extends AbstractTrackBankImpl
             }
 
             this.isDirty.set (false);
+        }
+    }
+
+
+    /**
+     * Handles the updates on all playing notes. Translates the note array into individual note
+     * observer updates of start and stopped notes.
+     * 
+     * @param trackPosition The position of the track
+     * @param notes The currently playing notes
+     */
+    public void handleNotes (final int trackPosition, final List<Note> notes)
+    {
+        synchronized (this.noteCache)
+        {
+            // Send the new notes
+            for (final Note note: notes)
+            {
+                final int pitch = note.getPitch ();
+                this.noteCache[pitch] = NOTE_ON_NEW;
+                this.notifyNoteObservers (trackPosition, pitch, note.getVelocity ());
+            }
+            // Send note offs
+            for (int i = 0; i < this.noteCache.length; i++)
+            {
+                if (this.noteCache[i] == NOTE_ON_NEW)
+                    this.noteCache[i] = NOTE_ON;
+                else if (this.noteCache[i] == NOTE_ON)
+                {
+                    this.noteCache[i] = NOTE_OFF;
+                    this.notifyNoteObservers (trackPosition, i, 0);
+                }
+            }
         }
     }
 }

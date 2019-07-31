@@ -8,11 +8,8 @@ import de.mossgrabers.framework.controller.IControllerSetup;
 import de.mossgrabers.framework.daw.IBrowser;
 import de.mossgrabers.framework.daw.IDeviceBank;
 import de.mossgrabers.framework.daw.IHost;
-import de.mossgrabers.framework.daw.IMarkerBank;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.IProject;
-import de.mossgrabers.framework.daw.ISceneBank;
-import de.mossgrabers.framework.daw.ISendBank;
 import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.data.IMarker;
 import de.mossgrabers.framework.daw.data.IParameter;
@@ -24,9 +21,11 @@ import de.mossgrabers.reaper.framework.daw.BrowserImpl;
 import de.mossgrabers.reaper.framework.daw.CursorDeviceImpl;
 import de.mossgrabers.reaper.framework.daw.MarkerBankImpl;
 import de.mossgrabers.reaper.framework.daw.ModelImpl;
+import de.mossgrabers.reaper.framework.daw.Note;
 import de.mossgrabers.reaper.framework.daw.ParameterBankImpl;
 import de.mossgrabers.reaper.framework.daw.ProjectImpl;
 import de.mossgrabers.reaper.framework.daw.SceneBankImpl;
+import de.mossgrabers.reaper.framework.daw.SendBankImpl;
 import de.mossgrabers.reaper.framework.daw.TrackBankImpl;
 import de.mossgrabers.reaper.framework.daw.TransportImpl;
 import de.mossgrabers.reaper.framework.daw.data.ItemImpl;
@@ -50,6 +49,13 @@ import java.util.concurrent.LinkedBlockingDeque;
  */
 public class MessageParser
 {
+    private static final String    TAG_COLOR  = "color";
+    private static final String    TAG_SELECT = "select";
+    private static final String    TAG_NUMBER = "number";
+    private static final String    TAG_COUNT  = "count";
+    private static final String    TAG_EXISTS = "exists";
+    private static final String    TAG_NAME   = "name";
+
     private final IControllerSetup controllerSetup;
 
     private final IHost            host;
@@ -109,7 +115,7 @@ public class MessageParser
             return;
 
         final Queue<String> parts = parsePath (osc);
-        if (parts == null)
+        if (parts.isEmpty ())
             return;
 
         final String command = parts.poll ();
@@ -123,7 +129,7 @@ public class MessageParser
                 final String projectCmd = parts.poll ();
                 switch (projectCmd)
                 {
-                    case "name":
+                    case TAG_NAME:
                         ((ProjectImpl) this.project).setName (value);
                         break;
                     case "engine":
@@ -140,7 +146,7 @@ public class MessageParser
                 break;
 
             case "master":
-                this.parseTrackValue (this.masterTrack, parts, value);
+                this.parseTrackValue (null, this.masterTrack, parts, value);
                 break;
 
             case "device":
@@ -248,33 +254,29 @@ public class MessageParser
         final String part = parts.poll ();
         try
         {
-            final int index = Integer.parseInt (part);
-            this.parseTrackValue (tb.getTrack (index), parts, value);
+            final int position = Integer.parseInt (part);
+            this.parseTrackValue (tb, tb.getUnpagedItem (position), parts, value);
         }
         catch (final NumberFormatException ex)
         {
-            switch (part)
+            // The number of tracks
+            if (TAG_COUNT.equals (part))
             {
-                // The number of tracks
-                case "count":
-                    tb.setTrackCount (Integer.parseInt (value));
-                    ((TrackBankImpl) this.model.getTrackBank ()).markDirty ();
-                    break;
-
-                default:
-                    this.host.error ("Unhandled Track command: " + part);
-                    return;
+                tb.setItemCount (Integer.parseInt (value));
+                ((TrackBankImpl) this.model.getTrackBank ()).markDirty ();
             }
+            else
+                this.host.error ("Unhandled Track command: " + part);
         }
     }
 
 
-    private void parseTrackValue (final TrackImpl track, final Queue<String> parts, final String value)
+    private void parseTrackValue (final TrackBankImpl tb, final TrackImpl track, final Queue<String> parts, final String value)
     {
         final String command = parts.poll ();
         switch (command)
         {
-            case "exists":
+            case TAG_EXISTS:
                 track.setExists (Double.parseDouble (value) > 0);
                 break;
 
@@ -291,18 +293,18 @@ public class MessageParser
                 track.setType (ChannelType.valueOf (value));
                 break;
 
-            case "select":
+            case TAG_SELECT:
                 final boolean isSelected = Double.parseDouble (value) > 0;
                 track.setSelected (isSelected);
                 ((TrackBankImpl) this.model.getCurrentTrackBank ()).handleBankTrackSelection (track, isSelected);
                 break;
 
-            case "number":
+            case TAG_NUMBER:
                 // Note: index is set in the tree (or flat) recalculation
                 track.setPosition (Integer.parseInt (value));
                 break;
 
-            case "name":
+            case TAG_NAME:
                 track.setName (value);
                 break;
 
@@ -373,20 +375,14 @@ public class MessageParser
                 }
                 break;
 
-            case "color":
+            case TAG_COLOR:
                 final double [] color = ((ModelImpl) this.model).parseColor (value);
                 if (color != null)
                     track.setColorState (color);
                 break;
 
             case "send":
-                if (!parts.isEmpty ())
-                {
-                    final int sendIndex = Integer.parseInt (parts.poll ()) - 1;
-                    final ISendBank sendBank = track.getSendBank ();
-                    if (sendIndex < sendBank.getPageSize ())
-                        this.parseSendValue (sendBank.getItem (sendIndex), parts, value);
-                }
+                this.parseSend (track, parts, value);
                 break;
 
             case "repeatActive":
@@ -397,9 +393,37 @@ public class MessageParser
                 track.setInternalNoteRepeatLength (Double.parseDouble (value));
                 break;
 
+            case "playingnotes":
+                if (tb != null)
+                    tb.handleNotes (track.getPosition (), Note.parseNotes (value));
+                break;
+
             default:
                 this.host.error ("Unhandled Track Parameter: " + command);
                 break;
+        }
+    }
+
+
+    private void parseSend (final TrackImpl track, final Queue<String> parts, final String value)
+    {
+        if (parts.isEmpty ())
+            return;
+
+        final String sendCmd = parts.poll ();
+        final SendBankImpl sendBank = (SendBankImpl) track.getSendBank ();
+        try
+        {
+            final int position = Integer.parseInt (sendCmd);
+            this.parseSendValue (sendBank.getUnpagedItem (position), parts, value);
+        }
+        catch (final NumberFormatException ex)
+        {
+            // The number of sends on the track
+            if (TAG_COUNT.equals (sendCmd))
+                sendBank.setItemCount (Integer.parseInt (value));
+            else
+                this.host.error ("Unhandled Send command: " + sendBank);
         }
     }
 
@@ -410,7 +434,7 @@ public class MessageParser
         final SendImpl sendImpl = (SendImpl) send;
         switch (command)
         {
-            case "name":
+            case TAG_NAME:
                 sendImpl.setName (value);
                 sendImpl.setExists (value != null && !value.isEmpty ());
                 break;
@@ -434,11 +458,11 @@ public class MessageParser
         final String command = parts.poll ();
         switch (command)
         {
-            case "count":
+            case TAG_COUNT:
                 device.setDeviceCount (Integer.parseInt (value));
                 break;
 
-            case "exists":
+            case TAG_EXISTS:
                 device.setExists (Integer.parseInt (value) > 0);
                 break;
 
@@ -450,7 +474,7 @@ public class MessageParser
                 device.setEnabled (Integer.parseInt (value) == 0);
                 break;
 
-            case "name":
+            case TAG_NAME:
                 device.setName (value);
                 break;
 
@@ -463,60 +487,62 @@ public class MessageParser
                 break;
 
             case "sibling":
-                final String siblingCmd = parts.poll ();
-                try
-                {
-                    final int siblingNo = Integer.parseInt (siblingCmd) - 1;
-                    final IDeviceBank deviceBank = device.getDeviceBank ();
-                    if (siblingNo < deviceBank.getPageSize ())
-                    {
-                        final ItemImpl sibling = (ItemImpl) deviceBank.getItem (siblingNo);
-                        switch (parts.poll ())
-                        {
-                            case "name":
-                                sibling.setName (value);
-                                sibling.setExists (value != null && !value.isEmpty ());
-                                break;
-
-                            default:
-                                this.host.error ("Unhandled device sibling parameter: " + command);
-                                return;
-                        }
-                    }
-                }
-                catch (final NumberFormatException ex)
-                {
-                    this.host.error ("Unhandled Device Sibling parameter: " + siblingCmd);
-                }
+                this.parseSibling (device, command, parts, value);
                 break;
 
             case "param":
-                final String cmd = parts.poll ();
-                try
-                {
-                    final int paramNo = Integer.parseInt (cmd);
-                    final ParameterBankImpl parameterBank = (ParameterBankImpl) device.getParameterBank ();
-                    if (parameterBank != null)
-                        this.parseDeviceParamValue (paramNo, parameterBank.getParameter (paramNo), parts, value);
-                }
-                catch (final NumberFormatException ex)
-                {
-                    switch (cmd)
-                    {
-                        case "count":
-                            device.setParameterCount (Integer.parseInt (value));
-                            break;
-
-                        default:
-                            this.host.error ("Unhandled Device Param parameter: " + cmd);
-                            return;
-                    }
-                }
+                this.parseParameter (device, value, parts);
                 break;
 
             default:
                 this.host.error ("Unhandled device parameter: " + command);
                 break;
+        }
+    }
+
+
+    private void parseParameter (final CursorDeviceImpl device, final String value, final Queue<String> parts)
+    {
+        final String cmd = parts.poll ();
+        try
+        {
+            final int paramNo = Integer.parseInt (cmd);
+            final ParameterBankImpl parameterBank = (ParameterBankImpl) device.getParameterBank ();
+            if (parameterBank != null)
+                this.parseDeviceParamValue (paramNo, parameterBank.getUnpagedItem (paramNo), parts, value);
+        }
+        catch (final NumberFormatException ex)
+        {
+            if (TAG_COUNT.equals (cmd))
+                device.setParameterCount (Integer.parseInt (value));
+            else
+                this.host.error ("Unhandled Device Param parameter: " + cmd);
+        }
+    }
+
+
+    private void parseSibling (final CursorDeviceImpl device, final String command, final Queue<String> parts, final String value)
+    {
+        final String siblingCmd = parts.poll ();
+        try
+        {
+            final int siblingNo = Integer.parseInt (siblingCmd) - 1;
+            final IDeviceBank deviceBank = device.getDeviceBank ();
+            if (siblingNo < deviceBank.getPageSize ())
+            {
+                final ItemImpl sibling = (ItemImpl) deviceBank.getItem (siblingNo);
+                if (TAG_NAME.equals (parts.poll ()))
+                {
+                    sibling.setName (value);
+                    sibling.setExists (value != null && !value.isEmpty ());
+                }
+                else
+                    this.host.error ("Unhandled device sibling parameter: " + command);
+            }
+        }
+        catch (final NumberFormatException ex)
+        {
+            this.host.error ("Unhandled Device Sibling parameter: " + siblingCmd);
         }
     }
 
@@ -527,7 +553,7 @@ public class MessageParser
         final ParameterImpl p = (ParameterImpl) param;
         switch (command)
         {
-            case "name":
+            case TAG_NAME:
                 p.setName (value);
                 p.setPosition (paramNo);
                 p.setExists (value != null && !value.isEmpty ());
@@ -557,21 +583,16 @@ public class MessageParser
         {
             case "result":
                 final int resultNo = Integer.parseInt (parts.poll ()) - 1;
-                switch (parts.poll ())
-                {
-                    case "name":
-                        ((BrowserImpl) this.browser).setPreset (resultNo, value == null || value.isEmpty () ? null : value);
-                        break;
-                    default:
-                        this.host.error ("Unhandled Browser Result: " + command);
-                        break;
-                }
+                if (TAG_NAME.equals (parts.poll ()))
+                    ((BrowserImpl) this.browser).setPreset (resultNo, value == null || value.isEmpty () ? null : value);
+                else
+                    this.host.error ("Unhandled Browser Result: " + command);
                 break;
 
             case "selected":
                 switch (parts.poll ())
                 {
-                    case "name":
+                    case TAG_NAME:
                         // Not used
                         break;
                     case "index":
@@ -592,26 +613,20 @@ public class MessageParser
 
     private void parseMarker (final Queue<String> parts, final String value)
     {
-        final IMarkerBank markerBank = this.model.getMarkerBank ();
+        final MarkerBankImpl markerBank = (MarkerBankImpl) this.model.getMarkerBank ();
         final String part = parts.poll ();
         try
         {
-            final int index = Integer.parseInt (part);
-            this.parseMarkerValue (markerBank.getItem (index), parts, value);
+            final int position = Integer.parseInt (part);
+            this.parseMarkerValue (markerBank.getUnpagedItem (position), parts, value);
         }
         catch (final NumberFormatException ex)
         {
-            switch (part)
-            {
-                // The number of tracks
-                case "count":
-                    ((MarkerBankImpl) markerBank).setMarkerCount (Integer.parseInt (value));
-                    break;
-
-                default:
-                    this.host.error ("Unhandled Marker command: " + part);
-                    return;
-            }
+            // The number of tracks
+            if (TAG_COUNT.equals (part))
+                markerBank.setItemCount (Integer.parseInt (value));
+            else
+                this.host.error ("Unhandled Marker command: " + part);
         }
     }
 
@@ -621,26 +636,20 @@ public class MessageParser
         for (final ITrackBank tb: ((ModelImpl) this.model).getTrackBanks ())
         {
             final Queue<String> partsCopy = new LinkedBlockingDeque<> (parts);
-            final ISceneBank sceneBank = tb.getSceneBank ();
+            final SceneBankImpl sceneBank = (SceneBankImpl) tb.getSceneBank ();
             final String part = partsCopy.poll ();
             try
             {
-                final int index = Integer.parseInt (part);
-                this.parseSceneValue (sceneBank.getItem (index), partsCopy, value);
+                final int position = Integer.parseInt (part);
+                this.parseSceneValue (sceneBank.getUnpagedItem (position), partsCopy, value);
             }
             catch (final NumberFormatException ex)
             {
-                switch (part)
-                {
-                    // The number of tracks
-                    case "count":
-                        ((SceneBankImpl) sceneBank).setSceneCount (Integer.parseInt (value));
-                        break;
-
-                    default:
-                        this.host.error ("Unhandled Scene command: " + part);
-                        return;
-                }
+                // The number of scenes
+                if (TAG_COUNT.equals (part))
+                    sceneBank.setItemCount (Integer.parseInt (value));
+                else
+                    this.host.error ("Unhandled Scene command: " + part);
             }
         }
     }
@@ -652,19 +661,19 @@ public class MessageParser
         final MarkerImpl markerImpl = (MarkerImpl) marker;
         switch (command)
         {
-            case "exists":
+            case TAG_EXISTS:
                 markerImpl.setExists (Double.parseDouble (value) > 0);
                 break;
 
-            case "number":
+            case TAG_NUMBER:
                 markerImpl.setPosition (Integer.parseInt (value));
                 break;
 
-            case "name":
+            case TAG_NAME:
                 markerImpl.setName (value);
                 break;
 
-            case "color":
+            case TAG_COLOR:
                 final double [] color = ((ModelImpl) this.model).parseColor (value);
                 if (color != null)
                     markerImpl.setColorState (color);
@@ -683,19 +692,19 @@ public class MessageParser
         final SceneImpl sceneImpl = (SceneImpl) scene;
         switch (command)
         {
-            case "exists":
+            case TAG_EXISTS:
                 sceneImpl.setExists (Double.parseDouble (value) > 0);
                 break;
 
-            case "number":
+            case TAG_NUMBER:
                 sceneImpl.setPosition (Integer.parseInt (value));
                 break;
 
-            case "name":
+            case TAG_NAME:
                 sceneImpl.setName (value);
                 break;
 
-            case "color":
+            case TAG_COLOR:
                 final double [] color = ((ModelImpl) this.model).parseColor (value);
                 if (color != null)
                     sceneImpl.setColor (color[0], color[1], color[2]);
@@ -726,7 +735,7 @@ public class MessageParser
                 modelImpl.setCursorClipPlayPosition (Double.parseDouble (value));
                 break;
 
-            case "color":
+            case TAG_COLOR:
                 final double [] color = modelImpl.parseColor (value);
                 if (color != null)
                     modelImpl.setCursorClipColorValue (color);
@@ -737,7 +746,7 @@ public class MessageParser
                 break;
 
             case "notes":
-                modelImpl.setCursorClipNotes (value);
+                modelImpl.setCursorClipNotes (Note.parseNotes (value));
                 break;
 
             case "all":
@@ -756,8 +765,11 @@ public class MessageParser
         final String [] parts = osc.split ("/");
         final Queue<String> oscParts = new ArrayBlockingQueue<> (parts.length);
         Collections.addAll (oscParts, parts);
-        if (oscParts.size () < 2)
-            return null;
+        if (oscParts.size () <= 1)
+        {
+            oscParts.clear ();
+            return oscParts;
+        }
         // Remove first empty element
         oscParts.poll ();
         return oscParts;

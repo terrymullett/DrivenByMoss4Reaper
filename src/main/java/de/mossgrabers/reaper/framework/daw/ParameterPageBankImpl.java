@@ -4,8 +4,6 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
-import de.mossgrabers.framework.controller.IValueChanger;
-import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.IParameterBank;
 import de.mossgrabers.framework.daw.IParameterPageBank;
 import de.mossgrabers.framework.observer.ItemSelectionObserver;
@@ -28,12 +26,10 @@ public class ParameterPageBankImpl implements IParameterPageBank
     /**
      * Constructor.
      *
-     * @param host The DAW host
-     * @param valueChanger The value changer
      * @param numParameterPages The number of parameter pages in the page of the bank
      * @param parameterBank The parameter bank
      */
-    public ParameterPageBankImpl (final IHost host, final IValueChanger valueChanger, final int numParameterPages, final IParameterBank parameterBank)
+    public ParameterPageBankImpl (final int numParameterPages, final IParameterBank parameterBank)
     {
         this.pageSize = numParameterPages;
         this.parameterBank = parameterBank;
