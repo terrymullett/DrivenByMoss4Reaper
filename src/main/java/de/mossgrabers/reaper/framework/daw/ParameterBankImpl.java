@@ -23,7 +23,7 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
      * @param dataSetup Some configuration variables
      * @param numParams The number of parameters in the page of the bank
      */
-    public ParameterBankImpl (final DataSetup dataSetup, final int numParams)
+    public ParameterBankImpl (final DataSetupEx dataSetup, final int numParams)
     {
         super (dataSetup, numParams, EmptyParameter.INSTANCE);
     }

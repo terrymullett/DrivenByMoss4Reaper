@@ -27,7 +27,7 @@ public class SceneBankImpl extends AbstractPagedBankImpl<SceneImpl, IScene> impl
      * @param trackBank The track bank to which the scene bank belongs
      * @param numScenes The number of scenes in the page of the bank
      */
-    public SceneBankImpl (final DataSetup dataSetup, final AbstractTrackBankImpl trackBank, final int numScenes)
+    public SceneBankImpl (final DataSetupEx dataSetup, final AbstractTrackBankImpl trackBank, final int numScenes)
     {
         super (dataSetup, numScenes, EmptyScene.INSTANCE);
 

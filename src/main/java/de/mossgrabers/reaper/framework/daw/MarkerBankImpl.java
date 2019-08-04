@@ -23,7 +23,7 @@ public class MarkerBankImpl extends AbstractPagedBankImpl<MarkerImpl, IMarker> i
      * @param dataSetup Some configuration variables
      * @param numMarkers The number of tracks of a bank page
      */
-    public MarkerBankImpl (final DataSetup dataSetup, final int numMarkers)
+    public MarkerBankImpl (final DataSetupEx dataSetup, final int numMarkers)
     {
         super (dataSetup, numMarkers, EmptyMarker.INSTANCE);
     }
@@ -33,7 +33,7 @@ public class MarkerBankImpl extends AbstractPagedBankImpl<MarkerImpl, IMarker> i
     @Override
     protected MarkerImpl createItem (final int position)
     {
-        return new MarkerImpl (this.dataSetup, this.pageSize == 0 ? 0 : (position) % this.pageSize);
+        return new MarkerImpl (this.dataSetup, this.pageSize == 0 ? 0 : position % this.pageSize);
     }
 
 

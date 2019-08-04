@@ -7,7 +7,7 @@ package de.mossgrabers.reaper.framework.daw.data;
 import de.mossgrabers.framework.daw.data.IMasterTrack;
 import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.framework.observer.ItemSelectionObserver;
-import de.mossgrabers.reaper.framework.daw.DataSetup;
+import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.TrackBankImpl;
 
 import java.util.ArrayList;
@@ -31,7 +31,7 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
      * @param trackBank The trackbank for calculating the index
      * @param numSends The number of sends on a page
      */
-    public MasterTrackImpl (final DataSetup dataSetup, final TrackBankImpl trackBank, final int numSends)
+    public MasterTrackImpl (final DataSetupEx dataSetup, final TrackBankImpl trackBank, final int numSends)
     {
         super (dataSetup, trackBank, 0, 1, numSends, 0);
 

@@ -26,7 +26,7 @@ public class GrooveImpl extends BaseImpl implements IGroove
      * @param dataSetup Some configuration variables
      * @param iniFiles The INI configuration files
      */
-    public GrooveImpl (final DataSetup dataSetup, final IniFiles iniFiles)
+    public GrooveImpl (final DataSetupEx dataSetup, final IniFiles iniFiles)
     {
         super (dataSetup);
 

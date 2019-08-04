@@ -148,7 +148,7 @@ public class MidiConnection
         try
         {
             byte [] d = data;
-            int oldmax = this.maxSysexLength.get ();
+            final int oldmax = this.maxSysexLength.get ();
             if (oldmax > data.length)
             {
                 // Workaround for bug in the JDK.If a longer Sysex message was sent before, sending

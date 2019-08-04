@@ -13,7 +13,7 @@ import de.mossgrabers.framework.daw.ModelSetup;
 import de.mossgrabers.framework.daw.midi.IMidiAccess;
 import de.mossgrabers.framework.scale.Scales;
 import de.mossgrabers.reaper.communication.MessageSender;
-import de.mossgrabers.reaper.framework.daw.DataSetup;
+import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.ModelImpl;
 import de.mossgrabers.reaper.framework.midi.MidiAccessImpl;
 import de.mossgrabers.reaper.ui.utils.LogModel;
@@ -66,7 +66,7 @@ public class ReaperSetupFactory implements ISetupFactory
     @Override
     public IModel createModel (final ColorManager colorManager, final IValueChanger valueChanger, final Scales scales, final ModelSetup modelSetup)
     {
-        final DataSetup dataSetup = new DataSetup (this.host, valueChanger, colorManager, this.sender);
+        final DataSetupEx dataSetup = new DataSetupEx (this.host, valueChanger, colorManager, this.sender);
         return new ModelImpl (modelSetup, dataSetup, scales, this.iniFiles);
     }
 

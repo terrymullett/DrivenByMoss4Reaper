@@ -33,7 +33,7 @@ public abstract class AbstractTrackBankImpl extends AbstractPagedBankImpl<TrackI
      * @param numScenes The number of scenes of a bank page
      * @param numSends The number of sends of a bank page
      */
-    public AbstractTrackBankImpl (final DataSetup dataSetup, final int numTracks, final int numScenes, final int numSends)
+    public AbstractTrackBankImpl (final DataSetupEx dataSetup, final int numTracks, final int numScenes, final int numSends)
     {
         super (dataSetup, numTracks, EmptyTrack.INSTANCE);
 

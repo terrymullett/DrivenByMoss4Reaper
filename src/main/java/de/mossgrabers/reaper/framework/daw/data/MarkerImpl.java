@@ -5,7 +5,7 @@
 package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.daw.data.IMarker;
-import de.mossgrabers.reaper.framework.daw.DataSetup;
+import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
 /**
@@ -29,7 +29,7 @@ public class MarkerImpl extends ItemImpl implements IMarker
      * @param dataSetup Some configuration variables
      * @param index The index of the marker
      */
-    public MarkerImpl (final DataSetup dataSetup, final int index)
+    public MarkerImpl (final DataSetupEx dataSetup, final int index)
     {
         super (dataSetup, index);
     }

@@ -8,7 +8,7 @@ import de.mossgrabers.framework.daw.ISlotBank;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.reaper.framework.daw.AbstractTrackBankImpl;
-import de.mossgrabers.reaper.framework.daw.DataSetup;
+import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.SlotBankImpl;
 import de.mossgrabers.reaper.framework.daw.TrackBankImpl;
 
@@ -46,7 +46,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     private String                        automation       = AUTOMATION_TRIM;
     private final ISlotBank               slotBank;
     private boolean                       isNoteRepeat;
-    private double                        noteRepeatLength;
+    private double                        noteRepeatPeriod;
     private int                           depth;
 
 
@@ -60,7 +60,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
      * @param numSends The number of sends of a bank
      * @param numScenes The number of scenes of a bank
      */
-    public TrackImpl (final DataSetup dataSetup, final AbstractTrackBankImpl trackBank, final int index, final int numTracks, final int numSends, final int numScenes)
+    public TrackImpl (final DataSetupEx dataSetup, final AbstractTrackBankImpl trackBank, final int index, final int numTracks, final int numSends, final int numScenes)
     {
         super (dataSetup, index, numSends);
 
@@ -169,35 +169,45 @@ public class TrackImpl extends ChannelImpl implements ITrack
     }
 
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Toggle note repeat on the channel.
+     */
     public void toggleNoteRepeat ()
     {
         this.sendTrackOSC ("noterepeat", !this.isNoteRepeat);
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public boolean isNoteRepeat ()
+    /**
+     * Check if note repeat is enabled.
+     *
+     * @return True if enabled
+     */
+    public boolean isNoteRepeatActive ()
     {
         return this.isNoteRepeat;
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public void setNoteRepeatLength (final double length)
+    /**
+     * Set the note repeat period.
+     *
+     * @param length The length of the period
+     */
+    public void setNoteRepeatPeriod (final double length)
     {
         this.sendTrackOSC ("noterepeatlength", length);
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    public double getNoteRepeatLength ()
+    /**
+     * Get the note repeat period.
+     *
+     * @return The current length of the period
+     */
+    public double getNoteRepeatPeriod ()
     {
-        return this.noteRepeatLength;
+        return this.noteRepeatPeriod;
     }
 
 
@@ -327,7 +337,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
      */
     public void setInternalNoteRepeatLength (final double length)
     {
-        this.noteRepeatLength = length;
+        this.noteRepeatPeriod = length;
     }
 
 

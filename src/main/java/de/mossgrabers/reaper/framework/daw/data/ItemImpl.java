@@ -8,7 +8,7 @@ import de.mossgrabers.framework.daw.data.IItem;
 import de.mossgrabers.framework.observer.IValueObserver;
 import de.mossgrabers.framework.utils.StringUtils;
 import de.mossgrabers.reaper.framework.daw.BaseImpl;
-import de.mossgrabers.reaper.framework.daw.DataSetup;
+import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,7 +35,7 @@ public abstract class ItemImpl extends BaseImpl implements IItem
      * @param dataSetup Some configuration variables
      * @param index The index
      */
-    public ItemImpl (final DataSetup dataSetup, final int index)
+    public ItemImpl (final DataSetupEx dataSetup, final int index)
     {
         super (dataSetup);
 

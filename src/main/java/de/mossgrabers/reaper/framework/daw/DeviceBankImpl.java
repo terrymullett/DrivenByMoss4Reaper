@@ -22,7 +22,7 @@ public class DeviceBankImpl extends AbstractBankImpl<IDevice> implements IDevice
      * @param dataSetup Some configuration variables
      * @param numDevices The number of devices in the page of the bank
      */
-    public DeviceBankImpl (final DataSetup dataSetup, final int numDevices)
+    public DeviceBankImpl (final DataSetupEx dataSetup, final int numDevices)
     {
         super (dataSetup, numDevices);
         this.initItems ();

@@ -29,7 +29,7 @@ public class DrumPadBankImpl extends AbstractBankImpl<IDrumPad> implements IDrum
      * @param numLayers The number of layers in the page of the bank
      * @param numSends The number of sends
      */
-    public DrumPadBankImpl (final DataSetup dataSetup, final int numLayers, final int numSends)
+    public DrumPadBankImpl (final DataSetupEx dataSetup, final int numLayers, final int numSends)
     {
         super (dataSetup, numLayers);
 

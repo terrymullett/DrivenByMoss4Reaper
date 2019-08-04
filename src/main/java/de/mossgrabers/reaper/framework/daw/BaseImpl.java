@@ -18,7 +18,7 @@ import de.mossgrabers.reaper.communication.MessageSender;
  */
 public abstract class BaseImpl implements ObserverManagement
 {
-    protected final DataSetup     dataSetup;
+    protected final DataSetupEx   dataSetup;
     protected final IHost         host;
     protected final MessageSender sender;
     protected final IValueChanger valueChanger;
@@ -29,7 +29,7 @@ public abstract class BaseImpl implements ObserverManagement
      *
      * @param dataSetup Some configuration variables
      */
-    public BaseImpl (final DataSetup dataSetup)
+    public BaseImpl (final DataSetupEx dataSetup)
     {
         this.dataSetup = dataSetup;
         this.host = dataSetup != null ? dataSetup.getHost () : null;

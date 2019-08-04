@@ -5,7 +5,7 @@
 package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.reaper.framework.IniFiles;
-import de.mossgrabers.reaper.framework.daw.DataSetup;
+import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
 /**
@@ -41,7 +41,7 @@ public class GrooveParameter extends ParameterImpl
      * @param index The index of the parameters
      * @param iniFiles The INI file where the values are stored
      */
-    public GrooveParameter (final DataSetup dataSetup, final int index, final IniFiles iniFiles)
+    public GrooveParameter (final DataSetupEx dataSetup, final int index, final IniFiles iniFiles)
     {
         super (dataSetup, index);
 

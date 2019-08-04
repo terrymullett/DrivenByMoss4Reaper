@@ -29,22 +29,22 @@ import java.util.Map;
  */
 public class ModelImpl extends AbstractModel
 {
-    private final DataSetup                dataSetup;
+    private final DataSetupEx              dataSetup;
     private final List<ITrackBank>         trackBanks = new ArrayList<> ();
     private final Map<Integer, ISceneBank> sceneBanks = new HashMap<> (1);
 
 
     /**
      * Constructor.
-     * 
+     *
      * @param modelSetup The configuration parameters for the model
      * @param dataSetup Some setup variables
      * @param scales The scales object
      * @param iniFiles The INI configuration files
      */
-    public ModelImpl (final ModelSetup modelSetup, final DataSetup dataSetup, final Scales scales, final IniFiles iniFiles)
+    public ModelImpl (final ModelSetup modelSetup, final DataSetupEx dataSetup, final Scales scales, final IniFiles iniFiles)
     {
-        super (dataSetup.getHost (), dataSetup.getColorManager (), dataSetup.getValueChanger (), scales, modelSetup);
+        super (modelSetup, dataSetup, scales);
 
         this.dataSetup = dataSetup;
 

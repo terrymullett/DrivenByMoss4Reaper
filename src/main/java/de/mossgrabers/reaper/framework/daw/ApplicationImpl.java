@@ -51,10 +51,10 @@ public class ApplicationImpl extends BaseImpl implements IApplication
 
     /**
      * Constructor.
-     * 
+     *
      * @param dataSetup Some configuration variables
      */
-    public ApplicationImpl (final DataSetup dataSetup)
+    public ApplicationImpl (final DataSetupEx dataSetup)
     {
         super (dataSetup);
     }

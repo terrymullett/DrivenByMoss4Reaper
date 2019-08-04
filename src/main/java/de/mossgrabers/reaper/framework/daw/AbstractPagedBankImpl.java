@@ -28,7 +28,7 @@ public abstract class AbstractPagedBankImpl<S extends T, T extends IItem> extend
      * @param pageSize The number of elements in a page of the bank
      * @param emptyItem The empty item object
      */
-    public AbstractPagedBankImpl (final DataSetup dataSetup, final int pageSize, final T emptyItem)
+    public AbstractPagedBankImpl (final DataSetupEx dataSetup, final int pageSize, final T emptyItem)
     {
         super (dataSetup, pageSize);
 
@@ -78,7 +78,7 @@ public abstract class AbstractPagedBankImpl<S extends T, T extends IItem> extend
     {
         this.itemCount = itemCount;
         if (this.pageSize > 0)
-            this.bankOffset = Math.min (this.bankOffset, (this.itemCount / this.pageSize) * this.pageSize);
+            this.bankOffset = Math.min (this.bankOffset, this.itemCount / this.pageSize * this.pageSize);
     }
 
 
@@ -98,7 +98,7 @@ public abstract class AbstractPagedBankImpl<S extends T, T extends IItem> extend
             if (diff > 0)
             {
                 for (int i = 0; i < diff; i++)
-                    this.items.add (createItem (size + i));
+                    this.items.add (this.createItem (size + i));
             }
             return (S) this.items.get (position);
         }

@@ -39,7 +39,9 @@ import de.mossgrabers.framework.controller.ISetupFactory;
 import de.mossgrabers.framework.controller.color.ColorManager;
 import de.mossgrabers.framework.daw.ICursorDevice;
 import de.mossgrabers.framework.daw.IHost;
+import de.mossgrabers.framework.daw.IParameterBank;
 import de.mossgrabers.framework.daw.ISceneBank;
+import de.mossgrabers.framework.daw.ISendBank;
 import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.daw.ModelSetup;
@@ -165,6 +167,15 @@ public class KontrolMkIIControllerSetup extends AbstractControllerSetup<KontrolM
 
     /** {@inheritDoc} */
     @Override
+    protected void createObservers ()
+    {
+        final KontrolMkIIControlSurface surface = this.getSurface ();
+        surface.getModeManager ().addModeListener ( (oldMode, newMode) -> this.updateIndication (newMode));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     protected void registerTriggerCommands ()
     {
         final KontrolMkIIControlSurface surface = this.getSurface ();
@@ -182,13 +193,10 @@ public class KontrolMkIIControllerSetup extends AbstractControllerSetup<KontrolM
         this.addTriggerCommand (TriggerCommandID.QUANTIZE, KontrolMkIIControlSurface.KONTROL_QUANTIZE, new QuantizeCommand<> (this.model, surface));
         this.addTriggerCommand (TriggerCommandID.AUTOMATION, KontrolMkIIControlSurface.KONTROL_AUTOMATION, new WriteArrangerAutomationCommand<> (this.model, surface));
 
-        if (this.host.hasClips ())
-        {
-            this.addTriggerCommand (TriggerCommandID.CLIP, KontrolMkIIControlSurface.KONTROL_PLAY_SELECTED_CLIP, new StartClipOrSceneCommand (this.model, surface));
-            this.addTriggerCommand (TriggerCommandID.STOP_CLIP, KontrolMkIIControlSurface.KONTROL_STOP_CLIP, new StopClipCommand<> (this.model, surface));
-            // Not implemented in NIHIA
-            this.addTriggerCommand (TriggerCommandID.SCENE1, KontrolMkIIControlSurface.KONTROL_PLAY_SCENE, new StartSceneCommand<> (this.model, surface));
-        }
+        this.addTriggerCommand (TriggerCommandID.CLIP, KontrolMkIIControlSurface.KONTROL_PLAY_SELECTED_CLIP, new StartClipOrSceneCommand (this.model, surface));
+        this.addTriggerCommand (TriggerCommandID.STOP_CLIP, KontrolMkIIControlSurface.KONTROL_STOP_CLIP, new StopClipCommand<> (this.model, surface));
+        // Not implemented in NIHIA
+        this.addTriggerCommand (TriggerCommandID.SCENE1, KontrolMkIIControlSurface.KONTROL_PLAY_SCENE, new StartSceneCommand<> (this.model, surface));
 
         // KONTROL_RECORD_SESSION - Not implemented in NIHIA
 
@@ -323,7 +331,34 @@ public class KontrolMkIIControllerSetup extends AbstractControllerSetup<KontrolM
     @Override
     protected void updateIndication (final Modes mode)
     {
-        // Unused
+        if (this.currentMode != null && this.currentMode == mode)
+            return;
+
+        if (mode != null)
+            this.currentMode = mode;
+
+        final ITrackBank tb = this.model.getTrackBank ();
+        final boolean isVolume = Modes.VOLUME == this.currentMode;
+        final boolean isSend = Modes.SEND == this.currentMode;
+        final boolean isDevice = Modes.isDeviceMode (this.currentMode) || Modes.isLayerMode (this.currentMode);
+
+        final ICursorDevice cursorDevice = this.model.getCursorDevice ();
+        final ITrack selectedTrack = tb.getSelectedItem ();
+        final IParameterBank parameterBank = cursorDevice.getParameterBank ();
+        for (int i = 0; i < tb.getPageSize (); i++)
+        {
+            final boolean hasTrackSel = selectedTrack != null && selectedTrack.getIndex () == i;
+
+            final ITrack track = tb.getItem (i);
+            track.setVolumeIndication (isVolume);
+            track.setPanIndication (isVolume);
+
+            final ISendBank sendBank = track.getSendBank ();
+            for (int j = 0; j < sendBank.getPageSize (); j++)
+                sendBank.getItem (j).setIndication (isSend && hasTrackSel);
+
+            parameterBank.getItem (i).setIndication (isDevice);
+        }
     }
 
 
@@ -399,8 +434,6 @@ public class KontrolMkIIControllerSetup extends AbstractControllerSetup<KontrolM
      */
     private void navigateScenes (final int value)
     {
-        if (!this.host.hasClips ())
-            return;
         final ISceneBank sceneBank = this.model.getSceneBank ();
         if (sceneBank == null)
             return;
@@ -418,8 +451,6 @@ public class KontrolMkIIControllerSetup extends AbstractControllerSetup<KontrolM
      */
     private void navigateClips (final int value)
     {
-        if (!this.host.hasClips ())
-            return;
         final ITrack selectedTrack = this.model.getSelectedTrack ();
         if (selectedTrack == null)
             return;

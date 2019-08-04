@@ -6,7 +6,7 @@ package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.data.ISend;
-import de.mossgrabers.reaper.framework.daw.DataSetup;
+import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
 /**
@@ -28,7 +28,7 @@ public class SendImpl extends ParameterImpl implements ISend
      * @param channel The index of the track to which this send belongs
      * @param index The index of the send
      */
-    public SendImpl (final DataSetup dataSetup, final IChannel channel, final int index)
+    public SendImpl (final DataSetupEx dataSetup, final IChannel channel, final int index)
     {
         super (dataSetup, index);
 

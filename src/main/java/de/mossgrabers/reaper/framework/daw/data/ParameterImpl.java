@@ -5,7 +5,7 @@
 package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.daw.data.IParameter;
-import de.mossgrabers.reaper.framework.daw.DataSetup;
+import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
 /**
@@ -28,7 +28,7 @@ public class ParameterImpl extends ItemImpl implements IParameter
      * @param dataSetup Some configuration variables
      * @param index The index of the parameters
      */
-    public ParameterImpl (final DataSetup dataSetup, final int index)
+    public ParameterImpl (final DataSetupEx dataSetup, final int index)
     {
         super (dataSetup, index);
     }

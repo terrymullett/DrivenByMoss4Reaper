@@ -5,7 +5,7 @@
 package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.daw.data.IDrumPad;
-import de.mossgrabers.reaper.framework.daw.DataSetup;
+import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
 /**
@@ -22,7 +22,7 @@ public class DrumPadImpl extends ChannelImpl implements IDrumPad
      * @param index The index of the channel in the page
      * @param numSends The number of sends of a bank
      */
-    public DrumPadImpl (final DataSetup dataSetup, final int index, final int numSends)
+    public DrumPadImpl (final DataSetupEx dataSetup, final int index, final int numSends)
     {
         super (dataSetup, index, numSends);
     }

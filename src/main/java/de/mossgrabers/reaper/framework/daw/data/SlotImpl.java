@@ -5,7 +5,7 @@
 package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.daw.data.ISlot;
-import de.mossgrabers.reaper.framework.daw.DataSetup;
+import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
 /**
@@ -28,7 +28,7 @@ public class SlotImpl extends ItemImpl implements ISlot
      * @param trackIndex The track index
      * @param index The index of the slot
      */
-    public SlotImpl (final DataSetup dataSetup, final int trackIndex, final int index)
+    public SlotImpl (final DataSetupEx dataSetup, final int trackIndex, final int index)
     {
         super (dataSetup, index);
 

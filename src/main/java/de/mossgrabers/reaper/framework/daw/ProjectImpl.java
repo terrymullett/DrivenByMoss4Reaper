@@ -23,7 +23,7 @@ public class ProjectImpl extends BaseImpl implements IProject
      *
      * @param dataSetup Some configuration variables
      */
-    public ProjectImpl (final DataSetup dataSetup)
+    public ProjectImpl (final DataSetupEx dataSetup)
     {
         super (dataSetup);
     }

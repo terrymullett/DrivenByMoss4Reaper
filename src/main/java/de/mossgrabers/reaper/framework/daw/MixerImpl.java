@@ -20,7 +20,7 @@ public class MixerImpl extends BaseImpl implements IMixer
      *
      * @param dataSetup Some configuration variables
      */
-    public MixerImpl (final DataSetup dataSetup)
+    public MixerImpl (final DataSetupEx dataSetup)
     {
         super (dataSetup);
     }

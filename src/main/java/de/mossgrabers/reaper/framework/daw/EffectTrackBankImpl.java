@@ -21,7 +21,7 @@ public class EffectTrackBankImpl extends AbstractTrackBankImpl
      * @param numTracks The number of track of a bank page
      * @param numScenes The number of scenes of a bank page
      */
-    public EffectTrackBankImpl (final DataSetup dataSetup, final int numTracks, final int numScenes)
+    public EffectTrackBankImpl (final DataSetupEx dataSetup, final int numTracks, final int numScenes)
     {
         super (dataSetup, numTracks, numScenes, 0);
     }
@@ -45,7 +45,7 @@ public class EffectTrackBankImpl extends AbstractTrackBankImpl
 
     /** {@inheritDoc} */
     @Override
-    public void addNoteObserver (NoteObserver observer)
+    public void addNoteObserver (final NoteObserver observer)
     {
         // No notes on FX tracks
     }

@@ -8,7 +8,7 @@ import de.mossgrabers.framework.daw.ISendBank;
 import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.reaper.framework.Actions;
-import de.mossgrabers.reaper.framework.daw.DataSetup;
+import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.SendBankImpl;
 
 
@@ -49,7 +49,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
      * @param index The index of the channel in the page
      * @param numSends The number of sends of a bank
      */
-    public ChannelImpl (final DataSetup dataSetup, final int index, final int numSends)
+    public ChannelImpl (final DataSetupEx dataSetup, final int index, final int numSends)
     {
         super (dataSetup, index);
 
@@ -558,31 +558,31 @@ public class ChannelImpl extends ItemImpl implements IChannel
 
     protected void sendTrackOSC (final String command)
     {
-        this.sender.processNoArg (this.getProcessor (), createCommand (command));
+        this.sender.processNoArg (this.getProcessor (), this.createCommand (command));
     }
 
 
     protected void sendTrackOSC (final String command, final int value)
     {
-        this.sender.processIntArg (this.getProcessor (), createCommand (command), value);
+        this.sender.processIntArg (this.getProcessor (), this.createCommand (command), value);
     }
 
 
     protected void sendTrackOSC (final String command, final boolean value)
     {
-        this.sender.processIntArg (this.getProcessor (), createCommand (command), value ? 1 : 0);
+        this.sender.processIntArg (this.getProcessor (), this.createCommand (command), value ? 1 : 0);
     }
 
 
     protected void sendTrackOSC (final String command, final double value)
     {
-        this.sender.processDoubleArg (this.getProcessor (), createCommand (command), value);
+        this.sender.processDoubleArg (this.getProcessor (), this.createCommand (command), value);
     }
 
 
     protected void sendTrackOSC (final String command, final String value)
     {
-        this.sender.processStringArg (this.getProcessor (), createCommand (command), value);
+        this.sender.processStringArg (this.getProcessor (), this.createCommand (command), value);
     }
 
 

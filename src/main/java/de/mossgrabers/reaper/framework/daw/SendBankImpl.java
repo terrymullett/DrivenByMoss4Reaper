@@ -28,7 +28,7 @@ public class SendBankImpl extends AbstractPagedBankImpl<SendImpl, ISend> impleme
      * @param channel The track to which the send bank belongs
      * @param numSends The number of sends in the page of the bank
      */
-    public SendBankImpl (final DataSetup dataSetup, final IChannel channel, final int numSends)
+    public SendBankImpl (final DataSetupEx dataSetup, final IChannel channel, final int numSends)
     {
         super (dataSetup, numSends, EmptySend.INSTANCE);
 

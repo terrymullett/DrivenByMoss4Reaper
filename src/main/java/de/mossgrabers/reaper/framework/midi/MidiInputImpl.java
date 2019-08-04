@@ -91,27 +91,17 @@ class MidiInputImpl implements IMidiInput
 
     /** {@inheritDoc} */
     @Override
-    public void setKeyTranslationTable (final Integer [] table)
-    {
-        if (this.defaultNoteInput != null)
-            this.defaultNoteInput.setKeyTranslationTable (table);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void setVelocityTranslationTable (final Integer [] table)
-    {
-        if (this.defaultNoteInput != null)
-            this.defaultNoteInput.setVelocityTranslationTable (table);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public void sendRawMidiEvent (final int status, final int data1, final int data2)
     {
         this.sender.processMidiArg (status, data1, data2);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public INoteInput getDefaultNoteInput ()
+    {
+        return this.defaultNoteInput;
     }
 
 

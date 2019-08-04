@@ -30,7 +30,7 @@ public class SlotBankImpl extends AbstractPagedBankImpl<SlotImpl, ISlot> impleme
      * @param trackIndex The track index to which the slot bank belongs
      * @param numSlots The number of slots in the page of the bank
      */
-    public SlotBankImpl (final DataSetup dataSetup, final int trackIndex, final int numSlots)
+    public SlotBankImpl (final DataSetupEx dataSetup, final int trackIndex, final int numSlots)
     {
         super (dataSetup, numSlots, EmptySlot.INSTANCE);
     }

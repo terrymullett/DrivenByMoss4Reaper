@@ -61,7 +61,7 @@ public class TransportImpl extends BaseImpl implements ITransport
      * @param model The DAW model
      * @param iniFiles The INI configuration files
      */
-    public TransportImpl (final DataSetup dataSetup, final IModel model, final IniFiles iniFiles)
+    public TransportImpl (final DataSetupEx dataSetup, final IModel model, final IniFiles iniFiles)
     {
         super (dataSetup);
 

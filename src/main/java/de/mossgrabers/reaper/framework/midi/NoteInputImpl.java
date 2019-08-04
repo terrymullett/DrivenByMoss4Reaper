@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper.framework.midi;
 
 import de.mossgrabers.framework.daw.midi.INoteInput;
+import de.mossgrabers.framework.daw.midi.INoteRepeat;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,9 +18,10 @@ import java.util.Set;
  */
 public class NoteInputImpl implements INoteInput
 {
-    private Integer []  keyTranslationTable;
-    private Integer []  velocityTranslationTable;
-    private Set<String> filters = new HashSet<> ();
+    private Integer []        keyTranslationTable;
+    private Integer []        velocityTranslationTable;
+    private Set<String>       filters = new HashSet<> ();
+    private final INoteRepeat noteRepeat;
 
 
     /**
@@ -43,6 +45,8 @@ public class NoteInputImpl implements INoteInput
             for (final String filter: filters)
                 this.filters.add (filter.replace ('?', ' ').trim ());
         }
+
+        this.noteRepeat = new NoteRepeatImpl ();
     }
 
 
@@ -59,6 +63,14 @@ public class NoteInputImpl implements INoteInput
     public void setVelocityTranslationTable (final Integer [] table)
     {
         this.velocityTranslationTable = table;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public INoteRepeat getNoteRepeat ()
+    {
+        return this.noteRepeat;
     }
 
 

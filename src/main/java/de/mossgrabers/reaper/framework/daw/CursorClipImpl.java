@@ -30,7 +30,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     private int                 numSteps;
     private int                 numRows;
     private double              stepLength;
-    private List<Note>      notes        = new ArrayList<> ();
+    private List<Note>          notes        = new ArrayList<> ();
     private final int [] []     data;
     private int                 editPage     = 0;
     private int                 maxPage      = 1;
@@ -43,7 +43,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
      * @param numSteps The number of steps of the clip to monitor
      * @param numRows The number of note rows of the clip to monitor
      */
-    public CursorClipImpl (final DataSetup dataSetup, final int numSteps, final int numRows)
+    public CursorClipImpl (final DataSetupEx dataSetup, final int numSteps, final int numRows)
     {
         super (dataSetup);
 

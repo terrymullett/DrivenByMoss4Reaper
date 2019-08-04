@@ -19,7 +19,7 @@ import de.mossgrabers.reaper.communication.MessageSender;
  */
 public abstract class AbstractBankImpl<T extends IItem> extends AbstractBank<T>
 {
-    protected final DataSetup     dataSetup;
+    protected final DataSetupEx   dataSetup;
     protected final MessageSender sender;
     protected final IValueChanger valueChanger;
 
@@ -32,7 +32,7 @@ public abstract class AbstractBankImpl<T extends IItem> extends AbstractBank<T>
      * @param dataSetup Some configuration variables
      * @param pageSize The number of elements in a page of the bank
      */
-    public AbstractBankImpl (final DataSetup dataSetup, final int pageSize)
+    public AbstractBankImpl (final DataSetupEx dataSetup, final int pageSize)
     {
         super (dataSetup == null ? null : dataSetup.getHost (), pageSize);
 

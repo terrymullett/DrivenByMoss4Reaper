@@ -86,14 +86,6 @@ public class HostImpl implements IHost
 
     /** {@inheritDoc} */
     @Override
-    public boolean hasClips ()
-    {
-        return true;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public boolean hasPinning ()
     {
         return false;
@@ -113,14 +105,6 @@ public class HostImpl implements IHost
     public boolean hasDrumDevice ()
     {
         return false;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean hasRepeat ()
-    {
-        return true;
     }
 
 

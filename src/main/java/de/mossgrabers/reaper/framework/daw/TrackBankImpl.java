@@ -53,7 +53,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
      * @param hasFullFlatTrackList True if the track navigation should include effect and master
      *            tracks if flat
      */
-    public TrackBankImpl (final DataSetup dataSetup, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final boolean hasFullFlatTrackList)
+    public TrackBankImpl (final DataSetupEx dataSetup, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final boolean hasFullFlatTrackList)
     {
         super (dataSetup, numTracks, numScenes, numSends);
 
@@ -384,7 +384,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     /**
      * Handles the updates on all playing notes. Translates the note array into individual note
      * observer updates of start and stopped notes.
-     * 
+     *
      * @param trackPosition The position of the track
      * @param notes The currently playing notes
      */
