@@ -76,6 +76,26 @@ public interface INoteClip extends IClip
 
 
     /**
+     * If there is a note started at this position, it will update the duration of the note.
+     *
+     * @param step The step
+     * @param row The note row
+     * @param duration The new length of the note
+     */
+    void updateStepDuration (int step, int row, double duration);
+
+
+    /**
+     * If there is a note started at this position, it will update the velocity of the note.
+     *
+     * @param step The step
+     * @param row The note row
+     * @param velocity The velocity of the note
+     */
+    void updateStepVelocity (int step, int row, double velocity);
+
+
+    /**
      * Clear a row (note).
      *
      * @param row The row to clear

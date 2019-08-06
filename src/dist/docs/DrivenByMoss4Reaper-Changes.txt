@@ -1,3 +1,11 @@
+7.05
+- Generic Flexi:
+  * New: Commands to set Solo, Mute, Rec Arm, Monitor and Auto Monitor (in addition to toggle).
+- Launchpad MkII
+  * Fixed: Blinking of playing clips did not work
+- Push 1
+  * Fixed: Do not send color palette request, which is only working for Push 2
+
 7.04
 - All devices
   * New: Note feedback is implemented. Playing notes from MIDI clips are shown in play and drum views.

@@ -360,6 +360,22 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
     /** {@inheritDoc} */
     @Override
+    public void updateStepDuration (int step, int row, double duration)
+    {
+        // TODO Implement
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void updateStepVelocity (int step, int row, double velocity)
+    {
+        // TODO Implement
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void clearStep (final int step, final int row)
     {
         this.sendClipOSC (PATH_NOTE + row + "/clear", (step + this.editPage * this.numSteps) * this.stepLength);

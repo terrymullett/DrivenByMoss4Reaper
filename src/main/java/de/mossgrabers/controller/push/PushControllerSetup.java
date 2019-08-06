@@ -522,7 +522,8 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
         surface.sendPressureMode (true);
         surface.getOutput ().sendSysex (DeviceInquiry.createQuery ());
 
-        surface.updateColorPalette ();
+        if (this.isPush2)
+            surface.updateColorPalette ();
     }
 
 
