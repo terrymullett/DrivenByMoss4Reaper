@@ -13,6 +13,10 @@ import de.mossgrabers.framework.graphics.IBitmap;
 import de.mossgrabers.framework.graphics.IGraphicsDimensions;
 import de.mossgrabers.framework.graphics.display.VirtualDisplay;
 import de.mossgrabers.framework.graphics.grid.DefaultGraphicsDimensions;
+import de.mossgrabers.framework.utils.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -252,6 +256,28 @@ public class PushDisplay extends GraphicDisplay
         if (diff > 0)
             return text + (" ".equals (character) ? PushDisplay.SPACES[diff] : PushDisplay.DASHES[diff]);
         return text;
+    }
+
+
+    /**
+     * Fills a list for drawing a menu.
+     *
+     * @param displaySize The number of rows to fill
+     * @param elements All elements
+     * @param selectedIndex The selected index in the elements
+     * @return The menu items including the selected element
+     */
+    public static List<Pair<String, Boolean>> createMenuList (final int displaySize, final String [] elements, final int selectedIndex)
+    {
+        final List<Pair<String, Boolean>> menu = new ArrayList<> ();
+        final int startIndex = Math.max (0, Math.min (selectedIndex, elements.length - displaySize));
+        for (int i = 0; i < displaySize; i++)
+        {
+            final int pos = startIndex + i;
+            final String itemName = pos < elements.length ? elements[pos] : "";
+            menu.add (new Pair<> (itemName, Boolean.valueOf (pos == selectedIndex)));
+        }
+        return menu;
     }
 
 

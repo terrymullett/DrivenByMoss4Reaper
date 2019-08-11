@@ -402,6 +402,27 @@ public class DisplayModel
 
 
     /**
+     * Add a list element to the message with one selected item.
+     * 
+     * @param displaySize The number of items to display in the list
+     * @param elements The list with all items
+     * @param selectedIndex The selected index in the list
+     */
+    public void addListElement (final int displaySize, final String [] elements, final int selectedIndex)
+    {
+        final List<Pair<String, Boolean>> menu = new ArrayList<> ();
+        final int startIndex = Math.max (0, Math.min (selectedIndex, elements.length - displaySize));
+        for (int i = 0; i < displaySize; i++)
+        {
+            final int pos = startIndex + i;
+            final String itemName = pos < elements.length ? elements[pos] : "";
+            menu.add (new Pair<> (itemName, Boolean.valueOf (pos == selectedIndex)));
+        }
+        this.elements.add (new ListGridElement (menu));
+    }
+
+
+    /**
      * Add a list element to the message.
      *
      * @param items Must contain X number of texts

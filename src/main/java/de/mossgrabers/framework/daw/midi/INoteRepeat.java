@@ -32,19 +32,54 @@ public interface INoteRepeat
 
 
     /**
-     * Set the note repeat length.
+     * Set the note repeat period.
+     *
+     * @param track The track
+     * @param period The period
+     */
+    void setPeriod (ITrack track, double period);
+
+
+    /**
+     * Get the note repeat period.
+     *
+     * @param track The track
+     * @return The period
+     */
+    double getPeriod (ITrack track);
+
+
+    /**
+     * Get the note length.
      *
      * @param track The track
      * @param length The length
      */
-    void setPeriod (ITrack track, double length);
+    void setNoteLength (ITrack track, double length);
 
 
     /**
-     * Get the note repeat length.
+     * Get the note length.
      *
      * @param track The track
      * @return The length
      */
-    double getPeriod (ITrack track);
+    double getNoteLength (ITrack track);
+
+
+    /**
+     * Check if shuffle is active.
+     *
+     * @param track The track for which to check the note repeat shuffle
+     * @return True if active
+     */
+    boolean isShuffle (ITrack track);
+
+
+    /**
+     * Toggle if shuffle is active.
+     *
+     * @param track The track for which to toggle the note repeat shuffle
+     */
+    void toggleShuffle (ITrack track);
 }
