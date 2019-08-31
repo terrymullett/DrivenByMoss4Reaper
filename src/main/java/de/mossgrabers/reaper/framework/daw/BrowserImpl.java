@@ -68,7 +68,7 @@ public class BrowserImpl extends AbstractBrowser
     List<Device>                       filteredDevices    = Collections.emptyList ();
 
     private MessageSender              sender;
-    private IBrowserColumn [] []       columnDataContentTypes;
+    private final IBrowserColumn [] [] columnDataContentTypes;
 
     private int                        insertPosition;
 
