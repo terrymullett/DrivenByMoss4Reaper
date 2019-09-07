@@ -414,11 +414,8 @@ public class ShiftView extends AbstractView<APCminiControlSurface, APCminiConfig
                     final ISlot s = slotIndexes.get (sIndex);
                     if (s.hasContent ())
                         continue;
-                    t.createClip (s.getIndex (), this.surface.getConfiguration ().getNewClipLenghthInBeats (this.model.getTransport ().getQuartersPerMeasure ()));
-                    if (slotIndex != sIndex)
-                        s.select ();
-                    s.launch ();
-                    this.model.getTransport ().setLauncherOverdub (true);
+                    final int lengthInBeats = this.surface.getConfiguration ().getNewClipLenghthInBeats (this.model.getTransport ().getQuartersPerMeasure ());
+                    this.model.createNoteClip (t, s, lengthInBeats, true);
                     return;
                 }
             }

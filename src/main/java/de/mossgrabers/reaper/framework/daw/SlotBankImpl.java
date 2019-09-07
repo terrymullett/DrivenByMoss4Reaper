@@ -74,7 +74,7 @@ public class SlotBankImpl extends AbstractPagedBankImpl<SlotImpl, ISlot> impleme
     @Override
     public ISlot getEmptySlot (final int startFrom)
     {
-        return new SlotImpl (this.dataSetup, this.trackIndex, -1);
+        return new SlotImpl (this.dataSetup, this.trackIndex, startFrom);
     }
 
 

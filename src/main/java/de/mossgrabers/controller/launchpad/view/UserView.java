@@ -79,7 +79,7 @@ public class UserView extends AbstractFaderView
 
     /** {@inheritDoc} */
     @Override
-    public void onScene (int scene, ButtonEvent event)
+    public void onScene (final int scene, final ButtonEvent event)
     {
         if (event != ButtonEvent.DOWN)
             return;

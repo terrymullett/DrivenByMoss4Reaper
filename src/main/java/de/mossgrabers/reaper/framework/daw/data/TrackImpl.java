@@ -512,7 +512,16 @@ public class TrackImpl extends ChannelImpl implements ITrack
     @Override
     public void createClip (final int slotIndex, final int lengthInBeats)
     {
-        this.sender.processIntArg ("track", this.index + "/createClip", lengthInBeats);
+        this.sendTrackOSC ("createClip", lengthInBeats);
+    }
+
+
+    /**
+     * Start recording a clip on the track at the current play position.
+     */
+    public void recordClip ()
+    {
+        this.sendTrackOSC ("recordClip");
     }
 
 

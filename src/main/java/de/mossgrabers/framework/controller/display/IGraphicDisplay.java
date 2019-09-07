@@ -69,7 +69,7 @@ public interface IGraphicDisplay extends IDisplay
 
     /**
      * Adds an empty element.
-     * 
+     *
      * @param hasSmallEmptyMenu If true draws an empty small menu
      */
     void addEmptyElement (boolean hasSmallEmptyMenu);

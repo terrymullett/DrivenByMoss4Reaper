@@ -10,6 +10,8 @@ import de.mossgrabers.framework.daw.INoteClip;
 import de.mossgrabers.framework.daw.ISceneBank;
 import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.ModelSetup;
+import de.mossgrabers.framework.daw.data.ISlot;
+import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.scale.Scales;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.data.MasterTrackImpl;
@@ -105,6 +107,24 @@ public class ModelImpl extends AbstractModel
         {
             return (INoteClip) this.cursorClips.computeIfAbsent (cols + "-" + rows, k -> new CursorClipImpl (this.dataSetup, cols, rows));
         }
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void createNoteClip (final ITrack track, final ISlot slot, final int lengthInBeats, final boolean overdub)
+    {
+        track.createClip (slot.getIndex (), lengthInBeats);
+        slot.select ();
+        this.transport.record ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void recordNoteClip (final ITrack track, final ISlot slot)
+    {
+        ((TrackImpl) track).recordClip ();
     }
 
 

@@ -40,6 +40,8 @@ public class SendBankImpl extends AbstractPagedBankImpl<SendImpl, ISend> impleme
     @Override
     protected SendImpl createItem (final int position)
     {
-        return new SendImpl (this.dataSetup, this.channel, position);
+        final SendImpl send = new SendImpl (this.dataSetup, this.channel, position % this.pageSize);
+        send.setPosition (position);
+        return send;
     }
 }

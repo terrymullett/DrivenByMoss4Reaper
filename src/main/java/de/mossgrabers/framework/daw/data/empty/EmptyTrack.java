@@ -245,7 +245,7 @@ public class EmptyTrack extends EmptyChannel implements ITrack
 
     /** {@inheritDoc} */
     @Override
-    public void setRecordQuantizationGrid (RecordQuantization recordQuantization)
+    public void setRecordQuantizationGrid (final RecordQuantization recordQuantization)
     {
         // Intentionally empty
     }

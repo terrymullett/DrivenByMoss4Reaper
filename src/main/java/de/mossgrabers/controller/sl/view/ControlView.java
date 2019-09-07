@@ -124,11 +124,8 @@ public class ControlView extends ControlOnlyView<SLControlSurface, SLConfigurati
                     final ISlot s = slotBank.getItem (sIndex);
                     if (!s.hasContent ())
                     {
-                        t.createClip (s.getIndex (), this.surface.getConfiguration ().getNewClipLenghthInBeats (this.model.getTransport ().getQuartersPerMeasure ()));
-                        if (slotIndex != sIndex)
-                            s.select ();
-                        s.launch ();
-                        this.model.getTransport ().setLauncherOverdub (true);
+                        final int lengthInBeats = this.surface.getConfiguration ().getNewClipLenghthInBeats (this.model.getTransport ().getQuartersPerMeasure ());
+                        this.model.createNoteClip (t, s, lengthInBeats, true);
                         return;
                     }
                 }

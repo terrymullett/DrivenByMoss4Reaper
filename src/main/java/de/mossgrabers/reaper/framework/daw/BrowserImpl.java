@@ -75,7 +75,7 @@ public class BrowserImpl extends AbstractBrowser
 
     /**
      * Constructor.
-     * 
+     *
      * @param dataSetup Some configuration variables
      * @param cursorDevice The cursor device
      * @param numFilterColumnEntries The number of entries in a filter column page

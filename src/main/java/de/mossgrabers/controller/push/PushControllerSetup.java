@@ -575,7 +575,7 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
         surface.updateTrigger (PushControlSurface.PUSH_BUTTON_RECORD, isRecordShifted ? t.isLauncherOverdub () ? PushColors.PUSH_BUTTON_STATE_OVR_HI : PushColors.PUSH_BUTTON_STATE_OVR_ON : t.isRecording () ? PushColors.PUSH_BUTTON_STATE_REC_HI : PushColors.PUSH_BUTTON_STATE_REC_ON);
 
         String repeatState = ColorManager.BUTTON_STATE_OFF;
-        ITrackBank currentTrackBank = this.model.getCurrentTrackBank ();
+        final ITrackBank currentTrackBank = this.model.getCurrentTrackBank ();
         final ITrack selectedTrack = currentTrackBank.getSelectedItem ();
         if (selectedTrack != null)
             repeatState = this.getSurface ().getInput ().getDefaultNoteInput ().getNoteRepeat ().isActive (selectedTrack) ? ColorManager.BUTTON_STATE_HI : ColorManager.BUTTON_STATE_ON;

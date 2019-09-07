@@ -145,18 +145,12 @@ public abstract class AbstractSessionView<S extends IControlSurface<C>, C extend
         switch (configuration.getActionForRecArmedPad ())
         {
             case 0:
-                // Record clip
-                if (!slot.isRecording ())
-                    slot.record ();
-                slot.launch ();
+                this.model.recordNoteClip (track, slot);
                 break;
 
             case 1:
-                // Create new clip
-                track.createClip (slot.getIndex (), this.surface.getConfiguration ().getNewClipLenghthInBeats (this.model.getTransport ().getQuartersPerMeasure ()));
-                slot.select ();
-                slot.launch ();
-                this.model.getTransport ().setLauncherOverdub (true);
+                final int lengthInBeats = this.surface.getConfiguration ().getNewClipLenghthInBeats (this.model.getTransport ().getQuartersPerMeasure ());
+                this.model.createNoteClip (track, slot, lengthInBeats, true);
                 break;
 
             case 2:

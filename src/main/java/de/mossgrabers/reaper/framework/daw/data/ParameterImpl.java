@@ -89,7 +89,7 @@ public class ParameterImpl extends ItemImpl implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void setValueImmediatly (int value)
+    public void setValueImmediatly (final int value)
     {
         // Always immediatly with Reaper
         this.setValue (value);

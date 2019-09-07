@@ -1,11 +1,19 @@
-8.00 (unreleased)
-* All devices
+8.01 (unreleased)
+- All devices
+  * Fixed: Creating clips did not start recording.
+  * Fixed: Send values were always sent for Send 1.
+  * Fixed: Only use send envelopes when active
+- OSC
+  * Fixed: All /vkb_midi commands did crash
+
+8.00
+- All devices
   * Fixed: Changing track selection did not correctly adjust the track bank page on the device (except Push)
-* Komplete Kontrol A-Series / M32
+- Komplete Kontrol A-Series / M32
   * Fixed: Track name was not displayed
-* Novation Remote SL Mk III
+- Novation Remote SL Mk III
   * New: Added setting to disable the faders (to prevent accidently changing volume)
-* Push 1/2
+- Push 1/2
   * New: Changed layout of Repeat configuration settings (long press Repeat button)
   * New: Changed the layout of the quantize/groove mode
   * New: Implemented editing of note parameters: length and velocity

@@ -66,7 +66,7 @@ public interface IHost
 
     /**
      * Returns true if the DAW supports editing a specific property.
-     * 
+     *
      * @param capability The capability to check
      * @return True if the DAW supports editing
      */

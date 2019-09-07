@@ -1,6 +1,6 @@
 plugins {
     id 'com.github.jk1.dependency-license-report' version '1.9'
-    id 'com.github.ben-manes.versions' version '0.22.0'
+    id 'com.github.ben-manes.versions' version '0.24.0'
     id 'java'
     id 'application'
     id 'eclipse'
@@ -9,7 +9,7 @@ plugins {
 sourceCompatibility = 11
 targetCompatibility = 11
 
-version = '8.00'
+version = '8.01'
 
 jar {
     manifest {
@@ -104,7 +104,7 @@ dependencies {
     compile group: 'com.illposed.osc', name: 'javaosc-core', version: '0.6'
     compile group: 'uk.co.xfactory-librarians', name: 'coremidi4j', version: '1.1'
     compile group: 'com.nikhaldimann', name: 'inieditor', version: 'r6'
-    compile group: 'net.java.dev.jna', name: 'jna', version: '5.3.1'
+    compile group: 'net.java.dev.jna', name: 'jna', version: '5.4.0'
     compile fileTree(dir: 'libs', include: '*.jar')
 }
 

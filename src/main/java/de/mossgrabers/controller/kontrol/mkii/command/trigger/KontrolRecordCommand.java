@@ -47,6 +47,7 @@ public class KontrolRecordCommand extends AbstractTriggerCommand<KontrolMkIICont
 
         final KontrolMkIIConfiguration configuration = this.surface.getConfiguration ();
         final KontrolMkIIConfiguration.RecordFunction recordMode = this.isRecordButton ? configuration.getRecordButtonFunction () : configuration.getShiftedRecordButtonFunction ();
+        final ITrack track = this.model.getCurrentTrackBank ().getSelectedItem ();
         switch (recordMode)
         {
             case RECORD_ARRANGER:
@@ -54,11 +55,8 @@ public class KontrolRecordCommand extends AbstractTriggerCommand<KontrolMkIICont
                 break;
             case RECORD_CLIP:
                 final ISlot slot = this.model.getSelectedSlot ();
-                if (slot == null)
-                    return;
-                if (!slot.isRecording ())
-                    slot.record ();
-                slot.launch ();
+                if (track != null && slot != null)
+                    this.model.recordNoteClip (track, slot);
                 break;
             case NEW_CLIP:
                 new NewCommand<> (this.model, this.surface).executeNormal (ButtonEvent.DOWN);
@@ -70,9 +68,8 @@ public class KontrolRecordCommand extends AbstractTriggerCommand<KontrolMkIICont
                 this.model.getTransport ().toggleLauncherOverdub ();
                 break;
             case TOGGLE_REC_ARM:
-                final ITrack selectedTrack = this.model.getCurrentTrackBank ().getSelectedItem ();
-                if (selectedTrack != null)
-                    selectedTrack.toggleRecArm ();
+                if (track != null)
+                    track.toggleRecArm ();
                 break;
             default:
                 // Intentionally empty

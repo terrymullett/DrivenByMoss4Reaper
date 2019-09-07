@@ -46,7 +46,7 @@ public abstract class BaseView extends AbstractView<MaschineMikroMk3ControlSurfa
     @Override
     public void onGridNote (final int note, final int velocity)
     {
-        int padIndex = note - 36;
+        final int padIndex = note - 36;
 
         // TODO not working since there is no pressed state
         if (this.surface.isPressed (MaschineMikroMk3ControlSurface.MIKRO_3_NOTE_REPEAT))
