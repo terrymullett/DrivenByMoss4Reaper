@@ -4,6 +4,7 @@
   * Fixed: Send values were always sent for Send 1.
   * Fixed: Only use send envelopes when active
 - OSC
+  * New: /playbutton - Toggles playback, you can configure the Stop behaviour in the configuration settings
   * Fixed: All /vkb_midi commands did crash
 
 8.00
