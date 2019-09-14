@@ -21,6 +21,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 {
     private static final String      PATH_NOTE    = "note/";
 
+    private boolean                  exists       = false;
     private double                   clipStart    = -1;
     private double                   clipEnd      = -1;
     private boolean                  isLooped     = false;
@@ -58,6 +59,25 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
             for (int row = 0; row < this.numRows; row++)
                 this.data[step][row] = new StepInfoImpl ();
         }
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean doesExist ()
+    {
+        return this.exists;
+    }
+
+
+    /**
+     * Set the exists state.
+     *
+     * @param exists True if a selected clip exists
+     */
+    public void setExistsValue (final boolean exists)
+    {
+        this.exists = exists;
     }
 
 

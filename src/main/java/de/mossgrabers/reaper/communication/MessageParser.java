@@ -734,6 +734,10 @@ public class MessageParser
         final ModelImpl modelImpl = (ModelImpl) this.model;
         switch (command)
         {
+            case "exists":
+                modelImpl.setCursorClipExists (Double.parseDouble (value) > 0);
+                break;
+
             case "start":
                 modelImpl.setCursorClipPlayStart (Double.parseDouble (value));
                 break;

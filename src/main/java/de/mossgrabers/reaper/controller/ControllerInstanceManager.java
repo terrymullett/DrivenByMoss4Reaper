@@ -11,7 +11,9 @@ import de.mossgrabers.controller.beatstep.BeatstepControllerDefinition;
 import de.mossgrabers.controller.generic.GenericFlexiControllerDefinition;
 import de.mossgrabers.controller.hui.HUIControllerDefinition;
 import de.mossgrabers.controller.kontrol.mki.Kontrol1ControllerDefinition;
-import de.mossgrabers.controller.kontrol.mkii.KontrolMkIIControllerDefinition;
+import de.mossgrabers.controller.kontrol.mkii.KontrolProtocolControllerDefinition;
+import de.mossgrabers.controller.kontrol.mkii.controller.KontrolProtocolDeviceDescriptorV1;
+import de.mossgrabers.controller.kontrol.mkii.controller.KontrolProtocolDeviceDescriptorV2;
 import de.mossgrabers.controller.launchpad.LaunchpadControllerDefinition;
 import de.mossgrabers.controller.maschine.mikro.mk3.MaschineMikroMk3ControllerDefinition;
 import de.mossgrabers.controller.mcu.MCUControllerDefinition;
@@ -34,7 +36,7 @@ import de.mossgrabers.reaper.controller.kontrol.mki.KontrolMkIS25ControllerInsta
 import de.mossgrabers.reaper.controller.kontrol.mki.KontrolMkIS49ControllerInstance;
 import de.mossgrabers.reaper.controller.kontrol.mki.KontrolMkIS61ControllerInstance;
 import de.mossgrabers.reaper.controller.kontrol.mki.KontrolMkIS88ControllerInstance;
-import de.mossgrabers.reaper.controller.kontrol.mkii.KontrolMkIIControllerInstance;
+import de.mossgrabers.reaper.controller.kontrol.mkii.KontrolProtocolV1ControllerInstance;
 import de.mossgrabers.reaper.controller.launchpad.LaunchpadMkIIControllerInstance;
 import de.mossgrabers.reaper.controller.launchpad.LaunchpadProControllerInstance;
 import de.mossgrabers.reaper.controller.maschine.mikro.mk3.MaschineMikroMk3ControllerInstance;
@@ -83,7 +85,8 @@ public class ControllerInstanceManager
         KontrolMkIS49ControllerInstance.class,
         KontrolMkIS61ControllerInstance.class,
         KontrolMkIS88ControllerInstance.class,
-        KontrolMkIIControllerInstance.class,
+        KontrolProtocolV1ControllerInstance.class,
+        KontrolProtocolV1ControllerInstance.class,
         LaunchpadMkIIControllerInstance.class,
         LaunchpadProControllerInstance.class,
         MaschineMikroMk3ControllerInstance.class,
@@ -114,7 +117,8 @@ public class ControllerInstanceManager
         new Kontrol1ControllerDefinition (1),
         new Kontrol1ControllerDefinition (2),
         new Kontrol1ControllerDefinition (3),
-        new KontrolMkIIControllerDefinition (),
+        new KontrolProtocolControllerDefinition (new KontrolProtocolDeviceDescriptorV1 ()),
+        new KontrolProtocolControllerDefinition (new KontrolProtocolDeviceDescriptorV2 ()),
         new LaunchpadControllerDefinition (true),
         new LaunchpadControllerDefinition (false),
         new MaschineMikroMk3ControllerDefinition (),

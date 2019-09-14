@@ -50,6 +50,9 @@ public class SequencerView extends AbstractNoteSequencerView<PushControlSurface,
     @Override
     public void onOctaveDown (final ButtonEvent event)
     {
+        if (!this.isActive ())
+            return;
+
         if (this.surface.isShiftPressed ())
         {
             if (event == ButtonEvent.DOWN)
@@ -72,6 +75,9 @@ public class SequencerView extends AbstractNoteSequencerView<PushControlSurface,
     @Override
     public void onOctaveUp (final ButtonEvent event)
     {
+        if (!this.isActive ())
+            return;
+
         if (this.surface.isShiftPressed ())
         {
             if (event == ButtonEvent.DOWN)
@@ -94,7 +100,7 @@ public class SequencerView extends AbstractNoteSequencerView<PushControlSurface,
     @Override
     public void onGridNoteLongPress (final int note)
     {
-        if (!this.model.canSelectedTrackHoldNotes ())
+        if (!this.isActive ())
             return;
 
         this.surface.setGridNoteConsumed (note);
@@ -122,8 +128,9 @@ public class SequencerView extends AbstractNoteSequencerView<PushControlSurface,
     @Override
     public void onGridNote (final int note, final int velocity)
     {
-        if (!this.model.canSelectedTrackHoldNotes ())
+        if (!this.isActive ())
             return;
+
         final int index = note - 36;
         final int x = index % 8;
         final int y = index / 8;
@@ -144,10 +151,27 @@ public class SequencerView extends AbstractNoteSequencerView<PushControlSurface,
     @Override
     public void updateSceneButtons ()
     {
+        if (!this.isActive ())
+        {
+            for (int i = PushControlSurface.PUSH_BUTTON_SCENE1; i <= PushControlSurface.PUSH_BUTTON_SCENE8; i++)
+                this.surface.updateTrigger (i, AbstractSequencerView.COLOR_RESOLUTION_OFF);
+            return;
+        }
+
         final ColorManager colorManager = this.model.getColorManager ();
         final int colorResolution = colorManager.getColor (AbstractSequencerView.COLOR_RESOLUTION);
         final int colorSelectedResolution = colorManager.getColor (AbstractSequencerView.COLOR_RESOLUTION_SELECTED);
         for (int i = PushControlSurface.PUSH_BUTTON_SCENE1; i <= PushControlSurface.PUSH_BUTTON_SCENE8; i++)
-            this.surface.updateTrigger (i, i == PushControlSurface.PUSH_BUTTON_SCENE1 + this.selectedIndex ? colorSelectedResolution : colorResolution);
+            this.surface.updateTrigger (i, i == PushControlSurface.PUSH_BUTTON_SCENE1 + this.selectedResolutionIndex ? colorSelectedResolution : colorResolution);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void updateButtons ()
+    {
+        final String color = this.isActive () ? ColorManager.BUTTON_STATE_ON : ColorManager.BUTTON_STATE_OFF;
+        this.surface.updateTrigger (PushControlSurface.PUSH_BUTTON_OCTAVE_UP, color);
+        this.surface.updateTrigger (PushControlSurface.PUSH_BUTTON_OCTAVE_DOWN, color);
     }
 }

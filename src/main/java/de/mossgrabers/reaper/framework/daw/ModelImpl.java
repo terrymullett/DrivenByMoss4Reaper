@@ -195,6 +195,21 @@ public class ModelImpl extends AbstractModel
 
 
     /**
+     * Set the exists state for all cursor clip objects.
+     *
+     * @param exists The exists state
+     */
+    public void setCursorClipExists (final boolean exists)
+    {
+        synchronized (this.cursorClips)
+        {
+            for (final IClip clip: this.cursorClips.values ())
+                ((CursorClipImpl) clip).setExistsValue (exists);
+        }
+    }
+
+
+    /**
      * Set the play start for all cursor clip objects.
      *
      * @param start The start

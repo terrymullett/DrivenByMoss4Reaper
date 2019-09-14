@@ -4,8 +4,10 @@
 
 package de.mossgrabers.reaper.controller.kontrol.mkii;
 
-import de.mossgrabers.controller.kontrol.mkii.KontrolMkIIControllerDefinition;
-import de.mossgrabers.controller.kontrol.mkii.KontrolMkIIControllerSetup;
+import de.mossgrabers.controller.kontrol.mkii.KontrolProtocolControllerDefinition;
+import de.mossgrabers.controller.kontrol.mkii.KontrolProtocolControllerSetup;
+import de.mossgrabers.controller.kontrol.mkii.controller.KontrolProtocol;
+import de.mossgrabers.controller.kontrol.mkii.controller.KontrolProtocolDeviceDescriptorV2;
 import de.mossgrabers.framework.controller.IControllerSetup;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.controller.AbstractControllerInstance;
@@ -17,11 +19,11 @@ import java.awt.Window;
 
 
 /**
- * Komplete Kontrol MkII controller instance.
+ * Komplete Kontrol NIHIA protocol version 2 controller instance.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class KontrolMkIIControllerInstance extends AbstractControllerInstance
+public class KontrolProtocolV2ControllerInstance extends AbstractControllerInstance
 {
     /**
      * Constructor.
@@ -31,9 +33,9 @@ public class KontrolMkIIControllerInstance extends AbstractControllerInstance
      * @param sender The sender
      * @param iniFiles The INI configuration files
      */
-    public KontrolMkIIControllerInstance (final LogModel logModel, final Window window, final MessageSender sender, final IniFiles iniFiles)
+    public KontrolProtocolV2ControllerInstance (final LogModel logModel, final Window window, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new KontrolMkIIControllerDefinition (), logModel, window, sender, iniFiles);
+        super (new KontrolProtocolControllerDefinition (new KontrolProtocolDeviceDescriptorV2 ()), logModel, window, sender, iniFiles);
     }
 
 
@@ -41,6 +43,6 @@ public class KontrolMkIIControllerInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup<?, ?> createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new KontrolMkIIControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI);
+        return new KontrolProtocolControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI, KontrolProtocol.VERSION_2);
     }
 }
