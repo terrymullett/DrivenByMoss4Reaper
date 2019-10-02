@@ -4,13 +4,6 @@
 
 package de.mossgrabers.reaper;
 
-import de.mossgrabers.reaper.ui.MainFrame;
-
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
-
 /**
  * Interface to be used from C++ code to control the application.
  *
@@ -18,7 +11,8 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class Controller
 {
-    private static MainFrame app;
+    private static MainApp app;
+
 
     /**
      * Private due to the fact that it only provides static functions.
@@ -36,38 +30,7 @@ public class Controller
      */
     public static void startup (final String iniPath)
     {
-        // Start in separate thread to allow the method to return to C++
-        try
-        {
-            SwingUtilities.invokeLater ( () -> {
-                try
-                {
-                    setSystemLF ();
-                    app = new MainFrame (iniPath);
-                }
-                catch (final Throwable ex)
-                {
-                    ex.printStackTrace ();
-                }
-            });
-        }
-        catch (final Throwable ex)
-        {
-            ex.printStackTrace ();
-        }
-    }
-
-
-    private static void setSystemLF () throws ClassNotFoundException, InstantiationException, IllegalAccessException
-    {
-        try
-        {
-            UIManager.setLookAndFeel (UIManager.getSystemLookAndFeelClassName ());
-        }
-        catch (final UnsupportedLookAndFeelException ex)
-        {
-            // Ignore
-        }
+        app = new MainApp (iniPath);
     }
 
 

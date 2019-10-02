@@ -26,6 +26,7 @@ public enum RecordQuantization
     /** 1/4 */
     RES_1_4("1/4", "1/4");
 
+
     private static final Map<String, RecordQuantization> QUANTIZATION_VALUES = new HashMap<> ();
     static
     {

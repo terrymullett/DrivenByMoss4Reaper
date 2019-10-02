@@ -122,6 +122,7 @@ public class TwoColsPanel extends BoxPanel
         this.right.sizeEqual (isVert);
     }
 
+
     /**
      * Adjusts the height of the labels to the height of the matching control.
      */

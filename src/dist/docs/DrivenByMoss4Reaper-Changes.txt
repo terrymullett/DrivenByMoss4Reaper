@@ -1,6 +1,13 @@
 8.11 (unreleased)
+- All devices
+    * New: Many performance improvements: Some updates were put on a slower thread, track 
+      chunk only is read and analysed if playback is stopped, GUI only gets created if 
+      dialog is opened, ...
+    * Fixed: Layout of Debug dialog
 - Native Instruments Komplete S-MkII, A-series/M32
 	* Fixed: Definition files were mixed up and therefore the devices did not work properly
+- Push 2    
+    * Fixed: Display preview window did not update and window layout was wrong
 
 8.10
 - All devices

@@ -22,6 +22,7 @@ public enum DeviceFileType
     /** Jesusonic effects. */
     JS("JS");
 
+
     private String name;
 
 

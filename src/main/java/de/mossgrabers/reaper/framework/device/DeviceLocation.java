@@ -16,6 +16,7 @@ public enum DeviceLocation
     /** Jesusonic effects. */
     JS("JS");
 
+
     private String name;
 
 

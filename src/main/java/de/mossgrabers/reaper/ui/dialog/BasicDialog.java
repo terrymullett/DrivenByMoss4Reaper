@@ -9,6 +9,7 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import java.awt.Container;
@@ -143,6 +144,9 @@ public abstract class BasicDialog extends JDialog
             ex.printStackTrace ();
         }
 
+        // Make sure the window is up to date with the current L&F
+        SwingUtilities.updateComponentTreeUI (this);
+
         this.frame.setCursor (Cursor.getPredefinedCursor (Cursor.DEFAULT_CURSOR));
     }
 
@@ -268,6 +272,7 @@ public abstract class BasicDialog extends JDialog
         return new WindowEvent (this, WindowEvent.WINDOW_CLOSING);
     }
 
+
     /**
      * Calls the ok () function.
      */
@@ -279,6 +284,7 @@ public abstract class BasicDialog extends JDialog
             BasicDialog.this.ok ();
         }
     }
+
 
     /**
      * Calls the cancel () function.

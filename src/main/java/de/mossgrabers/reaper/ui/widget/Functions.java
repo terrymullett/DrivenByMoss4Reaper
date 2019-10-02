@@ -492,6 +492,7 @@ public final class Functions
             ((JFrame) frame).getGlassPane ().setVisible (busy);
     }
 
+
     /**
      * Adds some functionality to a JFileChooser.
      */

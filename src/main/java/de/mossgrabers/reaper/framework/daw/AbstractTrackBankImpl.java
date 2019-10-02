@@ -194,9 +194,9 @@ public abstract class AbstractTrackBankImpl extends AbstractPagedBankImpl<TrackI
      */
     public boolean hasSolo ()
     {
-        for (int i = 0; i < this.items.size (); i++)
+        for (final ITrack element: this.items)
         {
-            if (this.items.get (i).isSolo ())
+            if (element.isSolo ())
                 return true;
         }
         return false;
@@ -208,8 +208,8 @@ public abstract class AbstractTrackBankImpl extends AbstractPagedBankImpl<TrackI
      */
     public void clearSolo ()
     {
-        for (int i = 0; i < this.items.size (); i++)
-            this.items.get (i).setSolo (false);
+        for (final ITrack element: this.items)
+            element.setSolo (false);
     }
 
 
@@ -218,8 +218,8 @@ public abstract class AbstractTrackBankImpl extends AbstractPagedBankImpl<TrackI
      */
     public void clearMute ()
     {
-        for (int i = 0; i < this.items.size (); i++)
-            this.items.get (i).setMute (false);
+        for (final ITrack element: this.items)
+            element.setMute (false);
     }
 
 

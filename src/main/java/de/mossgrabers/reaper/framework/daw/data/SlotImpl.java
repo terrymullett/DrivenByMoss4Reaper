@@ -20,6 +20,7 @@ public class SlotImpl extends ItemImpl implements ISlot
     private double green = 0;
     private double blue  = 0;
 
+
     /**
      * Constructor.
      *

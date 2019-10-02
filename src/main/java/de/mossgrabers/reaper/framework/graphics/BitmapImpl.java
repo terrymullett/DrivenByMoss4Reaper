@@ -7,6 +7,7 @@ package de.mossgrabers.reaper.framework.graphics;
 import de.mossgrabers.framework.graphics.IBitmap;
 import de.mossgrabers.framework.graphics.IEncoder;
 import de.mossgrabers.framework.graphics.IRenderer;
+import de.mossgrabers.reaper.ui.WindowManager;
 import de.mossgrabers.reaper.ui.dialog.BasicDialog;
 import de.mossgrabers.reaper.ui.widget.BoxPanel;
 
@@ -19,7 +20,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.nio.ByteBuffer;
@@ -30,88 +30,28 @@ import java.nio.ByteBuffer;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class BitmapImpl extends BasicDialog implements IBitmap
+public class BitmapImpl implements IBitmap
 {
-    private static final long             serialVersionUID = -6034592629355700876L;
-
-    private final transient BufferedImage bufferedImage;
-    private final transient ByteBuffer    imageBuffer;
-
-    private final JPanel                  canvas           = new JPanel ()
-                                                           {
-                                                               private static final long serialVersionUID = 971155807100338380L;
-
-
-                                                               @Override
-                                                               public void paintComponent (final Graphics gc)
-                                                               {
-                                                                   // Let UI Delegate paint first,
-                                                                   // which
-                                                                   // includes background filling
-                                                                   // since
-                                                                   // this component is opaque.
-
-                                                                   super.paintComponent (gc);
-                                                                   BitmapImpl.this.drawImage (gc);
-                                                               }
-                                                           };
-    private final Timer                   animationTimer;
-
-    private BoxPanel                      buttons;
+    private final WindowManager windowManager;
+    private final BufferedImage bufferedImage;
+    private final ByteBuffer    imageBuffer;
+    private final Object        windowLock  = new Object ();
+    private BitmapWindow        window;
+    private String              windowTitle = "";
 
 
     /**
      * Constructor.
      *
-     * @param owner
-     *
+     * @param windowManager The window manager
      * @param width The width of the bitmap
      * @param height The height of the bitmap
      */
-    public BitmapImpl (final Window owner, final int width, final int height)
+    public BitmapImpl (final WindowManager windowManager, final int width, final int height)
     {
-        super ((JFrame) owner, "", true, true);
-
+        this.windowManager = windowManager;
         this.bufferedImage = new BufferedImage (width, height, BufferedImage.TYPE_INT_ARGB);
         this.imageBuffer = ByteBuffer.allocateDirect (width * height * 4);
-
-        this.animationTimer = new Timer (200, event -> this.canvas.repaint ());
-
-        final Dimension dim = new Dimension (width, height);
-        this.canvas.setMinimumSize (dim);
-        this.canvas.setMaximumSize (dim);
-        this.canvas.setSize (dim);
-
-        this.basicInit ();
-
-        dim.height += this.buttons.getHeight () + 100;
-        this.setMinimumSize (dim);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    protected Container init () throws Exception
-    {
-        final JPanel contentPane = new JPanel (new BorderLayout ());
-
-        contentPane.add (this.canvas, BorderLayout.CENTER);
-
-        // Close button
-        this.buttons = new BoxPanel (BoxLayout.X_AXIS, true);
-        this.buttons.createSpace (BoxPanel.GLUE);
-        this.setButtons (null, this.buttons.createButton ("Close", null, BoxPanel.NONE));
-        contentPane.add (this.buttons, BorderLayout.SOUTH);
-
-        return contentPane;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    protected void set () throws Exception
-    {
-        this.animationTimer.start ();
     }
 
 
@@ -152,7 +92,7 @@ public class BitmapImpl extends BasicDialog implements IBitmap
     @Override
     public void setDisplayWindowTitle (final String title)
     {
-        this.setTitle (title);
+        this.windowTitle = title;
     }
 
 
@@ -160,10 +100,13 @@ public class BitmapImpl extends BasicDialog implements IBitmap
     @Override
     public void showDisplayWindow ()
     {
-        if (this.isShowing ())
-            return;
-        this.setVisible (true);
-        this.animationTimer.start ();
+        synchronized (this.windowLock)
+        {
+            if (this.window == null)
+                this.window = new BitmapWindow (this.windowManager.getMainFrame ());
+        }
+        this.window.setTitle (this.windowTitle);
+        this.window.showWindow ();
     }
 
 
@@ -171,19 +114,10 @@ public class BitmapImpl extends BasicDialog implements IBitmap
     @Override
     public void render (final IRenderer renderer)
     {
-        synchronized (BitmapImpl.this.bufferedImage)
+        synchronized (this.bufferedImage)
         {
             renderer.render (new GraphicsContextImpl (this.bufferedImage.createGraphics ()));
         }
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    protected boolean onCancel ()
-    {
-        this.animationTimer.stop ();
-        return true;
     }
 
 
@@ -192,6 +126,72 @@ public class BitmapImpl extends BasicDialog implements IBitmap
         synchronized (this.bufferedImage)
         {
             gc.drawImage (this.bufferedImage, 0, 0, this.bufferedImage.getWidth (), this.bufferedImage.getHeight (), null);
+        }
+    }
+
+
+    private class BitmapWindow extends BasicDialog
+    {
+        private static final int  BITMAP_REDRAW_RATE = 200;
+        private static final long serialVersionUID   = -6034592629355700876L;
+
+        private final Timer       animationTimer;
+        private BoxPanel          buttons;
+
+        private final JPanel      canvas             = new JPanel ()
+                                                     {
+                                                         private static final long serialVersionUID = 971155807100338380L;
+
+
+                                                         @Override
+                                                         public void paintComponent (final Graphics gc)
+                                                         {
+                                                             // Let UI Delegate paint first, which
+                                                             // includes background filling since
+                                                             // this component is opaque.
+                                                             super.paintComponent (gc);
+                                                             BitmapImpl.this.drawImage (gc);
+                                                         }
+                                                     };
+
+
+        public BitmapWindow (final JFrame owner)
+        {
+            super (owner, "", true, false);
+
+            this.animationTimer = new Timer (BITMAP_REDRAW_RATE, event -> this.canvas.repaint ());
+            this.canvas.setPreferredSize (new Dimension (BitmapImpl.this.bufferedImage.getWidth (), BitmapImpl.this.bufferedImage.getHeight ()));
+
+            this.basicInit ();
+        }
+
+
+        /** {@inheritDoc} */
+        @Override
+        protected Container init () throws Exception
+        {
+            final JPanel contentPane = new JPanel (new BorderLayout ());
+
+            contentPane.add (this.canvas, BorderLayout.CENTER);
+
+            // Close button
+            this.buttons = new BoxPanel (BoxLayout.X_AXIS, true);
+            this.buttons.createSpace (BoxPanel.GLUE);
+            this.setButtons (null, this.buttons.createButton ("Close", null, BoxPanel.NONE));
+            contentPane.add (this.buttons, BorderLayout.SOUTH);
+
+            return contentPane;
+        }
+
+
+        public void showWindow ()
+        {
+            if (this.isShowing ())
+                return;
+            this.animationTimer.start ();
+            // Since it is modal, the next function call blocks!
+            this.setVisible (true);
+            this.animationTimer.stop ();
         }
     }
 }

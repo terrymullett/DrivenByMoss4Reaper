@@ -300,6 +300,7 @@ public class MidiConnection
         }
     }
 
+
     private final class InternalMidiReceiver implements Receiver
     {
         private MidiMessageHandler callback;

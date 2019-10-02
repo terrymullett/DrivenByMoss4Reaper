@@ -46,6 +46,7 @@ public class BrowserImpl extends AbstractBrowser
         PRESET
     }
 
+
     private static final String []     CONTENT_TYPE_NAMES = new String []
     {
         "Devices",
@@ -72,6 +73,7 @@ public class BrowserImpl extends AbstractBrowser
     private final IBrowserColumn [] [] columnDataContentTypes;
 
     private int                        insertPosition;
+
 
     /**
      * Constructor.
@@ -428,6 +430,7 @@ public class BrowserImpl extends AbstractBrowser
         if (this.selectedIndex >= this.filteredDevices.size ())
             this.selectedIndex = 0;
     }
+
 
     /** An item in the result column. */
     private class ResultItem extends ItemImpl implements IBrowserColumnItem

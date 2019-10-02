@@ -36,6 +36,7 @@ public class DeviceCreatorFilterColumn extends BaseColumn
         return DeviceManager.get ().getVendors ().size ();
     }
 
+
     /** An item of the column. */
     private class DeviceVendorBrowserColumnItem extends BaseColumnItem
     {

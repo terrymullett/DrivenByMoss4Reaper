@@ -36,6 +36,7 @@ public class DeviceCollectionFilterColumn extends BaseColumn
         return DeviceManager.get ().getCollections ().size ();
     }
 
+
     /** An item of the column. */
     private class DeviceFolderBrowserColumnItem extends BaseColumnItem
     {

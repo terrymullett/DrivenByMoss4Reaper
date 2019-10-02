@@ -37,6 +37,7 @@ public class DeviceFileTypeFilterColumn extends BaseColumn
         return DeviceFileType.values ().length;
     }
 
+
     /** An item of the column. */
     private class DeviceTypeBrowserColumnItem extends BaseColumnItem
     {

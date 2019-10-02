@@ -36,6 +36,7 @@ public class DeviceTagsFilterColumn extends BaseColumn
         return 0;
     }
 
+
     /** An item of the column. */
     private class DeviceTagsBrowserColumnItem extends BaseColumnItem
     {

@@ -84,6 +84,7 @@ public class OpenSoundControlServerImpl implements IOpenSoundControlServer
         }
     }
 
+
     private class PacketListener implements OSCPacketListener
     {
         /** {@inheritDoc} */

@@ -36,6 +36,7 @@ public class DeviceCategoryFilterColumn extends BaseColumn
         return DeviceManager.get ().getCategories ().size ();
     }
 
+
     /** An item of the column. */
     private class DeviceCategoryBrowserColumnItem extends BaseColumnItem
     {

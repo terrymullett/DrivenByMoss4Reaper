@@ -22,11 +22,11 @@ import de.mossgrabers.reaper.framework.osc.OpenSoundControlClientImpl;
 import de.mossgrabers.reaper.framework.osc.OpenSoundControlMessageImpl;
 import de.mossgrabers.reaper.framework.osc.OpenSoundControlServerImpl;
 import de.mossgrabers.reaper.framework.usb.UsbDeviceImpl;
+import de.mossgrabers.reaper.ui.WindowManager;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
 import java.awt.Color;
-import java.awt.Window;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class HostImpl implements IHost
 {
-    private final Window                           owner;
+    private final WindowManager                    windowManager;
     private final LogModel                         logModel;
     private final ScheduledExecutorService         executor       = Executors.newScheduledThreadPool (10);
     private final List<UsbMatcher>                 usbDeviceInfos = new ArrayList<> ();
@@ -56,12 +56,12 @@ public class HostImpl implements IHost
      * Constructor.
      *
      * @param logModel The logging model
-     * @param owner The owner window for the bitmap display window
+     * @param windowManager The window manager for the bitmap display window
      */
-    public HostImpl (final LogModel logModel, final Window owner)
+    public HostImpl (final LogModel logModel, final WindowManager windowManager)
     {
         this.logModel = logModel;
-        this.owner = owner;
+        this.windowManager = windowManager;
 
         this.notificationWindow = new NotificationWindow (logModel);
     }
@@ -216,7 +216,7 @@ public class HostImpl implements IHost
     @Override
     public IBitmap createBitmap (final int width, final int height)
     {
-        return new BitmapImpl (this.owner, width, height);
+        return new BitmapImpl (this.windowManager, width, height);
     }
 
 

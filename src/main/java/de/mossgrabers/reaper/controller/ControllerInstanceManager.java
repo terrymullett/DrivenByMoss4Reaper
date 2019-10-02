@@ -53,10 +53,10 @@ import de.mossgrabers.reaper.controller.sl.SLMkIControllerInstance;
 import de.mossgrabers.reaper.controller.sl.SLMkIIControllerInstance;
 import de.mossgrabers.reaper.controller.slmkiii.SLMkIIIControllerInstance;
 import de.mossgrabers.reaper.framework.IniFiles;
+import de.mossgrabers.reaper.ui.WindowManager;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.PropertiesEx;
 
-import java.awt.Window;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -139,29 +139,30 @@ public class ControllerInstanceManager
     private static final Class<?> []              CONSTRUCTOR_TYPES       =
     {
         LogModel.class,
-        Window.class,
+        WindowManager.class,
         MessageSender.class,
         IniFiles.class
     };
 
     private final List<IControllerInstance>       instances               = new ArrayList<> ();
     private final LogModel                        logModel;
-    private final Window                          window;
+    private final WindowManager                   windowManager;
     private final MessageSender                   sender;
     private final IniFiles                        iniFiles;
+
 
     /**
      * Constructor.
      *
      * @param logModel The logging model
-     * @param window The owner window for the configuration dialog
+     * @param windowManager The owner window for the configuration dialog
      * @param sender The sender
      * @param iniFiles The INI configuration files
      */
-    public ControllerInstanceManager (final LogModel logModel, final Window window, final MessageSender sender, final IniFiles iniFiles)
+    public ControllerInstanceManager (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
         this.logModel = logModel;
-        this.window = window;
+        this.windowManager = windowManager;
         this.sender = sender;
         this.iniFiles = iniFiles;
     }
@@ -351,7 +352,7 @@ public class ControllerInstanceManager
         try
         {
             final Constructor<?> constructor = clazz.getConstructor (CONSTRUCTOR_TYPES);
-            final IControllerInstance newInstance = (IControllerInstance) constructor.newInstance (this.logModel, this.window, this.sender, this.iniFiles);
+            final IControllerInstance newInstance = (IControllerInstance) constructor.newInstance (this.logModel, this.windowManager, this.sender, this.iniFiles);
             this.instances.add (newInstance);
             return newInstance;
         }

@@ -15,17 +15,30 @@ import java.io.StringWriter;
  */
 public class LogModel
 {
-    private final JTextArea logMessage;
+    private final Object updateLock = new Object ();
+    private JTextArea    logMessage;
 
 
     /**
      * Constructor.
+     */
+    public LogModel ()
+    {
+        // Intentionally empty
+    }
+
+
+    /**
+     * Set the logging text area.
      *
      * @param loggingTextArea Where to output the logging messages
      */
-    public LogModel (final JTextArea loggingTextArea)
+    public void setTextArea (final JTextArea loggingTextArea)
     {
-        this.logMessage = loggingTextArea;
+        synchronized (this.updateLock)
+        {
+            this.logMessage = loggingTextArea;
+        }
     }
 
 
@@ -52,10 +65,13 @@ public class LogModel
     public void info (final String message)
     {
         SafeRunLater.execute (null, () -> {
-            synchronized (this.logMessage)
+            synchronized (this.updateLock)
             {
-                this.logMessage.append (message);
-                this.logMessage.append ("\n");
+                if (this.logMessage != null)
+                {
+                    this.logMessage.append (message);
+                    this.logMessage.append ("\n");
+                }
                 System.out.println (message);
             }
         });
@@ -67,9 +83,10 @@ public class LogModel
      */
     public void clearLogMessage ()
     {
-        synchronized (this.logMessage)
+        synchronized (this.updateLock)
         {
-            this.logMessage.setText ("");
+            if (this.logMessage != null)
+                this.logMessage.setText ("");
         }
     }
 }

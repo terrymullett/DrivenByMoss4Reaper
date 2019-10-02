@@ -4,14 +4,13 @@
 
 package de.mossgrabers.reaper.ui.dialog;
 
-import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.AppCallback;
 import de.mossgrabers.reaper.ui.widget.BoxPanel;
 import de.mossgrabers.reaper.ui.widget.TwoColsPanel;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
@@ -71,7 +70,7 @@ public class DebugDialog extends BasicDialog
         "session"
     };
 
-    private final MessageSender    sender;
+    private final AppCallback      callback;
     private final JCheckBox []     boxes            = new JCheckBox [LABELS.length];
 
 
@@ -79,13 +78,13 @@ public class DebugDialog extends BasicDialog
      * Constructor.
      *
      * @param owner The owner of the dialog
-     * @param sender Where ti sebd tge devug settings
+     * @param callback Where to send the debug settings
      */
-    public DebugDialog (final Window owner, final MessageSender sender)
+    public DebugDialog (final Window owner, final AppCallback callback)
     {
         super ((JFrame) owner, "Debug", true, true);
 
-        this.sender = sender;
+        this.callback = callback;
 
         this.setResizable (false);
         this.setMinimumSize (new Dimension (300, 400));
@@ -101,18 +100,16 @@ public class DebugDialog extends BasicDialog
         final JPanel contentPane = new JPanel (new BorderLayout ());
 
         final TwoColsPanel mainColumn = new TwoColsPanel (true);
-        final JPanel wrapper = new JPanel (new BorderLayout ());
-        wrapper.add (mainColumn, BorderLayout.NORTH);
+        mainColumn.createLabel ("Enable data update from:", null, BoxPanel.NORMAL);
 
         for (int i = 0; i < LABELS.length; i++)
         {
             final int count = i;
             this.boxes[i] = mainColumn.createCheckBox (LABELS[i], MNEMONICS[i], BoxPanel.NORMAL);
             this.boxes[i].setSelected (true);
-            this.boxes[i].addActionListener (event -> this.sender.enableUpdates (PROCESSORS[count], this.boxes[count].isSelected ()));
+            this.boxes[i].addActionListener (event -> this.callback.enableUpdates (PROCESSORS[count], this.boxes[count].isSelected ()));
         }
 
-        contentPane.add (new JLabel ("Enable data update from"), BorderLayout.NORTH);
         contentPane.add (mainColumn, BorderLayout.CENTER);
 
         // Close button

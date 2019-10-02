@@ -33,6 +33,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
     private final ILayerBank            layerBank;
     private final IDrumPadBank          drumPadBank;
 
+
     /**
      * Constructor.
      *

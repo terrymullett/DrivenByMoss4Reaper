@@ -18,6 +18,7 @@ public enum DeviceType
     /** A Midi Effect. */
     MIDI_EFFECT("Midi Effect");
 
+
     private String name;
 
 

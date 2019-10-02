@@ -14,12 +14,12 @@ import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.ReaperSetupFactory;
 import de.mossgrabers.reaper.framework.configuration.SettingsUI;
 import de.mossgrabers.reaper.framework.daw.HostImpl;
+import de.mossgrabers.reaper.ui.WindowManager;
 import de.mossgrabers.reaper.ui.dialog.ConfigurationDialog;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.PropertiesEx;
 import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
-import java.awt.Window;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -35,7 +35,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
 {
     protected final IControllerDefinition controllerDefinition;
     protected final LogModel              logModel;
-    protected final Window                window;
+    protected final WindowManager         windowManager;
     protected final MessageSender         sender;
     protected final IniFiles              iniFiles;
 
@@ -56,15 +56,15 @@ public abstract class AbstractControllerInstance implements IControllerInstance
      *
      * @param controllerDefinition The controller definition
      * @param logModel The logging model
-     * @param window The owner window for the configuration dialog
+     * @param windowManager The window manager for the configuration dialog
      * @param sender The sender
      * @param iniFiles The INI configuration files
      */
-    public AbstractControllerInstance (final IControllerDefinition controllerDefinition, final LogModel logModel, final Window window, final MessageSender sender, final IniFiles iniFiles)
+    public AbstractControllerInstance (final IControllerDefinition controllerDefinition, final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
         this.controllerDefinition = controllerDefinition;
         this.logModel = logModel;
-        this.window = window;
+        this.windowManager = windowManager;
         this.sender = sender;
         this.iniFiles = iniFiles;
     }
@@ -90,7 +90,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
             if (this.isRunning)
                 return;
 
-            this.host = new HostImpl (this.logModel, this.window);
+            this.host = new HostImpl (this.logModel, this.windowManager);
             this.settingsUI = new SettingsUI (this.logModel, this.controllerDefinition.getNumMidiInPorts (), this.controllerDefinition.getNumMidiOutPorts (), this.controllerDefinition.getMidiDiscoveryPairs (OperatingSystem.get ()));
 
             this.loadConfiguration ();
@@ -177,7 +177,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
     @Override
     public void edit ()
     {
-        new ConfigurationDialog (this.logModel, this.window, this.settingsUI).setVisible (true);
+        new ConfigurationDialog (this.logModel, this.windowManager.getMainFrame (), this.settingsUI).setVisible (true);
         this.storeConfiguration ();
     }
 

@@ -11,9 +11,8 @@ import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.controller.AbstractControllerInstance;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.ReaperSetupFactory;
+import de.mossgrabers.reaper.ui.WindowManager;
 import de.mossgrabers.reaper.ui.utils.LogModel;
-
-import java.awt.Window;
 
 
 /**
@@ -27,13 +26,13 @@ public class KontrolMkIS25ControllerInstance extends AbstractControllerInstance
      * Constructor.
      *
      * @param logModel The logging model
-     * @param window The owner window for the configuration dialog
+     * @param windowManager The window manager for the configuration dialog
      * @param sender The sender
      * @param iniFiles The INI configuration files
      */
-    public KontrolMkIS25ControllerInstance (final LogModel logModel, final Window window, final MessageSender sender, final IniFiles iniFiles)
+    public KontrolMkIS25ControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new Kontrol1ControllerDefinition (0), logModel, window, sender, iniFiles);
+        super (new Kontrol1ControllerDefinition (0), logModel, windowManager, sender, iniFiles);
     }
 
 

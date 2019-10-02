@@ -250,6 +250,7 @@ public class EmptyTrack extends EmptyChannel implements ITrack
         // Intentionally empty
     }
 
+
     class EmptySlotBank extends EmptyBank<ISlot> implements ISlotBank
     {
         /** {@inheritDoc} */

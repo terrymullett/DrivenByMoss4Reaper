@@ -44,6 +44,7 @@ public class EmptyFilterColumn extends BaseColumn
         return DeviceManager.get ().getCategories ().size ();
     }
 
+
     /** An item of the column. */
     private class EmptyBrowserColumnItem extends BaseColumnItem
     {
