@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class GenericFlexiControllerInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final GenericFlexiControllerDefinition CONTROLLER_DEFINITION = new GenericFlexiControllerDefinition ();
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class GenericFlexiControllerInstance extends AbstractControllerInstance
      */
     public GenericFlexiControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new GenericFlexiControllerDefinition (), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class APCminiControllerInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final APCminiControllerDefinition CONTROLLER_DEFINITION = new APCminiControllerDefinition ();
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class APCminiControllerInstance extends AbstractControllerInstance
      */
     public APCminiControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new APCminiControllerDefinition (), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

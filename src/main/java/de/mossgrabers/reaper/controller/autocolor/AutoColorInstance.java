@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class AutoColorInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final AutoColorDefinition CONTROLLER_DEFINITION = new AutoColorDefinition ();
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class AutoColorInstance extends AbstractControllerInstance
      */
     public AutoColorInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new AutoColorDefinition (), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

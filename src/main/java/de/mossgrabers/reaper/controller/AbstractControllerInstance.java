@@ -72,6 +72,14 @@ public abstract class AbstractControllerInstance implements IControllerInstance
 
     /** {@inheritDoc} */
     @Override
+    public IControllerDefinition getDefinition ()
+    {
+        return this.controllerDefinition;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public boolean isRunning ()
     {
         synchronized (this.startSync)

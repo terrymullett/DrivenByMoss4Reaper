@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class SLMkIControllerInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final SLControllerDefinition CONTROLLER_DEFINITION = new SLControllerDefinition (false);
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class SLMkIControllerInstance extends AbstractControllerInstance
      */
     public SLMkIControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new SLControllerDefinition (false), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

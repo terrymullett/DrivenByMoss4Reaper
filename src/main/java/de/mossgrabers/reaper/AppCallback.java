@@ -4,7 +4,10 @@
 
 package de.mossgrabers.reaper;
 
+import de.mossgrabers.framework.controller.IControllerDefinition;
 import de.mossgrabers.reaper.controller.IControllerInstance;
+
+import java.util.List;
 
 
 /**
@@ -15,12 +18,20 @@ import de.mossgrabers.reaper.controller.IControllerInstance;
 public interface AppCallback
 {
     /**
-     * Add a controller from a controller definition.
+     * Detect controllers.
+     * 
+     * @return The detected instances
+     */
+    List<IControllerInstance> detectControllers ();
+
+
+    /**
+     * Add and create a controller from a controller definition.
      *
-     * @param definitionIndex The index of the controller definition
+     * @param definition The controller definition
      * @return The created controller instance or null if an error occured
      */
-    IControllerInstance addController (int definitionIndex);
+    IControllerInstance addController (IControllerDefinition definition);
 
 
     /**

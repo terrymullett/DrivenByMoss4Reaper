@@ -24,6 +24,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class KontrolProtocolV1ControllerInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final KontrolProtocolControllerDefinition CONTROLLER_DEFINITION = new KontrolProtocolControllerDefinition (new KontrolProtocolDeviceDescriptorV1 ());
+
+
     /**
      * Constructor.
      *
@@ -34,7 +38,7 @@ public class KontrolProtocolV1ControllerInstance extends AbstractControllerInsta
      */
     public KontrolProtocolV1ControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new KontrolProtocolControllerDefinition (new KontrolProtocolDeviceDescriptorV1 ()), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

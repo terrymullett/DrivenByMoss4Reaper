@@ -4,7 +4,9 @@
 
 package de.mossgrabers.reaper;
 
+import de.mossgrabers.framework.controller.IControllerDefinition;
 import de.mossgrabers.framework.utils.OperatingSystem;
+import de.mossgrabers.framework.utils.Pair;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.controller.ControllerInstanceManager;
 import de.mossgrabers.reaper.controller.IControllerInstance;
@@ -21,6 +23,7 @@ import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 import org.usb4java.LibUsb;
 import org.usb4java.LibUsbException;
 
+import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiUnavailableException;
 import javax.swing.Timer;
 import javax.swing.UIManager;
@@ -30,6 +33,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -316,18 +321,70 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
 
     /** {@inheritDoc} */
     @Override
-    public IControllerInstance addController (final int definitionIndex)
+    public IControllerInstance addController (final IControllerDefinition definition)
     {
-        if (this.instanceManager.isInstantiated (definitionIndex))
+        if (this.instanceManager.isInstantiated (definition))
         {
             this.logModel.info ("Only one instance of a controller type is supported!");
             return null;
         }
 
-        final IControllerInstance controllerInstance = this.instanceManager.instantiate (definitionIndex);
+        final IControllerInstance controllerInstance = this.instanceManager.instantiate (definition);
         controllerInstance.start ();
         this.sendRefreshCommand ();
         return controllerInstance;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public List<IControllerInstance> detectControllers ()
+    {
+        final List<IControllerInstance> addedControllers = new ArrayList<> ();
+
+        for (final IControllerDefinition definition: this.instanceManager.getDefinitions ())
+        {
+            // Already detected
+            if (this.instanceManager.isInstantiated (definition))
+                continue;
+
+            for (final Pair<String [], String []> pair: definition.getMidiDiscoveryPairs (OperatingSystem.get ()))
+            {
+                final String [] ins = pair.getKey ();
+                final String [] outs = pair.getValue ();
+
+                // Ignore utility extensions, which would always match
+                if (ins.length == 0 && outs.length == 0)
+                    continue;
+
+                final List<MidiDevice> inputDevices = new ArrayList<> ();
+                final List<MidiDevice> outputDevices = new ArrayList<> ();
+
+                for (final String inputName: ins)
+                {
+                    final MidiDevice inputDevice = Midi.getInputDevice (inputName);
+                    if (inputDevice != null)
+                        inputDevices.add (inputDevice);
+                }
+
+                for (final String outputName: outs)
+                {
+                    final MidiDevice outputDevice = Midi.getOutputDevice (outputName);
+                    if (outputDevice != null)
+                        outputDevices.add (outputDevice);
+                }
+
+                // Is there a match?
+                if (ins.length == inputDevices.size () && outs.length == outputDevices.size ())
+                {
+                    final IControllerInstance c = this.addController (definition);
+                    if (c != null)
+                        addedControllers.add (c);
+                }
+            }
+        }
+
+        return addedControllers;
     }
 
 

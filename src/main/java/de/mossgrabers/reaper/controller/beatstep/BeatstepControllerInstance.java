@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class BeatstepControllerInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final BeatstepControllerDefinition CONTROLLER_DEFINITION = new BeatstepControllerDefinition (false);
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class BeatstepControllerInstance extends AbstractControllerInstance
      */
     public BeatstepControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new BeatstepControllerDefinition (false), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

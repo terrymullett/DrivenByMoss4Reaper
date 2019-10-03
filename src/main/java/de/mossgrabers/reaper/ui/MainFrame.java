@@ -30,11 +30,15 @@ import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 
@@ -84,10 +88,17 @@ public class MainFrame extends JFrame
 
         // Center pane with device configuration and logging
         this.configButton.addActionListener (event -> this.editController ());
+        this.configButton.setBackground (Color.YELLOW);
         final JButton addButton = new JButton ("Add");
+        addButton.setBackground (Color.GREEN);
         this.configureAddButton (addButton, instanceManager.getDefinitions ());
 
+        final JButton detectButton = new JButton ("Detect");
+        detectButton.setBackground (Color.GREEN);
+        detectButton.addActionListener (event -> this.detectControllers ());
+
         this.removeButton.addActionListener (event -> this.removeController ());
+        this.removeButton.setBackground (Color.RED);
 
         final JButton enableButton = new JButton ("Dis-/enable");
         enableButton.addActionListener (event -> this.toggleEnableController ());
@@ -97,8 +108,9 @@ public class MainFrame extends JFrame
 
         final JPanel deviceButtonContainer = new JPanel ();
         deviceButtonContainer.setBorder (new EmptyBorder (0, GAP, 0, 0));
-        deviceButtonContainer.setLayout (new GridLayout (6, 1, 0, GAP));
+        deviceButtonContainer.setLayout (new GridLayout (7, 1, 0, GAP));
 
+        deviceButtonContainer.add (detectButton);
         deviceButtonContainer.add (addButton);
         deviceButtonContainer.add (this.removeButton);
         deviceButtonContainer.add (this.configButton);
@@ -138,6 +150,27 @@ public class MainFrame extends JFrame
         for (final IControllerInstance instance: instanceManager.getInstances ())
             this.listModel.addElement (new CheckboxListItem (instance));
 
+        this.updateWidgetStates ();
+
+    }
+
+
+    /**
+     * Detect connected controllers, if any.
+     */
+    private void detectControllers ()
+    {
+        final List<IControllerInstance> detectedControllers = this.callback.detectControllers ();
+        if (detectedControllers.isEmpty ())
+            return;
+
+        for (final IControllerInstance controllerInstance: detectedControllers)
+        {
+            final CheckboxListItem inst = new CheckboxListItem (controllerInstance);
+            this.listModel.addElement (inst);
+        }
+
+        this.controllerList.setSelectedValue (detectedControllers.get (0), true);
         this.updateWidgetStates ();
 
     }
@@ -237,30 +270,35 @@ public class MainFrame extends JFrame
     }
 
 
-    private void configureAddButton (final JButton addButton, final IControllerDefinition [] definitions)
+    private void configureAddButton (final JButton addButton, final Set<IControllerDefinition> definitions)
     {
-        final Map<String, JMenu> menus = new TreeMap<> ();
+        final Map<String, Map<String, JMenuItem>> menus = new TreeMap<> ();
+        for (final IControllerDefinition definition: definitions)
+        {
+            final String vendor = definition.getHardwareVendor ();
+            final Map<String, JMenuItem> menuItems = menus.computeIfAbsent (vendor, v -> new TreeMap<> ());
+            final String hardwareModel = definition.getHardwareModel ();
+            final JMenuItem item = new JMenuItem (hardwareModel);
+            item.addActionListener (event -> this.addController (definition));
+            menuItems.put (hardwareModel, item);
+        }
 
         final JPopupMenu popup = new JPopupMenu ();
-        for (int i = 0; i < definitions.length; i++)
+        for (final Entry<String, Map<String, JMenuItem>> menuItems: menus.entrySet ())
         {
-            final String vendor = definitions[i].getHardwareVendor ();
-            final JMenu menu = menus.computeIfAbsent (vendor, JMenu::new);
-
-            final JMenuItem item = new JMenuItem (definitions[i].getHardwareModel ());
-            final int index = i;
-            item.addActionListener (event -> this.addController (index));
-            menu.add (item);
-        }
-        for (final JMenu menu: menus.values ())
+            final JMenu menu = new JMenu (menuItems.getKey ());
+            for (final JMenuItem subMenus: menuItems.getValue ().values ())
+                menu.add (subMenus);
             popup.add (menu);
+        }
+
         addButton.addActionListener (event -> popup.show (addButton, 0, addButton.getHeight ()));
     }
 
 
-    private void addController (final int index)
+    private void addController (final IControllerDefinition definition)
     {
-        final IControllerInstance controllerInstance = this.callback.addController (index);
+        final IControllerInstance controllerInstance = this.callback.addController (definition);
         if (controllerInstance == null)
             return;
         final CheckboxListItem inst = new CheckboxListItem (controllerInstance);

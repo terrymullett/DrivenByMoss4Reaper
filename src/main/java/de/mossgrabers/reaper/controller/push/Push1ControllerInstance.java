@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class Push1ControllerInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final PushControllerDefinition CONTROLLER_DEFINITION = new PushControllerDefinition (false);
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class Push1ControllerInstance extends AbstractControllerInstance
      */
     public Push1ControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new PushControllerDefinition (false), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

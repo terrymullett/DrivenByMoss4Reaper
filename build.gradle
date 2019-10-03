@@ -60,6 +60,15 @@ installDist {
         }
         sourceDir.delete()
 
+        // Copy resources
+        File resourcesDir = new File (destinationDir, 'resources')
+        resourcesDir.mkdirs ()
+        ant.copy (todir: resourcesDir) {
+            fileset(dir: new File ('resources')) {
+                include(name: '**')
+            }
+        }
+
         // Windows
         ant.zip (destfile: 'build/DrivenByMoss4Reaper-' + version + '-Windows.zip') {
             fileset(dir: destinationDir)

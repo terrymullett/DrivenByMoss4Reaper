@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class OSCControllerInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final OSCControllerDefinition CONTROLLER_DEFINITION = new OSCControllerDefinition ();
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class OSCControllerInstance extends AbstractControllerInstance
      */
     public OSCControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new OSCControllerDefinition (), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

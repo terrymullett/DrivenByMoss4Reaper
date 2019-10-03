@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class APC40mkIIControllerInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final APCControllerDefinition CONTROLLER_DEFINITION = new APCControllerDefinition (true);
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class APC40mkIIControllerInstance extends AbstractControllerInstance
      */
     public APC40mkIIControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new APCControllerDefinition (true), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

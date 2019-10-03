@@ -4,6 +4,8 @@
 
 package de.mossgrabers.reaper.controller;
 
+import de.mossgrabers.framework.controller.IControllerDefinition;
+
 /**
  * Interface to an controller instance.
  *
@@ -11,6 +13,14 @@ package de.mossgrabers.reaper.controller;
  */
 public interface IControllerInstance
 {
+    /**
+     * Get the controller description.
+     *
+     * @return The definition
+     */
+    IControllerDefinition getDefinition ();
+
+
     /**
      * Start the controller.
      */

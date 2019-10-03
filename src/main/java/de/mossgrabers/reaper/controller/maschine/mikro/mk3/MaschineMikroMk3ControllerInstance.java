@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class MaschineMikroMk3ControllerInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final MaschineMikroMk3ControllerDefinition CONTROLLER_DEFINITION = new MaschineMikroMk3ControllerDefinition ();
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class MaschineMikroMk3ControllerInstance extends AbstractControllerInstan
      */
     public MaschineMikroMk3ControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new MaschineMikroMk3ControllerDefinition (), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

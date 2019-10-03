@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class HUIControllerInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final HUIControllerDefinition CONTROLLER_DEFINITION = new HUIControllerDefinition ();
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class HUIControllerInstance extends AbstractControllerInstance
      */
     public HUIControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new HUIControllerDefinition (), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

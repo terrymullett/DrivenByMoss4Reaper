@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class MidiMonitorInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final MidiMonitorDefinition CONTROLLER_DEFINITION = new MidiMonitorDefinition ();
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class MidiMonitorInstance extends AbstractControllerInstance
      */
     public MidiMonitorInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new MidiMonitorDefinition (), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

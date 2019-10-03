@@ -4,24 +4,6 @@
 
 package de.mossgrabers.reaper.controller;
 
-import de.mossgrabers.controller.apc.APCControllerDefinition;
-import de.mossgrabers.controller.apcmini.APCminiControllerDefinition;
-import de.mossgrabers.controller.autocolor.AutoColorDefinition;
-import de.mossgrabers.controller.beatstep.BeatstepControllerDefinition;
-import de.mossgrabers.controller.generic.GenericFlexiControllerDefinition;
-import de.mossgrabers.controller.hui.HUIControllerDefinition;
-import de.mossgrabers.controller.kontrol.mki.Kontrol1ControllerDefinition;
-import de.mossgrabers.controller.kontrol.mkii.KontrolProtocolControllerDefinition;
-import de.mossgrabers.controller.kontrol.mkii.controller.KontrolProtocolDeviceDescriptorV1;
-import de.mossgrabers.controller.kontrol.mkii.controller.KontrolProtocolDeviceDescriptorV2;
-import de.mossgrabers.controller.launchpad.LaunchpadControllerDefinition;
-import de.mossgrabers.controller.maschine.mikro.mk3.MaschineMikroMk3ControllerDefinition;
-import de.mossgrabers.controller.mcu.MCUControllerDefinition;
-import de.mossgrabers.controller.midimonitor.MidiMonitorDefinition;
-import de.mossgrabers.controller.osc.OSCControllerDefinition;
-import de.mossgrabers.controller.push.PushControllerDefinition;
-import de.mossgrabers.controller.sl.SLControllerDefinition;
-import de.mossgrabers.controller.slmkiii.SLMkIIIControllerDefinition;
 import de.mossgrabers.framework.controller.IControllerDefinition;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.controller.apc.APC40mkIControllerInstance;
@@ -60,7 +42,10 @@ import de.mossgrabers.reaper.ui.utils.PropertiesEx;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -70,73 +55,46 @@ import java.util.List;
  */
 public class ControllerInstanceManager
 {
-    private static final String                   CONTROLLER_INSTANCE_TAG = "CONTROLLER_INSTANCE";
+    private static final String                               CONTROLLER_INSTANCE_TAG = "CONTROLLER_INSTANCE";
+    private static final Map<IControllerDefinition, Class<?>> DEF_TO_CLASS            = new HashMap<> ();
+    private static final Map<String, Class<?>>                NAME_TO_CLASS           = new HashMap<> ();
 
-    private static final Class<?> []              CLASSES                 =
+    static
     {
-        AutoColorInstance.class,
-        APC40mkIControllerInstance.class,
-        APC40mkIIControllerInstance.class,
-        APCminiControllerInstance.class,
-        BeatstepControllerInstance.class,
-        BeatstepProControllerInstance.class,
-        GenericFlexiControllerInstance.class,
-        HUIControllerInstance.class,
-        KontrolMkIS25ControllerInstance.class,
-        KontrolMkIS49ControllerInstance.class,
-        KontrolMkIS61ControllerInstance.class,
-        KontrolMkIS88ControllerInstance.class,
-        KontrolProtocolV1ControllerInstance.class,
-        KontrolProtocolV2ControllerInstance.class,
-        LaunchpadMkIIControllerInstance.class,
-        LaunchpadProControllerInstance.class,
-        MaschineMikroMk3ControllerInstance.class,
-        MidiMonitorInstance.class,
-        MCU1ControllerInstance.class,
-        MCU2ControllerInstance.class,
-        MCU3ControllerInstance.class,
-        MCU4ControllerInstance.class,
-        OSCControllerInstance.class,
-        Push1ControllerInstance.class,
-        Push2ControllerInstance.class,
-        SLMkIControllerInstance.class,
-        SLMkIIControllerInstance.class,
-        SLMkIIIControllerInstance.class
-    };
+        DEF_TO_CLASS.put (AutoColorInstance.CONTROLLER_DEFINITION, AutoColorInstance.class);
+        DEF_TO_CLASS.put (APC40mkIControllerInstance.CONTROLLER_DEFINITION, APC40mkIControllerInstance.class);
+        DEF_TO_CLASS.put (APC40mkIIControllerInstance.CONTROLLER_DEFINITION, APC40mkIIControllerInstance.class);
+        DEF_TO_CLASS.put (APCminiControllerInstance.CONTROLLER_DEFINITION, APCminiControllerInstance.class);
+        DEF_TO_CLASS.put (BeatstepControllerInstance.CONTROLLER_DEFINITION, BeatstepControllerInstance.class);
+        DEF_TO_CLASS.put (BeatstepProControllerInstance.CONTROLLER_DEFINITION, BeatstepProControllerInstance.class);
+        DEF_TO_CLASS.put (GenericFlexiControllerInstance.CONTROLLER_DEFINITION, GenericFlexiControllerInstance.class);
+        DEF_TO_CLASS.put (HUIControllerInstance.CONTROLLER_DEFINITION, HUIControllerInstance.class);
+        DEF_TO_CLASS.put (KontrolMkIS25ControllerInstance.CONTROLLER_DEFINITION, KontrolMkIS25ControllerInstance.class);
+        DEF_TO_CLASS.put (KontrolMkIS49ControllerInstance.CONTROLLER_DEFINITION, KontrolMkIS49ControllerInstance.class);
+        DEF_TO_CLASS.put (KontrolMkIS61ControllerInstance.CONTROLLER_DEFINITION, KontrolMkIS61ControllerInstance.class);
+        DEF_TO_CLASS.put (KontrolMkIS88ControllerInstance.CONTROLLER_DEFINITION, KontrolMkIS88ControllerInstance.class);
+        DEF_TO_CLASS.put (KontrolProtocolV1ControllerInstance.CONTROLLER_DEFINITION, KontrolProtocolV1ControllerInstance.class);
+        DEF_TO_CLASS.put (KontrolProtocolV2ControllerInstance.CONTROLLER_DEFINITION, KontrolProtocolV2ControllerInstance.class);
+        DEF_TO_CLASS.put (LaunchpadMkIIControllerInstance.CONTROLLER_DEFINITION, LaunchpadMkIIControllerInstance.class);
+        DEF_TO_CLASS.put (LaunchpadProControllerInstance.CONTROLLER_DEFINITION, LaunchpadProControllerInstance.class);
+        DEF_TO_CLASS.put (MaschineMikroMk3ControllerInstance.CONTROLLER_DEFINITION, MaschineMikroMk3ControllerInstance.class);
+        DEF_TO_CLASS.put (MidiMonitorInstance.CONTROLLER_DEFINITION, MidiMonitorInstance.class);
+        DEF_TO_CLASS.put (MCU1ControllerInstance.CONTROLLER_DEFINITION, MCU1ControllerInstance.class);
+        DEF_TO_CLASS.put (MCU2ControllerInstance.CONTROLLER_DEFINITION, MCU2ControllerInstance.class);
+        DEF_TO_CLASS.put (MCU3ControllerInstance.CONTROLLER_DEFINITION, MCU3ControllerInstance.class);
+        DEF_TO_CLASS.put (MCU4ControllerInstance.CONTROLLER_DEFINITION, MCU4ControllerInstance.class);
+        DEF_TO_CLASS.put (OSCControllerInstance.CONTROLLER_DEFINITION, OSCControllerInstance.class);
+        DEF_TO_CLASS.put (Push1ControllerInstance.CONTROLLER_DEFINITION, Push1ControllerInstance.class);
+        DEF_TO_CLASS.put (Push2ControllerInstance.CONTROLLER_DEFINITION, Push2ControllerInstance.class);
+        DEF_TO_CLASS.put (SLMkIControllerInstance.CONTROLLER_DEFINITION, SLMkIControllerInstance.class);
+        DEF_TO_CLASS.put (SLMkIIControllerInstance.CONTROLLER_DEFINITION, SLMkIIControllerInstance.class);
+        DEF_TO_CLASS.put (SLMkIIIControllerInstance.CONTROLLER_DEFINITION, SLMkIIIControllerInstance.class);
 
-    private static final IControllerDefinition [] DEFINITIONS             =
-    {
-        new AutoColorDefinition (),
-        new APCControllerDefinition (false),
-        new APCControllerDefinition (true),
-        new APCminiControllerDefinition (),
-        new BeatstepControllerDefinition (false),
-        new BeatstepControllerDefinition (true),
-        new GenericFlexiControllerDefinition (),
-        new HUIControllerDefinition (),
-        new Kontrol1ControllerDefinition (0),
-        new Kontrol1ControllerDefinition (1),
-        new Kontrol1ControllerDefinition (2),
-        new Kontrol1ControllerDefinition (3),
-        new KontrolProtocolControllerDefinition (new KontrolProtocolDeviceDescriptorV1 ()),
-        new KontrolProtocolControllerDefinition (new KontrolProtocolDeviceDescriptorV2 ()),
-        new LaunchpadControllerDefinition (true),
-        new LaunchpadControllerDefinition (false),
-        new MaschineMikroMk3ControllerDefinition (),
-        new MidiMonitorDefinition (),
-        new MCUControllerDefinition (0),
-        new MCUControllerDefinition (1),
-        new MCUControllerDefinition (2),
-        new MCUControllerDefinition (3),
-        new OSCControllerDefinition (),
-        new PushControllerDefinition (false),
-        new PushControllerDefinition (true),
-        new SLControllerDefinition (false),
-        new SLControllerDefinition (true),
-        new SLMkIIIControllerDefinition ()
-    };
+        for (final Class<?> clazz: DEF_TO_CLASS.values ())
+            NAME_TO_CLASS.put (clazz.getName (), clazz);
+    }
 
-    private static final Class<?> []              CONSTRUCTOR_TYPES       =
+    private static final Class<?> []        CONSTRUCTOR_TYPES =
     {
         LogModel.class,
         WindowManager.class,
@@ -144,11 +102,11 @@ public class ControllerInstanceManager
         IniFiles.class
     };
 
-    private final List<IControllerInstance>       instances               = new ArrayList<> ();
-    private final LogModel                        logModel;
-    private final WindowManager                   windowManager;
-    private final MessageSender                   sender;
-    private final IniFiles                        iniFiles;
+    private final List<IControllerInstance> instances         = new ArrayList<> ();
+    private final LogModel                  logModel;
+    private final WindowManager             windowManager;
+    private final MessageSender             sender;
+    private final IniFiles                  iniFiles;
 
 
     /**
@@ -173,9 +131,9 @@ public class ControllerInstanceManager
      *
      * @return All registeredcontroller definitions
      */
-    public IControllerDefinition [] getDefinitions ()
+    public Set<IControllerDefinition> getDefinitions ()
     {
-        return DEFINITIONS;
+        return DEF_TO_CLASS.keySet ();
     }
 
 
@@ -273,26 +231,26 @@ public class ControllerInstanceManager
     /**
      * Instantiate (add) a controller instance.
      *
-     * @param definitionIndex The index of the controller definition
+     * @param definition The controller definition
      * @return The instance
      */
-    public IControllerInstance instantiate (final int definitionIndex)
+    public IControllerInstance instantiate (final IControllerDefinition definition)
     {
-        return this.instantiateController (CLASSES[definitionIndex]);
+        return this.instantiateController (DEF_TO_CLASS.get (definition));
     }
 
 
     /**
      * Test if a controller definition is instantiated.
      *
-     * @param definitionIndex The index of the controller definition
+     * @param definition The index of the controller definition
      * @return True if instance exists
      */
-    public boolean isInstantiated (final int definitionIndex)
+    public boolean isInstantiated (final IControllerDefinition definition)
     {
         for (final IControllerInstance inst: this.instances)
         {
-            if (inst.getClass ().equals (CLASSES[definitionIndex]))
+            if (inst.getDefinition ().equals (definition))
                 return true;
         }
         return false;
@@ -321,7 +279,7 @@ public class ControllerInstanceManager
         String className;
         while ((className = properties.getString (CONTROLLER_INSTANCE_TAG + counter)) != null)
         {
-            final Class<?> clazz = lookupClass (className);
+            final Class<?> clazz = NAME_TO_CLASS.get (className);
             if (clazz == null)
                 this.logModel.info ("Unknown controller  class: " + className);
             else
@@ -361,16 +319,5 @@ public class ControllerInstanceManager
             this.logModel.error ("Could not instantiate controller  class: " + clazz.getName () + ".", ex);
             return null;
         }
-    }
-
-
-    private static Class<?> lookupClass (final String className)
-    {
-        for (final Class<?> clazz: CLASSES)
-        {
-            if (clazz.getName ().equals (className))
-                return clazz;
-        }
-        return null;
     }
 }

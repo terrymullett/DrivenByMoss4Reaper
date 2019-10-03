@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class MCU4ControllerInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final MCUControllerDefinition CONTROLLER_DEFINITION = new MCUControllerDefinition (3);
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class MCU4ControllerInstance extends AbstractControllerInstance
      */
     public MCU4ControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new MCUControllerDefinition (3), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 

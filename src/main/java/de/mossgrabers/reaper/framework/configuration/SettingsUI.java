@@ -235,7 +235,7 @@ public class SettingsUI implements ISettingsUI
                 continue;
             for (final Pair<String [], String []> pair: this.discoveryPairs)
             {
-                this.selectedMidiOutputs[i] = Midi.getOutputDevice (pair.getKey ()[i]);
+                this.selectedMidiOutputs[i] = Midi.getOutputDevice (pair.getValue ()[i]);
                 if (this.selectedMidiOutputs[i] != null)
                     break;
             }

@@ -22,6 +22,10 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  */
 public class LaunchpadMkIIControllerInstance extends AbstractControllerInstance
 {
+    /** The controller definition instance. */
+    public static final LaunchpadControllerDefinition CONTROLLER_DEFINITION = new LaunchpadControllerDefinition (true);
+
+
     /**
      * Constructor.
      *
@@ -32,7 +36,7 @@ public class LaunchpadMkIIControllerInstance extends AbstractControllerInstance
      */
     public LaunchpadMkIIControllerInstance (final LogModel logModel, final WindowManager windowManager, final MessageSender sender, final IniFiles iniFiles)
     {
-        super (new LaunchpadControllerDefinition (true), logModel, windowManager, sender, iniFiles);
+        super (CONTROLLER_DEFINITION, logModel, windowManager, sender, iniFiles);
     }
 
 
