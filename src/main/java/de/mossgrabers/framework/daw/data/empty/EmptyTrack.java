@@ -43,6 +43,14 @@ public class EmptyTrack extends EmptyChannel implements ITrack
 
     /** {@inheritDoc} */
     @Override
+    public boolean hasParent ()
+    {
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public boolean isRecArm ()
     {
         return false;

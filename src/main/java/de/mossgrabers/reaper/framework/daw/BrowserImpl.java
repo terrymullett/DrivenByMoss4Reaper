@@ -8,6 +8,7 @@ import de.mossgrabers.framework.daw.AbstractBrowser;
 import de.mossgrabers.framework.daw.ICursorDevice;
 import de.mossgrabers.framework.daw.data.IBrowserColumn;
 import de.mossgrabers.framework.daw.data.IBrowserColumnItem;
+import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.data.IItem;
 import de.mossgrabers.framework.utils.StringUtils;
 import de.mossgrabers.reaper.communication.MessageSender;
@@ -54,6 +55,7 @@ public class BrowserImpl extends AbstractBrowser
     };
 
     private ContentType                contentType        = ContentType.PRESET;
+    private final ICursorDevice        cursorDevice;
 
     final DeviceCollectionFilterColumn deviceCollectionFilterColumn;
     final DeviceLocationFilterColumn   deviceLocationFilterColumn;
@@ -87,6 +89,7 @@ public class BrowserImpl extends AbstractBrowser
     {
         super (numFilterColumnEntries, numResults);
 
+        this.cursorDevice = cursorDevice;
         this.sender = dataSetup != null ? dataSetup.getSender () : null;
 
         this.deviceCollectionFilterColumn = new DeviceCollectionFilterColumn (0, numFilterColumnEntries);
@@ -225,26 +228,43 @@ public class BrowserImpl extends AbstractBrowser
     public void replace (final IItem item)
     {
         // Slot and Drum Pad not supported
-        if (item instanceof CursorDeviceImpl)
-            this.browse (ContentType.PRESET, ((CursorDeviceImpl) item).getPosition ());
+        if (!(item instanceof CursorDeviceImpl))
+            return;
+
+        this.browse (ContentType.PRESET, ((CursorDeviceImpl) item).getPosition ());
+
+        final String name = item.getName ();
+        this.infoText = "Replace: " + (name.length () == 0 ? "Empty" : name);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void insertBefore (final IItem item)
+    public void addDevice (final IChannel channel)
     {
-        if (item instanceof CursorDeviceImpl)
-            this.browse (ContentType.DEVICE, ((CursorDeviceImpl) item).getPosition ());
+        this.infoText = "Add device to: " + channel.getName ();
+
+        this.browse (ContentType.DEVICE, 0);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void insertAfter (final IItem item)
+    public void insertBeforeCursorDevice ()
     {
-        if (item instanceof CursorDeviceImpl)
-            this.browse (ContentType.DEVICE, ((CursorDeviceImpl) item).getPosition () + 1);
+        this.infoText = "Insert device before: " + this.cursorDevice.getName ();
+
+        this.browse (ContentType.DEVICE, this.cursorDevice.getPosition ());
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void insertAfterCursorDevice ()
+    {
+        this.infoText = "Insert device after: " + this.cursorDevice.getName ();
+
+        this.browse (ContentType.DEVICE, this.cursorDevice.getPosition () + 1);
     }
 
 

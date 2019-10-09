@@ -24,6 +24,14 @@ public interface ITrack extends IChannel
 
 
     /**
+     * Returns true if there is a parent track.
+     *
+     * @return True if there is a parent track otherwise it is a top level track
+     */
+    boolean hasParent ();
+
+
+    /**
      * True if armed for recording.
      *
      * @return True if armed for recording

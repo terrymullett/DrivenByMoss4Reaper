@@ -26,4 +26,13 @@ public class DrumPadImpl extends ChannelImpl implements IDrumPad
     {
         super (dataSetup, index, numSends);
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasDevices ()
+    {
+        // Drum pads are not supported
+        return false;
+    }
 }

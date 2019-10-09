@@ -128,6 +128,14 @@ public class TrackImpl extends ChannelImpl implements ITrack
 
     /** {@inheritDoc} */
     @Override
+    public boolean hasParent ()
+    {
+        return this.trackBank.hasParent ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public boolean isRecArm ()
     {
         return this.doesExist () && this.isRecArm;
