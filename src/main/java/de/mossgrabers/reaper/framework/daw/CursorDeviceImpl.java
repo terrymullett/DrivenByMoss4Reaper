@@ -415,4 +415,21 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
     {
         // Not supported
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public String [] getSlotChains ()
+    {
+        // Not supported
+        return new String [0];
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void selectSlotChain (String slotChainName)
+    {
+        // Not supported
+    }
 }

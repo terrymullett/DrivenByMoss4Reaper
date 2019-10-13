@@ -99,7 +99,7 @@ public abstract class AbstractNoteSequencerView<S extends IControlSurface<C>, C 
         if (y < this.numSequencerRows)
         {
             if (velocity != 0)
-                clip.toggleStep (x, this.keyManager.map (y), this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity);
+                clip.toggleStep (defaultMidiChannel, x, this.keyManager.map (y), this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity);
             return;
         }
 
@@ -162,7 +162,7 @@ public abstract class AbstractNoteSequencerView<S extends IControlSurface<C>, C 
             {
                 // 0: not set, 1: note continues playing, 2: start of note
                 final int map = this.keyManager.map (y);
-                final int isSet = map < 0 ? 0 : clip.getStep (x, map).getState ();
+                final int isSet = map < 0 ? 0 : clip.getStep (defaultMidiChannel, x, map).getState ();
                 gridPad.lightEx (x, this.numDisplayRows - 1 - y, this.getStepColor (isSet, x == hiStep, y, selectedTrack));
             }
         }

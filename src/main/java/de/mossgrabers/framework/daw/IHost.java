@@ -65,6 +65,14 @@ public interface IHost
 
 
     /**
+     * Check if devices have addition slot chains.
+     *
+     * @return True if supported
+     */
+    boolean hasSlotChains ();
+
+
+    /**
      * Returns true if the DAW supports editing a specific property.
      *
      * @param capability The capability to check

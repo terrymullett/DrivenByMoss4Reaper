@@ -49,6 +49,9 @@ public abstract class AbstractSequencerView<S extends IControlSurface<C>, C exte
     /** The color for selected transposition. */
     public static final String    COLOR_TRANSPOSE_SELECTED     = "COLOR_TRANSPOSE_SELECTED";
 
+    // TODO Make this configurable
+    protected static int          defaultMidiChannel           = 0;
+
     protected int                 numSequencerRows;
     protected int                 selectedResolutionIndex;
     protected final Configuration configuration;

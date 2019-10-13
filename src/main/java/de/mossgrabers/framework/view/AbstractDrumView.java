@@ -124,7 +124,7 @@ public abstract class AbstractDrumView<S extends IControlSurface<C>, C extends C
             if (this.isActive () && velocity != 0)
             {
                 final int col = GRID_COLUMNS * (this.allLines - 1 - y) + x;
-                clip.toggleStep (col, offsetY + this.selectedPad, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity);
+                clip.toggleStep (defaultMidiChannel, col, offsetY + this.selectedPad, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity);
             }
             return;
         }
@@ -444,7 +444,7 @@ public abstract class AbstractDrumView<S extends IControlSurface<C>, C extends C
         final int hiStep = this.isInXRange (step) ? step % this.sequencerSteps : -1;
         for (int col = 0; col < this.sequencerSteps; col++)
         {
-            final int isSet = clip.getStep (col, this.scales.getDrumOffset () + this.selectedPad).getState ();
+            final int isSet = clip.getStep (defaultMidiChannel, col, this.scales.getDrumOffset () + this.selectedPad).getState ();
             final boolean hilite = col == hiStep;
             final int x = col % GRID_COLUMNS;
             final int y = col / GRID_COLUMNS;

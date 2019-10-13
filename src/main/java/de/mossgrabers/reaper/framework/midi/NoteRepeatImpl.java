@@ -27,6 +27,14 @@ public class NoteRepeatImpl implements INoteRepeat
 
     /** {@inheritDoc} */
     @Override
+    public void enableObservers (boolean enable)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public boolean isActive (final ITrack track)
     {
         return ((TrackImpl) track).isNoteRepeatActive ();
@@ -110,7 +118,7 @@ public class NoteRepeatImpl implements INoteRepeat
 
     /** {@inheritDoc} */
     @Override
-    public double getVelocityRamp (final ITrack track)
+    public int getOctaves (ITrack track)
     {
         // Not supported
         return 0;
@@ -119,16 +127,41 @@ public class NoteRepeatImpl implements INoteRepeat
 
     /** {@inheritDoc} */
     @Override
-    public String getVelocityRampStr (final ITrack track)
+    public void setOctaves (ITrack track, int octaves)
     {
         // Not supported
-        return null;
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void setVelocityRamp (final ITrack track, final double value)
+    public String getMode (ITrack track)
+    {
+        // Not supported
+        return "";
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setMode (ITrack track, String mode)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isFreeRunning (ITrack track)
+    {
+        // Not supported
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void toggleIsFreeRunning (ITrack track)
     {
         // Not supported
     }

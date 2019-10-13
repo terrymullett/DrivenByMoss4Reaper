@@ -18,8 +18,14 @@ public enum EditCapability
     NOTE_REPEAT_LENGTH,
     /** The API provides support for editing note repeat swing factor. */
     NOTE_REPEAT_SWING,
-    /** The API provides support for editing note repeat velocity ramp. */
-    NOTE_REPEAT_VELOCITY_RAMP,
+    /** The API provides support for editing note repeat arpeggiator mode. */
+    NOTE_REPEAT_MODE,
+    /** The API provides support for editing note repeat arpeggiator octaves range. */
+    NOTE_REPEAT_OCTAVES,
+    /** The API provides support for editing note repeat arpeggiator free running. */
+    NOTE_REPEAT_IS_FREE_RUNNING,
+    /** The API provides support for editing note repeat use pressure. */
+    NOTE_REPEAT_USE_PRESSURE_TO_VELOCITY,
 
     /** The API provides support for editing note release velocity. */
     NOTE_EDIT_RELEASE_VELOCITY,
@@ -31,6 +37,8 @@ public enum EditCapability
     NOTE_EDIT_PANORAMA,
     /** The API provides support for editing note transpose. */
     NOTE_EDIT_TRANSPOSE,
+    /** The API provides support for editing note gain. */
+    NOTE_EDIT_GAIN,
 
     /** The API provides support quantizing the note lengths of MIDI input. */
     QUANTIZE_INPUT_NOTE_LENGTH,

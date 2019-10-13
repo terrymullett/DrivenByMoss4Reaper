@@ -355,7 +355,7 @@ public class PlayView extends AbstractSequencerView<SLControlSurface, SLConfigur
         final int offsetY = this.scales.getDrumOffset ();
         for (int col = 0; col < PlayView.NUM_DISPLAY_COLS; col++)
         {
-            final int isSet = clip.getStep (col, offsetY + this.selectedPad).getState ();
+            final int isSet = clip.getStep (defaultMidiChannel, col, offsetY + this.selectedPad).getState ();
             final boolean hilite = col == hiStep;
             final int x = col % 8;
             final double y = col / 8.0;
@@ -404,7 +404,7 @@ public class PlayView extends AbstractSequencerView<SLControlSurface, SLConfigur
         else
         {
             if (velocity != 0)
-                this.getClip ().toggleStep (index < 8 ? index + 8 : index - 8, offsetY + this.selectedPad, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity);
+                this.getClip ().toggleStep (defaultMidiChannel, index < 8 ? index + 8 : index - 8, offsetY + this.selectedPad, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity);
         }
     }
 

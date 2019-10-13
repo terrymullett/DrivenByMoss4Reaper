@@ -158,7 +158,7 @@ public class PolySequencerView extends AbstractSequencerView<PushControlSurface,
         {
             for (int row = 0; row < 128; row++)
             {
-                if (clip.getStep (col, row).getState () > 0)
+                if (clip.getStep (defaultMidiChannel, col, row).getState () > 0)
                     clip.clearStep (col, row);
             }
         }
@@ -170,7 +170,7 @@ public class PolySequencerView extends AbstractSequencerView<PushControlSurface,
                 if (this.noteMemory.containsKey (k))
                 {
                     final Integer vel = this.noteMemory.get (k);
-                    clip.toggleStep (col, row, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : vel.intValue ());
+                    clip.toggleStep (defaultMidiChannel, col, row, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : vel.intValue ());
                 }
             }
         }
@@ -267,7 +267,7 @@ public class PolySequencerView extends AbstractSequencerView<PushControlSurface,
         int result = IStepInfo.NOTE_OFF;
         for (int row = 0; row < 128; row++)
         {
-            result = clip.getStep (col, row).getState ();
+            result = clip.getStep (defaultMidiChannel, col, row).getState ();
             if (result == IStepInfo.NOTE_START)
                 return result;
             if (result == IStepInfo.NOTE_CONTINUE)

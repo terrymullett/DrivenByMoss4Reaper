@@ -28,6 +28,9 @@ public class MidiClipComponent implements IComponent
     private final INoteClip      clip;
     private int                  quartersPerMeasure;
 
+    // TODO Make configurable
+    private int                  defaultMidiChannel;
+
 
     /**
      * Constructor.
@@ -138,7 +141,7 @@ public class MidiClipComponent implements IComponent
                 final int note = lowerRowWithData + row;
 
                 // Get step, check for length
-                final int stepState = this.clip.getStep (step, note).getState ();
+                final int stepState = this.clip.getStep (this.defaultMidiChannel, step, note).getState ();
                 if (stepState == 0)
                     continue;
 

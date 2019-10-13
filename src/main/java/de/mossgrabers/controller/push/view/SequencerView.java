@@ -113,13 +113,13 @@ public class SequencerView extends AbstractNoteSequencerView<PushControlSurface,
         final int x = index % 8;
         final INoteClip cursorClip = this.getClip ();
         final int mappedNote = this.keyManager.map (y);
-        final int state = cursorClip.getStep (x, mappedNote).getState ();
+        final int state = cursorClip.getStep (defaultMidiChannel, x, mappedNote).getState ();
         if (state != IStepInfo.NOTE_START)
             return;
 
         final ModeManager modeManager = this.surface.getModeManager ();
         final NoteMode noteMode = (NoteMode) modeManager.getMode (Modes.NOTE);
-        noteMode.setValues (cursorClip, x, mappedNote);
+        noteMode.setValues (cursorClip, defaultMidiChannel, x, mappedNote);
         modeManager.setActiveMode (Modes.NOTE);
     }
 
@@ -139,7 +139,7 @@ public class SequencerView extends AbstractNoteSequencerView<PushControlSurface,
         {
             // Toggle the note on up, so we can intercept the long presses
             if (velocity == 0)
-                this.getClip ().toggleStep (x, this.keyManager.map (y), this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : this.surface.getGridNoteVelocity (note));
+                this.getClip ().toggleStep (defaultMidiChannel, x, this.keyManager.map (y), this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : this.surface.getGridNoteVelocity (note));
             return;
         }
 

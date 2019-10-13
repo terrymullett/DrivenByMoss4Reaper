@@ -101,6 +101,15 @@ public class StepInfoImpl implements IStepInfo
 
     /** {@inheritDoc} */
     @Override
+    public double getGain ()
+    {
+        // Not supported
+        return 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public boolean isEditing ()
     {
         return this.isEditing;

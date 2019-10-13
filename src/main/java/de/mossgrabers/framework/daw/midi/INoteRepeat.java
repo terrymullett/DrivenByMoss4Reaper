@@ -5,6 +5,7 @@
 package de.mossgrabers.framework.daw.midi;
 
 import de.mossgrabers.framework.daw.data.ITrack;
+import de.mossgrabers.framework.observer.ObserverManagement;
 
 
 /**
@@ -12,7 +13,7 @@ import de.mossgrabers.framework.daw.data.ITrack;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public interface INoteRepeat
+public interface INoteRepeat extends ObserverManagement
 {
     /**
      * Toggle if note repeat is active.
@@ -102,28 +103,54 @@ public interface INoteRepeat
 
 
     /**
-     * Will accumulate for each new notes.
+     * Get the arpeggiator octaves.
      *
      * @param track The track
-     * @return The value is between -1 and 1
+     * @return The octaves (0-8)
      */
-    double getVelocityRamp (ITrack track);
+    int getOctaves (ITrack track);
 
 
     /**
-     * Get the velocity ramp value as a formatted string.
+     * Set the arpeggiator octaves.
      *
      * @param track The track
-     * @return The formatted value
+     * @param octaves The octaves (0-8)
      */
-    String getVelocityRampStr (ITrack track);
+    void setOctaves (ITrack track, int octaves);
 
 
     /**
-     * Will accumulate for each new notes.
+     * Get the arpeggiator mode.
      *
      * @param track The track
-     * @param value The value is between -1 and 1
+     * @return The mode
      */
-    void setVelocityRamp (ITrack track, double value);
+    String getMode (ITrack track);
+
+
+    /**
+     * Set the arpeggiator mode.
+     *
+     * @param track The track
+     * @param mode The mode
+     */
+    void setMode (ITrack track, String mode);
+
+
+    /**
+     * Is the note repeat arpeggiator free running?
+     *
+     * @param track The track
+     * @return True if free running
+     */
+    boolean isFreeRunning (ITrack track);
+
+
+    /**
+     * Toggle the free running state.
+     *
+     * @param track The track
+     */
+    void toggleIsFreeRunning (ITrack track);
 }

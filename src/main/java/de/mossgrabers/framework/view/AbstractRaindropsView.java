@@ -100,7 +100,7 @@ public abstract class AbstractRaindropsView<S extends IControlSurface<C>, C exte
             if (offset < 0)
                 return;
             for (int i = offset; i < length; i += stepSize)
-                clip.setStep (i, this.keyManager.map (x), this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity, Resolution.getValueAt (this.selectedResolutionIndex));
+                clip.setStep (defaultMidiChannel, i, this.keyManager.map (x), this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity, Resolution.getValueAt (this.selectedResolutionIndex));
         }
     }
 
@@ -204,14 +204,14 @@ public abstract class AbstractRaindropsView<S extends IControlSurface<C>, C exte
         final INoteClip clip = this.getClip ();
         for (step = 0; step < length; step++)
         {
-            if (clip.getStep (step, row).getState () > 0)
+            if (clip.getStep (defaultMidiChannel, step, row).getState () > 0)
                 break;
         }
         if (step >= length)
             return -1;
         for (int step2 = step + 1; step2 < length; step2++)
         {
-            if (clip.getStep (step2, row).getState () > 0)
+            if (clip.getStep (defaultMidiChannel, step2, row).getState () > 0)
                 return step2 - step;
         }
         return -1;
@@ -227,7 +227,7 @@ public abstract class AbstractRaindropsView<S extends IControlSurface<C>, C exte
         final INoteClip clip = this.getClip ();
         do
         {
-            if (clip.getStep (step, row).getState () > 0)
+            if (clip.getStep (defaultMidiChannel, step, row).getState () > 0)
                 return counter;
             step++;
             counter++;
@@ -248,7 +248,7 @@ public abstract class AbstractRaindropsView<S extends IControlSurface<C>, C exte
         final INoteClip clip = this.getClip ();
         do
         {
-            if (clip.getStep (step, row).getState () > 0)
+            if (clip.getStep (defaultMidiChannel, step, row).getState () > 0)
                 return counter;
             step--;
             counter++;
