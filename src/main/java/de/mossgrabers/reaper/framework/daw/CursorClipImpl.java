@@ -633,7 +633,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         int min = -1;
         for (int channel = 0; channel < 16; channel++)
         {
-            final int lower = this.getLowerRowWithData ();
+            final int lower = this.getLowerRowWithData (channel);
             if (lower >= 0 && lower < min)
                 min = lower;
         }
@@ -648,7 +648,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         int max = -1;
         for (int channel = 0; channel < 16; channel++)
         {
-            final int upper = this.getUpperRowWithData ();
+            final int upper = this.getUpperRowWithData (channel);
             if (upper >= 0 && upper > max)
                 max = upper;
         }

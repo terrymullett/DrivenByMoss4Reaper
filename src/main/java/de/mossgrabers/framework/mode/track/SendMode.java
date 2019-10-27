@@ -5,6 +5,7 @@
 package de.mossgrabers.framework.mode.track;
 
 import de.mossgrabers.framework.configuration.Configuration;
+import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ISend;
@@ -60,11 +61,19 @@ public class SendMode<S extends IControlSurface<C>, C extends Configuration> ext
     @Override
     public void onKnobTouch (final int index, final boolean isTouched)
     {
-        if (!isTouched)
-            return;
         final ITrack track = this.model.getCurrentTrackBank ().getItem (index);
-        if (track != null)
-            track.getSendBank ().getItem (this.sendIndex).resetValue ();
+        if (track == null)
+            return;
+        final ISend item = track.getSendBank ().getItem (this.sendIndex);
+        if (!item.doesExist ())
+            return;
+
+        if (isTouched && this.surface.isDeletePressed ())
+        {
+            this.surface.setTriggerConsumed (this.surface.getTriggerId (ButtonID.DELETE));
+            item.resetValue ();
+        }
+        item.touchValue (isTouched);
     }
 
 

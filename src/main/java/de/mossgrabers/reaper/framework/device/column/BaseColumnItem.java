@@ -16,6 +16,10 @@ import de.mossgrabers.reaper.framework.daw.data.ItemImpl;
  */
 public abstract class BaseColumnItem extends ItemImpl implements IBrowserColumnItem
 {
+    protected String name = "";
+    protected int    hits = 0;
+
+
     /**
      * Constructor.
      *
@@ -48,5 +52,21 @@ public abstract class BaseColumnItem extends ItemImpl implements IBrowserColumnI
     public String getName (final int limit)
     {
         return StringUtils.optimizeName (this.getName (), limit);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public String getName ()
+    {
+        return this.name;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public int getHitCount ()
+    {
+        return this.hits;
     }
 }

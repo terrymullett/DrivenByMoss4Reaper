@@ -1,3 +1,19 @@
+8.30
+- New: Speed up browsing filter columns
+- Fixed: Last item in a browser filter column could not be selected.
+- Support for Novation Launchkey Mini Mk3
+- Launchpad MkII
+  * Fixed: The Play and New functions in Shift mode were switched.
+  * Fixed: Sequencers were not available
+* MCU
+  * Fixed: Do not set pan mode on fader touch release when volume mode was active before.
+- OSC
+  * Fixed: OSC did crash on startup
+  * Fixed: Calls to /track/x/clip did not work
+
+8.21
+- Fixed: Endless recursion when accessing clips
+
 8.20
 - New: Improved auto-detect of some devices. Added CoreMidi4J prefix support on Macos.
 - Ableton Push

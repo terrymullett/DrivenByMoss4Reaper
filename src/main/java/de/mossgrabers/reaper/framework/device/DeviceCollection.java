@@ -4,12 +4,13 @@
 
 package de.mossgrabers.reaper.framework.device;
 
+import de.mossgrabers.framework.utils.Pair;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 
@@ -20,12 +21,14 @@ import java.util.Set;
  */
 public class DeviceCollection
 {
-    private static final int           TYPE_JS    = 2;
-    private static final int           TYPE_VST   = 3;
-    private static final int           TYPE_QUERY = 1048576;
+    private static final int                                  TYPE_JS    = 2;
+    private static final int                                  TYPE_VST   = 3;
+    private static final int                                  TYPE_QUERY = 1048576;
 
-    private final String               name;
-    private final Map<String, Integer> items      = new HashMap<> ();
+    private final String                                      name;
+    private final Set<String>                                 jsItems    = new HashSet<> ();
+    private final Set<String>                                 vstItems   = new HashSet<> ();
+    private final Map<String, Pair<Set<String>, Set<String>>> queryItems = new HashMap<> ();
 
 
     /**
@@ -47,7 +50,39 @@ public class DeviceCollection
      */
     public void addItem (final String item, final int type)
     {
-        this.items.put (item, Integer.valueOf (type));
+        switch (type)
+        {
+            case TYPE_JS:
+                this.jsItems.add (item);
+                break;
+
+            case TYPE_VST:
+                final String [] split = item.split ("[\\\\/]");
+                if (split == null || split.length == 0)
+                    return;
+                final String filename = split[split.length - 1].replace (' ', '_').replace ('(', '_').replace (')', '_');
+                this.vstItems.add (filename.toLowerCase ());
+                break;
+
+            case TYPE_QUERY:
+                // Parse the query
+                final Set<String> mustMatch = new HashSet<> ();
+                final Set<String> mustNotMatch = new HashSet<> ();
+
+                for (final String part: item.split (" OR "))
+                {
+                    final String [] notParts = part.split (" NOT ");
+                    mustMatch.add (notParts[0].toLowerCase ());
+                    for (int i = 1; i < notParts.length; i++)
+                        mustNotMatch.add (notParts[i].toLowerCase ());
+                }
+                this.queryItems.put (item, new Pair<> (mustMatch, mustNotMatch));
+                break;
+
+            default:
+                // Unsupported folder type
+                break;
+        }
     }
 
 
@@ -83,64 +118,47 @@ public class DeviceCollection
     /**
      * Test if the device matches this folder.
      *
-     * @param d The device to test
+     * @param device The device to test
      * @return True if matches
      */
-    private boolean testDevice (final Device d)
+    private boolean testDevice (final Device device)
     {
-        for (final Entry<String, Integer> e: this.items.entrySet ())
+        final boolean isJS = device.getFileType ().equals (DeviceFileType.JS);
+        final String module = device.getModule ();
+
+        if (isJS)
         {
-            final boolean isJS = d.getFileType ().equals (DeviceFileType.JS);
-            final String key = e.getKey ();
-            switch (e.getValue ().intValue ())
-            {
-                case TYPE_JS:
-                    if (isJS && key.equals (d.getModule ()))
-                        return true;
-                    break;
-
-                case TYPE_VST:
-                    if (!isJS && compareModules (key, d.getModule ()))
-                        return true;
-                    break;
-
-                case TYPE_QUERY:
-                    if (compareQuery (key, d))
-                        return true;
-                    break;
-
-                default:
-                    // Unsupported folder type
-                    break;
-            }
+            if (this.jsItems.contains (module))
+                return true;
         }
+        else
+        {
+            if (this.vstItems.contains (module))
+                return true;
+        }
+
+        for (final Pair<Set<String>, Set<String>> query: this.queryItems.values ())
+        {
+            if (compareQuery (query.getKey (), query.getValue (), device))
+                return true;
+        }
+
         return false;
     }
 
 
     /**
      * Parses the filter query and tests it against the given device.
-     *
-     * @param query The query to parse
-     * @param d The device to test
+     * 
+     * @param mustMatch The terms to match
+     * @param mustNotMatch The terms to not match
+     * @param device The device to test
      * @return True if matches
      */
-    private static boolean compareQuery (final String query, final Device d)
+    private static boolean compareQuery (final Set<String> mustMatch, final Set<String> mustNotMatch, final Device device)
     {
-        // Parse the query
-        final Set<String> mustMatch = new HashSet<> ();
-        final Set<String> mustNotMatch = new HashSet<> ();
-
-        for (final String part: query.split (" OR "))
-        {
-            final String [] notParts = part.split (" NOT ");
-            mustMatch.add (notParts[0].toLowerCase ());
-            for (int i = 1; i < notParts.length; i++)
-                mustNotMatch.add (notParts[i].toLowerCase ());
-        }
-
         // Compare all texts at once
-        final String text = (d.getName () + " " + d.getVendor () + " " + d.getFileType ()).toLowerCase ();
+        final String text = (device.getName () + " " + device.getVendor () + " " + device.getFileType ()).toLowerCase ();
 
         boolean success = mustMatch.isEmpty ();
         for (final String match: mustMatch)
@@ -160,22 +178,5 @@ public class DeviceCollection
                 return false;
         }
         return true;
-    }
-
-
-    /**
-     * Compares if the given path points to the module.
-     *
-     * @param modulePath The path
-     * @param module The module to test
-     * @return True if matches
-     */
-    private static boolean compareModules (final String modulePath, final String module)
-    {
-        final String [] split = modulePath.split ("[\\\\/]");
-        if (split == null || split.length == 0)
-            return false;
-        final String filename = split[split.length - 1].replace (' ', '_').replace ('(', '_').replace (')', '_');
-        return filename.equals (module);
     }
 }

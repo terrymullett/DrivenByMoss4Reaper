@@ -48,16 +48,9 @@ public class DeviceCollectionFilterColumn extends BaseColumn
         public DeviceFolderBrowserColumnItem (final int index)
         {
             super (index - 1);
-        }
 
-
-        /** {@inheritDoc} */
-        @Override
-        public String getName ()
-        {
-            if (this.index < 0)
-                return WILDCARD;
-            return this.index < DeviceCollectionFilterColumn.this.getMaxNumItems () ? DeviceManager.get ().getCollections ().get (this.index).getName () : "";
+            this.name = this.getCachedName ();
+            this.hits = this.getCachedHitCount ();
         }
 
 
@@ -69,9 +62,15 @@ public class DeviceCollectionFilterColumn extends BaseColumn
         }
 
 
-        /** {@inheritDoc} */
-        @Override
-        public int getHitCount ()
+        private String getCachedName ()
+        {
+            if (this.index < 0)
+                return WILDCARD;
+            return this.index < DeviceCollectionFilterColumn.this.getMaxNumItems () ? DeviceManager.get ().getCollections ().get (this.index).getName () : "";
+        }
+
+
+        private int getCachedHitCount ()
         {
             final DeviceManager deviceManager = DeviceManager.get ();
             if (this.index < 0)

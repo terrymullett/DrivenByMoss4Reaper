@@ -714,6 +714,7 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
         final boolean isVolume = Modes.VOLUME == this.currentMode;
         final boolean isPan = Modes.PAN == this.currentMode;
         final boolean isDevice = Modes.isDeviceMode (this.currentMode) || Modes.isLayerMode (this.currentMode);
+        final boolean isUserMode = Modes.USER == this.currentMode;
 
         tb.setIndication (!isEffect && isSession);
         if (tbe != null)
@@ -741,6 +742,13 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
             }
 
             parameterBank.getItem (i).setIndication (isDevice);
+        }
+
+        if (this.host.hasUserParameters ())
+        {
+            final IParameterBank userParameterBank = this.model.getUserParameterBank ();
+            for (int i = 0; i < userParameterBank.getPageSize (); i++)
+                userParameterBank.getItem (i).setIndication (isUserMode);
         }
     }
 

@@ -18,6 +18,7 @@ import de.mossgrabers.framework.daw.data.IScene;
 import de.mossgrabers.framework.daw.data.ISlot;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.utils.ButtonEvent;
+import de.mossgrabers.framework.utils.Pair;
 
 
 /**
@@ -103,20 +104,9 @@ public abstract class AbstractSessionView<S extends IControlSurface<C>, C extend
         if (velocity == 0)
             return;
 
-        final int index = note - 36;
-        int t = index % this.columns;
-        int s = this.rows - 1 - index / this.columns;
-
-        final C configuration = this.surface.getConfiguration ();
-        if (configuration.isFlipSession ())
-        {
-            final int dummy = t;
-            t = s;
-            s = dummy;
-        }
-
-        final ITrack track = this.model.getCurrentTrackBank ().getItem (t);
-        final ISlot slot = track.getSlotBank ().getItem (s);
+        final Pair<Integer, Integer> padPos = this.getPad (note);
+        final ITrack track = this.model.getCurrentTrackBank ().getItem (padPos.getKey ().intValue ());
+        final ISlot slot = track.getSlotBank ().getItem (padPos.getValue ().intValue ());
 
         // Delete selected clip
         if (this.surface.isDeletePressed ())
@@ -147,6 +137,7 @@ public abstract class AbstractSessionView<S extends IControlSurface<C>, C extend
             return;
         }
 
+        final C configuration = this.surface.getConfiguration ();
         switch (configuration.getActionForRecArmedPad ())
         {
             case 0:
@@ -154,7 +145,7 @@ public abstract class AbstractSessionView<S extends IControlSurface<C>, C extend
                 break;
 
             case 1:
-                final int lengthInBeats = this.surface.getConfiguration ().getNewClipLenghthInBeats (this.model.getTransport ().getQuartersPerMeasure ());
+                final int lengthInBeats = configuration.getNewClipLenghthInBeats (this.model.getTransport ().getQuartersPerMeasure ());
                 this.model.createNoteClip (track, slot, lengthInBeats, true);
                 break;
 
@@ -355,5 +346,15 @@ public abstract class AbstractSessionView<S extends IControlSurface<C>, C extend
         }
 
         return isArmed && this.surface.getConfiguration ().isDrawRecordStripe () ? this.clipColorIsRecArmed : this.clipColorHasNoContent;
+    }
+
+
+    protected Pair<Integer, Integer> getPad (final int note)
+    {
+        final int index = note - 36;
+        int t = index % this.columns;
+        int s = this.rows - 1 - index / this.columns;
+        final C configuration = this.surface.getConfiguration ();
+        return configuration.isFlipSession () ? new Pair<> (Integer.valueOf (s), Integer.valueOf (t)) : new Pair<> (Integer.valueOf (t), Integer.valueOf (s));
     }
 }

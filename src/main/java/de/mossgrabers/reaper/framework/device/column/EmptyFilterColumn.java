@@ -61,25 +61,9 @@ public class EmptyFilterColumn extends BaseColumn
 
         /** {@inheritDoc} */
         @Override
-        public String getName ()
-        {
-            return "";
-        }
-
-
-        /** {@inheritDoc} */
-        @Override
         public boolean isSelected ()
         {
             return false;
-        }
-
-
-        /** {@inheritDoc} */
-        @Override
-        public int getHitCount ()
-        {
-            return 0;
         }
     }
 }
