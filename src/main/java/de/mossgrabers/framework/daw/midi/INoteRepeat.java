@@ -29,6 +29,14 @@ public interface INoteRepeat extends ObserverManagement
 
 
     /**
+     * Set de-/active.
+     *
+     * @param active True to activate
+     */
+    void setActive (boolean active);
+
+
+    /**
      * Set the note repeat period.
      * 
      * @param period The period
@@ -113,7 +121,15 @@ public interface INoteRepeat extends ObserverManagement
      *
      * @return The mode
      */
-    String getMode ();
+    ArpeggiatorMode getMode ();
+
+
+    /**
+     * Get the available arpeggiator modes.
+     *
+     * @return The modes
+     */
+    ArpeggiatorMode [] getModes ();
 
 
     /**
@@ -122,6 +138,14 @@ public interface INoteRepeat extends ObserverManagement
      * @param mode The mode
      */
     void setMode (String mode);
+
+
+    /**
+     * Change the arpeggiator mode.
+     * 
+     * @param increase True to increase otherwise descrease
+     */
+    void changeMode (boolean increase);
 
 
     /**

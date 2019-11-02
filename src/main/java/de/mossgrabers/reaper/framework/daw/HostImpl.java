@@ -135,9 +135,11 @@ public class HostImpl implements IHost
                 return true;
 
             case NOTE_REPEAT_LENGTH:
-            case NOTE_REPEAT_SWING:
             case NOTE_REPEAT_USE_PRESSURE_TO_VELOCITY:
             case NOTE_REPEAT_MODE:
+                return true;
+
+            case NOTE_REPEAT_SWING:
             case NOTE_REPEAT_OCTAVES:
             case NOTE_REPEAT_IS_FREE_RUNNING:
                 return false;

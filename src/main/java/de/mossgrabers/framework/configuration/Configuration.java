@@ -5,6 +5,7 @@
 package de.mossgrabers.framework.configuration;
 
 import de.mossgrabers.framework.configuration.AbstractConfiguration.BehaviourOnStop;
+import de.mossgrabers.framework.daw.constants.Resolution;
 import de.mossgrabers.framework.observer.SettingObserver;
 
 
@@ -292,4 +293,68 @@ public interface Configuration
      * @return The value in the range of 1-100%
      */
     int getKnobSpeedSlow ();
+
+
+    /**
+     * Is note repeat active?
+     *
+     * @return True if active
+     */
+    boolean isNoteRepeatActive ();
+
+
+    /**
+     * Set note repeat de-/active.
+     *
+     * @param active True to set active
+     */
+    void setNoteRepeatActive (boolean active);
+
+
+    /**
+     * Get the note repeat period.
+     *
+     * @return The note repeat period
+     */
+    Resolution getNoteRepeatPeriod ();
+
+
+    /**
+     * Set the note repeat period.
+     *
+     * @param noteRepeatPeriod The note repeat period
+     */
+    void setNoteRepeatPeriod (Resolution noteRepeatPeriod);
+
+
+    /**
+     * Get the note repeat length.
+     *
+     * @return The note repeat length
+     */
+    Resolution getNoteRepeatLength ();
+
+
+    /**
+     * Set the note repeat length.
+     *
+     * @param noteRepeatLength The note repeat length
+     */
+    void setNoteRepeatLength (Resolution noteRepeatLength);
+
+
+    /**
+     * Get the MIDI channel for editing.
+     *
+     * @return The MIDI channel for editing notes
+     */
+    int getMidiEditChannel ();
+
+
+    /**
+     * Set the MIDI channel for editing.
+     *
+     * @param midiChannel The midi channel, 0-15
+     */
+    void setMidiEditChannel (int midiChannel);
 }

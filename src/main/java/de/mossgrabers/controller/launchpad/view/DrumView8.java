@@ -47,7 +47,8 @@ public class DrumView8 extends DrumViewBase
         final int sound = y + this.soundOffset;
         final int col = x;
 
-        this.getClip ().toggleStep (defaultMidiChannel, col, this.scales.getDrumOffset () + this.selectedPad + sound, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity);
+        final int editMidiChannel = this.surface.getConfiguration ().getMidiEditChannel ();
+        this.getClip ().toggleStep (editMidiChannel, col, this.scales.getDrumOffset () + this.selectedPad + sound, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity);
     }
 
 
@@ -69,11 +70,12 @@ public class DrumView8 extends DrumViewBase
         // Paint the sequencer steps
         final int hiStep = this.isInXRange (step) ? step % DrumView8.NUM_DISPLAY_COLS : -1;
         final int offsetY = this.scales.getDrumOffset ();
+        final int editMidiChannel = this.surface.getConfiguration ().getMidiEditChannel ();
         for (int sound = 0; sound < 8; sound++)
         {
             for (int col = 0; col < DrumView8.NUM_DISPLAY_COLS; col++)
             {
-                final int isSet = clip.getStep (defaultMidiChannel, col, offsetY + this.selectedPad + sound + this.soundOffset).getState ();
+                final int isSet = clip.getStep (editMidiChannel, col, offsetY + this.selectedPad + sound + this.soundOffset).getState ();
                 final boolean hilite = col == hiStep;
                 final int x = col % 8;
                 int y = col / 8;

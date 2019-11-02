@@ -80,10 +80,11 @@ public interface INoteClip extends IClip
     /**
      * Clear a note at a step.
      *
+     * @param channel The MIDI channel
      * @param step The step
      * @param row The note row
      */
-    void clearStep (final int step, final int row);
+    void clearStep (int channel, int step, int row);
 
 
     /**
@@ -277,9 +278,10 @@ public interface INoteClip extends IClip
     /**
      * Clear a row (note).
      *
+     * @param channel The MIDI channel
      * @param row The row to clear
      */
-    void clearRow (int row);
+    void clearRow (int channel, int row);
 
 
     /**

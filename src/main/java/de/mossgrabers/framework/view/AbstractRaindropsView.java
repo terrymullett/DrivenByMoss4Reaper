@@ -93,14 +93,15 @@ public abstract class AbstractRaindropsView<S extends IControlSurface<C>, C exte
         final INoteClip clip = this.getClip ();
         final int length = (int) Math.floor (clip.getLoopLength () / Resolution.getValueAt (this.selectedResolutionIndex));
         final int distance = this.getNoteDistance (this.keyManager.map (x), length);
-        clip.clearRow (this.keyManager.map (x));
+        final int editMidiChannel = this.surface.getConfiguration ().getMidiEditChannel ();
+        clip.clearRow (editMidiChannel, this.keyManager.map (x));
         if (distance == -1 || distance != (y == 0 ? 1 : y * 2))
         {
             final int offset = clip.getCurrentStep () % stepSize;
             if (offset < 0)
                 return;
             for (int i = offset; i < length; i += stepSize)
-                clip.setStep (defaultMidiChannel, i, this.keyManager.map (x), this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity, Resolution.getValueAt (this.selectedResolutionIndex));
+                clip.setStep (editMidiChannel, i, this.keyManager.map (x), this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity, Resolution.getValueAt (this.selectedResolutionIndex));
         }
     }
 
@@ -202,16 +203,17 @@ public abstract class AbstractRaindropsView<S extends IControlSurface<C>, C exte
     {
         int step;
         final INoteClip clip = this.getClip ();
+        final int editMidiChannel = this.surface.getConfiguration ().getMidiEditChannel ();
         for (step = 0; step < length; step++)
         {
-            if (clip.getStep (defaultMidiChannel, step, row).getState () > 0)
+            if (clip.getStep (editMidiChannel, step, row).getState () > 0)
                 break;
         }
         if (step >= length)
             return -1;
         for (int step2 = step + 1; step2 < length; step2++)
         {
-            if (clip.getStep (defaultMidiChannel, step2, row).getState () > 0)
+            if (clip.getStep (editMidiChannel, step2, row).getState () > 0)
                 return step2 - step;
         }
         return -1;
@@ -225,9 +227,10 @@ public abstract class AbstractRaindropsView<S extends IControlSurface<C>, C exte
         int step = start;
         int counter = 0;
         final INoteClip clip = this.getClip ();
+        final int editMidiChannel = this.surface.getConfiguration ().getMidiEditChannel ();
         do
         {
-            if (clip.getStep (defaultMidiChannel, step, row).getState () > 0)
+            if (clip.getStep (editMidiChannel, step, row).getState () > 0)
                 return counter;
             step++;
             counter++;
@@ -246,9 +249,10 @@ public abstract class AbstractRaindropsView<S extends IControlSurface<C>, C exte
         int step = s;
         int counter = 0;
         final INoteClip clip = this.getClip ();
+        final int editMidiChannel = this.surface.getConfiguration ().getMidiEditChannel ();
         do
         {
-            if (clip.getStep (defaultMidiChannel, step, row).getState () > 0)
+            if (clip.getStep (editMidiChannel, step, row).getState () > 0)
                 return counter;
             step--;
             counter++;

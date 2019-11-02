@@ -131,7 +131,8 @@ public class PlayView extends AbstractPlayView<PushControlSurface, PushConfigura
         if (this.surface.isDeletePressed ())
         {
             this.surface.setTriggerConsumed (this.surface.getTriggerId (ButtonID.DELETE));
-            this.model.getNoteClip (8, 128).clearRow (this.keyManager.map (note));
+            final int editMidiChannel = this.surface.getConfiguration ().getMidiEditChannel ();
+            this.model.getNoteClip (8, 128).clearRow (editMidiChannel, this.keyManager.map (note));
             return;
         }
         super.onGridNote (note, velocity);

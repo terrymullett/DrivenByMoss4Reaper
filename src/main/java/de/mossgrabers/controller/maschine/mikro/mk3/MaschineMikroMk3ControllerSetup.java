@@ -43,6 +43,7 @@ import de.mossgrabers.framework.command.trigger.transport.ToggleLoopCommand;
 import de.mossgrabers.framework.command.trigger.transport.WriteArrangerAutomationCommand;
 import de.mossgrabers.framework.command.trigger.transport.WriteClipLauncherAutomationCommand;
 import de.mossgrabers.framework.command.trigger.view.ViewMultiSelectCommand;
+import de.mossgrabers.framework.configuration.AbstractConfiguration;
 import de.mossgrabers.framework.configuration.ISettingsUI;
 import de.mossgrabers.framework.controller.AbstractControllerSetup;
 import de.mossgrabers.framework.controller.DefaultValueChanger;
@@ -59,6 +60,7 @@ import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.midi.IMidiAccess;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.daw.midi.IMidiOutput;
+import de.mossgrabers.framework.daw.midi.INoteRepeat;
 import de.mossgrabers.framework.mode.ModeManager;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.mode.device.SelectedDeviceMode;
@@ -157,6 +159,12 @@ public class MaschineMikroMk3ControllerSetup extends AbstractControllerSetup<Mas
 
         surface.getViewManager ().addViewChangeListener ( (previousViewId, activeViewId) -> this.updateMode (null));
         surface.getModeManager ().addModeListener ( (previousModeId, activeModeId) -> this.updateMode (activeModeId));
+
+        final INoteRepeat noteRepeat = this.getSurface ().getInput ().getDefaultNoteInput ().getNoteRepeat ();
+
+        this.configuration.addSettingObserver (AbstractConfiguration.NOTEREPEAT_ACTIVE, () -> noteRepeat.setActive (this.configuration.isNoteRepeatActive ()));
+        this.configuration.addSettingObserver (AbstractConfiguration.NOTEREPEAT_PERIOD, () -> noteRepeat.setPeriod (this.configuration.getNoteRepeatPeriod ().getValue ()));
+        this.configuration.addSettingObserver (AbstractConfiguration.NOTEREPEAT_LENGTH, () -> noteRepeat.setNoteLength (this.configuration.getNoteRepeatLength ().getValue ()));
 
         this.createScaleObservers (this.configuration);
     }

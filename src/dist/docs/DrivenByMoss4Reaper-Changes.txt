@@ -1,3 +1,19 @@
+8.31 (unreleased)
+- Do not display note feedback from muted media items
+- Switched to "MIDI Arpeggiator" instead of "MIDI Note Repeater" for Note Repeat.
+  This requires a fix on the MIDI Arpeggiator JS plugin to make the note length work:
+  Increase the note length step resolution from 0.1 to 0.001 like this:
+    slider2:1<0.01,1,0.001>Note Length
+- Launchpad
+  * New: Shift mode: Enable note repeat and set the note repeat period and length with the pads in the middle
+- Maschine Mikro Mk3
+  * New: Added note repeat settings
+- OSC
+  * New: Added commands for note repeat
+- Push 1/2
+  * New: Added note repeat, long press Repeat button for configuration settings
+  * New: The note insert/edit MIDI channel can be selected in the Track Details mode and in the document settings
+
 8.30
 - New: Speed up browsing filter columns
 - Fixed: Last item in a browser filter column could not be selected.

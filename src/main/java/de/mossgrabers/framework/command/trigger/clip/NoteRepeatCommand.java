@@ -9,9 +9,8 @@ import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.configuration.Configuration;
 import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.daw.IModel;
-import de.mossgrabers.framework.daw.ITrackBank;
-import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.midi.INoteInput;
+import de.mossgrabers.framework.daw.midi.INoteRepeat;
 import de.mossgrabers.framework.mode.ModeManager;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.utils.ButtonEvent;
@@ -60,13 +59,12 @@ public class NoteRepeatCommand<S extends IControlSurface<C>, C extends Configura
             return;
         }
 
-        final ITrackBank tb = this.model.getCurrentTrackBank ();
-        final ITrack selectedTrack = tb.getSelectedItem ();
-        if (selectedTrack == null)
+        final INoteInput defaultNoteInput = this.surface.getInput ().getDefaultNoteInput ();
+        if (defaultNoteInput == null)
             return;
 
-        final INoteInput defaultNoteInput = this.surface.getInput ().getDefaultNoteInput ();
-        if (defaultNoteInput != null)
-            defaultNoteInput.getNoteRepeat ().toggleActive ();
+        final INoteRepeat noteRepeat = defaultNoteInput.getNoteRepeat ();
+        noteRepeat.toggleActive ();
+        this.model.getHost ().scheduleTask ( () -> this.surface.getConfiguration ().setNoteRepeatActive (noteRepeat.isActive ()), 300);
     }
 }

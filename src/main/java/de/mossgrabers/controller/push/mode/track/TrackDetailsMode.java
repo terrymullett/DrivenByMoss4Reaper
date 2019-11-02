@@ -4,16 +4,19 @@
 
 package de.mossgrabers.controller.push.mode.track;
 
+import de.mossgrabers.controller.push.PushConfiguration;
 import de.mossgrabers.controller.push.controller.PushColors;
 import de.mossgrabers.controller.push.controller.PushControlSurface;
 import de.mossgrabers.controller.push.mode.BaseMode;
 import de.mossgrabers.controller.push.view.ColorView;
+import de.mossgrabers.framework.controller.color.ColorManager;
 import de.mossgrabers.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.controller.display.ITextDisplay;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.data.IMasterTrack;
 import de.mossgrabers.framework.daw.data.ITrack;
+import de.mossgrabers.framework.mode.AbstractMode;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.view.ViewManager;
 import de.mossgrabers.framework.view.Views;
@@ -35,6 +38,21 @@ public class TrackDetailsMode extends BaseMode
     public TrackDetailsMode (final PushControlSurface surface, final IModel model)
     {
         super ("Track details", surface, model);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void onKnobValue (final int index, final int value)
+    {
+        if (index < 6)
+            return;
+
+        final PushConfiguration configuration = this.surface.getConfiguration ();
+
+        final int speed = (int) this.model.getValueChanger ().calcKnobSpeed (value, 1);
+        configuration.setMidiEditChannel (configuration.getMidiEditChannel () + speed);
+
     }
 
 
@@ -154,6 +172,43 @@ public class TrackDetailsMode extends BaseMode
 
     /** {@inheritDoc} */
     @Override
+    public void onSecondRow (final int index, final ButtonEvent event)
+    {
+        if (event != ButtonEvent.DOWN)
+            return;
+
+        final PushConfiguration configuration = this.surface.getConfiguration ();
+        switch (index)
+        {
+            case 6:
+                configuration.setMidiEditChannel (configuration.getMidiEditChannel () - 1);
+                break;
+
+            case 7:
+                configuration.setMidiEditChannel (configuration.getMidiEditChannel () + 1);
+                break;
+
+            default:
+                // Not used
+                break;
+        }
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void updateSecondRow ()
+    {
+        final ColorManager colorManager = this.model.getColorManager ();
+        for (int i = 0; i < 6; i++)
+            this.surface.updateTrigger (102 + i, colorManager.getColor (AbstractMode.BUTTON_COLOR_OFF));
+        this.surface.updateTrigger (108, colorManager.getColor (AbstractMode.BUTTON_COLOR_ON));
+        this.surface.updateTrigger (109, colorManager.getColor (AbstractMode.BUTTON_COLOR_ON));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void updateDisplay1 (final ITextDisplay display)
     {
         final ITrack track = this.getSelectedTrack ();
@@ -180,6 +235,9 @@ public class TrackDetailsMode extends BaseMode
         display.setCell (2, 6, hasPinning ? "Pin Trck" : "");
         display.setCell (3, 6, hasPinning ? this.model.isCursorTrackPinned () ? "On" : "Off" : "");
         display.setCell (2, 7, "Select").setCell (3, 7, "Color");
+
+        display.setCell (0, 5, "Midi Ins");
+        display.setBlock (0, 3, "/Edit Channel: " + (this.surface.getConfiguration ().getMidiEditChannel () + 1));
     }
 
 
@@ -199,10 +257,10 @@ public class TrackDetailsMode extends BaseMode
         display.addOptionElement ("", "", false, "", "Mute", track.isMute (), false);
         display.addOptionElement ("", "", false, "", "Solo", track.isSolo (), false);
         display.addOptionElement ("", "", false, "", "Monitor", track.isMonitor (), false);
-        display.addOptionElement ("", "", false, "", "Auto Monitor", track.isAutoMonitor (), false);
+        display.addOptionElement ("Midi Insert/Edit Channel:", "", false, "", "Auto Monitor", track.isAutoMonitor (), false);
         final boolean hasPinning = this.model.getHost ().hasPinning ();
         display.addOptionElement ("", "", false, "", hasPinning ? "Pin Track" : "", hasPinning && this.model.isCursorTrackPinned (), false);
-        display.addOptionElement ("", "", false, "", "Select Color", false, false);
+        display.addOptionElement ("        " + (this.surface.getConfiguration ().getMidiEditChannel () + 1), "", false, "", "Select Color", false, false);
     }
 
 

@@ -26,10 +26,11 @@ public class Note
      *
      * @param start The start of the note
      * @param end The end of the note
+     * @param channel The MIDI channel
      * @param pitch The pitch of the note
      * @param velocity The velocity of the note
      */
-    public Note (final double start, final double end, final int pitch, final int velocity)
+    public Note (final double start, final double end, final int channel, final int pitch, final int velocity)
     {
         this.start = start;
         this.end = end;
@@ -96,7 +97,7 @@ public class Note
             for (final String part: notesStr.trim ().split (";"))
             {
                 final String [] noteParts = part.split (":");
-                notes.add (new Note (Double.parseDouble (noteParts[0]), Double.parseDouble (noteParts[1]), Integer.parseInt (noteParts[2]), Integer.parseInt (noteParts[3])));
+                notes.add (new Note (Double.parseDouble (noteParts[0]), Double.parseDouble (noteParts[1]), Integer.parseInt (noteParts[2]), Integer.parseInt (noteParts[3]), Integer.parseInt (noteParts[4])));
             }
         }
         return notes;

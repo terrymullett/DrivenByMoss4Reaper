@@ -117,8 +117,7 @@ public class SequencerView extends BaseSequencerView
         else
         {
             if (velocity != 0)
-                this.getClip ().toggleStep (defaultMidiChannel, index < 8 ? index + 8 : index - 8,
-                        /* this.noteMap[] */ this.offsetY + this.selectedPad, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity);
+                this.getClip ().toggleStep (this.surface.getConfiguration ().getMidiEditChannel (), index < 8 ? index + 8 : index - 8, this.offsetY + this.selectedPad, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity);
         }
     }
 
@@ -155,9 +154,10 @@ public class SequencerView extends BaseSequencerView
             // Paint the sequencer steps
             final int step = clip.getCurrentStep ();
             final int hiStep = this.isInXRange (step) ? step % SequencerView.NUM_DISPLAY_COLS : -1;
+            final int editMidiChannel = this.surface.getConfiguration ().getMidiEditChannel ();
             for (int col = 0; col < SequencerView.NUM_DISPLAY_COLS; col++)
             {
-                final int isSet = clip.getStep (defaultMidiChannel, col, this.offsetY + this.selectedPad).getState ();
+                final int isSet = clip.getStep (editMidiChannel, col, this.offsetY + this.selectedPad).getState ();
                 padGrid.lightEx (col % 8, 1 - col / 8, getSequencerColor (isSet, col == hiStep));
             }
         }

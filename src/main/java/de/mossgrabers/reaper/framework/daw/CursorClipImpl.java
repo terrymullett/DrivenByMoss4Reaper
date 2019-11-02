@@ -375,7 +375,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void toggleStep (final int channel, final int step, final int row, final int velocity)
     {
         final double pos = (step + this.editPage * this.numSteps) * this.stepLength;
-        this.sendClipOSC (PATH_NOTE + row + "/toggle", pos + " " + this.stepLength + " " + velocity);
+        this.sendClipOSC (PATH_NOTE + row + "/toggle", pos + " " + this.stepLength + " " + velocity + " " + channel);
     }
 
 
@@ -384,7 +384,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void setStep (final int channel, final int step, final int row, final int velocity, final double duration)
     {
         final double pos = (step + this.editPage * this.numSteps) * this.stepLength;
-        this.sendClipOSC (PATH_NOTE + row + "/set", pos + " " + duration + " " + velocity);
+        this.sendClipOSC (PATH_NOTE + row + "/set", pos + " " + duration + " " + velocity + " " + channel);
     }
 
 
@@ -415,7 +415,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
             return;
 
         final double velocity = stepInfo.getVelocity ();
-        this.clearStep (step, row);
+        this.clearStep (channel, step, row);
         this.setStep (channel, step, row, (int) (velocity * 127), duration);
     }
 
@@ -447,7 +447,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
             return;
 
         final double duration = stepInfo.getDuration ();
-        this.clearStep (step, row);
+        this.clearStep (channel, step, row);
         this.setStep (channel, step, row, (int) (velocity * 127), duration);
     }
 
@@ -589,24 +589,24 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         final IStepInfo stepInfo = this.data[step][row];
         final double duration = stepInfo.getDuration ();
         final double velocity = stepInfo.getVelocity ();
-        this.clearStep (step, row);
+        this.clearStep (channel, step, row);
         this.setStep (channel, step, row, (int) (velocity * 127), duration);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void clearStep (final int step, final int row)
+    public void clearStep (final int channel, final int step, final int row)
     {
-        this.sendClipOSC (PATH_NOTE + row + "/clear", (step + this.editPage * this.numSteps) * this.stepLength);
+        this.sendClipOSC (PATH_NOTE + row + "/clear/" + channel, (step + this.editPage * this.numSteps) * this.stepLength);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void clearRow (final int row)
+    public void clearRow (final int channel, final int row)
     {
-        this.sendClipOSC (PATH_NOTE + row + "/clear");
+        this.sendClipOSC (PATH_NOTE + row + "/clear/" + channel);
     }
 
 

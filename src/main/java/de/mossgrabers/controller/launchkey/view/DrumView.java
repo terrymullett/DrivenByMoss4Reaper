@@ -63,7 +63,7 @@ public class DrumView extends AbstractDrumView<LaunchkeyMiniMk3ControlSurface, L
         else
         {
             if (velocity != 0)
-                this.getClip ().toggleStep (defaultMidiChannel, index < 8 ? index + 8 : index - 8, offsetY + this.selectedPad, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity);
+                this.getClip ().toggleStep (this.surface.getConfiguration ().getMidiEditChannel (), index < 8 ? index + 8 : index - 8, offsetY + this.selectedPad, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity);
         }
     }
 
@@ -120,9 +120,10 @@ public class DrumView extends AbstractDrumView<LaunchkeyMiniMk3ControlSurface, L
         final int stepColor = this.getStepColor (primary);
         final int hiStep = this.isInXRange (step) ? step % this.sequencerSteps : -1;
         final int offsetY = this.scales.getDrumOffset ();
+        final int editMidiChannel = this.surface.getConfiguration ().getMidiEditChannel ();
         for (int col = 0; col < DrumView.NUM_DISPLAY_COLS; col++)
         {
-            final IStepInfo stepInfo = clip.getStep (defaultMidiChannel, col, offsetY + this.selectedPad);
+            final IStepInfo stepInfo = clip.getStep (editMidiChannel, col, offsetY + this.selectedPad);
             final int isSet = stepInfo.getState ();
             final boolean hilite = col == hiStep;
             final int x = col % GRID_COLUMNS;

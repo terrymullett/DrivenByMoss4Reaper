@@ -4,6 +4,7 @@
 
 package de.mossgrabers.reaper.framework.midi;
 
+import de.mossgrabers.framework.daw.midi.ArpeggiatorMode;
 import de.mossgrabers.framework.daw.midi.INoteRepeat;
 import de.mossgrabers.reaper.communication.MessageSender;
 
@@ -15,9 +16,22 @@ import de.mossgrabers.reaper.communication.MessageSender;
  */
 public class NoteRepeatImpl implements INoteRepeat
 {
-    private final MessageSender sender;
-    private boolean             isNoteRepeat;
-    private double              noteRepeatPeriod;
+    private static final String             NOTEREPEAT_TAG = "noterepeat";
+
+    private static final ArpeggiatorMode [] ARP_MODES      =
+    {
+        new ArpeggiatorMode (0, "Down", "Down"),
+        new ArpeggiatorMode (1, "Up", "Up"),
+        new ArpeggiatorMode (2, "Down Alt", "Down Alt"),
+        new ArpeggiatorMode (3, "Up Alt", "Up Alt")
+    };
+
+    private final MessageSender             sender;
+    private boolean                         isNoteRepeat;
+    private double                          noteRepeatPeriod;
+    private double                          noteLength;
+    private boolean                         usePressure;
+    private ArpeggiatorMode                 mode;
 
 
     /**
@@ -51,15 +65,24 @@ public class NoteRepeatImpl implements INoteRepeat
     @Override
     public void toggleActive ()
     {
-        this.sender.processBooleanArg ("noterepeat", "active", !this.isNoteRepeat);
+        this.sender.processBooleanArg (NOTEREPEAT_TAG, "active", !this.isNoteRepeat);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void setPeriod (final double length)
+    public void setActive (boolean active)
     {
-        this.sender.processDoubleArg ("noterepeat", "length", length);
+        // TODO Auto-generated method stub
+
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setPeriod (final double period)
+    {
+        this.sender.processDoubleArg (NOTEREPEAT_TAG, "rate", 1.0 / period);
     }
 
 
@@ -71,33 +94,11 @@ public class NoteRepeatImpl implements INoteRepeat
     }
 
 
-    /**
-     * Set if repeat is enabled.
-     *
-     * @param enable True if enabled
-     */
-    public void setInternalActive (final boolean enable)
-    {
-        this.isNoteRepeat = enable;
-    }
-
-
-    /**
-     * Set the note length for note repeat.
-     *
-     * @param length The length
-     */
-    public void setInternalPeriod (final double length)
-    {
-        this.noteRepeatPeriod = length;
-    }
-
-
     /** {@inheritDoc} */
     @Override
     public void setNoteLength (final double length)
     {
-        // Not supported
+        this.sender.processDoubleArg (NOTEREPEAT_TAG, "notelength", length);
     }
 
 
@@ -105,8 +106,7 @@ public class NoteRepeatImpl implements INoteRepeat
     @Override
     public double getNoteLength ()
     {
-        // Not supported
-        return 0;
+        return this.noteLength;
     }
 
 
@@ -131,8 +131,7 @@ public class NoteRepeatImpl implements INoteRepeat
     @Override
     public boolean usePressure ()
     {
-        // Not supported
-        return false;
+        return this.usePressure;
     }
 
 
@@ -140,7 +139,7 @@ public class NoteRepeatImpl implements INoteRepeat
     @Override
     public void toggleUsePressure ()
     {
-        // Not supported
+        this.sender.processBooleanArg (NOTEREPEAT_TAG, "velocity", !this.usePressure);
     }
 
 
@@ -163,18 +162,42 @@ public class NoteRepeatImpl implements INoteRepeat
 
     /** {@inheritDoc} */
     @Override
-    public String getMode ()
+    public void setMode (final String mode)
     {
-        // Not supported
-        return "";
+        for (int i = 0; i < ARP_MODES.length; i++)
+        {
+            if (ARP_MODES[i].getValue ().equals (mode))
+            {
+                this.sender.processIntArg (NOTEREPEAT_TAG, "mode", i);
+                return;
+            }
+        }
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void setMode (final String mode)
+    public ArpeggiatorMode getMode ()
     {
-        // Not supported
+        return this.mode;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public ArpeggiatorMode [] getModes ()
+    {
+        return ARP_MODES;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void changeMode (final boolean increase)
+    {
+        final int index = this.mode.getIndex ();
+        final int newIndex = Math.max (0, Math.min (ARP_MODES.length - 1, index + (increase ? 1 : -1)));
+        this.setMode (ARP_MODES[newIndex].getValue ());
     }
 
 
@@ -192,5 +215,60 @@ public class NoteRepeatImpl implements INoteRepeat
     public void toggleIsFreeRunning ()
     {
         // Not supported
+    }
+
+
+    /**
+     * Set if repeat is enabled.
+     *
+     * @param enable True if enabled
+     */
+    public void setInternalActive (final boolean enable)
+    {
+        this.isNoteRepeat = enable;
+    }
+
+
+    /**
+     * Set the period for note repeat.
+     *
+     * @param period The period
+     */
+    public void setInternalPeriod (final double period)
+    {
+        this.noteRepeatPeriod = period;
+    }
+
+
+    /**
+     * Set the note length for note repeat.
+     *
+     * @param length The length
+     */
+    public void setInternalNoteLength (final double length)
+    {
+        this.noteLength = length;
+    }
+
+
+    /**
+     * Set the use pressure / velocity for note repeat.
+     *
+     * @param usePressure True to enable to use velocity
+     */
+    public void setInternalUsePressure (final boolean usePressure)
+    {
+        this.usePressure = usePressure;
+    }
+
+
+    /**
+     * Set the arpeggiator mode.
+     *
+     * @param modeIndex The index of the mode
+     */
+    public void setInternalMode (final int modeIndex)
+    {
+        this.mode = ARP_MODES[modeIndex >= 0 && modeIndex < ARP_MODES.length ? modeIndex : 0];
     }
 }

@@ -28,9 +28,6 @@ public class MidiClipComponent implements IComponent
     private final INoteClip      clip;
     private int                  quartersPerMeasure;
 
-    // TODO Make configurable
-    private int                  defaultMidiChannel;
-
 
     /**
      * Constructor.
@@ -141,27 +138,30 @@ public class MidiClipComponent implements IComponent
                 final int note = lowerRowWithData + row;
 
                 // Get step, check for length
-                final int stepState = this.clip.getStep (this.defaultMidiChannel, step, note).getState ();
-                if (stepState == 0)
-                    continue;
-
-                double x = left + step * stepWidth - 1;
-                double w = stepWidth + 2;
-                final boolean isStart = stepState == 2;
-                if (isStart)
+                for (int channel = 0; channel < 16; channel++)
                 {
-                    x += 2;
-                    w -= 2;
-                }
+                    final int stepState = this.clip.getStep (channel, step, note).getState ();
+                    if (stepState == 0)
+                        continue;
 
-                gc.strokeRectangle (x, top + (range - row - 1) * stepHeight + 2, w, stepHeight - 2, ColorEx.BLACK);
-                gc.fillRectangle (x + (isStart ? 0 : -2), top + (range - row - 1) * stepHeight + 2, w - 1 + (isStart ? 0 : 2), stepHeight - 3, noteColor);
+                    double x = left + step * stepWidth - 1;
+                    double w = stepWidth + 2;
+                    final boolean isStart = stepState == 2;
+                    if (isStart)
+                    {
+                        x += 2;
+                        w -= 2;
+                    }
 
-                if (isStart && fontSize > 0)
-                {
-                    final String text = Scales.formatDrumNote (note);
-                    final ColorEx textColor = ColorEx.calcContrastColor (noteColor);
-                    gc.drawTextInBounds (text, x, top + (range - row - 1) * stepHeight + 2, w - 1, stepHeight - 3, Align.CENTER, textColor, fontSize);
+                    gc.strokeRectangle (x, top + (range - row - 1) * stepHeight + 2, w, stepHeight - 2, ColorEx.BLACK);
+                    gc.fillRectangle (x + (isStart ? 0 : -2), top + (range - row - 1) * stepHeight + 2, w - 1 + (isStart ? 0 : 2), stepHeight - 3, noteColor);
+
+                    if (isStart && fontSize > 0)
+                    {
+                        final String text = (channel + 1) + ": " + Scales.formatDrumNote (note);
+                        final ColorEx textColor = ColorEx.calcContrastColor (noteColor);
+                        gc.drawTextInBounds (text, x, top + (range - row - 1) * stepHeight + 2, w - 1, stepHeight - 3, Align.CENTER, textColor, fontSize);
+                    }
                 }
             }
         }

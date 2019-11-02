@@ -77,6 +77,11 @@ public class MaschineMikroMk3Configuration extends AbstractConfiguration
         this.activateScaleLayoutSetting (documentSettings);
 
         ///////////////////////////
+        // Note Repeat
+
+        this.activateNoteRepeatSetting (documentSettings);
+
+        ///////////////////////////
         // Transport
 
         this.activateBehaviourOnStopSetting (globalSettings);

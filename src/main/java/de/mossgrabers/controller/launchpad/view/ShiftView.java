@@ -12,6 +12,8 @@ import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.configuration.AbstractConfiguration;
 import de.mossgrabers.framework.controller.grid.PadGrid;
 import de.mossgrabers.framework.daw.IModel;
+import de.mossgrabers.framework.daw.constants.Resolution;
+import de.mossgrabers.framework.daw.midi.INoteRepeat;
 import de.mossgrabers.framework.mode.ModeManager;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.utils.ButtonEvent;
@@ -62,9 +64,47 @@ public class ShiftView extends AbstractView<LaunchpadControlSurface, LaunchpadCo
         for (int i = 0; i < 8; i++)
             padGrid.light (36 + i, i == clipLengthIndex ? LaunchpadColors.LAUNCHPAD_COLOR_WHITE : LaunchpadColors.LAUNCHPAD_COLOR_GREY_LO);
 
+        // Note Repeat
+        final INoteRepeat noteRepeat = this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ();
+        padGrid.light (87, noteRepeat.isActive () ? LaunchpadColors.LAUNCHPAD_COLOR_ORCHID_HI : LaunchpadColors.LAUNCHPAD_COLOR_ORCHID_LO);
+
+        // Note Repeat period
+        final int periodIndex = Resolution.getMatch (noteRepeat.getPeriod ());
+        padGrid.light (79, periodIndex == 0 ? LaunchpadColors.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColors.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light (71, periodIndex == 2 ? LaunchpadColors.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColors.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light (63, periodIndex == 4 ? LaunchpadColors.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColors.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light (55, periodIndex == 6 ? LaunchpadColors.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColors.LAUNCHPAD_COLOR_SKY_LO);
+
+        padGrid.light (80, periodIndex == 1 ? LaunchpadColors.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColors.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light (72, periodIndex == 3 ? LaunchpadColors.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColors.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light (64, periodIndex == 5 ? LaunchpadColors.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColors.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light (56, periodIndex == 7 ? LaunchpadColors.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColors.LAUNCHPAD_COLOR_PINK_LO);
+
+        // Note Repeat length
+        final int lengthIndex = Resolution.getMatch (noteRepeat.getNoteLength ());
+        padGrid.light (81, lengthIndex == 0 ? LaunchpadColors.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColors.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light (73, lengthIndex == 2 ? LaunchpadColors.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColors.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light (65, lengthIndex == 4 ? LaunchpadColors.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColors.LAUNCHPAD_COLOR_SKY_LO);
+        padGrid.light (57, lengthIndex == 6 ? LaunchpadColors.LAUNCHPAD_COLOR_SKY_HI : LaunchpadColors.LAUNCHPAD_COLOR_SKY_LO);
+
+        padGrid.light (82, lengthIndex == 1 ? LaunchpadColors.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColors.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light (74, lengthIndex == 3 ? LaunchpadColors.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColors.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light (66, lengthIndex == 5 ? LaunchpadColors.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColors.LAUNCHPAD_COLOR_PINK_LO);
+        padGrid.light (58, lengthIndex == 7 ? LaunchpadColors.LAUNCHPAD_COLOR_PINK_HI : LaunchpadColors.LAUNCHPAD_COLOR_PINK_LO);
+
         if (this.surface.isPro ())
         {
-            for (int i = 44; i < 97; i++)
+            for (int i = 44; i < 55; i++)
+                padGrid.light (i, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+            for (int i = 59; i < 63; i++)
+                padGrid.light (i, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+            for (int i = 67; i < 71; i++)
+                padGrid.light (i, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+            for (int i = 75; i < 79; i++)
+                padGrid.light (i, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+            for (int i = 83; i < 87; i++)
+                padGrid.light (i, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+            for (int i = 88; i < 97; i++)
                 padGrid.light (i, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
             return;
         }
@@ -79,31 +119,32 @@ public class ShiftView extends AbstractView<LaunchpadControlSurface, LaunchpadCo
         padGrid.light (52, LaunchpadColors.LAUNCHPAD_COLOR_GREEN);
         padGrid.light (53, LaunchpadColors.LAUNCHPAD_COLOR_GREEN_SPRING);
 
-        for (int i = 54; i < 60; i++)
-            padGrid.light (i, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light (54, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light (59, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
 
         padGrid.light (60, LaunchpadColors.LAUNCHPAD_COLOR_GREEN);
         padGrid.light (61, LaunchpadColors.LAUNCHPAD_COLOR_GREEN_SPRING);
 
-        for (int i = 62; i < 68; i++)
-            padGrid.light (i, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light (62, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light (67, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
 
         padGrid.light (68, LaunchpadColors.LAUNCHPAD_COLOR_GREEN);
         padGrid.light (69, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
 
-        for (int i = 70; i < 76; i++)
-            padGrid.light (i, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light (70, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light (75, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
 
         padGrid.light (76, LaunchpadColors.LAUNCHPAD_COLOR_GREEN);
-        padGrid.light (77, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
 
-        for (int i = 78; i < 84; i++)
-            padGrid.light (i, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light (78, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+        padGrid.light (83, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
 
         padGrid.light (84, LaunchpadColors.LAUNCHPAD_COLOR_GREEN);
         padGrid.light (85, LaunchpadColors.LAUNCHPAD_COLOR_GREEN_SPRING);
 
-        for (int i = 86; i < 92; i++)
+        padGrid.light (86, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
+
+        for (int i = 88; i < 92; i++)
             padGrid.light (i, LaunchpadColors.LAUNCHPAD_COLOR_BLACK);
 
         padGrid.light (92, LaunchpadColors.LAUNCHPAD_COLOR_GREEN);
@@ -134,6 +175,61 @@ public class ShiftView extends AbstractView<LaunchpadControlSurface, LaunchpadCo
                 final int newClipLength = note - 36;
                 this.surface.getConfiguration ().setNewClipLength (newClipLength);
                 this.surface.getDisplay ().notify ("New clip length: " + AbstractConfiguration.getNewClipLengthValue (newClipLength));
+                break;
+
+            case 87:
+                final INoteRepeat noteRepeat = this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ();
+                noteRepeat.toggleActive ();
+                break;
+
+            case 79:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setPeriod (Resolution.getValueAt (0));
+                break;
+            case 80:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setPeriod (Resolution.getValueAt (1));
+                break;
+            case 71:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setPeriod (Resolution.getValueAt (2));
+                break;
+            case 72:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setPeriod (Resolution.getValueAt (3));
+                break;
+            case 63:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setPeriod (Resolution.getValueAt (4));
+                break;
+            case 64:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setPeriod (Resolution.getValueAt (5));
+                break;
+            case 55:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setPeriod (Resolution.getValueAt (6));
+                break;
+            case 56:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setPeriod (Resolution.getValueAt (7));
+                break;
+
+            case 81:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setNoteLength (Resolution.getValueAt (0));
+                break;
+            case 82:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setNoteLength (Resolution.getValueAt (1));
+                break;
+            case 73:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setNoteLength (Resolution.getValueAt (2));
+                break;
+            case 74:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setNoteLength (Resolution.getValueAt (3));
+                break;
+            case 65:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setNoteLength (Resolution.getValueAt (4));
+                break;
+            case 66:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setNoteLength (Resolution.getValueAt (5));
+                break;
+            case 57:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setNoteLength (Resolution.getValueAt (6));
+                break;
+            case 58:
+                this.surface.getInput ().getDefaultNoteInput ().getNoteRepeat ().setNoteLength (Resolution.getValueAt (7));
                 break;
 
             case 97:

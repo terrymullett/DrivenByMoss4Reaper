@@ -38,9 +38,7 @@ import de.mossgrabers.reaper.framework.daw.data.SendImpl;
 import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
 import de.mossgrabers.reaper.framework.midi.NoteRepeatImpl;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -759,7 +757,7 @@ public class MessageParser
                 break;
 
             case "notes":
-                modelImpl.setCursorClipNotes (parseNotes (value));
+                modelImpl.setCursorClipNotes (Note.parseNotes (value));
                 break;
 
             case "all":
@@ -788,7 +786,19 @@ public class MessageParser
                 break;
 
             case "period":
-                noteRepeat.setInternalPeriod (Double.parseDouble (value));
+                noteRepeat.setInternalPeriod (1.0 / Double.parseDouble (value));
+                break;
+
+            case "notelength":
+                noteRepeat.setInternalNoteLength (Double.parseDouble (value));
+                break;
+
+            case "mode":
+                noteRepeat.setInternalMode (Integer.parseInt (value));
+                break;
+
+            case "velocity":
+                noteRepeat.setInternalUsePressure (Integer.parseInt (value) > 0);
                 break;
 
             default:
@@ -811,26 +821,5 @@ public class MessageParser
         // Remove first empty element
         oscParts.poll ();
         return oscParts;
-    }
-
-
-    /**
-     * Parses notes from a string.
-     *
-     * @param notesStr Formatted like start1:end1:pitch1:velocity1;...;startN:endN:pitchN:velocityN;
-     * @return The parsed notes
-     */
-    public static List<Note> parseNotes (final String notesStr)
-    {
-        final List<Note> notes = new ArrayList<> ();
-        if (notesStr != null)
-        {
-            for (final String part: notesStr.trim ().split (";"))
-            {
-                final String [] noteParts = part.split (":");
-                notes.add (new Note (Double.parseDouble (noteParts[0]), Double.parseDouble (noteParts[1]), Integer.parseInt (noteParts[2]), Integer.parseInt (noteParts[3])));
-            }
-        }
-        return notes;
     }
 }

@@ -154,12 +154,13 @@ public class PolySequencerView extends AbstractSequencerView<PushControlSurface,
 
         final INoteClip clip = this.getClip ();
         final int col = GRID_COLUMNS * (NUM_LINES - 1 - y) + x;
+        final int editMidiChannel = this.surface.getConfiguration ().getMidiEditChannel ();
         if (getStep (clip, col) > 0)
         {
             for (int row = 0; row < 128; row++)
             {
-                if (clip.getStep (defaultMidiChannel, col, row).getState () > 0)
-                    clip.clearStep (col, row);
+                if (clip.getStep (editMidiChannel, col, row).getState () > 0)
+                    clip.clearStep (editMidiChannel, col, row);
             }
         }
         else
@@ -170,7 +171,7 @@ public class PolySequencerView extends AbstractSequencerView<PushControlSurface,
                 if (this.noteMemory.containsKey (k))
                 {
                     final Integer vel = this.noteMemory.get (k);
-                    clip.toggleStep (defaultMidiChannel, col, row, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : vel.intValue ());
+                    clip.toggleStep (editMidiChannel, col, row, this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : vel.intValue ());
                 }
             }
         }
@@ -262,12 +263,13 @@ public class PolySequencerView extends AbstractSequencerView<PushControlSurface,
      * @return 0: All notes are off, 1: at least 1 note continues playing, 2: at least 1 note starts
      *         at this step, see the defined constants
      */
-    private static int getStep (final INoteClip clip, final int col)
+    private int getStep (final INoteClip clip, final int col)
     {
         int result = IStepInfo.NOTE_OFF;
+        final int editMidiChannel = this.surface.getConfiguration ().getMidiEditChannel ();
         for (int row = 0; row < 128; row++)
         {
-            result = clip.getStep (defaultMidiChannel, col, row).getState ();
+            result = clip.getStep (editMidiChannel, col, row).getState ();
             if (result == IStepInfo.NOTE_START)
                 return result;
             if (result == IStepInfo.NOTE_CONTINUE)
