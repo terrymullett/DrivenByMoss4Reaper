@@ -9,6 +9,7 @@ import de.mossgrabers.framework.controller.hardware.AbstractHwContinuousControl;
 import de.mossgrabers.framework.controller.hardware.BindType;
 import de.mossgrabers.framework.controller.hardware.IHwAbsoluteKnob;
 import de.mossgrabers.framework.daw.IHost;
+import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 
 
@@ -25,7 +26,7 @@ public class HwAbsoluteKnobImpl extends AbstractHwContinuousControl implements I
 
     /**
      * Constructor.
-     * 
+     *
      * @param id The ID of the control
      * @param host The controller host
      * @param label The label of the knob
@@ -43,6 +44,14 @@ public class HwAbsoluteKnobImpl extends AbstractHwContinuousControl implements I
     public void bind (final IMidiInput input, final BindType type, final int channel, final int value)
     {
         input.bind (this, type, channel, value);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void bind (final IParameter parameter)
+    {
+        // So far only used for user mode, which is not supported for Reaper
     }
 
 

@@ -9,6 +9,7 @@ import de.mossgrabers.framework.controller.hardware.AbstractHwContinuousControl;
 import de.mossgrabers.framework.controller.hardware.BindType;
 import de.mossgrabers.framework.controller.hardware.IHwFader;
 import de.mossgrabers.framework.daw.IHost;
+import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 
 
@@ -44,6 +45,14 @@ public class HwFaderImpl extends AbstractHwContinuousControl implements IHwFader
     public void bind (final IMidiInput input, final BindType type, final int channel, final int control)
     {
         input.bind (this, type, channel, control);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void bind (final IParameter parameter)
+    {
+        // So far only used for user mode, which is not supported for Reaper
     }
 
 

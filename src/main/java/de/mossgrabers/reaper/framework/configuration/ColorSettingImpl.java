@@ -21,7 +21,7 @@ import java.awt.Color;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class ColorSettingImpl extends BaseSetting<ColoredButton, double []> implements IColorSetting
+public class ColorSettingImpl extends BaseSetting<ColoredButton, ColorEx> implements IColorSetting
 {
     private ColorEx value;
 
@@ -80,12 +80,7 @@ public class ColorSettingImpl extends BaseSetting<ColoredButton, double []> impl
     @Override
     public void flush ()
     {
-        this.notifyObservers (new double []
-        {
-            this.value.getRed (),
-            this.value.getGreen (),
-            this.value.getBlue ()
-        });
+        this.notifyObservers (this.value);
     }
 
 

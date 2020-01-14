@@ -124,6 +124,14 @@ public abstract class AbstractControllerInstance implements IControllerInstance
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    public SettingsUI getSettingsUI ()
+    {
+        return this.settingsUI;
+    }
+
+
     protected abstract IControllerSetup<?, ?> createControllerSetup (final ReaperSetupFactory setupFactory);
 
 

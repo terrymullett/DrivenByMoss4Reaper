@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper.controller;
 
 import de.mossgrabers.framework.controller.IControllerDefinition;
+import de.mossgrabers.reaper.framework.configuration.SettingsUI;
 
 
 /**
@@ -83,4 +84,12 @@ public interface IControllerInstance
      * Store the controllers configuration settings.
      */
     void storeConfiguration ();
+
+
+    /**
+     * Get the settings.
+     *
+     * @return The settings
+     */
+    SettingsUI getSettingsUI ();
 }

@@ -15,6 +15,7 @@ import de.mossgrabers.framework.controller.valuechanger.Relative3ValueChanger;
 import de.mossgrabers.framework.controller.valuechanger.Relative4ValueChanger;
 import de.mossgrabers.framework.controller.valuechanger.RelativeEncoding;
 import de.mossgrabers.framework.daw.IHost;
+import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 
 import java.util.EnumMap;
@@ -79,6 +80,14 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     public void bind (final IMidiInput input, final BindType type, final int channel, final int control)
     {
         input.bind (this, type, channel, control, this.encoding);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void bind (final IParameter parameter)
+    {
+        // So far only used for user mode, which is not supported for Reaper
     }
 
 

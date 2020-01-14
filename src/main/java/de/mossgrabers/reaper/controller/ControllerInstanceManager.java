@@ -37,9 +37,12 @@ import de.mossgrabers.reaper.controller.sl.SLMkIControllerInstance;
 import de.mossgrabers.reaper.controller.sl.SLMkIIControllerInstance;
 import de.mossgrabers.reaper.controller.slmkiii.SLMkIIIControllerInstance;
 import de.mossgrabers.reaper.framework.IniFiles;
+import de.mossgrabers.reaper.framework.configuration.SettingsUI;
 import de.mossgrabers.reaper.ui.WindowManager;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.PropertiesEx;
+
+import javax.sound.midi.MidiDevice;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -256,6 +259,33 @@ public class ControllerInstanceManager
         {
             if (inst.getDefinition ().equals (definition))
                 return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Is one of the given in- or output devices already in use?
+     *
+     * @param inputDevices The input devices to test
+     * @param outputDevices The output devices to test
+     * @return True if one of the devices is already in use
+     */
+    public boolean areInUse (final List<MidiDevice> inputDevices, final List<MidiDevice> outputDevices)
+    {
+        for (final IControllerInstance inst: this.instances)
+        {
+            final SettingsUI settings = inst.getSettingsUI ();
+            for (final MidiDevice input: settings.getSelectedMidiInputs ())
+            {
+                if (inputDevices.contains (input))
+                    return true;
+            }
+            for (final MidiDevice output: settings.getSelectedMidiOutputs ())
+            {
+                if (inputDevices.contains (output))
+                    return true;
+            }
         }
         return false;
     }

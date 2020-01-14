@@ -165,10 +165,7 @@ public class MainFrame extends JFrame
             return;
 
         for (final IControllerInstance controllerInstance: detectedControllers)
-        {
-            final CheckboxListItem inst = new CheckboxListItem (controllerInstance);
-            this.listModel.addElement (inst);
-        }
+            this.listModel.addElement (new CheckboxListItem (controllerInstance));
 
         this.controllerList.setSelectedValue (detectedControllers.get (0), true);
         this.updateWidgetStates ();

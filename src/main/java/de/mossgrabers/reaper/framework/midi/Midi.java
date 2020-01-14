@@ -109,7 +109,7 @@ public class Midi
 
 
     /**
-     * Ï Get a specific output device.
+     * Get a specific output device.
      *
      * @param name The full name of the device to lookup
      * @return The device or null if not found

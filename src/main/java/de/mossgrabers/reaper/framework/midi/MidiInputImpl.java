@@ -310,7 +310,7 @@ class MidiInputImpl implements IMidiInput
 
             case 0x80:
             case 0x90:
-                return handleControlsNote (channel, data1, data2, code == 0x80 || data2 == 0);
+                return this.handleControlsNote (channel, data1, data2, code == 0x80 || data2 == 0);
 
             case 0xE0:
                 return this.handleControlsPitchbend (channel, data1, data2);

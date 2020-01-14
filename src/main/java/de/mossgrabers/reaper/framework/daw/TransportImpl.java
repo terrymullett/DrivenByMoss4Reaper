@@ -77,6 +77,8 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void play ()
     {
+        if (this.isPlaying && this.isRecording)
+            this.sender.processNoArg ("record");
         this.sender.processNoArg ("play");
     }
 
@@ -103,6 +105,8 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void stop ()
     {
+        if (this.isPlaying && this.isRecording)
+            this.sender.processNoArg ("record");
         this.sender.processNoArg ("stop");
     }
 

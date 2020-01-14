@@ -383,6 +383,14 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
     /** {@inheritDoc} */
     @Override
+    public void setStep (final int channel, final int step, final int row, final IStepInfo noteStep)
+    {
+        this.setStep (channel, step, row, (int) (noteStep.getVelocity () * 127.0), noteStep.getDuration ());
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void changeStepDuration (final int channel, final int step, final int row, final int control)
     {
         final IStepInfo info = this.getStep (channel, step, row);

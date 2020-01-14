@@ -65,7 +65,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
 
     /**
      * Constructor.
-     * 
+     *
      * @param instrumentDevice The instrument cursor device to update the drum pads
      * @param dataSetup Some configuration variables
      * @param numTracks The number of tracks in a bank page
@@ -76,7 +76,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
      * @param hasFullFlatTrackList True if the track navigation should include effect and master
      *            tracks if flat
      */
-    public TrackBankImpl (final ICursorDevice instrumentDevice, DataSetupEx dataSetup, int numTracks, int numScenes, int numSends, boolean hasFlatTrackList, boolean hasFullFlatTrackList)
+    public TrackBankImpl (final ICursorDevice instrumentDevice, final DataSetupEx dataSetup, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final boolean hasFullFlatTrackList)
     {
         super (dataSetup, numTracks, numScenes, numSends);
 

@@ -35,7 +35,7 @@ public class HwLightImpl extends AbstractHwControl implements IHwLight, IReaperH
 
     /**
      * Constructor.
-     * 
+     *
      * @param id The ID o the control
      * @param supplier Callback for getting the state of the light
      * @param sendValueConsumer Callback for sending the state to the controller device

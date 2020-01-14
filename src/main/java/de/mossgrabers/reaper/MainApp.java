@@ -199,7 +199,17 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
     private void startupInfrastructure ()
     {
         this.startFlushTimer ();
+        this.updateMidiDevices ();
+        this.instanceManager.load (this.mainConfiguration);
+        this.startControllers ();
+    }
 
+
+    /**
+     * Read all available MIDI devices.
+     */
+    private void updateMidiDevices ()
+    {
         try
         {
             Midi.readDeviceMetadata ();
@@ -208,9 +218,6 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
         {
             this.logModel.error ("Midi not available.", ex);
         }
-
-        this.instanceManager.load (this.mainConfiguration);
-        this.startControllers ();
     }
 
 
@@ -340,6 +347,9 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
     @Override
     public List<IControllerInstance> detectControllers ()
     {
+        // In case a device was hot-swapped
+        this.updateMidiDevices ();
+
         final List<IControllerInstance> addedControllers = new ArrayList<> ();
 
         for (final IControllerDefinition definition: this.instanceManager.getDefinitions ())
@@ -357,34 +367,52 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
                 if (ins.length == 0 && outs.length == 0)
                     continue;
 
-                final List<MidiDevice> inputDevices = new ArrayList<> ();
-                final List<MidiDevice> outputDevices = new ArrayList<> ();
-
-                for (final String inputName: ins)
-                {
-                    final MidiDevice inputDevice = Midi.getInputDevice (inputName);
-                    if (inputDevice != null)
-                        inputDevices.add (inputDevice);
-                }
-
-                for (final String outputName: outs)
-                {
-                    final MidiDevice outputDevice = Midi.getOutputDevice (outputName);
-                    if (outputDevice != null)
-                        outputDevices.add (outputDevice);
-                }
-
                 // Is there a match?
-                if (ins.length == inputDevices.size () && outs.length == outputDevices.size ())
-                {
-                    final IControllerInstance c = this.addController (definition);
-                    if (c != null)
-                        addedControllers.add (c);
-                }
+                final List<MidiDevice> inputDevices = lookupInputs (ins);
+                if (ins.length != inputDevices.size ())
+                    continue;
+                final List<MidiDevice> outputDevices = lookupOutputs (outs);
+                if (outs.length != outputDevices.size ())
+                    continue;
+
+                // Is one of the midi device already in use?
+                if (this.instanceManager.areInUse (inputDevices, outputDevices))
+                    continue;
+
+                // Found!
+                final IControllerInstance c = this.addController (definition);
+                if (c != null)
+                    addedControllers.add (c);
             }
         }
 
         return addedControllers;
+    }
+
+
+    private static List<MidiDevice> lookupOutputs (final String [] outs)
+    {
+        final List<MidiDevice> outputDevices = new ArrayList<> ();
+        for (final String outputName: outs)
+        {
+            final MidiDevice outputDevice = Midi.getOutputDevice (outputName);
+            if (outputDevice != null)
+                outputDevices.add (outputDevice);
+        }
+        return outputDevices;
+    }
+
+
+    private static List<MidiDevice> lookupInputs (final String [] ins)
+    {
+        final List<MidiDevice> inputDevices = new ArrayList<> ();
+        for (final String inputName: ins)
+        {
+            final MidiDevice inputDevice = Midi.getInputDevice (inputName);
+            if (inputDevice != null)
+                inputDevices.add (inputDevice);
+        }
+        return inputDevices;
     }
 
 
