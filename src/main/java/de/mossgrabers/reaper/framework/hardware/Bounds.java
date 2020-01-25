@@ -79,7 +79,7 @@ public class Bounds
 
 
     /**
-     * Test iof the given point is inside of these bounds.
+     * Test if the given point is inside of these bounds.
      *
      * @param x The x position of the point
      * @param y The y position of the point
@@ -87,6 +87,30 @@ public class Bounds
      */
     public boolean contains (final double x, final double y)
     {
-        return this.x <= x && x <= this.x + this.width && this.y <= y && y <= this.y + this.height;
+        return containsX (x) && containsY (y);
+    }
+
+
+    /**
+     * Test if the given point is inside of the x bounds.
+     *
+     * @param x The x position of the point
+     * @return True if the point is inside of the bounds
+     */
+    public boolean containsX (final double x)
+    {
+        return this.x <= x && x <= this.x + this.width;
+    }
+
+
+    /**
+     * Test if the given point is inside of the y bounds.
+     *
+     * @param y The y position of the point
+     * @return True if the point is inside of the bounds
+     */
+    public boolean containsY (final double y)
+    {
+        return this.y <= y && y <= this.y + this.height;
     }
 }

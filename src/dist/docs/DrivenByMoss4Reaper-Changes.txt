@@ -4,10 +4,21 @@
   * New: Improved autodetect: Do not add a device if one of the midi ins/outs is already in use. Refresh midi devices before executing the autodetect.
   * Fixed: Some LEDs did not update correctly
   * Fixed: Duplicating media items from the session view did always duplicate the selected media items.
+* Beatstep
+  * New: Easier switching between note selection and step editing in sequencers. Turning knob left selects play/note select, turning it right selects step editing.
+  * Fixed: Value change on some knobs were flipped (e.g. scrolling browser).
+  * Fixed: The Note Sequencer used the drum mapping and octave shifting.
+  * Fixed: Pads sometimes lit with wrong color after pad was pressed
+  * Fixed: Pads sometimes lit with wrong color after leaving Shift mode
+  * Fixed: Browser mode was canceled when Shift was released
 - Push 1/2
   * Fixed: Filter active sensing warnings from log console
+  * Fixed: Push 1: Frame mode showed an empty display
 - Launchpad:
   * New: Non-Pro models: Pressing the Delete and Duplicate pads in shift mode activates the related mode. Leaving the shift mode and entering session mode allows then to delete/duplicate clips and tracks. After deleting/duplicating an item the delete/duplicate mode is turned off.
+  * New: Turn of panaroama lights for non-existing tracks, instead of showing them centered
+  * Fixed: Launchpad X was not correctly using the velocity faders
+  * Fixed: Fader scaling was wrong (except Launchpad Pro)
 - Komplete Kontrol A-Series / S-Series Mk2 / M32
   * Fixed: Some buttons did not work (Quantize, Metro, Undo)
 - MCU

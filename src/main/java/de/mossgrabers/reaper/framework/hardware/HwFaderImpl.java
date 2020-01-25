@@ -155,23 +155,22 @@ public class HwFaderImpl extends AbstractHwContinuousControl implements IHwFader
                 return;
             }
 
-            final Bounds bounds = this.layout.getBounds ();
-            if (!bounds.contains (x, y))
-                return;
-
             if (mouseEvent == MouseEvent.MOUSE_PRESSED)
             {
                 this.isPressed = true;
                 return;
             }
 
+            final Bounds bounds = this.layout.getBounds ();
             if (mouseEvent == MouseEvent.MOUSE_DRAGGED && this.isPressed)
             {
-                final double value;
+                double value;
                 if (this.isVertical)
-                    value = 1 - Math.abs (y - bounds.getY ()) / bounds.getHeight ();
+                    value = 1 - (y - bounds.getY ()) / bounds.getHeight ();
                 else
-                    value = Math.abs (x - bounds.getX ()) / bounds.getWidth ();
+                    value = (x - bounds.getX ()) / bounds.getWidth ();
+                value = Math.max (0, Math.min (1, value));
+
                 if (this.midiType == BindType.CC)
                 {
                     this.currentValue = (int) (Math.max (0, Math.round (value * 127.0)));
