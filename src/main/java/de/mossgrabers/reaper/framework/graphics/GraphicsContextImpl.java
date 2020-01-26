@@ -31,20 +31,22 @@ import java.io.IOException;
  */
 public class GraphicsContextImpl implements IGraphicsContext
 {
-    private static final FontCache FONT_CACHE = new FontCache ();
+    private final FontCache fontCache;
 
-    private Graphics2D             gc;
+    private Graphics2D      gc;
 
 
     /**
      * Constructor.
      *
      * @param gc The Bitwig graphics context
+     * @param fontFamily The font family to use for drawing text
      */
-    public GraphicsContextImpl (final Graphics2D gc)
+    public GraphicsContextImpl (final Graphics2D gc, final String fontFamily)
     {
         configureGraphics (gc);
         this.gc = gc;
+        this.fontCache = new FontCache (fontFamily);
     }
 
 
@@ -138,6 +140,24 @@ public class GraphicsContextImpl implements IGraphicsContext
     }
 
 
+    /**
+     * Fills a circular or elliptical arc.
+     *
+     * @param x the <i>x</i> coordinate of the center of the arc to be filled
+     * @param y the <i>y</i> coordinate of the center of the arc to be filled
+     * @param radius The radius of the arc
+     * @param fillColor The color to fill the arc with
+     * @param startAngle the beginning angle
+     * @param arcAngle the angular extent of the arc, relative to the start angle
+     */
+    public void fillArc (final double x, final double y, final double radius, final ColorEx fillColor, final int startAngle, final int arcAngle)
+    {
+        this.setColor (fillColor);
+        final int size = (int) (2 * radius);
+        this.gc.fillArc ((int) (x - radius), (int) (y - radius), size, size, startAngle, arcAngle);
+    }
+
+
     /** {@inheritDoc} */
     @Override
     public void drawTextInBounds (final String text, final double x, final double y, final double width, final double height, final Align alignment, final ColorEx color, final double fontSize)
@@ -153,7 +173,7 @@ public class GraphicsContextImpl implements IGraphicsContext
         if (text == null || text.length () == 0)
             return;
 
-        this.gc.setFont (FONT_CACHE.getFont ((int) fontSize));
+        this.gc.setFont (this.fontCache.getFont ((int) fontSize));
 
         final Dimension dim = this.getTextDims (text);
         this.gc.clipRect ((int) x, (int) y, (int) width, (int) height);
@@ -200,7 +220,7 @@ public class GraphicsContextImpl implements IGraphicsContext
         if (text == null || text.length () == 0)
             return;
 
-        this.gc.setFont (FONT_CACHE.getFont ((int) fontSize));
+        this.gc.setFont (this.fontCache.getFont ((int) fontSize));
         final Dimension dim = this.getTextDims (text);
 
         final double textDescent = this.getTextDescent (text);
@@ -251,7 +271,7 @@ public class GraphicsContextImpl implements IGraphicsContext
         double fittingSize = -1;
         while (size < maxHeight)
         {
-            this.gc.setFont (FONT_CACHE.getFont ((int) size));
+            this.gc.setFont (this.fontCache.getFont ((int) size));
             final Dimension textDims = this.getTextDims (text);
             final double width = textDims.getWidth ();
             if (width > maxWidth)

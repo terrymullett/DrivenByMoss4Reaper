@@ -19,7 +19,12 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.graphics.IGraphicsContext;
+import de.mossgrabers.reaper.framework.midi.MidiInputImpl;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.ShortMessage;
+
+import java.awt.event.MouseEvent;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -44,12 +49,20 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     private final HwControlLayout  layout;
     private final RelativeEncoding encoding;
 
+    private MidiInputImpl          midiInput;
+    private BindType               midiType;
+    private int                    midiChannel;
+    private int                    midiControl;
+
+    private boolean                isPressed;
+    private double                 pressedX;
+    private double                 pressedY;
+
 
     /**
      * Constructor. Uses Two's complement as the default relative encoding.
      *
-     * @param id
-     *
+     * @param id The ID of the control
      * @param host The controller host
      * @param label The label of the knob
      */
@@ -80,6 +93,11 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     @Override
     public void bind (final IMidiInput input, final BindType type, final int channel, final int control)
     {
+        this.midiInput = (MidiInputImpl) input;
+        this.midiType = type;
+        this.midiChannel = channel;
+        this.midiControl = control;
+
         input.bind (this, type, channel, control, this.encoding);
     }
 
@@ -107,7 +125,7 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     {
         final int intValue = (int) Math.round (value * 127);
         final int speed = (int) VALUE_CHANGERS.get (this.encoding).calcKnobSpeed (intValue);
-        this.command.execute (speed);
+        this.command.execute (speed < 0 ? speed + 128 : speed);
     }
 
 
@@ -136,8 +154,55 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
 
     /** {@inheritDoc} */
     @Override
-    public void mouse (final int mouseEvent, final double x, final double y)
+    public void mouse (final int mouseEvent, final double x, final double y, final double scale)
     {
-        // TODO
+        if (this.midiInput == null)
+            return;
+
+        try
+        {
+            final Bounds bounds = this.layout.getBounds ();
+            if (bounds == null)
+                return;
+
+            final double scaleX = x / scale;
+            final double scaleY = y / scale;
+
+            if (mouseEvent == MouseEvent.MOUSE_PRESSED && bounds.contains (scaleX, scaleY))
+            {
+                this.isPressed = true;
+                this.pressedX = scaleX;
+                this.pressedY = scaleY;
+                return;
+            }
+
+            if (!this.isPressed)
+                return;
+
+            if (mouseEvent == MouseEvent.MOUSE_RELEASED)
+            {
+                this.isPressed = false;
+                return;
+            }
+
+            if (mouseEvent == MouseEvent.MOUSE_DRAGGED)
+            {
+                final int speed = (int) Math.min (3, Math.max (-3, Math.round ((this.pressedX - scaleX) + (this.pressedY - scaleY))));
+                if (speed == 0)
+                    return;
+                this.pressedX = scaleX;
+                this.pressedY = scaleY;
+
+                if (this.midiType == BindType.CC)
+                {
+                    final int value = VALUE_CHANGERS.get (this.encoding).encode (speed);
+                    this.midiInput.handleMidiMessage (new ShortMessage (0xB0, this.midiChannel, this.midiControl, value));
+                }
+            }
+        }
+        catch (final InvalidMidiDataException ex)
+        {
+            this.host.error ("Invalid MIDI message.", ex);
+        }
     }
 }

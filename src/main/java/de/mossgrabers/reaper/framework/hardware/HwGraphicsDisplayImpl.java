@@ -59,7 +59,7 @@ public class HwGraphicsDisplayImpl extends AbstractHwControl implements IHwGraph
 
     /** {@inheritDoc} */
     @Override
-    public void mouse (final int mouseEvent, final double x, final double y)
+    public void mouse (final int mouseEvent, final double x, final double y, final double scale)
     {
         // No interaction with diplays
     }

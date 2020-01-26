@@ -134,7 +134,7 @@ public class MessageParser
                 {
                     case TAG_NAME:
                         ((ProjectImpl) this.project).setName (value);
-                        this.host.scheduleTask ( () -> this.controllerSetup.getSurface ().getViewManager ().getActiveView ().updateNoteMapping (), 1000);
+                        this.updateNoteMapping ();
                         break;
                     case "engine":
                         this.application.setInternalEngineActive (Integer.parseInt (value) > 0);
@@ -271,7 +271,7 @@ public class MessageParser
             if (TAG_COUNT.equals (part))
             {
                 tb.setItemCount (Integer.parseInt (value));
-                ((TrackBankImpl) this.model.getTrackBank ()).markDirty ();
+                tb.markDirty ();
             }
             else
                 this.host.error ("Unhandled Track command: " + part);
@@ -305,6 +305,8 @@ public class MessageParser
                 final boolean isSelected = Double.parseDouble (value) > 0;
                 track.setSelected (isSelected);
                 ((TrackBankImpl) this.model.getCurrentTrackBank ()).handleBankTrackSelection (track, isSelected);
+                if (isSelected)
+                    this.updateNoteMapping ();
                 break;
 
             case TAG_NUMBER:
@@ -822,5 +824,11 @@ public class MessageParser
         // Remove first empty element
         oscParts.poll ();
         return oscParts;
+    }
+
+
+    private void updateNoteMapping ()
+    {
+        this.host.scheduleTask ( () -> this.controllerSetup.getSurface ().getViewManager ().getActiveView ().updateNoteMapping (), 1000);
     }
 }

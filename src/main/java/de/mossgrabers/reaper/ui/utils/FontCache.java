@@ -15,17 +15,13 @@ import java.util.Map;
  */
 public class FontCache
 {
-    private Font              baseFont;
-    private Map<Double, Font> scaledFonts = new HashMap<> ();
+    /** Use sans serif as the base font. */
+    public static final String SANS_SERIF  = "SansSerif";
+    /** Use monospaced as the base font. */
+    public static final String MONOSPACED  = "Monospaced";
 
-
-    /**
-     * Constructor.
-     */
-    public FontCache ()
-    {
-        this ("monospace");
-    }
+    private Font               baseFont;
+    private Map<Double, Font>  scaledFonts = new HashMap<> ();
 
 
     /**

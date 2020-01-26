@@ -9,6 +9,8 @@ import de.mossgrabers.framework.controller.hardware.IHwPianoKeyboard;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.graphics.IGraphicsContext;
 
+import java.awt.event.MouseEvent;
+
 
 /**
  * Implementation of a proxy to a fader on a hardware controller.
@@ -17,8 +19,9 @@ import de.mossgrabers.framework.graphics.IGraphicsContext;
  */
 public class HwPianoKeyboardImpl implements IHwPianoKeyboard, IReaperHwControl
 {
+    private static final int      NOTE_START        = 36;
 
-    private static final int []   KEYS_WHITE =
+    private static final int []   KEYS_WHITE        =
     {
         0,
         2,
@@ -29,7 +32,7 @@ public class HwPianoKeyboardImpl implements IHwPianoKeyboard, IReaperHwControl
         11
     };
 
-    private static final int []   KEYS_BLACK =
+    private static final int []   KEYS_BLACK        =
     {
         1,
         3,
@@ -40,12 +43,29 @@ public class HwPianoKeyboardImpl implements IHwPianoKeyboard, IReaperHwControl
         -1
     };
 
+    private static final int []   WHITE_KEYS_DETECT =
+    {
+        -1,
+        0,
+        2,
+        4,
+        5,
+        7,
+        9,
+        11,
+        12
+    };
+
     private final int             numKeys;
     private final HwControlLayout layout;
 
-    private IMidiInput            input;
+    private IMidiInput            midiInput;
+    private boolean               isPressed;
+    private double                pressedX;
+    private double                pressedY;
+    private int                   pressedKey        = -1;
+    private int                   currentValue      = 0;
 
-    private int                   activeKey  = -1;
     private double                keyHeightWhite;
     private double                keyWidthWhite;
     private double                keyHeightBlack;
@@ -75,7 +95,7 @@ public class HwPianoKeyboardImpl implements IHwPianoKeyboard, IReaperHwControl
     @Override
     public void bind (final IMidiInput input)
     {
-        this.input = input;
+        this.midiInput = input;
     }
 
 
@@ -132,10 +152,12 @@ public class HwPianoKeyboardImpl implements IHwPianoKeyboard, IReaperHwControl
         final double x = bounds.getX () * scale;
         final double y = bounds.getY () * scale;
 
+        final int activeKey = this.pressedKey - NOTE_START;
+
         // Draw the white keys
         for (int i = 0; i < this.steps; i++)
         {
-            final ColorEx color = KEYS_WHITE[i % 7] + 12 * (i / 7) == this.activeKey ? ColorEx.BLUE : ColorEx.WHITE;
+            final ColorEx color = KEYS_WHITE[i % 7] + 12 * (i / 7) == activeKey ? ColorEx.BLUE : ColorEx.WHITE;
             final double left = x + i * this.keyWidthWhite;
             gc.fillRectangle (left, y, this.keyWidthWhite, this.keyHeightWhite, color);
             gc.strokeRectangle (left, y, this.keyWidthWhite, this.keyHeightWhite, ColorEx.BLACK);
@@ -147,7 +169,7 @@ public class HwPianoKeyboardImpl implements IHwPianoKeyboard, IReaperHwControl
             final int scalePos = i % 7;
             if (KEYS_BLACK[scalePos] == -1)
                 continue;
-            final ColorEx color = KEYS_BLACK[scalePos] + 12 * (i / 7) == this.activeKey ? ColorEx.BLUE : ColorEx.BLACK;
+            final ColorEx color = KEYS_BLACK[scalePos] + 12 * (i / 7) == activeKey ? ColorEx.BLUE : ColorEx.BLACK;
             gc.fillRectangle (x + i * this.keyWidthWhite + this.offset, y, this.keyWidthBlack, this.keyHeightBlack, color);
         }
     }
@@ -155,9 +177,50 @@ public class HwPianoKeyboardImpl implements IHwPianoKeyboard, IReaperHwControl
 
     /** {@inheritDoc} */
     @Override
-    public void mouse (final int mouseEvent, final double x, final double y)
+    public void mouse (final int mouseEvent, final double x, final double y, final double scale)
     {
-        // TODO
+        if (this.midiInput == null)
+            return;
+
+        final Bounds bounds = this.layout.getBounds ();
+        if (bounds == null)
+            return;
+
+        final double scaleX = x / scale;
+        final double scaleY = y / scale;
+
+        if (mouseEvent == MouseEvent.MOUSE_PRESSED && bounds.contains (scaleX, scaleY))
+        {
+            this.isPressed = true;
+            this.pressedX = scaleX - bounds.getX ();
+            this.pressedY = scaleY - bounds.getY ();
+            this.pressedKey = NOTE_START + this.getKey (this.pressedX, this.pressedY, scale);
+            this.currentValue = 0;
+            this.midiInput.sendRawMidiEvent (0x90, this.pressedKey, 127);
+            return;
+        }
+
+        if (!this.isPressed)
+            return;
+
+        if (mouseEvent == MouseEvent.MOUSE_RELEASED)
+        {
+            this.midiInput.sendRawMidiEvent (0x80, this.pressedKey, 0);
+            this.isPressed = false;
+            this.pressedKey = -1;
+            return;
+        }
+
+        if (mouseEvent == MouseEvent.MOUSE_DRAGGED)
+        {
+            final double change = Math.min (3, Math.max (-3, (this.pressedX - scaleX) + (this.pressedY - scaleY)));
+            this.pressedX = scaleX;
+            this.pressedY = scaleY;
+
+            // Simulate Aftertouch with mouse movement
+            this.currentValue = (int) Math.max (0, Math.min (127, this.currentValue + change));
+            this.midiInput.sendRawMidiEvent (0xA0, this.pressedKey, this.currentValue);
+        }
     }
 
 
@@ -170,59 +233,55 @@ public class HwPianoKeyboardImpl implements IHwPianoKeyboard, IReaperHwControl
      */
     public void sendNoteEvent (final boolean isDown, final int note, final int velocity)
     {
-        if (this.input != null)
-            this.input.sendRawMidiEvent (isDown ? 0x90 : 0x80, note, velocity);
+        if (this.midiInput != null)
+            this.midiInput.sendRawMidiEvent (isDown ? 0x90 : 0x80, note, velocity);
     }
 
 
     /**
      * Calc the key from the mouse position.
+     * 
+     * @param x The x position relative to the widget
+     * @param y The y position relative to the widget
+     * @param scale The scale factor
+     * @return The pressed key
      */
-    private int getKey (final int x, final int y)
+    private int getKey (final double x, final double y, final double scale)
     {
-        final int [] whiteKeys =
-        {
-            -1,
-            0,
-            2,
-            4,
-            5,
-            7,
-            9,
-            11,
-            12
-        };
+        final double kww = this.keyWidthWhite / scale;
+        final double kwb = this.keyWidthBlack / scale;
+        final double khb = this.keyHeightBlack / scale;
 
         // Calc white key
-        final int num = (int) (x / this.keyWidthWhite);
+        final int num = (int) (x / kww);
         final int pos = num % 7 + 1;
-        final int whiteKey = 12 * (num / 7) + whiteKeys[pos];
+        final int whiteKey = 12 * (num / 7) + WHITE_KEYS_DETECT[pos];
 
-        if (y > this.keyHeightBlack) // A white key
+        if (y > khb) // A white key
             return whiteKey;
 
         // A white or black key
         // Move val to 1. key
-        final int transNumX = (int) (x - num * this.keyWidthWhite);
+        final int transNumX = (int) (x - num * kww);
 
-        if (transNumX <= this.keyWidthBlack / 2)
+        if (transNumX <= kwb / 2)
         { // Black key left of white key
           // Is there a black key ?
-            if (whiteKeys[pos] - whiteKeys[pos - 1] == 1)
+            if (WHITE_KEYS_DETECT[pos] - WHITE_KEYS_DETECT[pos - 1] == 1)
                 return whiteKey; // No
             // Yes
-            return 12 * (num / 7) + whiteKeys[pos] - 1;
+            return 12 * (num / 7) + WHITE_KEYS_DETECT[pos] - 1;
         }
 
         // Black key to the right of white key
-        if (transNumX >= this.keyWidthWhite - this.keyWidthBlack / 2)
+        if (transNumX >= kww - kwb / 2)
         {
             // Is there a black key ?
-            if (whiteKeys[pos + 1] - whiteKeys[pos] == 1)
+            if (WHITE_KEYS_DETECT[pos + 1] - WHITE_KEYS_DETECT[pos] == 1)
                 return whiteKey; // No
 
             // Yes
-            return 12 * (num / 7) + whiteKeys[pos] + 1;
+            return 12 * (num / 7) + WHITE_KEYS_DETECT[pos] + 1;
         }
 
         // White key

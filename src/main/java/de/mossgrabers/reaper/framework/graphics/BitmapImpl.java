@@ -9,6 +9,7 @@ import de.mossgrabers.framework.graphics.IEncoder;
 import de.mossgrabers.framework.graphics.IRenderer;
 import de.mossgrabers.reaper.ui.WindowManager;
 import de.mossgrabers.reaper.ui.dialog.BasicDialog;
+import de.mossgrabers.reaper.ui.utils.FontCache;
 import de.mossgrabers.reaper.ui.widget.BoxPanel;
 
 import javax.swing.BoxLayout;
@@ -116,7 +117,7 @@ public class BitmapImpl implements IBitmap
     {
         synchronized (this.bufferedImage)
         {
-            renderer.render (new GraphicsContextImpl (this.bufferedImage.createGraphics ()));
+            renderer.render (new GraphicsContextImpl (this.bufferedImage.createGraphics (), FontCache.SANS_SERIF));
         }
     }
 

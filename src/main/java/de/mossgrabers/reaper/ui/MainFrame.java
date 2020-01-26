@@ -33,6 +33,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.List;
@@ -75,7 +77,10 @@ public class MainFrame extends JFrame
 
         logModel.setTextArea (this.loggingTextArea);
 
-        this.setType (Type.UTILITY);
+        final URL resource = getClass ().getResource ("/images/AppIcon.gif");
+        final Image image = Toolkit.getDefaultToolkit ().getImage (resource);
+        if (image != null)
+            this.setIconImage (image);
 
         this.setTitle ();
 

@@ -28,7 +28,7 @@ public class NoteRepeatImpl implements INoteRepeat
     };
 
     private final MessageSender            sender;
-    private boolean                        isNoteRepeat;
+    private boolean                        isNoteRepeat   = false;
     private double                         noteRepeatPeriod;
     private double                         noteLength;
     private boolean                        usePressure;

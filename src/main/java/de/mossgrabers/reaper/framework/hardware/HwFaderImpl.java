@@ -142,33 +142,42 @@ public class HwFaderImpl extends AbstractHwContinuousControl implements IHwFader
 
     /** {@inheritDoc} */
     @Override
-    public void mouse (final int mouseEvent, final double x, final double y)
+    public void mouse (final int mouseEvent, final double x, final double y, final double scale)
     {
         if (this.midiInput == null)
             return;
 
         try
         {
+            final Bounds bounds = this.layout.getBounds ();
+            if (bounds == null)
+                return;
+
+            final double scaleX = x / scale;
+            final double scaleY = y / scale;
+
+            if (mouseEvent == MouseEvent.MOUSE_PRESSED && bounds.contains (scaleX, scaleY))
+            {
+                this.isPressed = true;
+                return;
+            }
+
+            if (!this.isPressed)
+                return;
+
             if (mouseEvent == MouseEvent.MOUSE_RELEASED)
             {
                 this.isPressed = false;
                 return;
             }
 
-            if (mouseEvent == MouseEvent.MOUSE_PRESSED)
-            {
-                this.isPressed = true;
-                return;
-            }
-
-            final Bounds bounds = this.layout.getBounds ();
-            if (mouseEvent == MouseEvent.MOUSE_DRAGGED && this.isPressed)
+            if (mouseEvent == MouseEvent.MOUSE_DRAGGED)
             {
                 double value;
                 if (this.isVertical)
-                    value = 1 - (y - bounds.getY ()) / bounds.getHeight ();
+                    value = 1 - (scaleY - bounds.getY ()) / bounds.getHeight ();
                 else
-                    value = (x - bounds.getX ()) / bounds.getWidth ();
+                    value = (scaleX - bounds.getX ()) / bounds.getWidth ();
                 value = Math.max (0, Math.min (1, value));
 
                 if (this.midiType == BindType.CC)

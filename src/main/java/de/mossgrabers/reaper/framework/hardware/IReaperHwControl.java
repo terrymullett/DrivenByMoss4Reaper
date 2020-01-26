@@ -30,6 +30,7 @@ public interface IReaperHwControl extends IHwControl
      * @param mouseEvent The event
      * @param x The X position of the event
      * @param y The Y position of the event
+     * @param scale The scale factor
      */
-    void mouse (int mouseEvent, double x, double y);
+    void mouse (int mouseEvent, double x, double y, double scale);
 }

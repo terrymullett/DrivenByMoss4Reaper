@@ -2,9 +2,11 @@
 - All devices
   * New: Stop (or toggle playback) also disables record
   * New: Improved autodetect: Do not add a device if one of the midi ins/outs is already in use. Refresh midi devices before executing the autodetect.
+  * New: Configuration window is now a top level window
+  * New: Added simulator window for each device
   * Fixed: Some LEDs did not update correctly
   * Fixed: Duplicating media items from the session view did always duplicate the selected media items.
-* Beatstep
+- Beatstep
   * New: Easier switching between note selection and step editing in sequencers. Turning knob left selects play/note select, turning it right selects step editing.
   * Fixed: Value change on some knobs were flipped (e.g. scrolling browser).
   * Fixed: The Note Sequencer used the drum mapping and octave shifting.
@@ -27,6 +29,7 @@
   * New: Added duplicating notes in Note, Drum, Drum 4 and Drum 8 sequencers. Keep Dulicate button pressed, select the source note, press empty destination pad(s). The note will be copied with all settings.
   * New: Tempo and Position knobs only show their value as a popup notification. The metronome settings can now be accessed by long-pressing the **Metronome** button. Note: play position text is only updated when playback is active!
   * Fixed: Layout of Touchstrip mode was not updated to new features on Push 1
+  * Fixed: Play view was not active on a newly added track
 - SL MkIII
   * Fixed: Crash when selecting track again to enter device mode
 

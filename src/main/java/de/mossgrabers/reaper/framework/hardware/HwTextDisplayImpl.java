@@ -73,14 +73,14 @@ public class HwTextDisplayImpl extends AbstractHwControl implements IHwTextDispl
         for (int i = 0; i < this.lines.length; i++)
         {
             if (this.lines[i] != null)
-                gc.drawTextInBounds (this.lines[i], x, y + i * height, width, height, Align.CENTER, ColorEx.WHITE, fontSize);
+                gc.drawTextInBounds (this.lines[i], x, y + i * height, width, height, Align.LEFT, ColorEx.WHITE, fontSize);
         }
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void mouse (final int mouseEvent, final double x, final double y)
+    public void mouse (final int mouseEvent, final double x, final double y, final double scale)
     {
         // No interaction with displays
     }

@@ -136,7 +136,7 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
 
     /** {@inheritDoc} */
     @Override
-    public void mouse (final int mouseEvent, final double x, final double y)
+    public void mouse (final int mouseEvent, final double x, final double y, final double scale)
     {
         if (this.midiInput == null)
             return;
@@ -153,13 +153,16 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
                 return;
             }
 
+            final double scaleX = x / scale;
+            final double scaleY = y / scale;
+
             final Bounds bounds = this.layout.getBounds ();
-            if (!bounds.contains (x, y))
+            if (!bounds.contains (scaleX, scaleY))
                 return;
 
             if (mouseEvent == MouseEvent.MOUSE_PRESSED)
             {
-                final double value = 1 - Math.abs (y - bounds.getY ()) / bounds.getHeight ();
+                final double value = 1 - Math.abs (scaleY - bounds.getY ()) / bounds.getHeight ();
                 int type = this.midiType == BindType.CC ? 0xB0 : 0x90;
                 this.midiInput.handleMidiMessage (new ShortMessage (type, this.midiChannel, this.midiControl, (int) (Math.max (0, Math.round (value * 127.0)))));
                 return;
@@ -169,7 +172,7 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
             {
                 if (this.currentY < 0)
                     this.currentY = bounds.getY ();
-                final double value = 1 - Math.abs (y - this.currentY) / bounds.getHeight ();
+                final double value = 1 - Math.abs (scaleY - this.currentY) / bounds.getHeight ();
                 this.midiInput.handleMidiMessage (new ShortMessage (0xA0, this.midiChannel, this.midiControl, (int) (Math.max (0, Math.round (value * 127.0)))));
             }
         }

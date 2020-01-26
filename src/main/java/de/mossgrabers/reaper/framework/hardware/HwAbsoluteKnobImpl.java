@@ -13,6 +13,13 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.graphics.IGraphicsContext;
+import de.mossgrabers.reaper.framework.graphics.GraphicsContextImpl;
+import de.mossgrabers.reaper.framework.midi.MidiInputImpl;
+
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.ShortMessage;
+
+import java.awt.event.MouseEvent;
 
 
 /**
@@ -23,6 +30,16 @@ import de.mossgrabers.framework.graphics.IGraphicsContext;
 public class HwAbsoluteKnobImpl extends AbstractHwContinuousControl implements IHwAbsoluteKnob, IReaperHwControl
 {
     private final HwControlLayout layout;
+
+    private MidiInputImpl         midiInput;
+    private BindType              midiType;
+    private int                   midiChannel;
+    private int                   midiControl;
+
+    private boolean               isPressed;
+    private double                pressedX;
+    private double                pressedY;
+    private int                   currentValue = 0;
 
 
     /**
@@ -42,9 +59,14 @@ public class HwAbsoluteKnobImpl extends AbstractHwContinuousControl implements I
 
     /** {@inheritDoc} */
     @Override
-    public void bind (final IMidiInput input, final BindType type, final int channel, final int value)
+    public void bind (final IMidiInput input, final BindType type, final int channel, final int control)
     {
-        input.bind (this, type, channel, value);
+        this.midiInput = (MidiInputImpl) input;
+        this.midiType = type;
+        this.midiChannel = channel;
+        this.midiControl = control;
+
+        input.bind (this, type, channel, control);
     }
 
 
@@ -92,16 +114,64 @@ public class HwAbsoluteKnobImpl extends AbstractHwContinuousControl implements I
         final double centerX = (bounds.getX () + radius) * scale;
         final double centerY = (bounds.getY () + radius) * scale;
 
-        // TODO Draw according to value
-        gc.fillCircle (centerX, centerY, radius, ColorEx.RED);
-        gc.fillCircle (centerX, centerY, radius * 0.9, ColorEx.BLACK);
+        gc.fillCircle (centerX, centerY, radius, ColorEx.BLACK);
+
+        final int length = (int) Math.round (this.currentValue * 360.0 / 127.0);
+        ((GraphicsContextImpl) gc).fillArc (centerX, centerY, radius, ColorEx.RED, 270 - length, length);
+
+        gc.fillCircle (centerX, centerY, radius * 0.8, ColorEx.BLACK);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void mouse (final int mouseEvent, final double x, final double y)
+    public void mouse (final int mouseEvent, final double x, final double y, final double scale)
     {
-        // TODO
+        if (this.midiInput == null)
+            return;
+
+        try
+        {
+            final Bounds bounds = this.layout.getBounds ();
+            if (bounds == null)
+                return;
+
+            final double scaleX = x / scale;
+            final double scaleY = y / scale;
+
+            if (mouseEvent == MouseEvent.MOUSE_PRESSED && bounds.contains (scaleX, scaleY))
+            {
+                this.isPressed = true;
+                this.pressedX = scaleX;
+                this.pressedY = scaleY;
+                return;
+            }
+
+            if (!this.isPressed)
+                return;
+
+            if (mouseEvent == MouseEvent.MOUSE_RELEASED)
+            {
+                this.isPressed = false;
+                return;
+            }
+
+            if (mouseEvent == MouseEvent.MOUSE_DRAGGED)
+            {
+                final double offset = Math.min (3, Math.max (-3, (this.pressedX - scaleX) + (this.pressedY - scaleY)));
+                this.pressedX = scaleX;
+                this.pressedY = scaleY;
+
+                if (this.midiType == BindType.CC)
+                {
+                    this.currentValue = (int) Math.max (0, Math.min (127, this.currentValue + offset));
+                    this.midiInput.handleMidiMessage (new ShortMessage (0xB0, this.midiChannel, this.midiControl, this.currentValue));
+                }
+            }
+        }
+        catch (final InvalidMidiDataException ex)
+        {
+            this.host.error ("Invalid MIDI message.", ex);
+        }
     }
 }
