@@ -6,6 +6,7 @@
   * Fixed: Configured knob speed settings were not set on startup
 - Komplete Kontrol A-Series / M32
   * Fixed: Configured knob speed settings were not set on startup
+  * Fixed: Crashes when scrolling clip page
 - Push 1/2
   * Fixed: Configured knob speed settings were not set on startup
 
