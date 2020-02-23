@@ -1,4 +1,4 @@
-8.80 (unreleased)
+8.80
 - All devices
   * New: The project start time, which can be configured in the project settings, is now added to the displayed time.
   * Fixed: jna-platform.jar file was missing. E.g. caused the file dialog in the Generic Flexi to crash.
