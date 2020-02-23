@@ -29,6 +29,17 @@ Requires Reaper 64 bit, 5.95+ version!
       Install the *.so file into ~/.config/REAPER/UserPlugins or in the case of a 
       portable install into REAPER/UserPlugins.
 
+2) Security check on Mac OS 
+   If you get the following error when starting Reaper: >> "reaper_drivenbymoss.dylib" can't be opened because Apple cannot check it for malicious software. <<,
+   do the following:
+   a) Run Reaper to get the error
+   b) Close Reaper
+   c) Open the System Settings
+   d) Open the Security tab
+   e) Click the Lock icon at the bottom of the window and enter your password
+   f) Above it you should see the notification that "reaper_drivenbymoss.dylib" was blocked
+   g) Click the button to "allow it anyway"
+
 2) Configuration
    a) Start Reaper
    b) Open the Preferences (Ctrl+P)

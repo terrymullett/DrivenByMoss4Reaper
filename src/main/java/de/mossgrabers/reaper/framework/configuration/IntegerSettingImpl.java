@@ -97,9 +97,7 @@ public class IntegerSettingImpl extends BaseSetting<JFormattedTextField, Integer
     @Override
     public void flush ()
     {
-        // Workaround Bitwig offset bug
-        final int v = this.value - this.minValue;
-        this.notifyObservers (Integer.valueOf (v));
+        this.notifyObservers (Integer.valueOf (this.value));
     }
 
 

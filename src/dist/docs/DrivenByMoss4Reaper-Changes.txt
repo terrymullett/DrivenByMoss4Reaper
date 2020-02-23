@@ -1,12 +1,20 @@
 8.80 (unreleased)
 - All devices
+  * New: The project start time, which can be configured in the project settings, is now added to the displayed time.
+  * Fixed: jna-platform.jar file was missing. E.g. caused the file dialog in the Generic Flexi to crash.
   * Fixed: Blinking pads in simulator UI did not work
   * Fixed: Mapping of CC commands to specific values was broken. Mainly affected Kontrol keyboards.
   * Fixed: Scene/clip scrolling LEDs not indicated correctly. Session birds eye view navigation did not work.
+- Akai APCmini
+  * New: Change note length or create long notes in the Sequencers (Note, Drum) by pressing a note pad and then a pad right of it.
 - Akai APC40 / APC40mkII
+  * New: Change note length or create long notes in the Sequencers (Note, Drum) by pressing a note pad and then a pad right of it.
   * New: Improved scrolling of browser columns
   * Fixed: Browser crashed when activated
 - Generic Flexi
+  * New: Added new function: **Clip: Quantize**
+  * New: Added functions for note repeat
+  * New: Added functions for transposing the keyboard
   * Fixed: Configured knob speed settings were not set on startup
 - Komplete Kontrol A-Series / M32
   * Fixed: Configured knob speed settings were not set on startup
@@ -14,8 +22,12 @@
 - Launchpad
   * New: Virtual faders support 4 velocity steps (on all models)
   * New: Activates hardware play mode again when extension is stopped
+  * New: Change note length or create long notes in the Sequencers (Note, Drum, Drum 4, Drum 8) by pressing a note pad and then a pad right of it.
+  * New: Launchpad Pro: Duplicate notes in Drum 4 and Drum 8 sequencers
   * Fixed: Color of front LED was wrong when mode was changed
+  * Fixed: Cursor left was not lit correctly in Drum 4 and Drum 8 mode
 - Push 1/2
+  * New: Change note length or create long notes in the Sequencers (Note, Drum, Drum 4, Drum 8) by pressing a note pad and then a pad right of it.
   * Fixed: Master mode only showed up shortly when Master volume knob was touched
   * Fixed: Configured knob speed settings were not set on startup
 
