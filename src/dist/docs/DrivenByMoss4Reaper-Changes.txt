@@ -1,6 +1,7 @@
-8.92 (unreleased)
+8.92
 - All devices
   * New: Added version information to Windows DLL
+  * Fixed: Temporary freezes of the Reaper UI with heavy CPU plugins with lots of parameters
   * Fixed: Shutdown was not fully completed after JVM was stopped.
 - Launchpad
   * Fixed: Note selection was activated when coming from a non-note mode but should not.
