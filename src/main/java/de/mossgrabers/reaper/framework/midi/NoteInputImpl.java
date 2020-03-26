@@ -30,8 +30,8 @@ public class NoteInputImpl implements INoteInput
      *
      * @param sender
      *
-     * @param filters a filter string formatted as hexadecimal value with `?` as wildcard. For
-     *            example `80????` would match note-off on channel 1 (0). When this parameter is
+     * @param filters a filter string formatted as hexadecimal value with '?' as wildcard. For
+     *            example '80????' would match note-off on channel 1 (0). When this parameter is
      *            {@null}, a standard filter will be used to forward note-related messages on
      *            channel 1 (0).
      */
@@ -41,6 +41,11 @@ public class NoteInputImpl implements INoteInput
         {
             this.filters.add ("90");
             this.filters.add ("80");
+            this.filters.add ("B001");
+            this.filters.add ("B040");
+            this.filters.add ("E0");
+            this.filters.add ("D0");
+            this.filters.add ("A0");
         }
         else
         {
