@@ -1,6 +1,6 @@
  reaper_drivenbymoss
 
- Timestamp is 5e7c4de8 (Thu Mar 26 07:38:32 2020)
+ Timestamp is 5e7f811e (Sat Mar 28 17:53:50 2020)
 
  Preferred load address is 0000000180000000
 
@@ -5316,21 +5316,21 @@
  0002:0001d760       __real@3e60000000000000    0000000180094760     DataCollector.obj
  0002:0001d768       __real@3f1a36e2eb1c432d    0000000180094768     ClipProcessor.obj
  0002:0001d770       __real@3f50624dd2f1a9fc    0000000180094770     DataCollector.obj
- 0002:0001d778       __real@3fbd791c5f888822    0000000180094778     TrackProcessor.obj
+ 0002:0001d778       __real@3fbd791c5f888822    0000000180094778     MastertrackProcessor.obj
  0002:0001d780       __real@3fc0000000000000    0000000180094780     TrackProcessor.obj
  0002:0001d788       __real@3fd0000000000000    0000000180094788     TrackProcessor.obj
  0002:0001d790       __real@3fe0000000000000    0000000180094790     TrackProcessor.obj
  0002:0001d798       __real@3ff0000000000000    0000000180094798     TrackProcessor.obj
- 0002:0001d7a0       __real@4000000000000000    00000001800947a0     MastertrackProcessor.obj
- 0002:0001d7a8       __real@4008000000000000    00000001800947a8     MastertrackProcessor.obj
- 0002:0001d7b0       __real@4010000000000000    00000001800947b0     MastertrackProcessor.obj
+ 0002:0001d7a0       __real@4000000000000000    00000001800947a0     TrackProcessor.obj
+ 0002:0001d7a8       __real@4008000000000000    00000001800947a8     TrackProcessor.obj
+ 0002:0001d7b0       __real@4010000000000000    00000001800947b0     TrackProcessor.obj
  0002:0001d7b8       __real@4014000000000000    00000001800947b8     TrackProcessor.obj
  0002:0001d7c0       __real@401c000000000000    00000001800947c0     TrackProcessor.obj
  0002:0001d7c8       __real@4020000000000000    00000001800947c8     DeviceProcessor.obj
  0002:0001d7d0       __real@40215f2ced384f29    00000001800947d0     DataCollector.obj
  0002:0001d7d8       __real@404e000000000000    00000001800947d8     TrackProcessor.obj
  0002:0001d7e0       __real@4059000000000000    00000001800947e0     DataCollector.obj
- 0002:0001d7e8       __real@408f400000000000    00000001800947e8     TrackProcessor.obj
+ 0002:0001d7e8       __real@408f400000000000    00000001800947e8     MastertrackProcessor.obj
  0002:0001d7f0       __real@4202a05f20000000    00000001800947f0     DataCollector.obj
  0002:0001d7f8       __real@bff0000000000000    00000001800947f8     ClipProcessor.obj
  0002:0001d800       __real@c059000000000000    0000000180094800     DataCollector.obj

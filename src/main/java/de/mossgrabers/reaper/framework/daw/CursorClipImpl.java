@@ -631,14 +631,14 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public int getLowerRowWithData ()
     {
-        int min = -1;
+        int min = 128;
         for (int channel = 0; channel < 16; channel++)
         {
             final int lower = this.getLowerRowWithData (channel);
             if (lower >= 0 && lower < min)
                 min = lower;
         }
-        return min;
+        return min == 128 ? -1 : min;
     }
 
 
