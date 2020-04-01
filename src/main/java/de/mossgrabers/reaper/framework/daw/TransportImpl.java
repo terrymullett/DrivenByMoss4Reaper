@@ -429,7 +429,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void toggleWriteArrangerAutomation ()
     {
         if (this.isWritingArrangerAutomation ())
-            this.setAutomationWriteMode (AutomationMode.READ);
+            this.setAutomationWriteMode (AutomationMode.TRIM_READ);
         else
             this.setAutomationWriteMode (AutomationMode.WRITE);
     }

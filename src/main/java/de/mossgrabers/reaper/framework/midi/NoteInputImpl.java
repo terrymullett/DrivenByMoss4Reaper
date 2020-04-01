@@ -42,6 +42,7 @@ public class NoteInputImpl implements INoteInput
             this.filters.add ("90");
             this.filters.add ("80");
             this.filters.add ("B001");
+            this.filters.add ("B00B");
             this.filters.add ("B040");
             this.filters.add ("E0");
             this.filters.add ("D0");

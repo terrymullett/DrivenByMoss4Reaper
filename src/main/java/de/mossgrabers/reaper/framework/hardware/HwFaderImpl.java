@@ -125,7 +125,7 @@ public class HwFaderImpl extends AbstractHwContinuousControl implements IHwFader
 
         gc.fillRectangle (left, top, width, height, ColorEx.BLACK);
 
-        final double factor = this.midiType == BindType.CC ? 127.0 : 16383.0;
+        final double factor = this.midiType == null || this.midiType == BindType.CC ? 127.0 : 16383.0;
 
         if (this.isVertical)
         {
@@ -144,33 +144,30 @@ public class HwFaderImpl extends AbstractHwContinuousControl implements IHwFader
     @Override
     public void mouse (final int mouseEvent, final double x, final double y, final double scale)
     {
-        if (this.midiInput == null)
+        final Bounds bounds = this.layout.getBounds ();
+        if (bounds == null)
             return;
+
+        final double scaleX = x / scale;
+        final double scaleY = y / scale;
+
+        if (mouseEvent == MouseEvent.MOUSE_PRESSED && bounds.contains (scaleX, scaleY))
+        {
+            this.isPressed = true;
+            return;
+        }
+
+        if (!this.isPressed)
+            return;
+
+        if (mouseEvent == MouseEvent.MOUSE_RELEASED)
+        {
+            this.isPressed = false;
+            return;
+        }
 
         try
         {
-            final Bounds bounds = this.layout.getBounds ();
-            if (bounds == null)
-                return;
-
-            final double scaleX = x / scale;
-            final double scaleY = y / scale;
-
-            if (mouseEvent == MouseEvent.MOUSE_PRESSED && bounds.contains (scaleX, scaleY))
-            {
-                this.isPressed = true;
-                return;
-            }
-
-            if (!this.isPressed)
-                return;
-
-            if (mouseEvent == MouseEvent.MOUSE_RELEASED)
-            {
-                this.isPressed = false;
-                return;
-            }
-
             if (mouseEvent == MouseEvent.MOUSE_DRAGGED)
             {
                 double value;
@@ -179,6 +176,23 @@ public class HwFaderImpl extends AbstractHwContinuousControl implements IHwFader
                 else
                     value = (scaleX - bounds.getX ()) / bounds.getWidth ();
                 value = Math.max (0, Math.min (1, value));
+
+                if (this.midiInput == null)
+                {
+                    if (this.command != null)
+                    {
+                        this.currentValue = (int) Math.max (0, Math.round (value * 127.0));
+                        this.command.execute (this.currentValue);
+                    }
+                    else if (this.pitchbendCommand != null)
+                    {
+                        this.currentValue = (int) Math.max (0, Math.round (value * 16383.0));
+                        final int data1 = (int) Math.min (127, Math.round (this.currentValue % 128.0));
+                        final int data2 = (int) Math.min (127, Math.round (this.currentValue / 128.0));
+                        this.pitchbendCommand.onPitchbend (data1, data2);
+                    }
+                    return;
+                }
 
                 if (this.midiType == BindType.CC)
                 {

@@ -12,6 +12,7 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.graphics.Align;
 import de.mossgrabers.framework.graphics.IGraphicsContext;
+import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.reaper.framework.graphics.GraphicsContextImpl;
 import de.mossgrabers.reaper.framework.midi.MidiInputImpl;
 
@@ -126,6 +127,8 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
         if (this.label != null)
         {
             final Bounds bounds = this.layout.getBounds ();
+            if (bounds == null)
+                return;
             final double width = bounds.getWidth () * scale;
             final double height = bounds.getHeight () * scale;
             final double fontSize = ((GraphicsContextImpl) gc).calculateFontSize (this.label, height, width, 6.0);
@@ -138,9 +141,27 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
     @Override
     public void mouse (final int mouseEvent, final double x, final double y, final double scale)
     {
-        if (this.midiInput == null)
+        // Check if click is in the bounds of the button
+        final double scaleX = x / scale;
+        final double scaleY = y / scale;
+        final Bounds bounds = this.layout.getBounds ();
+        if (bounds == null || !bounds.contains (scaleX, scaleY))
             return;
 
+        // If MIDI is not attached simply execute the command
+        if (this.midiInput == null)
+        {
+            if (this.command == null)
+                return;
+
+            if (mouseEvent == MouseEvent.MOUSE_PRESSED)
+                this.command.execute (ButtonEvent.DOWN, 127);
+            else if (mouseEvent == MouseEvent.MOUSE_RELEASED)
+                this.command.execute (ButtonEvent.UP, 0);
+            return;
+        }
+
+        // Send MIDI event to indirectly trigger the command
         try
         {
             if (mouseEvent == MouseEvent.MOUSE_RELEASED)
@@ -152,13 +173,6 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
                 }
                 return;
             }
-
-            final double scaleX = x / scale;
-            final double scaleY = y / scale;
-
-            final Bounds bounds = this.layout.getBounds ();
-            if (!bounds.contains (scaleX, scaleY))
-                return;
 
             if (mouseEvent == MouseEvent.MOUSE_PRESSED)
             {

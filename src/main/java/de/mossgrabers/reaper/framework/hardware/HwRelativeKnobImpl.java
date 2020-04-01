@@ -156,35 +156,32 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     @Override
     public void mouse (final int mouseEvent, final double x, final double y, final double scale)
     {
-        if (this.midiInput == null)
+        final Bounds bounds = this.layout.getBounds ();
+        if (bounds == null)
             return;
+
+        final double scaleX = x / scale;
+        final double scaleY = y / scale;
+
+        if (mouseEvent == MouseEvent.MOUSE_PRESSED && bounds.contains (scaleX, scaleY))
+        {
+            this.isPressed = true;
+            this.pressedX = scaleX;
+            this.pressedY = scaleY;
+            return;
+        }
+
+        if (!this.isPressed)
+            return;
+
+        if (mouseEvent == MouseEvent.MOUSE_RELEASED)
+        {
+            this.isPressed = false;
+            return;
+        }
 
         try
         {
-            final Bounds bounds = this.layout.getBounds ();
-            if (bounds == null)
-                return;
-
-            final double scaleX = x / scale;
-            final double scaleY = y / scale;
-
-            if (mouseEvent == MouseEvent.MOUSE_PRESSED && bounds.contains (scaleX, scaleY))
-            {
-                this.isPressed = true;
-                this.pressedX = scaleX;
-                this.pressedY = scaleY;
-                return;
-            }
-
-            if (!this.isPressed)
-                return;
-
-            if (mouseEvent == MouseEvent.MOUSE_RELEASED)
-            {
-                this.isPressed = false;
-                return;
-            }
-
             if (mouseEvent == MouseEvent.MOUSE_DRAGGED)
             {
                 final int speed = (int) Math.min (3, Math.max (-3, Math.round (this.pressedX - scaleX + (this.pressedY - scaleY))));
@@ -193,11 +190,16 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
                 this.pressedX = scaleX;
                 this.pressedY = scaleY;
 
-                if (this.midiType == BindType.CC)
+                final int value = VALUE_CHANGERS.get (this.encoding).encode (speed);
+
+                if (this.midiInput == null)
                 {
-                    final int value = VALUE_CHANGERS.get (this.encoding).encode (speed);
-                    this.midiInput.handleMidiMessage (new ShortMessage (0xB0, this.midiChannel, this.midiControl, value));
+                    this.command.execute (value);
+                    return;
                 }
+
+                if (this.midiType == BindType.CC)
+                    this.midiInput.handleMidiMessage (new ShortMessage (0xB0, this.midiChannel, this.midiControl, value));
             }
         }
         catch (final InvalidMidiDataException ex)
