@@ -18,7 +18,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -40,19 +39,14 @@ public class DeviceManager
     private static final Pattern         PATTERN_COMPANY = Pattern.compile ("(.*?)\\s*\\((.*?)\\)");
     private static final Pattern         PATTERN_JSFX    = Pattern.compile ("NAME\\s?((\")?.+?(\")?)\\s?\"(.+?)\"");
 
-    private static final Set<String>     NON_CATEGORIES  = new HashSet<> ();
+    private static final Set<String>     NON_CATEGORIES  = Set.of ("ix", "till", "loser", "liteon", "sstillwell", "teej", "schwa", "u-he", "remaincalm_org");
 
     private final List<Device>           devices         = new ArrayList<> ();
     private final List<String>           categories      = new ArrayList<> ();
     private final List<String>           vendors         = new ArrayList<> ();
     private final List<DeviceCollection> collections     = new ArrayList<> ();
 
-    static
-    {
-        Collections.addAll (NON_CATEGORIES, "ix", "till", "loser", "liteon", "sstillwell", "teej", "schwa", "u-he", "remaincalm_org");
-    }
-
-    private static final DeviceManager INSTANCE = new DeviceManager ();
+    private static final DeviceManager   INSTANCE        = new DeviceManager ();
 
 
     /**
