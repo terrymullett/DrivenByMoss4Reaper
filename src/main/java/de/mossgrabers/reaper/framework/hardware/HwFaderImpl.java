@@ -35,6 +35,9 @@ public class HwFaderImpl extends AbstractHwContinuousControl implements IHwFader
     private BindType              midiType;
     private int                   midiChannel;
     private int                   midiControl;
+    // Alternative binding to the command
+    private IParameter            parameter;
+
     private boolean               isPressed;
     private int                   currentValue = 0;
 
@@ -73,16 +76,16 @@ public class HwFaderImpl extends AbstractHwContinuousControl implements IHwFader
     @Override
     public void bind (final IParameter parameter)
     {
-        // So far only used for user mode, which is not supported for Reaper
+        this.parameter = parameter;
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void bindTouch (final TriggerCommand command, final IMidiInput input, final BindType type, final int control)
+    public void bindTouch (final TriggerCommand command, final IMidiInput input, final BindType type, final int channel, final int control)
     {
         this.touchCommand = command;
-        input.bindTouch (this, type, 0, control);
+        input.bindTouch (this, type, channel, control);
     }
 
 
@@ -90,7 +93,9 @@ public class HwFaderImpl extends AbstractHwContinuousControl implements IHwFader
     @Override
     public void handleValue (final double value)
     {
-        if (this.command != null)
+        if (this.parameter != null)
+            this.parameter.setValue ((int) Math.round (value * 127.0));
+        else if (this.command != null)
             this.command.execute ((int) Math.round (value * 127.0));
         else if (this.pitchbendCommand != null)
         {

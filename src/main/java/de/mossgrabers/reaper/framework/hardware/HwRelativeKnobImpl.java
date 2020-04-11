@@ -53,6 +53,8 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     private BindType               midiType;
     private int                    midiChannel;
     private int                    midiControl;
+    // Alternative binding to the command
+    private IParameter             parameter;
 
     private boolean                isPressed;
     private double                 pressedX;
@@ -106,16 +108,16 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     @Override
     public void bind (final IParameter parameter)
     {
-        // So far only used for user mode, which is not supported for Reaper
+        this.parameter = parameter;
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void bindTouch (final TriggerCommand command, final IMidiInput input, final BindType type, final int control)
+    public void bindTouch (final TriggerCommand command, final IMidiInput input, final BindType type, final int channel, final int control)
     {
         this.touchCommand = command;
-        input.bindTouch (this, type, 0, control);
+        input.bindTouch (this, type, channel, control);
     }
 
 
@@ -125,7 +127,11 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     {
         final int intValue = (int) Math.round (value * 127);
         final int speed = (int) VALUE_CHANGERS.get (this.encoding).calcKnobSpeed (intValue);
-        this.command.execute (speed < 0 ? speed + 128 : speed);
+        final int changeValue = speed < 0 ? speed + 128 : speed;
+        if (this.parameter != null)
+            this.parameter.changeValue (changeValue);
+        else if (this.command != null)
+            this.command.execute (changeValue);
     }
 
 

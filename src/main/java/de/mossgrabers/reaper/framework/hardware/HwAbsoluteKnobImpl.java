@@ -35,6 +35,8 @@ public class HwAbsoluteKnobImpl extends AbstractHwContinuousControl implements I
     private BindType              midiType;
     private int                   midiChannel;
     private int                   midiControl;
+    // Alternative binding to the command
+    private IParameter            parameter;
 
     private boolean               isPressed;
     private double                pressedX;
@@ -74,13 +76,13 @@ public class HwAbsoluteKnobImpl extends AbstractHwContinuousControl implements I
     @Override
     public void bind (final IParameter parameter)
     {
-        // So far only used for user mode, which is not supported for Reaper
+        this.parameter = parameter;
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void bindTouch (final TriggerCommand command, final IMidiInput input, final BindType type, final int control)
+    public void bindTouch (final TriggerCommand command, final IMidiInput input, final BindType type, final int channel, final int control)
     {
         // No touch on absolute knob
     }
@@ -90,7 +92,11 @@ public class HwAbsoluteKnobImpl extends AbstractHwContinuousControl implements I
     @Override
     public void handleValue (final double value)
     {
-        this.command.execute ((int) Math.round (value * 127.0));
+        final int v = (int) Math.round (value * 127.0);
+        if (this.parameter != null)
+            this.parameter.setValue (v);
+        else if (this.command != null)
+            this.command.execute (v);
     }
 
 

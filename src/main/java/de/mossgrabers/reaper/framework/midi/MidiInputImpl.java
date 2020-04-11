@@ -374,7 +374,7 @@ public class MidiInputImpl implements IMidiInput
                     final int value = valueButtonPair.getKey ().intValue ();
                     if (value == -1 || value == data2)
                     {
-                        valueButtonPair.getValue ().trigger (data2 > 0 ? ButtonEvent.DOWN : ButtonEvent.UP);
+                        valueButtonPair.getValue ().trigger (value == 0 || data2 > 0 ? ButtonEvent.DOWN : ButtonEvent.UP);
                         return true;
                     }
                 }

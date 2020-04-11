@@ -12,6 +12,7 @@ import de.mossgrabers.framework.daw.ILayerBank;
 import de.mossgrabers.framework.daw.IParameterBank;
 import de.mossgrabers.framework.daw.IParameterPageBank;
 import de.mossgrabers.framework.daw.data.IDevice;
+import de.mossgrabers.framework.observer.IValueObserver;
 import de.mossgrabers.reaper.framework.daw.data.DeviceImpl;
 
 
@@ -193,6 +194,14 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
     {
         // Not supported
         return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void addHasDrumPadsObserver (IValueObserver<Boolean> observer)
+    {
+        // No drum devices, therefore never fires
     }
 
 

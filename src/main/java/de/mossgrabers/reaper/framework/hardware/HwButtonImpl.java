@@ -178,7 +178,12 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
             {
                 final double value = 1 - Math.abs (scaleY - bounds.getY ()) / bounds.getHeight ();
                 final int type = this.midiType == BindType.CC ? 0xB0 : 0x90;
-                this.midiInput.handleMidiMessage (new ShortMessage (type, this.midiChannel, this.midiControl, (int) Math.max (0, Math.round (value * 127.0))));
+                int v;
+                if (this.midiValue < 0)
+                    v = (int) Math.max (0, Math.round (value * 127.0));
+                else
+                    v = this.midiValue;
+                this.midiInput.handleMidiMessage (new ShortMessage (type, this.midiChannel, this.midiControl, v));
                 return;
             }
 
