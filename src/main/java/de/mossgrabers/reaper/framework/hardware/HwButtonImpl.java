@@ -93,6 +93,14 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
 
     /** {@inheritDoc} */
     @Override
+    public void unbind (final IMidiInput input)
+    {
+        input.unbind (this);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void setBounds (final double x, final double y, final double width, final double height)
     {
         this.layout.setBounds (x, y, width, height);
@@ -131,7 +139,7 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
                 return;
             final double width = bounds.getWidth () * scale;
             final double height = bounds.getHeight () * scale;
-            final double fontSize = ((GraphicsContextImpl) gc).calculateFontSize (this.label, height, width, 6.0);
+            final double fontSize = ((GraphicsContextImpl) gc).calculateFontSize (this.label, height, width, 8.0);
             gc.drawTextInBounds (this.label, bounds.getX () * scale, bounds.getY () * scale, width, height, Align.CENTER, textColor, fontSize);
         }
     }

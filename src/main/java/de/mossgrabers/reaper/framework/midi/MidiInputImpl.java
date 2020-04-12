@@ -26,6 +26,7 @@ import javax.sound.midi.ShortMessage;
 import javax.sound.midi.SysexMessage;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -145,6 +146,37 @@ public class MidiInputImpl implements IMidiInput
             throw new BindException (type);
 
         controlMap.computeIfAbsent (Integer.valueOf (control), key -> new HashMap<> ()).put (Integer.valueOf (value), button);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void unbind (final IHwButton button)
+    {
+        for (final Map<Integer, Map<Integer, IHwButton>> m: this.ccButtonMatchers.values ())
+        {
+            for (final Map<Integer, IHwButton> v: m.values ())
+            {
+                Collection<IHwButton> values = v.values ();
+                if (values.contains (button))
+                {
+                    values.remove (button);
+                    return;
+                }
+            }
+        }
+        for (final Map<Integer, Map<Integer, IHwButton>> m: this.noteButtonMatchers.values ())
+        {
+            for (final Map<Integer, IHwButton> v: m.values ())
+            {
+                Collection<IHwButton> values = v.values ();
+                if (values.contains (button))
+                {
+                    values.remove (button);
+                    return;
+                }
+            }
+        }
     }
 
 

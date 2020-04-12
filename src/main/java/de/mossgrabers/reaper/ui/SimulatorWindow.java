@@ -6,9 +6,11 @@ package de.mossgrabers.reaper.ui;
 
 import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.controller.color.ColorEx;
+import de.mossgrabers.framework.controller.hardware.IHwLight;
 import de.mossgrabers.framework.graphics.IGraphicsContext;
 import de.mossgrabers.reaper.framework.graphics.GraphicsContextImpl;
 import de.mossgrabers.reaper.framework.hardware.HwSurfaceFactoryImpl;
+import de.mossgrabers.reaper.framework.hardware.IReaperHwControl;
 import de.mossgrabers.reaper.ui.utils.FontCache;
 
 import javax.swing.JFrame;
@@ -28,6 +30,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.util.List;
 
 
 /**
@@ -145,7 +148,15 @@ public class SimulatorWindow extends JFrame
             this.scaleFactor = Math.min (innerSize.width / this.surfaceFactory.getWidth (), innerSize.height / this.surfaceFactory.getHeight ());
         gc.fillRectangle (0, 0, innerSize.width, innerSize.height, ColorEx.GRAY);
 
-        this.surfaceFactory.getControls ().forEach (control -> control.draw (gc, this.scaleFactor));
+        final List<IReaperHwControl> controls = this.surfaceFactory.getControls ();
+        controls.forEach (control -> {
+            if (control instanceof IHwLight)
+                control.draw (gc, this.scaleFactor);
+        });
+        controls.forEach (control -> {
+            if (!(control instanceof IHwLight))
+                control.draw (gc, this.scaleFactor);
+        });
     }
 
 

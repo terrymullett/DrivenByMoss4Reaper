@@ -268,7 +268,7 @@ public class GraphicsContextImpl implements IGraphicsContext
     public double calculateFontSize (final String text, final double maxHeight, final double maxWidth, final double minimumFontSize)
     {
         double size = minimumFontSize;
-        double fittingSize = -1;
+        double fittingSize = minimumFontSize;
         while (size < maxHeight)
         {
             this.gc.setFont (this.fontCache.getFont ((int) size));

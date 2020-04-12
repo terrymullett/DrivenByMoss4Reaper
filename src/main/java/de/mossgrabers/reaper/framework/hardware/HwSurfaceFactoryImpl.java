@@ -22,8 +22,8 @@ import de.mossgrabers.framework.controller.valuechanger.RelativeEncoding;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.graphics.IBitmap;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
@@ -38,12 +38,12 @@ import java.util.function.Supplier;
  */
 public class HwSurfaceFactoryImpl implements IHwSurfaceFactory
 {
-    private final IHost                 host;
-    private final Set<IReaperHwControl> controls     = new HashSet<> ();
+    private final IHost                  host;
+    private final List<IReaperHwControl> controls     = new ArrayList<> ();
 
-    private double                      width;
-    private double                      height;
-    private int                         lightCounter = 0;
+    private double                       width;
+    private double                       height;
+    private int                          lightCounter = 0;
 
 
     /**
@@ -221,7 +221,7 @@ public class HwSurfaceFactoryImpl implements IHwSurfaceFactory
      *
      * @return The controls
      */
-    public Set<IReaperHwControl> getControls ()
+    public List<IReaperHwControl> getControls ()
     {
         return this.controls;
     }
