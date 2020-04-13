@@ -44,6 +44,6 @@ public class MCU3ControllerInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup<?, ?> createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new MCUControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI, 3);
+        return new MCUControllerSetup (this.host, setupFactory, this.globalSettingsUI, this.documentSettingsUI, 3);
     }
 }

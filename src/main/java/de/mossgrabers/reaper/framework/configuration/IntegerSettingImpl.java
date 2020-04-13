@@ -25,6 +25,7 @@ public class IntegerSettingImpl extends BaseSetting<JFormattedTextField, Integer
 {
     private final int minValue;
     private final int maxValue;
+    private final int initialValue;
     private int       value;
 
 
@@ -43,9 +44,10 @@ public class IntegerSettingImpl extends BaseSetting<JFormattedTextField, Integer
     {
         super (logModel, label, category, new JFormattedTextField (NumberFormat.getIntegerInstance ()));
 
-        this.value = properties.getInt (this.getID (), initialValue);
         this.minValue = minValue;
         this.maxValue = maxValue;
+        this.initialValue = initialValue;
+        this.load (properties);
 
         this.field.setValue (Integer.valueOf (initialValue));
         this.field.addKeyListener (new KeyAdapter ()
@@ -115,5 +117,21 @@ public class IntegerSettingImpl extends BaseSetting<JFormattedTextField, Integer
     public void store (final PropertiesEx properties)
     {
         properties.put (this.getID (), Integer.toString (this.value));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void load (final PropertiesEx properties)
+    {
+        this.set (properties.getInt (this.getID (), this.initialValue));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void reset ()
+    {
+        this.set (this.initialValue);
     }
 }

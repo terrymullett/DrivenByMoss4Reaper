@@ -102,6 +102,10 @@ public class MainFrame extends JFrame
         this.removeButton.addActionListener (event -> this.removeController ());
         this.removeButton.setBackground (Color.RED);
 
+        final JButton projectButton = new JButton ("Project");
+        projectButton.setBackground (Color.YELLOW);
+        projectButton.addActionListener (event -> this.projectSettings ());
+
         final JButton enableButton = new JButton ("Dis-/enable");
         enableButton.addActionListener (event -> this.toggleEnableController ());
 
@@ -110,12 +114,13 @@ public class MainFrame extends JFrame
 
         final JPanel deviceButtonContainer = new JPanel ();
         deviceButtonContainer.setBorder (new EmptyBorder (0, GAP, 0, 0));
-        deviceButtonContainer.setLayout (new GridLayout (6, 1, 0, GAP));
+        deviceButtonContainer.setLayout (new GridLayout (7, 1, 0, GAP));
 
         deviceButtonContainer.add (detectButton);
         deviceButtonContainer.add (addButton);
         deviceButtonContainer.add (this.removeButton);
         deviceButtonContainer.add (this.configButton);
+        deviceButtonContainer.add (projectButton);
         deviceButtonContainer.add (enableButton);
         deviceButtonContainer.add (debugButton);
 
@@ -196,6 +201,15 @@ public class MainFrame extends JFrame
         this.listModel.remove (selectedIndex);
         this.callback.removeController (selectedIndex);
         this.updateWidgetStates ();
+    }
+
+
+    /**
+     * Open the project settings dialog.
+     */
+    public void projectSettings ()
+    {
+        this.callback.projectSettings ();
     }
 
 

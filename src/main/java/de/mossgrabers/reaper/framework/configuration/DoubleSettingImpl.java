@@ -23,7 +23,8 @@ import java.text.NumberFormat;
  */
 public class DoubleSettingImpl extends BaseSetting<JFormattedTextField, Double> implements IDoubleSetting
 {
-    private double value;
+    private final double initialValue;
+    private double       value;
 
 
     /**
@@ -39,9 +40,10 @@ public class DoubleSettingImpl extends BaseSetting<JFormattedTextField, Double> 
     {
         super (logModel, label, category, new JFormattedTextField (NumberFormat.getNumberInstance ()));
 
-        this.value = properties.getDouble (this.getID (), initialValue);
+        this.initialValue = initialValue;
+        this.load (properties);
 
-        this.field.setValue (Double.valueOf (initialValue));
+        this.field.setValue (Double.valueOf (this.value));
         this.field.addKeyListener (new KeyAdapter ()
         {
             /** {@inheritDoc} */
@@ -108,5 +110,21 @@ public class DoubleSettingImpl extends BaseSetting<JFormattedTextField, Double> 
     public void store (final PropertiesEx properties)
     {
         properties.put (this.getID (), Double.toString (this.value));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void load (final PropertiesEx properties)
+    {
+        this.set (properties.getDouble (this.getID (), this.initialValue));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void reset ()
+    {
+        this.set (this.initialValue);
     }
 }

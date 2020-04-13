@@ -11,6 +11,8 @@ import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.controller.ControllerInstanceManager;
 import de.mossgrabers.reaper.controller.IControllerInstance;
 import de.mossgrabers.reaper.framework.IniFiles;
+import de.mossgrabers.reaper.framework.configuration.DocumentSettingsUI;
+import de.mossgrabers.reaper.framework.configuration.IfxSetting;
 import de.mossgrabers.reaper.framework.device.DeviceManager;
 import de.mossgrabers.reaper.framework.graphics.SVGImage;
 import de.mossgrabers.reaper.framework.midi.Midi;
@@ -18,6 +20,7 @@ import de.mossgrabers.reaper.framework.midi.MidiConnection;
 import de.mossgrabers.reaper.ui.MainFrame;
 import de.mossgrabers.reaper.ui.WindowManager;
 import de.mossgrabers.reaper.ui.utils.LogModel;
+import de.mossgrabers.reaper.ui.utils.PropertiesEx;
 import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
 import org.usb4java.LibUsb;
@@ -33,8 +36,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -45,6 +56,7 @@ import java.util.List;
 public class MainApp implements MessageSender, AppCallback, WindowManager
 {
     private static final int          DEVICE_UPDATE_RATE = 30;
+    private static final Pattern      TAG_PATTERN        = Pattern.compile ("(.*?)=\"(.*?)\"\\s*");
 
     private final LogModel            logModel           = new LogModel ();
 
@@ -449,6 +461,14 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
 
     /** {@inheritDoc} */
     @Override
+    public void projectSettings ()
+    {
+        this.instanceManager.projectSettings ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void sendRefreshCommand ()
     {
         this.processNoArg ("refresh");
@@ -494,6 +514,92 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
 
 
     /**
+     * Set the default initial settings for the document/project.
+     */
+    public void setDefaultDocumentSettings ()
+    {
+        for (final IControllerInstance instance: this.instanceManager.getInstances ())
+        {
+            final DocumentSettingsUI documentSettingsUI = instance.getDocumentSettingsUI ();
+            for (final IfxSetting<?> setting: documentSettingsUI.getSettings ())
+            {
+                setting.reset ();
+            }
+        }
+    }
+
+
+    /**
+     * Get the formatted document settings formatted to be stored in the Reaper extension data
+     *
+     * @return The formatted document settings
+     */
+    public String getFormattedDocumentSettings ()
+    {
+        final StringBuilder data = new StringBuilder ();
+
+        for (final IControllerInstance instance: this.instanceManager.getInstances ())
+        {
+            final IControllerDefinition definition = instance.getDefinition ();
+
+            final DocumentSettingsUI documentSettingsUI = instance.getDocumentSettingsUI ();
+            documentSettingsUI.store ();
+            final PropertiesEx properties = documentSettingsUI.store ();
+            final StringWriter writer = new StringWriter ();
+            final Encoder encoder = Base64.getEncoder ();
+            try
+            {
+                properties.store (writer, "");
+                final String str = writer.toString ();
+                final String encodedString = encoder.encodeToString (str.getBytes (StandardCharsets.UTF_8));
+                final String tag = definition.getHardwareModel ().replace (' ', '_').replace ('/', '_').toUpperCase ();
+                data.append (tag).append ("=\"").append (encodedString).append ("\"\n");
+            }
+            catch (final IOException ex)
+            {
+                final StringWriter sw = new StringWriter ();
+                ex.printStackTrace (new PrintWriter (sw));
+                this.logModel.info (sw.toString ());
+            }
+        }
+
+        return data.toString ();
+    }
+
+
+    /**
+     * Get the formatted document settings formatted to be stored in the Reaper extension data
+     *
+     * @param data The formatted document settings
+     */
+    public void setFormattedDocumentSettings (final String data)
+    {
+        final Matcher matcher = TAG_PATTERN.matcher (data);
+        final Decoder decoder = Base64.getDecoder ();
+        final Map<String, String> found = new HashMap<> ();
+        while (matcher.find ())
+        {
+            if (matcher.groupCount () != 2)
+                break;
+
+            final String tag = matcher.group (1);
+            final String propertiesText = new String (decoder.decode (matcher.group (2)), StandardCharsets.UTF_8);
+            found.put (tag, propertiesText);
+        }
+
+        for (final IControllerInstance instance: this.instanceManager.getInstances ())
+        {
+            final IControllerDefinition definition = instance.getDefinition ();
+            final String tag = definition.getHardwareModel ().replace (' ', '_').replace ('/', '_').toUpperCase ();
+
+            final String propertiesText = found.get (tag);
+            if (propertiesText != null)
+                instance.getDocumentSettingsUI ().parse (propertiesText);
+        }
+    }
+
+
+    /**
      * Load and parse all Reaper INI files, which contain information about the available devices.
      *
      * @param path The path which contains the INI files
@@ -515,6 +621,21 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
             final MainFrame win = this.getMainFrame ();
             win.setVisible (true);
             win.toFront ();
+        });
+    }
+
+
+    /**
+     * Shows the application stage and ensures that it is brought ot the front of all stages. After
+     * that the project settings window is displayed.
+     */
+    public void showProjectWindow ()
+    {
+        SafeRunLater.execute (this.logModel, () -> {
+            final MainFrame win = this.getMainFrame ();
+            win.setVisible (true);
+            win.toFront ();
+            win.projectSettings ();
         });
     }
 

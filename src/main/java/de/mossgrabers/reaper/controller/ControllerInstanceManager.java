@@ -37,8 +37,9 @@ import de.mossgrabers.reaper.controller.sl.SLMkIControllerInstance;
 import de.mossgrabers.reaper.controller.sl.SLMkIIControllerInstance;
 import de.mossgrabers.reaper.controller.slmkiii.SLMkIIIControllerInstance;
 import de.mossgrabers.reaper.framework.IniFiles;
-import de.mossgrabers.reaper.framework.configuration.SettingsUI;
+import de.mossgrabers.reaper.framework.configuration.GlobalSettingsUI;
 import de.mossgrabers.reaper.ui.WindowManager;
+import de.mossgrabers.reaper.ui.dialog.ProjectSettingsDialog;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.PropertiesEx;
 
@@ -223,6 +224,15 @@ public class ControllerInstanceManager
 
 
     /**
+     * Edit all project settings.
+     */
+    public void projectSettings ()
+    {
+        new ProjectSettingsDialog (this.windowManager.getMainFrame (), this.instances).showDialog ();
+    }
+
+
+    /**
      * Remove a controller instance.
      *
      * @param index The index of the controller instance
@@ -275,7 +285,7 @@ public class ControllerInstanceManager
     {
         for (final IControllerInstance inst: this.instances)
         {
-            final SettingsUI settings = inst.getSettingsUI ();
+            final GlobalSettingsUI settings = inst.getGlobalSettingsUI ();
             for (final MidiDevice input: settings.getSelectedMidiInputs ())
             {
                 if (inputDevices.contains (input))

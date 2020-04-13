@@ -12,7 +12,8 @@ import de.mossgrabers.reaper.communication.MessageParser;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.ReaperSetupFactory;
-import de.mossgrabers.reaper.framework.configuration.SettingsUI;
+import de.mossgrabers.reaper.framework.configuration.DocumentSettingsUI;
+import de.mossgrabers.reaper.framework.configuration.GlobalSettingsUI;
 import de.mossgrabers.reaper.framework.daw.HostImpl;
 import de.mossgrabers.reaper.ui.SimulatorWindow;
 import de.mossgrabers.reaper.ui.WindowManager;
@@ -45,7 +46,8 @@ public abstract class AbstractControllerInstance implements IControllerInstance
     protected final IniFiles              iniFiles;
 
     protected HostImpl                    host;
-    protected SettingsUI                  settingsUI;
+    protected GlobalSettingsUI            globalSettingsUI;
+    protected final DocumentSettingsUI    documentSettingsUI;
     protected ReaperSetupFactory          setupFactory;
     protected IControllerSetup<?, ?>      controllerSetup;
     protected PropertiesEx                controllerConfiguration = new PropertiesEx ();
@@ -73,6 +75,8 @@ public abstract class AbstractControllerInstance implements IControllerInstance
         this.windowManager = windowManager;
         this.sender = sender;
         this.iniFiles = iniFiles;
+
+        this.documentSettingsUI = new DocumentSettingsUI (this.logModel);
     }
 
 
@@ -107,8 +111,8 @@ public abstract class AbstractControllerInstance implements IControllerInstance
             this.host = new HostImpl (this.logModel, this.windowManager);
 
             this.loadConfiguration ();
-            this.settingsUI = new SettingsUI (this.logModel, this.controllerConfiguration, this.controllerDefinition.getNumMidiInPorts (), this.controllerDefinition.getNumMidiOutPorts (), this.controllerDefinition.getMidiDiscoveryPairs (OperatingSystem.get ()));
-            this.settingsUI.initMIDI ();
+            this.globalSettingsUI = new GlobalSettingsUI (this.logModel, this.controllerConfiguration, this.controllerDefinition.getNumMidiInPorts (), this.controllerDefinition.getNumMidiOutPorts (), this.controllerDefinition.getMidiDiscoveryPairs (OperatingSystem.get ()));
+            this.globalSettingsUI.initMIDI ();
 
             if (!this.isEnabled ())
             {
@@ -122,7 +126,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
             if (matcher != null)
                 this.host.addUSBDeviceInfo (matcher);
 
-            this.setupFactory = new ReaperSetupFactory (this.iniFiles, this.sender, this.host, this.logModel, this.settingsUI.getSelectedMidiInputs (), this.settingsUI.getSelectedMidiOutputs ());
+            this.setupFactory = new ReaperSetupFactory (this.iniFiles, this.sender, this.host, this.logModel, this.globalSettingsUI.getSelectedMidiInputs (), this.globalSettingsUI.getSelectedMidiOutputs ());
             this.controllerSetup = this.createControllerSetup (this.setupFactory);
 
             SafeRunLater.execute (this.logModel, this::delayedStart);
@@ -132,9 +136,17 @@ public abstract class AbstractControllerInstance implements IControllerInstance
 
     /** {@inheritDoc} */
     @Override
-    public SettingsUI getSettingsUI ()
+    public GlobalSettingsUI getGlobalSettingsUI ()
     {
-        return this.settingsUI;
+        return this.globalSettingsUI;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public DocumentSettingsUI getDocumentSettingsUI ()
+    {
+        return this.documentSettingsUI;
     }
 
 
@@ -212,7 +224,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
     @Override
     public void edit ()
     {
-        new ConfigurationDialog (this.logModel, this.windowManager.getMainFrame (), this.settingsUI).setVisible (true);
+        new ConfigurationDialog (this.logModel, this.windowManager.getMainFrame (), this.globalSettingsUI).showDialog ();
         this.storeConfiguration ();
     }
 
@@ -221,7 +233,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
     @Override
     public boolean isEnabled ()
     {
-        return this.settingsUI != null && this.settingsUI.isEnabled ();
+        return this.globalSettingsUI != null && this.globalSettingsUI.isEnabled ();
     }
 
 
@@ -229,7 +241,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
     @Override
     public void setEnabled (final boolean isEnabled)
     {
-        this.settingsUI.setEnabled (isEnabled);
+        this.globalSettingsUI.setEnabled (isEnabled);
     }
 
 
@@ -266,11 +278,11 @@ public abstract class AbstractControllerInstance implements IControllerInstance
         this.controllerSetup.init ();
 
         // 2nd load to also load the settings
-        this.settingsUI.init ();
+        this.globalSettingsUI.init ();
 
         this.oscParser = new MessageParser (this.controllerSetup);
 
-        this.settingsUI.flush ();
+        this.globalSettingsUI.flush ();
 
         this.host.scheduleTask ( () -> {
             try
@@ -312,7 +324,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
     {
         try (final FileWriter writer = new FileWriter (this.getFileName ()))
         {
-            this.settingsUI.store (this.controllerConfiguration);
+            this.globalSettingsUI.store (this.controllerConfiguration);
             this.controllerConfiguration.store (writer, "");
         }
         catch (final IOException ex)

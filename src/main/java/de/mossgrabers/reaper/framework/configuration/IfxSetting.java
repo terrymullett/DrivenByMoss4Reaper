@@ -78,4 +78,18 @@ public interface IfxSetting<T> extends ISetting<T>
      * @param properties Where to store to
      */
     void store (PropertiesEx properties);
+
+
+    /**
+     * Load the setting.
+     *
+     * @param properties Where to load from
+     */
+    void load (PropertiesEx properties);
+
+
+    /**
+     * Set the default value.
+     */
+    void reset ();
 }

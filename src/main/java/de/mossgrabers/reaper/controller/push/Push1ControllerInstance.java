@@ -44,6 +44,6 @@ public class Push1ControllerInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup<?, ?> createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new PushControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI, false);
+        return new PushControllerSetup (this.host, setupFactory, this.globalSettingsUI, this.documentSettingsUI, false);
     }
 }

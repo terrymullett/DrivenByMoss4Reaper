@@ -65,4 +65,20 @@ public class SignalSettingImpl extends BaseSetting<JButton, Void> implements ISi
     {
         // Intentionally empty
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void load (final PropertiesEx properties)
+    {
+        // Intentionally empty
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void reset ()
+    {
+        // Intentionally empty
+    }
 }

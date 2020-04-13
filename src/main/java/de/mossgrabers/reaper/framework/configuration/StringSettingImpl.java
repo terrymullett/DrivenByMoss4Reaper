@@ -22,7 +22,8 @@ import java.awt.event.KeyEvent;
  */
 public class StringSettingImpl extends BaseSetting<JTextField, String> implements IStringSetting
 {
-    private String value;
+    private final String initialValue;
+    private String       value;
 
 
     /**
@@ -38,7 +39,8 @@ public class StringSettingImpl extends BaseSetting<JTextField, String> implement
     {
         super (logModel, label, category, new JTextField (initialValue));
 
-        this.value = properties.getString (this.getID (), initialValue);
+        this.initialValue = initialValue;
+        this.load (properties);
 
         this.field.addKeyListener (new KeyAdapter ()
         {
@@ -88,5 +90,21 @@ public class StringSettingImpl extends BaseSetting<JTextField, String> implement
     public void store (final PropertiesEx properties)
     {
         properties.put (this.getID (), this.value);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void load (final PropertiesEx properties)
+    {
+        this.set (properties.getString (this.getID (), this.initialValue));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void reset ()
+    {
+        this.set (this.initialValue);
     }
 }

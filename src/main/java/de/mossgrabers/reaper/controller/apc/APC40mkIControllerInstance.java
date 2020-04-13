@@ -44,6 +44,6 @@ public class APC40mkIControllerInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup<?, ?> createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new APCControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI, false);
+        return new APCControllerSetup (this.host, setupFactory, this.globalSettingsUI, this.documentSettingsUI, false);
     }
 }

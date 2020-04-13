@@ -59,6 +59,12 @@ public interface AppCallback
 
 
     /**
+     * Edit the project settings.
+     */
+    void projectSettings ();
+
+
+    /**
      * Request a full update of the data model.
      */
     void sendRefreshCommand ();

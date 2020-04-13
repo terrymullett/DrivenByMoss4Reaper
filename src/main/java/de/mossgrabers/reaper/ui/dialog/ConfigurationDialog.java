@@ -4,9 +4,8 @@
 
 package de.mossgrabers.reaper.ui.dialog;
 
-import de.mossgrabers.framework.configuration.ISettingsUI;
+import de.mossgrabers.reaper.framework.configuration.GlobalSettingsUI;
 import de.mossgrabers.reaper.framework.configuration.IfxSetting;
-import de.mossgrabers.reaper.framework.configuration.SettingsUI;
 import de.mossgrabers.reaper.framework.midi.Midi;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.widget.BoxPanel;
@@ -43,12 +42,12 @@ import java.util.List;
  */
 public class ConfigurationDialog extends BasicDialog
 {
-    private static final long            serialVersionUID = -495747813993365661L;
+    private static final long                serialVersionUID = -495747813993365661L;
 
-    private List<JComboBoxX<MidiDevice>> midiInputs;
-    private List<JComboBoxX<MidiDevice>> midiOutputs;
-    private final transient LogModel     model;
-    private final transient ISettingsUI  settings;
+    private List<JComboBoxX<MidiDevice>>     midiInputs;
+    private List<JComboBoxX<MidiDevice>>     midiOutputs;
+    private final transient LogModel         model;
+    private final transient GlobalSettingsUI settings;
 
 
     /**
@@ -58,11 +57,12 @@ public class ConfigurationDialog extends BasicDialog
      * @param owner The owner of the dialog
      * @param settings The configuration settings
      */
-    public ConfigurationDialog (final LogModel model, final Window owner, final ISettingsUI settings)
+    public ConfigurationDialog (final LogModel model, final Window owner, final GlobalSettingsUI settings)
     {
         super ((JFrame) owner, "Configuration", true, true);
 
         this.setMinimumSize (new Dimension (400, 600));
+        this.setSize (400, 600);
 
         this.model = model;
         this.settings = settings;
@@ -85,9 +85,8 @@ public class ConfigurationDialog extends BasicDialog
         scrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy (ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-        final SettingsUI settingsImpl = (SettingsUI) this.settings;
-        this.midiInputs = settingsImpl.createMidiInputWidgets ();
-        this.midiOutputs = settingsImpl.createMidiOutputWidgets ();
+        this.midiInputs = this.settings.createMidiInputWidgets ();
+        this.midiOutputs = this.settings.createMidiOutputWidgets ();
 
         final boolean hasMidiPorts = !this.midiInputs.isEmpty () && !this.midiOutputs.isEmpty ();
         if (hasMidiPorts)
@@ -101,7 +100,7 @@ public class ConfigurationDialog extends BasicDialog
         {
             mainColumn.addComponent (device, new JLabel ("Midi Input " + index), null, BoxPanel.NORMAL);
             device.setAll (inputDevices);
-            final MidiDevice selectedDevice = settingsImpl.getSelectedMidiInput (index - 1);
+            final MidiDevice selectedDevice = this.settings.getSelectedMidiInput (index - 1);
             if (selectedDevice != null)
                 device.setSelectedItem (selectedDevice);
             index++;
@@ -113,7 +112,7 @@ public class ConfigurationDialog extends BasicDialog
         {
             mainColumn.addComponent (device, new JLabel ("Midi Output " + index), null, BoxPanel.NORMAL);
             device.setAll (outputDevices);
-            final MidiDevice selectedDevice = settingsImpl.getSelectedMidiOutput (index - 1);
+            final MidiDevice selectedDevice = this.settings.getSelectedMidiOutput (index - 1);
             if (selectedDevice != null)
                 device.setSelectedItem (selectedDevice);
             index++;
@@ -127,7 +126,7 @@ public class ConfigurationDialog extends BasicDialog
         }
 
         String category = null;
-        for (final IfxSetting<?> s: settingsImpl.getSettings ())
+        for (final IfxSetting<?> s: this.settings.getSettings ())
         {
             final String cat = s.getCategory ();
             if (category == null || !category.equals (cat))

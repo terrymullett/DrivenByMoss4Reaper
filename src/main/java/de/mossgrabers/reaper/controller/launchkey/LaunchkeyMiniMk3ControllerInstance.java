@@ -44,6 +44,6 @@ public class LaunchkeyMiniMk3ControllerInstance extends AbstractControllerInstan
     @Override
     protected IControllerSetup<?, ?> createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new LaunchkeyMiniMk3ControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI);
+        return new LaunchkeyMiniMk3ControllerSetup (this.host, setupFactory, this.globalSettingsUI, this.documentSettingsUI);
     }
 }

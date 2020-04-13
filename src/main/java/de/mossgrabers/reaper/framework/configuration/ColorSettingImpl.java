@@ -23,7 +23,8 @@ import java.awt.Color;
  */
 public class ColorSettingImpl extends BaseSetting<ColoredButton, ColorEx> implements IColorSetting
 {
-    private ColorEx value;
+    private final ColorEx initialValue;
+    private ColorEx       value;
 
 
     /**
@@ -39,16 +40,10 @@ public class ColorSettingImpl extends BaseSetting<ColoredButton, ColorEx> implem
     {
         super (logModel, label, category, new ColoredButton ());
 
-        this.value = initialValue;
-        final String color = properties.getString (this.getID ());
-        if (color != null)
-        {
-            final String [] parts = color.split (",");
-            if (parts.length == 3)
-                this.value = new ColorEx (Double.parseDouble (parts[0]), Double.parseDouble (parts[1]), Double.parseDouble (parts[2]));
-        }
+        this.initialValue = initialValue;
+        this.load (properties);
 
-        this.field.setBackground (new Color ((float) initialValue.getRed (), (float) initialValue.getGreen (), (float) initialValue.getBlue ()));
+        this.field.setBackground (new Color ((float) this.value.getRed (), (float) this.value.getGreen (), (float) this.value.getBlue ()));
 
         this.field.addActionListener (event -> {
             final Color c = JColorChooser.showDialog (this.field, "Pick color", this.field.getBackground ());
@@ -106,5 +101,28 @@ public class ColorSettingImpl extends BaseSetting<ColoredButton, ColorEx> implem
     public void store (final PropertiesEx properties)
     {
         properties.put (this.getID (), this.value.getRed () + "," + this.value.getGreen () + "," + this.value.getBlue ());
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void load (final PropertiesEx properties)
+    {
+        this.value = this.initialValue;
+        final String color = properties.getString (this.getID ());
+        if (color == null)
+            return;
+
+        final String [] parts = color.split (",");
+        if (parts.length == 3)
+            this.set (new ColorEx (Double.parseDouble (parts[0]), Double.parseDouble (parts[1]), Double.parseDouble (parts[2])));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void reset ()
+    {
+        this.set (this.initialValue);
     }
 }

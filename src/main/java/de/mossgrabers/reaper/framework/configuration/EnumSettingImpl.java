@@ -20,7 +20,8 @@ import javax.swing.JComboBox;
  */
 public class EnumSettingImpl extends BaseSetting<JComboBox<String>, String> implements IEnumSetting
 {
-    private String value;
+    private final String initialValue;
+    private String       value;
 
 
     /**
@@ -38,7 +39,8 @@ public class EnumSettingImpl extends BaseSetting<JComboBox<String>, String> impl
     {
         super (logModel, label, category, new JComboBox<> (new DefaultComboBoxModel<> (options)));
 
-        this.value = properties.getString (this.getID (), initialValue);
+        this.initialValue = initialValue;
+        this.load (properties);
 
         this.field.setSelectedItem (this.value);
         this.field.addItemListener (event -> SafeRunLater.execute (EnumSettingImpl.this.logModel, () -> this.set ((String) this.field.getSelectedItem ())));
@@ -91,8 +93,24 @@ public class EnumSettingImpl extends BaseSetting<JComboBox<String>, String> impl
 
     /** {@inheritDoc} */
     @Override
+    public void load (final PropertiesEx properties)
+    {
+        this.set (properties.getString (this.getID (), this.initialValue));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void setEnabled (final boolean enable)
     {
         this.field.setEnabled (enable);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void reset ()
+    {
+        this.set (this.initialValue);
     }
 }

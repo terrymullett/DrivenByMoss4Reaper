@@ -54,9 +54,20 @@ public abstract class BasicDialog extends JDialog
     public BasicDialog (final JFrame frame, final String title, final boolean isModal, final boolean disposeOnClose)
     {
         super (frame, title, isModal);
+
         this.frame = frame;
         this.setDefaultCloseOperation (disposeOnClose ? WindowConstants.DISPOSE_ON_CLOSE : WindowConstants.HIDE_ON_CLOSE);
         this.getRootPane ().registerKeyboardAction (e -> this.cancel (), KeyStroke.getKeyStroke (KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
+
+
+    /**
+     * Show the dialog.
+     */
+    public void showDialog ()
+    {
+        this.setLocationRelativeTo (null);
+        this.setVisible (true);
     }
 
 

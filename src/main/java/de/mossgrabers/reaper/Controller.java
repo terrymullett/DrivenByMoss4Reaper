@@ -64,4 +64,45 @@ public class Controller
         if (app != null)
             app.showStage ();
     }
+
+
+    /**
+     * Displays the project settings window.
+     */
+    public static void displayProjectWindow ()
+    {
+        if (app != null)
+            app.showProjectWindow ();
+    }
+
+
+    /**
+     * Set the default initial settings for the document/project.
+     */
+    public static void setDefaultDocumentSettings ()
+    {
+        app.setDefaultDocumentSettings ();
+    }
+
+
+    /**
+     * Get the formatted document settings formatted to be stored in the Reaper extension data
+     *
+     * @return The formatted document settings
+     */
+    public static String getFormattedDocumentSettings ()
+    {
+        return app.getFormattedDocumentSettings ();
+    }
+
+
+    /**
+     * Set the formatted document settings formatted from the the Reaper extension data
+     *
+     * @param data The formatted document settings
+     */
+    public static void setFormattedDocumentSettings (final String data)
+    {
+        app.setFormattedDocumentSettings (data);
+    }
 }

@@ -44,6 +44,6 @@ public class LaunchpadXControllerInstance extends AbstractControllerInstance
     @Override
     protected IControllerSetup<?, ?> createControllerSetup (final ReaperSetupFactory setupFactory)
     {
-        return new LaunchpadControllerSetup (this.host, setupFactory, this.settingsUI, this.settingsUI, CONTROLLER_DEFINITION);
+        return new LaunchpadControllerSetup (this.host, setupFactory, this.globalSettingsUI, this.documentSettingsUI, CONTROLLER_DEFINITION);
     }
 }

@@ -19,7 +19,8 @@ import javax.swing.JCheckBox;
  */
 public class BooleanSettingImpl extends BaseSetting<JCheckBox, Boolean> implements IBooleanSetting
 {
-    private boolean value;
+    private final boolean initialValue;
+    private boolean       value;
 
 
     /**
@@ -35,7 +36,9 @@ public class BooleanSettingImpl extends BaseSetting<JCheckBox, Boolean> implemen
     {
         super (logModel, label, category, new JCheckBox ());
 
-        this.value = properties.getBoolean (this.getID (), initialValue);
+        this.initialValue = initialValue;
+        this.load (properties);
+
         this.field.addActionListener (event -> SafeRunLater.execute (BooleanSettingImpl.this.logModel, () -> this.set (BooleanSettingImpl.this.field.isSelected ())));
     }
 
@@ -84,5 +87,21 @@ public class BooleanSettingImpl extends BaseSetting<JCheckBox, Boolean> implemen
     public void store (final PropertiesEx properties)
     {
         properties.put (this.getID (), Boolean.toString (this.value));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void load (final PropertiesEx properties)
+    {
+        this.set (properties.getBoolean (this.getID (), this.initialValue));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void reset ()
+    {
+        this.set (this.initialValue);
     }
 }

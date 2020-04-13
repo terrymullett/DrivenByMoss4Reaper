@@ -5,7 +5,8 @@
 package de.mossgrabers.reaper.controller;
 
 import de.mossgrabers.framework.controller.IControllerDefinition;
-import de.mossgrabers.reaper.framework.configuration.SettingsUI;
+import de.mossgrabers.reaper.framework.configuration.DocumentSettingsUI;
+import de.mossgrabers.reaper.framework.configuration.GlobalSettingsUI;
 
 import javax.swing.JFrame;
 
@@ -89,11 +90,19 @@ public interface IControllerInstance
 
 
     /**
-     * Get the settings.
+     * Get the global settings.
      *
      * @return The settings
      */
-    SettingsUI getSettingsUI ();
+    GlobalSettingsUI getGlobalSettingsUI ();
+
+
+    /**
+     * Get the project settings.
+     *
+     * @return The settings
+     */
+    DocumentSettingsUI getDocumentSettingsUI ();
 
 
     /**
