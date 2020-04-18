@@ -199,7 +199,7 @@ public class CursorDeviceImpl extends DeviceImpl implements ICursorDevice
 
     /** {@inheritDoc} */
     @Override
-    public void addHasDrumPadsObserver (IValueObserver<Boolean> observer)
+    public void addHasDrumPadsObserver (final IValueObserver<Boolean> observer)
     {
         // No drum devices, therefore never fires
     }

@@ -56,7 +56,7 @@ public class DocumentSettingsUI extends AbstractSettingsUI
         {
             this.properties.load (reader);
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             final StringWriter sw = new StringWriter ();
             ex.printStackTrace (new PrintWriter (sw));

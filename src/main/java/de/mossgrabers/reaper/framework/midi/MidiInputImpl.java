@@ -157,7 +157,7 @@ public class MidiInputImpl implements IMidiInput
         {
             for (final Map<Integer, IHwButton> v: m.values ())
             {
-                Collection<IHwButton> values = v.values ();
+                final Collection<IHwButton> values = v.values ();
                 if (values.contains (button))
                 {
                     values.remove (button);
@@ -169,7 +169,7 @@ public class MidiInputImpl implements IMidiInput
         {
             for (final Map<Integer, IHwButton> v: m.values ())
             {
-                Collection<IHwButton> values = v.values ();
+                final Collection<IHwButton> values = v.values ();
                 if (values.contains (button))
                 {
                     values.remove (button);
@@ -366,7 +366,7 @@ public class MidiInputImpl implements IMidiInput
             final Map<Integer, IHwButton> valueMap = noteMap.get (Integer.valueOf (data1));
             if (valueMap != null)
             {
-                for (Entry<Integer, IHwButton> valueButtonPair: valueMap.entrySet ())
+                for (final Entry<Integer, IHwButton> valueButtonPair: valueMap.entrySet ())
                 {
                     final int value = valueButtonPair.getKey ().intValue ();
                     if (value == -1 || value == data2)
@@ -401,7 +401,7 @@ public class MidiInputImpl implements IMidiInput
             final Map<Integer, IHwButton> valueMap = ccButtonMap.get (Integer.valueOf (data1));
             if (valueMap != null)
             {
-                for (Entry<Integer, IHwButton> valueButtonPair: valueMap.entrySet ())
+                for (final Entry<Integer, IHwButton> valueButtonPair: valueMap.entrySet ())
                 {
                     final int value = valueButtonPair.getKey ().intValue ();
                     if (value == -1 || value == data2)

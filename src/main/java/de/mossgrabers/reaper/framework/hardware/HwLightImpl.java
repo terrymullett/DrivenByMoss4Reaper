@@ -166,7 +166,7 @@ public class HwLightImpl extends AbstractHwControl implements IHwLight, IReaperH
         if (this.colorState != null && this.blinkColorEx != null)
         {
             final long rate = Math.round (this.blinkTimeInSec * 2.0);
-            long seconds = System.currentTimeMillis () / 1000;
+            final long seconds = System.currentTimeMillis () / 1000;
             if (seconds % (rate + 1) == rate)
                 color = this.blinkColorEx;
         }

@@ -93,6 +93,14 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
 
     /** {@inheritDoc} */
     @Override
+    public boolean isBound ()
+    {
+        return this.parameter != null || super.isBound ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void bind (final IMidiInput input, final BindType type, final int channel, final int control)
     {
         this.midiInput = (MidiInputImpl) input;
