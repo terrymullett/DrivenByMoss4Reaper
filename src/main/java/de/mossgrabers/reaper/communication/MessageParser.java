@@ -4,6 +4,7 @@
 
 package de.mossgrabers.reaper.communication;
 
+import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.controller.IControllerSetup;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.IBrowser;
@@ -302,6 +303,7 @@ public class MessageParser
 
             case "active":
                 track.setInternalIsActivated (Double.parseDouble (value) > 0);
+                ((TrackBankImpl) this.model.getTrackBank ()).markDirty ();
                 break;
 
             case "type":
@@ -794,7 +796,7 @@ public class MessageParser
         final ModelImpl modelImpl = (ModelImpl) this.model;
         switch (command)
         {
-            case "exists":
+            case TAG_EXISTS:
                 modelImpl.setCursorClipExists (Double.parseDouble (value) > 0);
                 break;
 
@@ -837,7 +839,8 @@ public class MessageParser
 
     private void parseNoteRepeat (final Queue<String> parts, final String value)
     {
-        final IMidiInput input = this.controllerSetup.getSurface ().getMidiInput ();
+        final IControlSurface<?> surface = this.controllerSetup.getSurface ();
+        final IMidiInput input = surface.getMidiInput ();
         if (input == null)
             return;
         final NoteRepeatImpl noteRepeat = (NoteRepeatImpl) input.getDefaultNoteInput ().getNoteRepeat ();
@@ -846,7 +849,8 @@ public class MessageParser
         switch (command)
         {
             case "active":
-                noteRepeat.setInternalActive (Double.parseDouble (value) > 0);
+                final boolean isActive = Double.parseDouble (value) > 0;
+                surface.getConfiguration ().setNoteRepeatActive (isActive);
                 break;
 
             case "period":

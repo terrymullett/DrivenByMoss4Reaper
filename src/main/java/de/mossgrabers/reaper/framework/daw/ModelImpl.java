@@ -76,7 +76,7 @@ public class ModelImpl extends AbstractModel
         final TrackBankImpl trackBankImpl = new TrackBankImpl (this.instrumentDevice, dataSetup, numTracks, numScenes, numSends, modelSetup.hasFlatTrackList (), modelSetup.hasFullFlatTrackList ());
         this.trackBank = trackBankImpl;
         this.masterTrack = new MasterTrackImpl (dataSetup, trackBankImpl, numSends);
-        trackBankImpl.setMasterTrack (this.masterTrack);
+        trackBankImpl.setMasterTrack ((TrackImpl) this.masterTrack);
         this.trackBanks.add (this.trackBank);
         this.effectTrackBank = null;
 

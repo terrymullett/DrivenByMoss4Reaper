@@ -99,4 +99,13 @@ public class DrumPadBankImpl extends AbstractBankImpl<IDrumPad> implements IDrum
     {
         // Not supported
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasSoloedPads ()
+    {
+        // Not supported
+        return false;
+    }
 }

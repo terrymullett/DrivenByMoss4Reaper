@@ -36,11 +36,13 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     private final ICursorDevice     instrumentDevice;
     private final boolean           hasFlatTrackList;
     private final boolean           hasFullFlatTrackList;
+    private boolean                 skipDisabledItems;
     private final AtomicBoolean     isDirty       = new AtomicBoolean (false);
     private final Set<NoteObserver> noteObservers = new HashSet<> ();
     private final int []            noteCache     = new int [128];
 
-    private ITrack                  master;
+    private TrackImpl               master;
+    private List<TrackImpl>         flatTracks    = new ArrayList<> ();
     private TreeNode<TrackImpl>     rootTrack     = new TreeNode<> ();
     private TreeNode<TrackImpl>     currentFolder = this.rootTrack;
 
@@ -100,7 +102,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
      *
      * @param master If set the track navigation should include master tracks if flat
      */
-    public void setMasterTrack (final ITrack master)
+    public void setMasterTrack (final TrackImpl master)
     {
         this.master = master;
     }
@@ -152,10 +154,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     @Override
     public boolean hasParent ()
     {
-        if (this.hasFlatTrackList)
-            return false;
-
-        return this.currentFolder.getParent () != null;
+        return !this.hasFlatTrackList && this.currentFolder.getParent () != null;
     }
 
 
@@ -169,23 +168,16 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     {
         if (this.hasFlatTrackList)
         {
-            if (track instanceof IMasterTrack)
-            {
-                if (this.master != null && isSelected)
-                {
-                    final int position = super.getItemCount ();
-                    // Is mastertrack on current page? If not adjust the page
-                    if (this.isOnSelectedPage (position))
-                        this.bankOffset = position / this.pageSize * this.pageSize;
-                }
-                return;
-            }
-
             if (isSelected)
             {
-                final int position = track.getPosition ();
+                final int position;
+                if (track instanceof IMasterTrack)
+                    position = this.hasFullFlatTrackList && this.master != null ? this.flatTracks.size () - 1 : -1;
+                else
+                    position = track.getPosition ();
+
                 // Is track on current page? If not adjust the page
-                if (!this.isOnSelectedPage (position))
+                if (position >= 0 && !this.isOnSelectedPage (position))
                     this.bankOffset = position / this.pageSize * this.pageSize;
             }
         }
@@ -272,16 +264,12 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     @Override
     public ITrack getItem (final int index)
     {
-        this.recalcTree ();
+        this.recalcTrackList ();
 
         final int id = this.bankOffset + index;
 
         if (this.hasFlatTrackList)
-        {
-            if (this.hasFullFlatTrackList && this.master != null && super.getItemCount () == id)
-                return this.master;
-            return super.getItem (index);
-        }
+            return id >= 0 && id < this.flatTracks.size () ? this.flatTracks.get (id) : this.emptyItem;
 
         final List<TreeNode<TrackImpl>> children = this.currentFolder.getChildren ();
         return id < children.size () ? children.get (id).getData () : this.emptyItem;
@@ -292,15 +280,10 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     @Override
     public int getItemCount ()
     {
-        this.recalcTree ();
+        this.recalcTrackList ();
 
         if (this.hasFlatTrackList)
-        {
-            int size = super.getItemCount ();
-            if (this.hasFullFlatTrackList && this.master != null)
-                size++;
-            return size;
-        }
+            return this.flatTracks.size ();
 
         return this.currentFolder.getChildren ().size ();
     }
@@ -362,64 +345,11 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     }
 
 
-    /**
-     * Recalculate the track tree (and the flat numbering).
-     */
-    public void recalcTree ()
+    /** {@inheritDoc} */
+    @Override
+    public void setSkipDisabledItems (final boolean shouldSkip)
     {
-        synchronized (this.isDirty)
-        {
-            if (!this.isDirty.get ())
-                return;
-
-            synchronized (this.items)
-            {
-                if (this.hasFlatTrackList)
-                {
-                    for (int i = 0; i < super.getItemCount (); i++)
-                        this.getUnpagedItem (i).setIndex (i % this.pageSize);
-                }
-                else
-                {
-                    final TreeNode<TrackImpl> newRoot = new TreeNode<> ();
-                    this.currentFolder = null;
-
-                    final List<TreeNode<TrackImpl>> hierarchy = new ArrayList<> ();
-                    hierarchy.add (newRoot);
-
-                    for (int i = 0; i < super.getItemCount (); i++)
-                    {
-                        final TrackImpl track = this.getUnpagedItem (i);
-
-                        final int depth = track.getDepth ();
-
-                        final TreeNode<TrackImpl> p = hierarchy.get (depth);
-                        final TreeNode<TrackImpl> child = p.addChild (track);
-                        final int childrenSize = p.getChildren ().size ();
-                        track.setIndex ((childrenSize - 1) % this.pageSize);
-
-                        final int index = depth + 1;
-                        if (index < hierarchy.size ())
-                            hierarchy.set (index, child);
-                        else
-                            hierarchy.add (index, child);
-
-                        if (track.isSelected ())
-                        {
-                            this.currentFolder = p;
-                            this.bankOffset = childrenSize / this.pageSize * this.pageSize;
-                        }
-                    }
-
-                    this.rootTrack = newRoot;
-
-                    if (this.currentFolder == null)
-                        this.currentFolder = newRoot;
-                }
-            }
-
-            this.isDirty.set (false);
-        }
+        this.skipDisabledItems = shouldSkip;
     }
 
 
@@ -453,5 +383,111 @@ public class TrackBankImpl extends AbstractTrackBankImpl
                 }
             }
         }
+    }
+
+
+    /**
+     * Set if dea<yctivated tracks should be filtered (not displayed).
+     *
+     * @param filterDeactivatedTracks True to filter
+     */
+    public void setFilterDeactivatedTracks (final boolean filterDeactivatedTracks)
+    {
+        this.skipDisabledItems = filterDeactivatedTracks;
+    }
+
+
+    /**
+     * Recalculate the track tree (and the flat numbering).
+     */
+    private void recalcTrackList ()
+    {
+        synchronized (this.isDirty)
+        {
+            if (!this.isDirty.get ())
+                return;
+
+            synchronized (this.items)
+            {
+                if (this.hasFlatTrackList)
+                    this.calcFlatTrack ();
+                else
+                    calcTreeTracks ();
+            }
+
+            this.isDirty.set (false);
+        }
+    }
+
+
+    /**
+     * Create a tree of groups and tracks. Filter deactivated tracks if enabled.
+     */
+    private void calcTreeTracks ()
+    {
+        final TreeNode<TrackImpl> newRoot = new TreeNode<> ();
+        this.currentFolder = null;
+
+        final List<TreeNode<TrackImpl>> hierarchy = new ArrayList<> ();
+        hierarchy.add (newRoot);
+
+        for (int i = 0; i < super.getItemCount (); i++)
+        {
+            final TrackImpl track = this.getUnpagedItem (i);
+
+            // FIlter deactivated tracks
+            if (this.skipDisabledItems && !track.isActivated ())
+                continue;
+
+            final int depth = track.getDepth ();
+
+            final TreeNode<TrackImpl> p = hierarchy.get (depth);
+            final TreeNode<TrackImpl> child = p.addChild (track);
+            final int childrenSize = p.getChildren ().size ();
+            track.setIndex ((childrenSize - 1) % this.pageSize);
+
+            final int index = depth + 1;
+            if (index < hierarchy.size ())
+                hierarchy.set (index, child);
+            else
+                hierarchy.add (index, child);
+
+            if (track.isSelected ())
+            {
+                this.currentFolder = p;
+                this.bankOffset = childrenSize / this.pageSize * this.pageSize;
+            }
+        }
+
+        this.rootTrack = newRoot;
+
+        if (this.currentFolder == null)
+            this.currentFolder = newRoot;
+    }
+
+
+    /**
+     * Create a flat list of all tracks incl. the master track if enabled. Filter deactivated tracks
+     * if enabled.
+     */
+    private void calcFlatTrack ()
+    {
+        this.flatTracks.clear ();
+        for (int i = 0; i < super.getItemCount (); i++)
+        {
+            final TrackImpl track = this.getUnpagedItem (i);
+
+            // FIlter deactivated tracks
+            if (this.skipDisabledItems && !track.isActivated ())
+                continue;
+
+            this.flatTracks.add (track);
+        }
+
+        if (this.hasFullFlatTrackList && this.master != null)
+            this.flatTracks.add (this.master);
+
+        for (int i = 0; i < this.flatTracks.size (); i++)
+            this.flatTracks.get (i).setIndex (i % this.pageSize);
     }
 }

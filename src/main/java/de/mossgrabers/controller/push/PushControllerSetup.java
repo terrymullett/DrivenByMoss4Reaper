@@ -393,6 +393,8 @@ public class PushControllerSetup extends AbstractControllerSetup<PushControlSurf
                 viewManager.setActiveView (Views.SESSION);
         });
 
+        this.configuration.registerDeactivatedItemsHandler (this.model);
+
         this.configuration.addSettingObserver (AbstractConfiguration.KNOB_SPEED_NORMAL, this::updateKnobSpeeds);
         this.configuration.addSettingObserver (AbstractConfiguration.KNOB_SPEED_SLOW, this::updateKnobSpeeds);
 

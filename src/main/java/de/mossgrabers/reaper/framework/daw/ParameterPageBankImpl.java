@@ -240,4 +240,12 @@ public class ParameterPageBankImpl implements IParameterPageBank
     {
         return Math.min (this.getScrollPosition () + this.pageSize, this.getItemCount ()) - 1;
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setSkipDisabledItems (final boolean shouldSkip)
+    {
+        // Not supported
+    }
 }

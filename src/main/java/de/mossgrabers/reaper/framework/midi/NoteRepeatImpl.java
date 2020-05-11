@@ -74,7 +74,11 @@ public class NoteRepeatImpl implements INoteRepeat
     @Override
     public void setActive (final boolean active)
     {
-        this.sender.processBooleanArg (NOTEREPEAT_TAG, "active", active);
+        if (this.isNoteRepeat != active)
+        {
+            this.isNoteRepeat = active;
+            this.sender.processBooleanArg (NOTEREPEAT_TAG, "active", active);
+        }
     }
 
 
@@ -197,17 +201,6 @@ public class NoteRepeatImpl implements INoteRepeat
     public void toggleIsFreeRunning ()
     {
         // Not supported
-    }
-
-
-    /**
-     * Set if repeat is enabled.
-     *
-     * @param enable True if enabled
-     */
-    public void setInternalActive (final boolean enable)
-    {
-        this.isNoteRepeat = enable;
     }
 
 
