@@ -11,6 +11,7 @@ import com.nikhaldimann.inieditor.IniEditor;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -470,13 +471,26 @@ public class DeviceManager
         try
         {
             if (path.toFile ().exists ())
-                Files.readAllLines (path, StandardCharsets.UTF_8).forEach (line -> this.parseJSDevice (line, categoriesSet, vendorsSet));
+                loadFile (path).forEach (line -> this.parseJSDevice (line, categoriesSet, vendorsSet));
             else
                 logModel.info (filename + " not present, skipped loading.");
         }
         catch (final IOException ex)
         {
             logModel.error ("Could not load file: " + path, ex);
+        }
+    }
+
+
+    private static List<String> loadFile (final Path path) throws IOException
+    {
+        try
+        {
+            return Files.readAllLines (path);
+        }
+        catch (final MalformedInputException ex)
+        {
+            return Files.readAllLines (path, StandardCharsets.ISO_8859_1);
         }
     }
 
