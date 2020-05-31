@@ -8,6 +8,8 @@ import de.mossgrabers.controller.launchpad.controller.LaunchpadControlSurface;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.utils.ButtonEvent;
+import de.mossgrabers.framework.view.ViewManager;
+import de.mossgrabers.framework.view.Views;
 
 
 /**
@@ -35,9 +37,15 @@ public class StopClipCommand extends AbstractTrackCommand
     {
         if (this.surface.isPro () && this.surface.isShiftPressed ())
         {
-            this.model.getCurrentTrackBank ().stop ();
+            if (event != ButtonEvent.DOWN)
+                return;
+            final ViewManager viewManager = this.surface.getViewManager ();
+            if (viewManager.isActiveView (Views.SHIFT))
+                viewManager.restoreView ();
+            viewManager.setActiveView (Views.SHUFFLE);
             return;
         }
+
         this.onModeButton (event, Modes.STOP_CLIP, "Stop Clip");
     }
 }

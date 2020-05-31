@@ -315,6 +315,10 @@ public class MidiInputImpl implements IMidiInput
         if (isProcessed)
             return;
 
+        // Ignore active sensing
+        if (status == 0xF8)
+            return;
+
         if (this.shortCallback != null)
             this.shortCallback.handleMidi (status, data1, data2);
     }

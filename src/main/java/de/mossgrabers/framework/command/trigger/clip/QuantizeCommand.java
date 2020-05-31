@@ -9,6 +9,8 @@ import de.mossgrabers.framework.configuration.Configuration;
 import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.daw.IClip;
 import de.mossgrabers.framework.daw.IModel;
+import de.mossgrabers.framework.daw.constants.RecordQuantization;
+import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
 
@@ -40,6 +42,37 @@ public class QuantizeCommand<S extends IControlSurface<C>, C extends Configurati
     {
         if (event == ButtonEvent.DOWN)
             this.quantize ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void executeShifted (final ButtonEvent event)
+    {
+        if (event != ButtonEvent.DOWN)
+            return;
+
+        final ITrack selectedTrack = this.model.getSelectedTrack ();
+        if (selectedTrack == null)
+            return;
+
+        // Toggle through all record quantization settings...
+
+        final RecordQuantization [] values = RecordQuantization.values ();
+        final RecordQuantization recordQuantization = selectedTrack.getRecordQuantizationGrid ();
+        int index = 0;
+        for (int i = 0; i < values.length; i++)
+        {
+            if (recordQuantization == values[i])
+            {
+                index = i + 1;
+                if (index >= values.length)
+                    index = 0;
+                break;
+            }
+        }
+        selectedTrack.setRecordQuantizationGrid (values[index]);
+        this.surface.getDisplay ().notify ("Record Quantization: " + values[index].getName ());
     }
 
 

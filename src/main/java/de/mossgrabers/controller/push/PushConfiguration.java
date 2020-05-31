@@ -1010,6 +1010,14 @@ public class PushConfiguration extends AbstractConfiguration implements IGraphic
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean isAntialiasEnabled ()
+    {
+        return true;
+    }
+
+
     /**
      * Get the selected display mode for debugging.
      *

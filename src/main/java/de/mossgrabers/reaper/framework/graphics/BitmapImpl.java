@@ -113,11 +113,11 @@ public class BitmapImpl implements IBitmap
 
     /** {@inheritDoc} */
     @Override
-    public void render (final IRenderer renderer)
+    public void render (final boolean enableAntialias, final IRenderer renderer)
     {
         synchronized (this.bufferedImage)
         {
-            renderer.render (new GraphicsContextImpl (this.bufferedImage.createGraphics (), FontCache.SANS_SERIF));
+            renderer.render (new GraphicsContextImpl (this.bufferedImage.createGraphics (), FontCache.SANS_SERIF, enableAntialias));
         }
     }
 

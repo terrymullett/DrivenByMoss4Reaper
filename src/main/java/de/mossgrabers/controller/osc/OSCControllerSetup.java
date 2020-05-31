@@ -197,8 +197,7 @@ public class OSCControllerSetup extends AbstractControllerSetup<IControlSurface<
         modules.add (new BrowserModule (this.host, this.model, this.writer));
         modules.add (new MidiModule (this.host, this.model, surface, this.writer, this.keyManager));
 
-        if (this.host.hasUserParameters ())
-            modules.add (new UserModule (this.host, this.model, this.writer));
+        modules.add (new UserModule (this.host, this.model, this.writer));
 
         modules.forEach (module -> {
             this.writer.registerModule (module);

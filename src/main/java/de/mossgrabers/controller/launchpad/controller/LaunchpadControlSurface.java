@@ -52,6 +52,15 @@ public class LaunchpadControlSurface extends AbstractControlSurface<LaunchpadCon
 
     public static final int                      LAUNCHPAD_LOGO             = 99;
 
+    public static final int                      LAUNCHPAD_TRACK1           = 101;
+    public static final int                      LAUNCHPAD_TRACK2           = 102;
+    public static final int                      LAUNCHPAD_TRACK3           = 103;
+    public static final int                      LAUNCHPAD_TRACK4           = 104;
+    public static final int                      LAUNCHPAD_TRACK5           = 105;
+    public static final int                      LAUNCHPAD_TRACK6           = 106;
+    public static final int                      LAUNCHPAD_TRACK7           = 107;
+    public static final int                      LAUNCHPAD_TRACK8           = 108;
+
     public static final int                      LAUNCHPAD_BUTTON_STATE_OFF = 0;
     public static final int                      LAUNCHPAD_BUTTON_STATE_ON  = 1;
     public static final int                      LAUNCHPAD_BUTTON_STATE_HI  = 4;
@@ -80,7 +89,7 @@ public class LaunchpadControlSurface extends AbstractControlSurface<LaunchpadCon
      */
     public LaunchpadControlSurface (final IHost host, final ColorManager colorManager, final LaunchpadConfiguration configuration, final IMidiOutput output, final IMidiInput input, final ILaunchpadControllerDefinition definition)
     {
-        super (host, configuration, colorManager, output, input, new LaunchpadPadGrid (colorManager, output, definition), 800, 740);
+        super (host, configuration, colorManager, output, input, new LaunchpadPadGrid (colorManager, output, definition), definition.isPro () ? 800 : 680, definition.isPro () ? 740 : 670);
 
         this.definition = definition;
 
@@ -265,6 +274,17 @@ public class LaunchpadControlSurface extends AbstractControlSurface<LaunchpadCon
     public boolean isPro ()
     {
         return this.definition.isPro ();
+    }
+
+
+    /**
+     * Does the device have dedicated buttons to select the tracks?
+     *
+     * @return True if supported
+     */
+    public boolean hasTrackSelectionButtons ()
+    {
+        return this.definition.hasTrackSelectionButtons ();
     }
 
 

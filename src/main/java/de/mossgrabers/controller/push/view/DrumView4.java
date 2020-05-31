@@ -7,8 +7,10 @@ package de.mossgrabers.controller.push.view;
 import de.mossgrabers.controller.push.controller.PushControlSurface;
 import de.mossgrabers.controller.push.mode.NoteMode;
 import de.mossgrabers.framework.controller.ButtonID;
+import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.grid.IPadGrid;
 import de.mossgrabers.framework.controller.hardware.IHwButton;
+import de.mossgrabers.framework.daw.ICursorDevice;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.INoteClip;
 import de.mossgrabers.framework.daw.IStepInfo;
@@ -47,11 +49,7 @@ public class DrumView4 extends DrumViewBase
     @Override
     public void onGridNote (final int note, final int velocity)
     {
-        if (!this.model.canSelectedTrackHoldNotes ())
-            return;
-
-        // Toggle the note on up, so we can intercept the long presses
-        if (velocity != 0)
+        if (!this.isActive () || velocity == 0)
             return;
 
         final int index = note - DRUM_START_KEY;
@@ -59,12 +57,11 @@ public class DrumView4 extends DrumViewBase
         final int y = index / 8;
 
         final int sound = y % 4 + this.soundOffset;
-        final int offsetY = this.scales.getDrumOffset ();
         final int col = 8 * (1 - y / 4) + x;
-        final int row = offsetY + this.getSelectedPad () + sound;
+        final int row = this.scales.getDrumOffset () + this.getSelectedPad () + sound;
 
         final int channel = this.configuration.getMidiEditChannel ();
-        final int vel = this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : this.surface.getButton (ButtonID.get (ButtonID.PAD1, index)).getPressedVelocity ();
+        final int vel = this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity;
         final INoteClip clip = this.getClip ();
 
         if (this.handleNoteAreaButtonCombinations (clip, channel, col, y, row, vel))
@@ -163,7 +160,7 @@ public class DrumView4 extends DrumViewBase
     public void drawGrid ()
     {
         final IPadGrid padGrid = this.surface.getPadGrid ();
-        if (!this.model.canSelectedTrackHoldNotes () || !this.isActive ())
+        if (!this.isActive ())
         {
             padGrid.turnOff ();
             return;
@@ -178,18 +175,22 @@ public class DrumView4 extends DrumViewBase
         final int offsetY = this.scales.getDrumOffset ();
         final int editMidiChannel = this.configuration.getMidiEditChannel ();
         final int selPad = this.getSelectedPad ();
+        final ICursorDevice primary = this.model.getInstrumentDevice ();
         for (int sound = 0; sound < 4; sound++)
         {
+            final int padIndex = selPad + sound + this.soundOffset;
+            final int noteRow = offsetY + padIndex;
+            final ColorEx drumPadColor = this.getDrumPadColor (primary, padIndex);
             for (int col = 0; col < DrumView4.NUM_DISPLAY_COLS; col++)
             {
-                final int isSet = clip.getStep (editMidiChannel, col, offsetY + selPad + sound + this.soundOffset).getState ();
+                final int isSet = clip.getStep (editMidiChannel, col, noteRow).getState ();
                 final boolean hilite = col == hiStep;
                 final int x = col % 8;
                 int y = col / 8;
                 if (col < 8)
                     y += 5;
                 y += sound;
-                padGrid.lightEx (x, 8 - y, this.getStepColor (isSet, hilite));
+                padGrid.lightEx (x, 8 - y, this.getStepColor (isSet, hilite, drumPadColor));
             }
         }
     }

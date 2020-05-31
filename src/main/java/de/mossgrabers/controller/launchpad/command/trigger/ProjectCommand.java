@@ -9,16 +9,15 @@ import de.mossgrabers.controller.launchpad.controller.LaunchpadControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.utils.ButtonEvent;
-import de.mossgrabers.framework.view.ViewManager;
 import de.mossgrabers.framework.view.Views;
 
 
 /**
- * Command to dis-/enable the metronome. Also toggles metronome ticks when Shift is pressed.
+ * Project command.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class ShiftCommand extends AbstractTriggerCommand<LaunchpadControlSurface, LaunchpadConfiguration>
+public class ProjectCommand extends AbstractTriggerCommand<LaunchpadControlSurface, LaunchpadConfiguration>
 {
     /**
      * Constructor.
@@ -26,29 +25,26 @@ public class ShiftCommand extends AbstractTriggerCommand<LaunchpadControlSurface
      * @param model The model
      * @param surface The surface
      */
-    public ShiftCommand (final IModel model, final LaunchpadControlSurface surface)
+    public ProjectCommand (final IModel model, final LaunchpadControlSurface surface)
     {
         super (model, surface);
     }
 
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc}} */
     @Override
     public void executeNormal (final ButtonEvent event)
     {
-        if (event != ButtonEvent.UP)
-            return;
-        final ViewManager viewManager = this.surface.getViewManager ();
-        if (viewManager.isActiveView (Views.SHIFT))
-            viewManager.restoreView ();
+        if (event == ButtonEvent.UP)
+            this.surface.getViewManager ().setActiveView (Views.PROJECT);
     }
 
 
-    /** {@inheritDoc} */
+    /** {@inheritDoc}} */
     @Override
     public void executeShifted (final ButtonEvent event)
     {
-        if (event == ButtonEvent.DOWN)
-            this.surface.getViewManager ().setActiveView (Views.SHIFT);
+        if (event == ButtonEvent.UP)
+            this.model.getProject ().save ();
     }
 }

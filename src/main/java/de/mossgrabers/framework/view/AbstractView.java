@@ -194,7 +194,7 @@ public abstract class AbstractView<S extends IControlSurface<C>, C extends Confi
      * @param colorID
      * @return The color ID
      */
-    protected static String replaceOctaveColorWithTrackColor (final ITrack track, final String colorID)
+    public static String replaceOctaveColorWithTrackColor (final ITrack track, final String colorID)
     {
         if (Scales.SCALE_COLOR_OCTAVE.equals (colorID))
         {

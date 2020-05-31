@@ -441,6 +441,10 @@ public class TrackBankImpl extends AbstractTrackBankImpl
 
             final int depth = track.getDepth ();
 
+            // This might happen if the parent folder is hidden!
+            if (depth >= hierarchy.size ())
+                continue;
+
             final TreeNode<TrackImpl> p = hierarchy.get (depth);
             final TreeNode<TrackImpl> child = p.addChild (track);
             final int childrenSize = p.getChildren ().size ();

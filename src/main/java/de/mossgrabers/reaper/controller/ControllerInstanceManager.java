@@ -23,6 +23,7 @@ import de.mossgrabers.reaper.controller.launchkey.LaunchkeyMiniMk3ControllerInst
 import de.mossgrabers.reaper.controller.launchpad.LaunchpadMiniMkIIIControllerInstance;
 import de.mossgrabers.reaper.controller.launchpad.LaunchpadMkIIControllerInstance;
 import de.mossgrabers.reaper.controller.launchpad.LaunchpadProControllerInstance;
+import de.mossgrabers.reaper.controller.launchpad.LaunchpadProMk3ControllerInstance;
 import de.mossgrabers.reaper.controller.launchpad.LaunchpadXControllerInstance;
 import de.mossgrabers.reaper.controller.maschine.mikro.mk3.MaschineMikroMk3ControllerInstance;
 import de.mossgrabers.reaper.controller.mcu.MCU1ControllerInstance;
@@ -72,6 +73,8 @@ public class ControllerInstanceManager
         DEF_TO_CLASS.put (APC40mkIIControllerInstance.CONTROLLER_DEFINITION, APC40mkIIControllerInstance.class);
         DEF_TO_CLASS.put (APCminiControllerInstance.CONTROLLER_DEFINITION, APCminiControllerInstance.class);
         DEF_TO_CLASS.put (BeatstepControllerInstance.CONTROLLER_DEFINITION, BeatstepControllerInstance.class);
+        // DEF_TO_CLASS.put (FireControllerInstance.CONTROLLER_DEFINITION,
+        // FireControllerInstance.class);
         DEF_TO_CLASS.put (GenericFlexiControllerInstance.CONTROLLER_DEFINITION, GenericFlexiControllerInstance.class);
         DEF_TO_CLASS.put (HUIControllerInstance.CONTROLLER_DEFINITION, HUIControllerInstance.class);
         DEF_TO_CLASS.put (KontrolMkIS25ControllerInstance.CONTROLLER_DEFINITION, KontrolMkIS25ControllerInstance.class);
@@ -85,6 +88,7 @@ public class ControllerInstanceManager
         DEF_TO_CLASS.put (LaunchpadProControllerInstance.CONTROLLER_DEFINITION, LaunchpadProControllerInstance.class);
         DEF_TO_CLASS.put (LaunchpadXControllerInstance.CONTROLLER_DEFINITION, LaunchpadXControllerInstance.class);
         DEF_TO_CLASS.put (LaunchpadMiniMkIIIControllerInstance.CONTROLLER_DEFINITION, LaunchpadMiniMkIIIControllerInstance.class);
+        DEF_TO_CLASS.put (LaunchpadProMk3ControllerInstance.CONTROLLER_DEFINITION, LaunchpadProMk3ControllerInstance.class);
         DEF_TO_CLASS.put (MaschineMikroMk3ControllerInstance.CONTROLLER_DEFINITION, MaschineMikroMk3ControllerInstance.class);
         DEF_TO_CLASS.put (MidiMonitorInstance.CONTROLLER_DEFINITION, MidiMonitorInstance.class);
         DEF_TO_CLASS.put (MCU1ControllerInstance.CONTROLLER_DEFINITION, MCU1ControllerInstance.class);

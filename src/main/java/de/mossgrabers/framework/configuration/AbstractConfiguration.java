@@ -1072,7 +1072,7 @@ public abstract class AbstractConfiguration implements Configuration
 
 
     /**
-     * Activate the accent value setting.
+     * Activate the flip arranger and clip record setting.
      *
      * @param settingsUI The settings
      */
@@ -1412,6 +1412,36 @@ public abstract class AbstractConfiguration implements Configuration
                 return i;
         }
         return 0;
+    }
+
+
+    /**
+     * Get the next arpeggiator mode.
+     *
+     * @return The next
+     */
+    public ArpeggiatorMode nextArpeggiatorMode ()
+    {
+        final ArpeggiatorMode arpMode = this.getNoteRepeatMode ();
+        int index = this.lookupArpeggiatorModeIndex (arpMode) + 1;
+        if (index >= this.arpeggiatorModes.length)
+            index = 0;
+        return this.arpeggiatorModes[index];
+    }
+
+
+    /**
+     * Get the previous arpeggiator mode.
+     *
+     * @return The previous
+     */
+    public ArpeggiatorMode prevArpeggiatorMode ()
+    {
+        final ArpeggiatorMode arpMode = this.getNoteRepeatMode ();
+        int index = this.lookupArpeggiatorModeIndex (arpMode) - 1;
+        if (index < 0)
+            index = this.arpeggiatorModes.length - 1;
+        return this.arpeggiatorModes[index];
     }
 
 

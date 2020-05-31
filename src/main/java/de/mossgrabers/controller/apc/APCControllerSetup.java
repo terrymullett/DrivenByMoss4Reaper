@@ -290,7 +290,7 @@ public class APCControllerSetup extends AbstractControllerSetup<APCControlSurfac
         for (int i = 0; i < 5; i++)
         {
             final ButtonID sceneButtonID = ButtonID.get (ButtonID.SCENE1, i);
-            this.addButton (sceneButtonID, "Scene " + (i + 1), new ViewButtonCommand<> (sceneButtonID, this.model, surface), APCControlSurface.APC_BUTTON_SCENE_LAUNCH_1 + i, () -> {
+            this.addButton (sceneButtonID, "Scene " + (i + 1), new ViewButtonCommand<> (sceneButtonID, surface), APCControlSurface.APC_BUTTON_SCENE_LAUNCH_1 + i, () -> {
                 final View activeView = viewManager.getActiveView ();
                 return activeView != null ? activeView.getButtonColor (sceneButtonID) : 0;
             });

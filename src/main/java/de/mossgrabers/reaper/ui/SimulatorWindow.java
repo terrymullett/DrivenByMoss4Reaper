@@ -52,8 +52,9 @@ public class SimulatorWindow extends JFrame
      *
      * @param surface The surface to simulate
      * @param title The window title
+     * @param enableAntialias True to enable anti aliasing
      */
-    public SimulatorWindow (final IControlSurface<?> surface, final String title)
+    public SimulatorWindow (final IControlSurface<?> surface, final String title, final boolean enableAntialias)
     {
         super (title);
 
@@ -63,6 +64,7 @@ public class SimulatorWindow extends JFrame
             this.setIconImage (image);
 
         this.surface = surface;
+
         this.surfaceFactory = (HwSurfaceFactoryImpl) this.surface.getSurfaceFactory ();
 
         final JPanel canvas = new JPanel ()
@@ -75,7 +77,7 @@ public class SimulatorWindow extends JFrame
             public void paintComponent (final Graphics g)
             {
                 super.paintComponent (g);
-                SimulatorWindow.this.render (new GraphicsContextImpl ((Graphics2D) g, FontCache.MONOSPACED));
+                SimulatorWindow.this.render (new GraphicsContextImpl ((Graphics2D) g, FontCache.MONOSPACED, enableAntialias));
             }
         };
 

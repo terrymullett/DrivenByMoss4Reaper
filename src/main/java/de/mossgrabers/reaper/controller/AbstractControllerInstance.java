@@ -253,7 +253,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
             return;
 
         if (this.simulators.isEmpty ())
-            this.controllerSetup.getSurfaces ().forEach (surface -> this.simulators.add (new SimulatorWindow (surface, this.toString ())));
+            this.controllerSetup.getSurfaces ().forEach (surface -> this.simulators.add (new SimulatorWindow (surface, this.toString (), true)));
 
         this.simulators.forEach (simulator -> simulator.setVisible (true));
     }

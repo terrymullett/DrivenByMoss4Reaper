@@ -41,10 +41,11 @@ public class GraphicsContextImpl implements IGraphicsContext
      *
      * @param gc The Bitwig graphics context
      * @param fontFamily The font family to use for drawing text
+     * @param enableAntialias True to enable anti aliasing
      */
-    public GraphicsContextImpl (final Graphics2D gc, final String fontFamily)
+    public GraphicsContextImpl (final Graphics2D gc, final String fontFamily, final boolean enableAntialias)
     {
-        configureGraphics (gc);
+        configureGraphics (gc, enableAntialias);
         this.gc = gc;
         this.fontCache = new FontCache (fontFamily);
     }
@@ -307,10 +308,11 @@ public class GraphicsContextImpl implements IGraphicsContext
      * Makes several graphic settings on the graphics context.
      *
      * @param gc The graphics context
+     * @param enableAntialias True to enable anti aliasing
      */
-    private static void configureGraphics (final Graphics2D gc)
+    private static void configureGraphics (final Graphics2D gc, final boolean enableAntialias)
     {
-        gc.setRenderingHint (RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        gc.setRenderingHint (RenderingHints.KEY_ANTIALIASING, enableAntialias ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
         gc.setRenderingHint (RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         gc.setRenderingHint (RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
     }
