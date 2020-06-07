@@ -183,12 +183,29 @@ public abstract class AbstractPagedBankImpl<S extends T, T extends IItem> extend
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    public void scrollBackwards ()
+    {
+        this.bankOffset = Math.max (0, this.bankOffset - 1);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void scrollForwards ()
+    {
+        if (this.bankOffset + 1 < this.getItemCount ())
+            this.bankOffset += 1;
+    }
+
+
     /**
      * Set the bank offset. Used for keeping in sync with another bank.
      *
      * @param bankOffset The bank offset
      */
-    public void setBankOffset (final int bankOffset)
+    protected void setBankOffset (final int bankOffset)
     {
         this.bankOffset = bankOffset;
     }
