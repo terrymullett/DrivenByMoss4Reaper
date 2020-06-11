@@ -6,7 +6,9 @@ package de.mossgrabers.controller.fire;
 
 import de.mossgrabers.controller.fire.command.continuous.SelectKnobCommand;
 import de.mossgrabers.controller.fire.command.trigger.DrumSequencerSelectCommand;
+import de.mossgrabers.controller.fire.command.trigger.FireBrowserCommand;
 import de.mossgrabers.controller.fire.command.trigger.FireRecordCommand;
+import de.mossgrabers.controller.fire.command.trigger.FireViewButtonCommand;
 import de.mossgrabers.controller.fire.command.trigger.PlaySelectCommand;
 import de.mossgrabers.controller.fire.command.trigger.SessionSelectCommand;
 import de.mossgrabers.controller.fire.command.trigger.StepSequencerSelectCommand;
@@ -14,12 +16,14 @@ import de.mossgrabers.controller.fire.controller.FireColorManager;
 import de.mossgrabers.controller.fire.controller.FireControlSurface;
 import de.mossgrabers.controller.fire.controller.FireDisplay;
 import de.mossgrabers.controller.fire.controller.FireScales;
-import de.mossgrabers.controller.fire.mode.track.FireLayerMode;
-import de.mossgrabers.controller.fire.mode.track.FireParameterMode;
-import de.mossgrabers.controller.fire.mode.track.FireTrackMode;
-import de.mossgrabers.controller.fire.mode.track.FireUserMode;
-import de.mossgrabers.controller.fire.view.DrumView;
+import de.mossgrabers.controller.fire.mode.BrowserMode;
+import de.mossgrabers.controller.fire.mode.FireLayerMode;
+import de.mossgrabers.controller.fire.mode.FireParameterMode;
+import de.mossgrabers.controller.fire.mode.FireTrackMode;
+import de.mossgrabers.controller.fire.mode.FireUserMode;
+import de.mossgrabers.controller.fire.mode.NoteMode;
 import de.mossgrabers.controller.fire.view.DrumView4;
+import de.mossgrabers.controller.fire.view.DrumView64;
 import de.mossgrabers.controller.fire.view.IFireView;
 import de.mossgrabers.controller.fire.view.MixView;
 import de.mossgrabers.controller.fire.view.PianoView;
@@ -113,6 +117,10 @@ public class FireControllerSetup extends AbstractControllerSetup<FireControlSurf
         ms.setNumSends (6);
         ms.setNumDrumPadLayers (4);
         ms.setNumDeviceLayers (4);
+        ms.setNumUserPages (8);
+        ms.setNumUserPageSize (4);
+        ms.setNumFilterColumnEntries (3);
+        ms.setNumResults (3);
         ms.setHasFullFlatTrackList (true);
 
         this.model = this.factory.createModel (this.colorManager, this.valueChanger, this.scales, ms);
@@ -159,6 +167,8 @@ public class FireControllerSetup extends AbstractControllerSetup<FireControlSurf
         modeManager.registerMode (Modes.TRACK, new FireTrackMode (surface, this.model));
         modeManager.registerMode (Modes.DEVICE_PARAMS, new FireParameterMode (surface, this.model));
         modeManager.registerMode (Modes.USER, new FireUserMode (surface, this.model));
+        modeManager.registerMode (Modes.NOTE, new NoteMode (surface, this.model));
+        modeManager.registerMode (Modes.BROWSER, new BrowserMode (surface, this.model));
     }
 
 
@@ -176,7 +186,7 @@ public class FireControllerSetup extends AbstractControllerSetup<FireControlSurf
         viewManager.registerView (Views.PIANO, new PianoView (surface, this.model));
 
         viewManager.registerView (Views.DRUM4, new DrumView4 (surface, this.model));
-        viewManager.registerView (Views.DRUM, new DrumView (surface, this.model));
+        viewManager.registerView (Views.DRUM64, new DrumView64 (surface, this.model));
 
         viewManager.registerView (Views.SESSION, new SessionView (surface, this.model));
         viewManager.registerView (Views.MIX, new MixView (surface, this.model));
@@ -250,7 +260,7 @@ public class FireControllerSetup extends AbstractControllerSetup<FireControlSurf
         this.addButton (ButtonID.DRUM, "DRUM", new DrumSequencerSelectCommand (this.model, surface), FireControlSurface.FIRE_DRUM, () -> {
             if (viewManager.isActiveView (Views.DRUM4))
                 return 1;
-            if (viewManager.isActiveView (Views.DRUM))
+            if (viewManager.isActiveView (Views.DRUM64))
                 return 2;
             return surface.isPressed (ButtonID.DRUM) ? 1 : 0;
         }, FireColorManager.BUTTON_STATE_ON2, FireColorManager.BUTTON_STATE_HI2, ColorManager.BUTTON_STATE_HI);
@@ -266,15 +276,29 @@ public class FireControllerSetup extends AbstractControllerSetup<FireControlSurf
         this.addButton (ButtonID.SHIFT, "SHIFT", new ToggleShiftViewCommand<> (this.model, surface), FireControlSurface.FIRE_SHIFT, (IntSupplier) null, FireColorManager.BUTTON_STATE_ON2, FireColorManager.BUTTON_STATE_HI2);
         this.addButton (ButtonID.ALT, "ALT", NopCommand.INSTANCE, FireControlSurface.FIRE_ALT);
 
-        this.addButton (ButtonID.SELECT, "SELECT", NopCommand.INSTANCE, FireControlSurface.SELECT);
+        this.addButton (ButtonID.SELECT, "SELECT", (event, velocity) -> {
 
-        // TODO Implement Browser
-        this.addButton (ButtonID.BROWSE, "BROWSER", NopCommand.INSTANCE, FireControlSurface.FIRE_BROWSER);
+            if (velocity > 0)
+                return;
+
+            if (modeManager.isActiveOrTempMode (Modes.NOTE))
+            {
+                final NoteMode mode = (NoteMode) modeManager.getMode (Modes.NOTE);
+                mode.resetTranspose ();
+                return;
+            }
+
+            if (modeManager.isActiveOrTempMode (Modes.BROWSER))
+                ((FireBrowserCommand) surface.getButton (ButtonID.BROWSE).getCommand ()).discardBrowser (true);
+
+        }, FireControlSurface.SELECT);
+
+        this.addButton (ButtonID.BROWSE, "BROWSER", new FireBrowserCommand (Modes.BROWSER, this.model, surface), FireControlSurface.FIRE_BROWSER, () -> modeManager.isActiveOrTempMode (Modes.BROWSER));
 
         // Navigation
 
-        this.addButton (ButtonID.ARROW_LEFT, "GRID\nLEFT", new ViewButtonCommand<> (ButtonID.ARROW_LEFT, surface), FireControlSurface.FIRE_GRID_LEFT);
-        this.addButton (ButtonID.ARROW_RIGHT, "GRID\nRIGHT", new ViewButtonCommand<> (ButtonID.ARROW_RIGHT, surface), FireControlSurface.FIRE_GRID_RIGHT);
+        this.addButton (ButtonID.ARROW_LEFT, "GRID\nLEFT", new FireViewButtonCommand (ButtonID.ARROW_LEFT, this.model, surface), FireControlSurface.FIRE_GRID_LEFT);
+        this.addButton (ButtonID.ARROW_RIGHT, "GRID\nRIGHT", new FireViewButtonCommand (ButtonID.ARROW_RIGHT, this.model, surface), FireControlSurface.FIRE_GRID_RIGHT);
 
         this.addButton (ButtonID.ARROW_UP, "PATTERN\nUP", (event, velocity) -> {
             if (velocity == 0)
@@ -543,8 +567,6 @@ public class FireControllerSetup extends AbstractControllerSetup<FireControlSurf
         if (mode != null)
             this.currentMode = mode;
 
-        // TODO Test indication
-
         final FireControlSurface surface = this.getSurface ();
         final ITrackBank tb = this.model.getTrackBank ();
         final ViewManager viewManager = surface.getViewManager ();
@@ -586,7 +608,6 @@ public class FireControllerSetup extends AbstractControllerSetup<FireControlSurf
 
         final FireControlSurface surface = this.getSurface ();
         final ViewManager viewManager = surface.getViewManager ();
-        final ModeManager modeManager = surface.getModeManager ();
 
         // Recall last used view (if we are not in session mode)
         if (!viewManager.isActiveView (Views.SESSION) && !viewManager.isActiveView (Views.MIX))
@@ -599,15 +620,12 @@ public class FireControllerSetup extends AbstractControllerSetup<FireControlSurf
             }
         }
 
-        if (modeManager.isActiveOrTempMode (Modes.MASTER))
-            modeManager.setActiveMode (Modes.TRACK);
-
         if (viewManager.isActiveView (Views.PLAY))
             viewManager.getActiveView ().updateNoteMapping ();
 
         // Reset drum octave because the drum pad bank is also reset
         this.scales.resetDrumOctave ();
-        if (viewManager.isActiveView (Views.DRUM))
-            viewManager.getView (Views.DRUM).updateNoteMapping ();
+        if (viewManager.isActiveView (Views.DRUM4))
+            viewManager.getView (Views.DRUM4).updateNoteMapping ();
     }
 }

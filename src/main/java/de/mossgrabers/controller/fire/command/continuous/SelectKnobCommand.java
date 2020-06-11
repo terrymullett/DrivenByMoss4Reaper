@@ -11,10 +11,10 @@ import de.mossgrabers.framework.command.core.AbstractContinuousCommand;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.daw.ICursorDevice;
 import de.mossgrabers.framework.daw.IModel;
-import de.mossgrabers.framework.daw.IParameterBank;
 import de.mossgrabers.framework.daw.ITrackBank;
 import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.daw.data.ITrack;
+import de.mossgrabers.framework.mode.Mode;
 import de.mossgrabers.framework.mode.ModeManager;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.view.View;
@@ -43,9 +43,28 @@ public class SelectKnobCommand extends AbstractContinuousCommand<FireControlSurf
     @Override
     public void execute (final int value)
     {
+        final ModeManager modeManager = this.surface.getModeManager ();
+
+        // In note mode use it to change the transposition
+        if (modeManager.isActiveOrTempMode (Modes.NOTE))
+        {
+            final Mode mode = modeManager.getMode (Modes.NOTE);
+            mode.onKnobTouch (4, true);
+            mode.onKnobValue (4, value);
+            return;
+        }
+
+        if (modeManager.isActiveOrTempMode (Modes.BROWSER))
+        {
+            final Mode mode = modeManager.getMode (Modes.BROWSER);
+            mode.onKnobTouch (8, true);
+            mode.onKnobValue (8, value);
+            return;
+        }
+
+        // Bank scrolling with ALT button is always active
         if (this.surface.isPressed (ButtonID.ALT))
         {
-            final ModeManager modeManager = this.surface.getModeManager ();
             final boolean isInc = this.model.getValueChanger ().calcKnobSpeed (value) > 0;
             if (modeManager.isActiveOrTempMode (Modes.TRACK, Modes.DEVICE_LAYER))
                 handleTrackSelection (this.surface, this.model.getTrackBank (), isInc);
@@ -56,6 +75,7 @@ public class SelectKnobCommand extends AbstractContinuousCommand<FireControlSurf
             return;
         }
 
+        // Change the tempo in combination with the drum button
         if (this.surface.isPressed (ButtonID.DRUM))
         {
             this.surface.setTriggerConsumed (ButtonID.DRUM);
@@ -100,11 +120,11 @@ public class SelectKnobCommand extends AbstractContinuousCommand<FireControlSurf
 
     private void handleUserPageSelection (final boolean isInc)
     {
-        final IParameterBank userBank = this.model.getUserParameterBank ();
+        final Mode userMode = this.surface.getModeManager ().getMode (Modes.USER);
         if (isInc)
-            userBank.selectNextPage ();
+            userMode.selectNextItem ();
         else
-            userBank.selectPreviousPage ();
+            userMode.selectPreviousItem ();
     }
 
 

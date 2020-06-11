@@ -31,7 +31,7 @@ public class DrumSequencerSelectCommand extends ViewMultiSelectCommand<FireContr
      */
     public DrumSequencerSelectCommand (final IModel model, final FireControlSurface surface)
     {
-        super (model, surface, true, Views.DRUM4, Views.DRUM);
+        super (model, surface, true, Views.DRUM4, Views.DRUM64);
     }
 
 

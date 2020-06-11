@@ -26,12 +26,12 @@ public class UserParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, 
      * Constructor.
      *
      * @param dataSetup Some configuration variables
-     * @param numParams The number of parameters in the page of the bank
+     * @param numUserPageSize The number of parameters in the page of the bank
      * @param model The model for getting the selected track
      */
-    public UserParameterBankImpl (final DataSetupEx dataSetup, final int numParams, final IModel model)
+    public UserParameterBankImpl (final DataSetupEx dataSetup, final int numUserPageSize, final IModel model)
     {
-        super (dataSetup, numParams, EmptyParameter.INSTANCE);
+        super (dataSetup, numUserPageSize, EmptyParameter.INSTANCE);
 
         this.model = model;
     }

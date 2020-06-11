@@ -80,7 +80,7 @@ public class ModelImpl extends AbstractModel
         this.trackBanks.add (this.trackBank);
         this.effectTrackBank = null;
 
-        this.userParameterBank = new UserParameterBankImpl (dataSetup, numParams, this);
+        this.userParameterBank = new UserParameterBankImpl (dataSetup, modelSetup.getNumUserPageSize (), this);
 
         final int numResults = modelSetup.getNumResults ();
         if (numResults > 0)
