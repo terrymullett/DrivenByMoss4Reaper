@@ -70,14 +70,16 @@ public class MidiConnection
             if (device == null)
                 return;
 
-            USED_DEVICES.add (device);
-
             try
             {
                 this.midiOutputDevice = device;
                 if (!this.midiOutputDevice.isOpen ())
                     this.midiOutputDevice.open ();
+                if (!this.midiOutputDevice.isOpen ())
+                    throw new MidiUnavailableException ("Could not open MIDI output device: " + this.midiOutputDevice.getDeviceInfo ().getName ());
                 this.receiver = this.midiOutputDevice.getReceiver ();
+
+                USED_DEVICES.add (device);
             }
             catch (final MidiUnavailableException ex)
             {
@@ -120,21 +122,6 @@ public class MidiConnection
         {
             this.model.error ("Midi not available.", ex);
         }
-    }
-
-
-    /**
-     * Send a system exclusive message to the output.
-     *
-     * @param data The data to send formatted as hex values separated by spaces
-     */
-    public void sendSysex (final String data)
-    {
-        final String [] parts = data.split (" ");
-        final byte [] bytes = new byte [parts.length];
-        for (int i = 0; i < parts.length; i++)
-            bytes[i] = (byte) Integer.parseInt (parts[i], 16);
-        this.sendSysex (bytes);
     }
 
 
@@ -281,8 +268,13 @@ public class MidiConnection
             return;
         synchronized (this.sendLock)
         {
-            if (this.receiver != null && this.midiOutputDevice.isOpen ())
+            if (this.receiver == null)
+                return;
+
+            if (this.midiOutputDevice.isOpen ())
                 this.receiver.send (message, -1);
+            else
+                this.model.error ("Attempt to send to closed MIDI output: " + this.midiOutputDevice.getDeviceInfo ().getName (), null);
         }
     }
 

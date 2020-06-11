@@ -30,15 +30,20 @@ class MidiOutputImpl extends AbstractMidiOutputImpl
 
     /** {@inheritDoc} */
     @Override
-    public void sendSysex (final byte [] data)
+    public void sendSysex (final String data)
     {
-        this.midiConnection.sendSysex (data);
+        final String [] parts = data.split (" ");
+        final byte [] bytes = new byte [parts.length];
+        for (int i = 0; i < parts.length; i++)
+            bytes[i] = (byte) Integer.parseInt (parts[i], 16);
+
+        this.sendSysex (bytes);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void sendSysex (final String data)
+    public void sendSysex (final byte [] data)
     {
         this.midiConnection.sendSysex (data);
     }
