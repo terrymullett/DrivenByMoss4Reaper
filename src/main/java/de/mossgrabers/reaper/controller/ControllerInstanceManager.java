@@ -120,6 +120,7 @@ public class ControllerInstanceManager
     private final MessageSender             sender;
     private final IniFiles                  iniFiles;
 
+
     /**
      * Constructor.
      *

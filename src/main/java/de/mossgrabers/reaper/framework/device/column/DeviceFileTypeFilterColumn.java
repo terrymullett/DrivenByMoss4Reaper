@@ -56,7 +56,7 @@ public class DeviceFileTypeFilterColumn extends BaseColumn
         @Override
         public int getIndex ()
         {
-            return calcPosition (this.index);
+            return DeviceFileTypeFilterColumn.this.calcPosition (this.index);
         }
 
 

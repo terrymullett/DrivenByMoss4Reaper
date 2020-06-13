@@ -31,6 +31,7 @@ public abstract class BaseColumn extends ItemImpl implements IBrowserColumn
 
     int                                   selectedRow = 0;
 
+
     /**
      * Constructor.
      *

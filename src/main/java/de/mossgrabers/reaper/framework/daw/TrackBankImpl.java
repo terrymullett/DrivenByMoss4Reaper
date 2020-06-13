@@ -412,7 +412,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
                 if (this.hasFlatTrackList)
                     this.calcFlatTrack ();
                 else
-                    calcTreeTracks ();
+                    this.calcTreeTracks ();
             }
 
             this.isDirty.set (false);

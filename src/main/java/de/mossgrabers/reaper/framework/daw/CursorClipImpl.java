@@ -37,6 +37,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     private int                       editPage     = 0;
     private int                       maxPage      = 1;
 
+
     /**
      * Constructor.
      *
