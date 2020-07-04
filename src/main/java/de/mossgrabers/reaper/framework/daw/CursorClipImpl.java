@@ -600,6 +600,14 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
     /** {@inheritDoc} */
     @Override
+    public void clearAll ()
+    {
+        this.sendClipOSC ("clear");
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void clearStep (final int channel, final int step, final int row)
     {
         this.sendClipOSC (PATH_NOTE + row + "/clear/" + channel, (step + this.editPage * this.numSteps) * this.stepLength);

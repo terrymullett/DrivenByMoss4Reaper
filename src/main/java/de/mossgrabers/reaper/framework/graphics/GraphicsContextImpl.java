@@ -8,6 +8,7 @@ import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.graphics.Align;
 import de.mossgrabers.framework.graphics.IGraphicsContext;
 import de.mossgrabers.framework.graphics.IImage;
+import de.mossgrabers.framework.utils.StringUtils;
 import de.mossgrabers.reaper.ui.utils.FontCache;
 
 import java.awt.BasicStroke;
@@ -194,9 +195,11 @@ public class GraphicsContextImpl implements IGraphicsContext
         if (text == null || text.length () == 0)
             return;
 
+        final String txt = StringUtils.fixFontCharacters (text);
+
         this.gc.setFont (this.fontCache.getFont ((int) fontSize));
 
-        final Dimension dim = this.getTextDims (text);
+        final Dimension dim = this.getTextDims (txt);
         this.gc.clipRect ((int) x, (int) y, (int) width, (int) height);
         final int posX;
         switch (alignment)
@@ -211,7 +214,7 @@ public class GraphicsContextImpl implements IGraphicsContext
                 break;
         }
 
-        final double textDescent = this.getTextDescent (text);
+        final double textDescent = this.getTextDescent (txt);
         final int posY = (int) (y + height - (height - dim.height) / 2 - textDescent);
 
         if (backgroundColor != null)
@@ -221,7 +224,7 @@ public class GraphicsContextImpl implements IGraphicsContext
         }
 
         this.setColor (color);
-        this.gc.drawString (text, posX, posY);
+        this.gc.drawString (txt, posX, posY);
         this.gc.setClip (null);
     }
 
@@ -241,10 +244,12 @@ public class GraphicsContextImpl implements IGraphicsContext
         if (text == null || text.length () == 0)
             return;
 
-        this.gc.setFont (this.fontCache.getFont ((int) fontSize));
-        final Dimension dim = this.getTextDims (text);
+        final String txt = StringUtils.fixFontCharacters (text);
 
-        final double textDescent = this.getTextDescent (text);
+        this.gc.setFont (this.fontCache.getFont ((int) fontSize));
+        final Dimension dim = this.getTextDims (txt);
+
+        final double textDescent = this.getTextDescent (txt);
         final int posY = (int) (y + height - (height - dim.height) / 2 - textDescent);
 
         if (backgroundColor != null)
@@ -254,7 +259,7 @@ public class GraphicsContextImpl implements IGraphicsContext
         }
 
         this.setColor (color);
-        this.gc.drawString (text, (int) x, (int) (y + height - (height - dim.height) / 2 - this.getTextDescent ("Hg")));
+        this.gc.drawString (txt, (int) x, (int) (y + height - (height - dim.height) / 2 - this.getTextDescent ("Hg")));
     }
 
 

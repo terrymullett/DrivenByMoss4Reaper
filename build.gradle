@@ -1,4 +1,5 @@
 plugins {
+    // The following plugin causes the Gradle 7 deprecation warnings!
     id 'com.github.jk1.dependency-license-report' version '1.14'
     id 'com.github.ben-manes.versions' version '0.28.0'
     id 'java'
@@ -9,7 +10,7 @@ plugins {
 sourceCompatibility = 13
 targetCompatibility = 13
 
-version = '10.0.0'
+version = '10.1.0'
 
 jar {
     manifest {
