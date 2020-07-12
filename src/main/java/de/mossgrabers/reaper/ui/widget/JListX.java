@@ -29,7 +29,7 @@ public class JListX<E> extends JList<E>
      */
     public JListX ()
     {
-        super (new DefaultListModel<E> ());
+        super (new DefaultListModel<> ());
     }
 
 

@@ -131,7 +131,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
         synchronized (UPDATE_LOCK)
         {
             if (this.isAutomationRecActive ())
-                this.sender.delayUpdates ("track");
+                this.sender.delayUpdates (PATH_TRACK);
             this.volume = this.valueChanger.toNormalizedValue (value);
             this.sendTrackOSC ("volume", this.volume);
         }
@@ -229,7 +229,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
         synchronized (UPDATE_LOCK)
         {
             if (this.isAutomationRecActive ())
-                this.sender.delayUpdates ("track");
+                this.sender.delayUpdates (PATH_TRACK);
             this.pan = this.valueChanger.toNormalizedValue (value);
             this.sendTrackOSC ("pan", this.pan);
         }
@@ -368,7 +368,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
         synchronized (UPDATE_LOCK)
         {
             if (this.isAutomationRecActive ())
-                this.sender.delayUpdates ("track");
+                this.sender.delayUpdates (PATH_TRACK);
             this.setMuteState (value);
             this.sendTrackOSC ("mute", value);
         }

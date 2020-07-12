@@ -233,6 +233,14 @@ public class TransportImpl extends BaseImpl implements ITransport
 
     /** {@inheritDoc} */
     @Override
+    public void setMetronomeTicks (final boolean on)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public String getMetronomeVolumeStr ()
     {
         // Not supported
