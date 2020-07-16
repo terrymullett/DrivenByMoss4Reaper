@@ -1,6 +1,6 @@
  reaper_drivenbymoss
 
- Timestamp is 5f0f7895 (Wed Jul 15 23:43:49 2020)
+ Timestamp is 5f102382 (Thu Jul 16 11:53:06 2020)
 
  Preferred load address is 0000000180000000
 
@@ -5383,21 +5383,21 @@
  0002:0001df80       __real@3fc0000000000000    0000000180097f80     TrackProcessor.obj
  0002:0001df88       __real@3fd0000000000000    0000000180097f88     TrackProcessor.obj
  0002:0001df90       __real@3fe0000000000000    0000000180097f90     TrackProcessor.obj
- 0002:0001df98       __real@3ff0000000000000    0000000180097f98     MastertrackProcessor.obj
+ 0002:0001df98       __real@3ff0000000000000    0000000180097f98     TrackProcessor.obj
  0002:0001dfa0       __real@4000000000000000    0000000180097fa0     MastertrackProcessor.obj
  0002:0001dfa8       __real@4008000000000000    0000000180097fa8     MastertrackProcessor.obj
  0002:0001dfb0       __real@4010000000000000    0000000180097fb0     MastertrackProcessor.obj
  0002:0001dfb8       __real@401c000000000000    0000000180097fb8     TrackProcessor.obj
  0002:0001dfc0       __real@4020000000000000    0000000180097fc0     DeviceProcessor.obj
  0002:0001dfc8       __real@40215f2ced384f29    0000000180097fc8     DataCollector.obj
- 0002:0001dfd0       __real@404e000000000000    0000000180097fd0     ClipProcessor.obj
+ 0002:0001dfd0       __real@404e000000000000    0000000180097fd0     TrackProcessor.obj
  0002:0001dfd8       __real@4059000000000000    0000000180097fd8     DataCollector.obj
  0002:0001dfe0       __real@408f400000000000    0000000180097fe0     MastertrackProcessor.obj
  0002:0001dfe8       __real@4202a05f20000000    0000000180097fe8     ActionProcessor.obj
  0002:0001dff0       __real@bff0000000000000    0000000180097ff0     ClipProcessor.obj
  0002:0001dff8       __real@c059000000000000    0000000180097ff8     DataCollector.obj
  0002:0001e000       __real@c062c00000000000    0000000180098000     DataCollector.obj
- 0002:0001e010       __xmm@7fffffffffffffff7fffffffffffffff 0000000180098010     ActionProcessor.obj
+ 0002:0001e010       __xmm@7fffffffffffffff7fffffffffffffff 0000000180098010     ClipProcessor.obj
  0002:0001e2a0       _load_config_used          00000001800982a0     LIBCMT:loadcfg.obj
  0002:0001e3d0       ??_R4bad_function_call@std@@6B@ 00000001800983d0     libcpmt:xthrow.obj
  0002:0001e3f8       ??_R3bad_function_call@std@@8 00000001800983f8     libcpmt:xthrow.obj
