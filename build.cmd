@@ -1,2 +1,2 @@
-set JAVA_HOME=%JAVA_HOME13%
+set JAVA_HOME=%JAVA_HOME14%
 gradlew build
