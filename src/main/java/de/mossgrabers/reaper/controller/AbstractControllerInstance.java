@@ -258,7 +258,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance
 
     /** {@inheritDoc} */
     @Override
-    public synchronized void simulateUI (final JFrame frame)
+    public synchronized void simulateUI ()
     {
         if (this.controllerSetup == null)
             return;
@@ -267,6 +267,15 @@ public abstract class AbstractControllerInstance implements IControllerInstance
             this.controllerSetup.getSurfaces ().forEach (surface -> this.simulators.add (new SimulatorWindow (surface, this.toString (), true)));
 
         this.simulators.forEach (simulator -> simulator.setVisible (true));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public synchronized void testUI ()
+    {
+        if (this.controllerSetup != null)
+            this.controllerSetup.test ();
     }
 
 

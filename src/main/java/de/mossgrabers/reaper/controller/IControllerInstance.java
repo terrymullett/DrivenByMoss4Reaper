@@ -8,8 +8,6 @@ import de.mossgrabers.framework.controller.IControllerDefinition;
 import de.mossgrabers.reaper.framework.configuration.DocumentSettingsUI;
 import de.mossgrabers.reaper.framework.configuration.GlobalSettingsUI;
 
-import javax.swing.JFrame;
-
 
 /**
  * Interface to an controller instance.
@@ -107,8 +105,12 @@ public interface IControllerInstance
 
     /**
      * Simulate the user interface of the device in a window.
-     *
-     * @param frame The parent window
      */
-    void simulateUI (JFrame frame);
+    void simulateUI ();
+
+
+    /**
+     * Test the user interface.
+     */
+    void testUI ();
 }

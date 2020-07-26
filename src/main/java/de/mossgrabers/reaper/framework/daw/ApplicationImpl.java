@@ -5,11 +5,9 @@
 package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.daw.IApplication;
-import de.mossgrabers.framework.utils.OperatingSystem;
 import de.mossgrabers.reaper.framework.Actions;
+import de.mossgrabers.reaper.ui.utils.RobotUtil;
 
-import java.awt.AWTException;
-import java.awt.Robot;
 import java.awt.event.KeyEvent;
 
 
@@ -20,33 +18,9 @@ import java.awt.event.KeyEvent;
  */
 public class ApplicationImpl extends BaseImpl implements IApplication
 {
-    private static Robot robot;
-
-    private String       panelLayout  = IApplication.PANEL_LAYOUT_ARRANGE;
-    private boolean      engineActive = true;
-    private int          windowLayout = 0;
-
-
-    static Robot getRobot ()
-    {
-        if (robot == null)
-        {
-            try
-            {
-                // Freezes Reaper UI on Linux
-                if (OperatingSystem.get () != OperatingSystem.LINUX)
-                {
-                    robot = new Robot ();
-                    robot.setAutoDelay (250);
-                }
-            }
-            catch (final AWTException ex)
-            {
-                robot = null;
-            }
-        }
-        return robot;
-    }
+    private String  panelLayout  = IApplication.PANEL_LAYOUT_ARRANGE;
+    private boolean engineActive = true;
+    private int     windowLayout = 0;
 
 
     /**
@@ -401,14 +375,9 @@ public class ApplicationImpl extends BaseImpl implements IApplication
 
     private void sendKey (final int key)
     {
-        final Robot rob = getRobot ();
-        if (rob == null)
-        {
+        if (RobotUtil.exists ())
+            RobotUtil.sendKey (key);
+        else
             this.host.println ("Sending key presses not supported on this platform.");
-            return;
-        }
-
-        rob.keyPress (key);
-        rob.keyRelease (key);
     }
 }

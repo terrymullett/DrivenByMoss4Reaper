@@ -325,6 +325,10 @@ public class MainFrame extends JFrame
         simItem.addActionListener (event -> this.displaySimulatorWindow ());
         popup.add (simItem);
 
+        final JMenuItem testItem = new JMenuItem ("Test all views/modes");
+        testItem.addActionListener (event -> this.testAllControllers ());
+        popup.add (testItem);
+
         debugButton.addActionListener (event -> popup.show (debugButton, 0, debugButton.getHeight ()));
     }
 
@@ -339,7 +343,21 @@ public class MainFrame extends JFrame
             return;
         final IControllerInstance controllerInstance = checkboxListItem.getItem ();
         if (controllerInstance != null)
-            controllerInstance.simulateUI (this);
+            controllerInstance.simulateUI ();
+    }
+
+
+    private void testAllControllers ()
+    {
+        final int selectedIndex = this.controllerList.getSelectionModel ().getLeadSelectionIndex ();
+        if (selectedIndex < 0)
+            return;
+        final CheckboxListItem checkboxListItem = this.listModel.get (selectedIndex);
+        if (checkboxListItem == null)
+            return;
+        final IControllerInstance controllerInstance = checkboxListItem.getItem ();
+        if (controllerInstance != null)
+            controllerInstance.testUI ();
     }
 
 

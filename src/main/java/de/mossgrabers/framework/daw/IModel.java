@@ -148,7 +148,7 @@ public interface IModel
 
 
     /**
-     * Get the drum device. This is the first instrument of the track and monitors 64 layers.
+     * Get the first drum device of the track and monitors 64 layers.
      *
      * @return The device
      */

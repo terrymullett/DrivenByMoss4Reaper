@@ -32,6 +32,7 @@ import de.mossgrabers.framework.view.AbstractDrumView;
 public class DrumView4 extends AbstractDrumView<FireControlSurface, FireConfiguration> implements IFireView
 {
     private static final int  NUM_DISPLAY_COLS = 16;
+    private static final int  LANES            = 4;
 
     private final int         columns;
     private final IDrumDevice primary;
@@ -45,9 +46,9 @@ public class DrumView4 extends AbstractDrumView<FireControlSurface, FireConfigur
      */
     public DrumView4 (final FireControlSurface surface, final IModel model)
     {
-        super ("Drum 4", surface, model, 2, 0, false);
+        super ("Drum 4", surface, model, 1, 0, 16, 128, 16, true, false);
 
-        this.columns = 16;
+        this.columns = NUM_DISPLAY_COLS;
         this.primary = this.model.getDrumDevice ();
     }
 
@@ -63,8 +64,8 @@ public class DrumView4 extends AbstractDrumView<FireControlSurface, FireConfigur
         final int x = index % this.columns;
         final int y = index / this.columns;
 
-        final int sound = y % 4 + this.scales.getDrumOffset ();
-        final int step = this.columns * (y / 4) + x;
+        final int sound = y % LANES + this.scales.getDrumOffset ();
+        final int step = this.columns * (y / LANES) + x;
 
         final int channel = this.configuration.getMidiEditChannel ();
         final int vel = this.configuration.isAccentActive () ? this.configuration.getFixedAccentValue () : velocity;
@@ -130,23 +131,19 @@ public class DrumView4 extends AbstractDrumView<FireControlSurface, FireConfigur
                 final IDrumPadBank drumPadBank = this.primary.getDrumPadBank ();
                 this.scrollPosition = drumPadBank.getScrollPosition ();
                 this.model.getBrowser ().replace (drumPadBank.getItem (row));
-                this.browserModeActivator.activate ();
             }
             return true;
         }
 
         // Change length of a note or create a new one with a length
-        final int lines = 4;
-        final boolean isLower = row / lines == 0;
+        final int laneOffset = row / LANES;
         final int offset = row * this.columns;
         for (int s = 0; s < step; s++)
         {
             final IHwButton button = this.surface.getButton (ButtonID.get (ButtonID.PAD1, offset + s));
             if (button.isLongPressed ())
             {
-                int start = s;
-                if (isLower)
-                    start += this.columns;
+                int start = s + (this.sequencerLines - laneOffset - 1) * this.columns;
                 button.setConsumed ();
                 final int length = step - start + 1;
                 final double duration = length * Resolution.getValueAt (this.getResolutionIndex ());
@@ -179,21 +176,21 @@ public class DrumView4 extends AbstractDrumView<FireControlSurface, FireConfigur
         final int step = clip.getCurrentStep ();
 
         // Paint the sequencer steps
-        final int hiStep = this.isInXRange (step) ? step % DrumView4.NUM_DISPLAY_COLS : -1;
+        final int hiStep = this.isInXRange (step) ? step % this.columns : -1;
         final int offsetY = this.scales.getDrumOffset ();
         final int editMidiChannel = this.configuration.getMidiEditChannel ();
-        for (int sound = 0; sound < 4; sound++)
+        for (int sound = 0; sound < LANES; sound++)
         {
             final int noteRow = offsetY + sound;
             final ColorEx drumPadColor = this.getDrumPadColor (this.primary, sound);
-            for (int col = 0; col < DrumView4.NUM_DISPLAY_COLS; col++)
+            for (int col = 0; col < this.numColumns; col++)
             {
                 final int isSet = clip.getStep (editMidiChannel, col, noteRow).getState ();
                 final boolean hilite = col == hiStep;
                 final int x = col % this.columns;
                 int y = 0;
                 if (col >= this.columns)
-                    y += 4;
+                    y += LANES;
                 y += sound;
                 padGrid.lightEx (x, 3 - y, this.getStepColor (isSet, hilite, drumPadColor));
             }
@@ -213,13 +210,7 @@ public class DrumView4 extends AbstractDrumView<FireControlSurface, FireConfigur
     @Override
     public int getSoloButtonColor (final int index)
     {
-        if (!this.isActive ())
-            return 0;
-
-        final int pos = 3 - index;
-        if (this.primary.hasDrumPads ())
-            return this.primary.getDrumPadBank ().getItem (pos).isSelected () ? 4 : 0;
-        return 0;
+        return this.isActive () && this.primary.hasDrumPads () && this.primary.getDrumPadBank ().getItem (3 - index).isSelected () ? LANES : 0;
     }
 
 

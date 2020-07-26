@@ -66,7 +66,7 @@ public class BrowserImpl extends AbstractBrowser
     final DeviceCreatorFilterColumn    deviceCreatorFilterColumn;
     final DeviceTypeFilterColumn       deviceTypeFilterColumn;
 
-    private boolean                    isBrowserActive;
+    private boolean                    isBrowserActive    = false;
     String []                          presets            = new String [128];
     private int                        presetCount        = 0;
     int                                selectedIndex;
@@ -277,6 +277,7 @@ public class BrowserImpl extends AbstractBrowser
         this.insertPosition = insertPos;
         this.setContentType (contentType);
         this.isBrowserActive = true;
+        this.fireActiveObserver (this.isBrowserActive);
     }
 
 
@@ -284,6 +285,9 @@ public class BrowserImpl extends AbstractBrowser
     @Override
     public void stopBrowsing (final boolean commitSelection)
     {
+        if (!this.isBrowserActive)
+            return;
+
         if (commitSelection && this.insertPosition >= 0)
         {
             switch (this.contentType)
@@ -309,6 +313,7 @@ public class BrowserImpl extends AbstractBrowser
         this.enableObservers (false);
         this.insertPosition = -1;
         this.isBrowserActive = false;
+        this.fireActiveObserver (this.isBrowserActive);
     }
 
 

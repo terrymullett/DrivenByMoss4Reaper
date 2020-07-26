@@ -618,9 +618,18 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
     public void showStage ()
     {
         SafeRunLater.execute (this.logModel, () -> {
-            final MainFrame win = this.getMainFrame ();
-            win.setVisible (true);
-            win.toFront ();
+            try
+            {
+                final MainFrame win = this.getMainFrame ();
+                win.setVisible (true);
+                win.toFront ();
+            }
+            catch (final RuntimeException ex)
+            {
+                final StringWriter sw = new StringWriter ();
+                ex.printStackTrace (new PrintWriter (sw));
+                this.logModel.info (sw.toString ());
+            }
         });
     }
 
@@ -632,10 +641,19 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
     public void showProjectWindow ()
     {
         SafeRunLater.execute (this.logModel, () -> {
-            final MainFrame win = this.getMainFrame ();
-            win.setVisible (true);
-            win.toFront ();
-            win.projectSettings ();
+            try
+            {
+                final MainFrame win = this.getMainFrame ();
+                win.setVisible (true);
+                win.toFront ();
+                win.projectSettings ();
+            }
+            catch (final RuntimeException ex)
+            {
+                final StringWriter sw = new StringWriter ();
+                ex.printStackTrace (new PrintWriter (sw));
+                this.logModel.info (sw.toString ());
+            }
         });
     }
 
