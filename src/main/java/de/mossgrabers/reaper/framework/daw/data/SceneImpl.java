@@ -34,6 +34,15 @@ public class SceneImpl extends ItemImpl implements IScene
 
     /** {@inheritDoc} */
     @Override
+    public String getName ()
+    {
+        final String name = super.getName ();
+        return this.doesExist () && name != null && name.isBlank () ? "Scene " + (this.getPosition () + 1) : name;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public ColorEx getColor ()
     {
         return this.color;
