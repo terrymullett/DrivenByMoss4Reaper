@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.data.IScene;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
@@ -61,7 +62,7 @@ public class SceneImpl extends ItemImpl implements IScene
     @Override
     public void launch ()
     {
-        this.sendSceneOSC ("launch");
+        this.sendPositionedItemOSC ("launch");
     }
 
 
@@ -69,7 +70,7 @@ public class SceneImpl extends ItemImpl implements IScene
     @Override
     public void remove ()
     {
-        this.sendSceneOSC ("remove");
+        this.sendPositionedItemOSC ("remove");
     }
 
 
@@ -77,7 +78,7 @@ public class SceneImpl extends ItemImpl implements IScene
     @Override
     public void select ()
     {
-        this.sendSceneOSC ("select");
+        this.sendPositionedItemOSC ("select");
     }
 
 
@@ -89,8 +90,10 @@ public class SceneImpl extends ItemImpl implements IScene
     }
 
 
-    protected void sendSceneOSC (final String command)
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
     {
-        this.sender.processNoArg ("scene", this.getPosition () + "/" + command);
+        return Processor.SCENE;
     }
 }

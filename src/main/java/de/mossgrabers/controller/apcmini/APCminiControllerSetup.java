@@ -112,7 +112,7 @@ public class APCminiControllerSetup extends AbstractControllerSetup<APCminiContr
         super (factory, host, globalSettings, documentSettings);
 
         this.colorManager = new APCminiColorManager ();
-        this.valueChanger = new DefaultValueChanger (128, 1, 0.5);
+        this.valueChanger = new DefaultValueChanger (128, 1);
         this.configuration = new APCminiConfiguration (host, this.valueChanger, factory.getArpeggiatorModes ());
     }
 
@@ -187,6 +187,8 @@ public class APCminiControllerSetup extends AbstractControllerSetup<APCminiContr
     @Override
     protected void createObservers ()
     {
+        super.createObservers ();
+
         final APCminiControlSurface surface = this.getSurface ();
         surface.getViewManager ().addViewChangeListener ( (previousViewId, activeViewId) -> this.updateMode (null));
         surface.getModeManager ().addModeListener ( (previousModeId, activeModeId) -> this.updateMode (activeModeId));

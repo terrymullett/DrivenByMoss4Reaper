@@ -8,6 +8,7 @@ import de.mossgrabers.controller.fire.FireConfiguration;
 import de.mossgrabers.controller.fire.controller.FireControlSurface;
 import de.mossgrabers.controller.fire.graphics.canvas.component.TitleValueComponent;
 import de.mossgrabers.framework.controller.ButtonID;
+import de.mossgrabers.framework.controller.ContinuousID;
 import de.mossgrabers.framework.controller.display.IGraphicDisplay;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ICursorDevice;
@@ -33,7 +34,7 @@ public class FireParameterMode extends ParameterMode<FireControlSurface, FireCon
      */
     public FireParameterMode (final FireControlSurface surface, final IModel model)
     {
-        super (surface, model, false);
+        super (surface, model, false, ContinuousID.createSequentialList (ContinuousID.KNOB1, 4));
     }
 
 

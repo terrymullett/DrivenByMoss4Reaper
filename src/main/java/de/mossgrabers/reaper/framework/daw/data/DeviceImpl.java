@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.daw.data.IDevice;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
@@ -39,7 +40,7 @@ public class DeviceImpl extends ItemImpl implements IDevice
     @Override
     public void select ()
     {
-        this.sender.processIntArg ("device", "selected", this.getIndex () + 1);
+        this.sendOSC ("selected", this.getIndex () + 1);
     }
 
 
@@ -86,6 +87,14 @@ public class DeviceImpl extends ItemImpl implements IDevice
 
     protected void sendDeviceOSC (final String command)
     {
-        this.sender.processNoArg ("device", this.getIndex () + 1 + "/" + command);
+        this.sendOSC (this.getIndex () + 1 + "/" + command);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
+    {
+        return Processor.DEVICE;
     }
 }

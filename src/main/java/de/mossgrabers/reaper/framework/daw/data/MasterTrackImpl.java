@@ -7,6 +7,7 @@ package de.mossgrabers.reaper.framework.daw.data;
 import de.mossgrabers.framework.daw.data.IMasterTrack;
 import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.framework.observer.ItemSelectionObserver;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.bank.TrackBankImpl;
 
@@ -39,9 +40,9 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
         this.crossfaderParameter = new UserParameterImpl (dataSetup, 0, null)
         {
             @Override
-            protected void sendUpdate ()
+            protected void sendValue ()
             {
-                MasterTrackImpl.this.sendTrackOSC ("user/param/0/value", this.value);
+                MasterTrackImpl.this.sendPositionedItemOSC ("user/param/0/value", this.value);
             }
         };
 
@@ -57,7 +58,7 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
     @Override
     public void enableObservers (final boolean enable)
     {
-        this.sender.enableUpdates ("mastertrack", enable);
+        this.sender.enableUpdates (Processor.MASTER, enable);
     }
 
 
@@ -153,9 +154,9 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
 
     /** {@inheritDoc} */
     @Override
-    protected String getProcessor ()
+    protected Processor getProcessor ()
     {
-        return "master";
+        return Processor.MASTER;
     }
 
 

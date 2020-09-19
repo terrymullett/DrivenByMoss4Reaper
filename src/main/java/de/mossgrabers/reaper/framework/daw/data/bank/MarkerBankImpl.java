@@ -7,6 +7,7 @@ package de.mossgrabers.reaper.framework.daw.data.bank;
 import de.mossgrabers.framework.daw.data.IMarker;
 import de.mossgrabers.framework.daw.data.bank.IMarkerBank;
 import de.mossgrabers.framework.daw.data.empty.EmptyMarker;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.MarkerImpl;
 
@@ -34,7 +35,7 @@ public class MarkerBankImpl extends AbstractPagedBankImpl<MarkerImpl, IMarker> i
     @Override
     public void enableObservers (final boolean enable)
     {
-        this.sender.enableUpdates ("marker", enable);
+        this.sender.enableUpdates (Processor.MARKER, enable);
     }
 
 
@@ -50,6 +51,6 @@ public class MarkerBankImpl extends AbstractPagedBankImpl<MarkerImpl, IMarker> i
     @Override
     public void addMarker ()
     {
-        this.sender.processNoArg ("marker", "add");
+        this.sender.processNoArg (Processor.MARKER, "add");
     }
 }

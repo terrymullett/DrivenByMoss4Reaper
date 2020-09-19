@@ -7,6 +7,7 @@ package de.mossgrabers.reaper.framework.device.column;
 import de.mossgrabers.framework.daw.data.IBrowserColumn;
 import de.mossgrabers.framework.daw.data.IBrowserColumnItem;
 import de.mossgrabers.framework.utils.StringUtils;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.data.ItemImpl;
 
 import java.util.HashSet;
@@ -210,5 +211,14 @@ public abstract class BaseColumn extends ItemImpl implements IBrowserColumn
     {
         for (final FilterListener listener: this.listeners)
             listener.hasChanged ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
+    {
+        // Not used
+        return null;
     }
 }

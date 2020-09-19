@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.data.ISlot;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
@@ -146,7 +147,15 @@ public class SlotImpl extends ItemImpl implements ISlot
 
     private void sendTrackClipOSC (final String command)
     {
-        this.sender.processNoArg ("track", this.trackIndex + "/clip/" + this.getPosition () + "/" + command);
+        this.sendOSC (this.trackIndex + "/clip/" + this.getPosition () + "/" + command);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
+    {
+        return Processor.TRACK;
     }
 
 

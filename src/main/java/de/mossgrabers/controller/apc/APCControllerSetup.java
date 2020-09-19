@@ -114,7 +114,7 @@ public class APCControllerSetup extends AbstractControllerSetup<APCControlSurfac
 
         this.isMkII = isMkII;
         this.colorManager = new APCColorManager (isMkII);
-        this.valueChanger = new DefaultValueChanger (128, 1, 0.5);
+        this.valueChanger = new DefaultValueChanger (128, 1);
         this.configuration = new APCConfiguration (host, this.valueChanger, factory.getArpeggiatorModes ());
     }
 
@@ -161,6 +161,8 @@ public class APCControllerSetup extends AbstractControllerSetup<APCControlSurfac
     @Override
     protected void createObservers ()
     {
+        super.createObservers ();
+
         final APCControlSurface surface = this.getSurface ();
         surface.getViewManager ().addViewChangeListener ( (previousViewId, activeViewId) -> this.updateMode (null));
         surface.getModeManager ().addModeListener ( (previousModeId, activeModeId) -> this.updateMode (activeModeId));

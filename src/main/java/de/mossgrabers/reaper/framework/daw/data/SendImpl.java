@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.data.ISend;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
@@ -53,10 +54,18 @@ public class SendImpl extends ParameterImpl implements ISend
         synchronized (UPDATE_LOCK)
         {
             if (this.isAutomationRecActive ())
-                this.sender.delayUpdates ("track");
+                this.sender.delayUpdates (Processor.TRACK);
             this.value = this.valueChanger.toNormalizedValue (value);
-            final StringBuilder command = new StringBuilder ().append (this.channel.getPosition ()).append ("/send/").append (this.getPosition ()).append ("/volume");
-            this.sender.processDoubleArg ("track", command.toString (), this.value);
+            sendValue ();
         }
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected void sendValue ()
+    {
+        final StringBuilder command = new StringBuilder ().append (this.channel.getPosition ()).append ("/send/").append (this.getPosition ()).append ("/volume");
+        this.sender.processDoubleArg (Processor.TRACK, command.toString (), this.value);
     }
 }

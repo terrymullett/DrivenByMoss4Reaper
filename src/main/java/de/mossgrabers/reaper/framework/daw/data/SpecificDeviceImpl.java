@@ -11,6 +11,7 @@ import de.mossgrabers.framework.daw.data.bank.ILayerBank;
 import de.mossgrabers.framework.daw.data.bank.IParameterBank;
 import de.mossgrabers.framework.daw.data.bank.IParameterPageBank;
 import de.mossgrabers.framework.observer.IValueObserver;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.bank.DrumPadBankImpl;
 import de.mossgrabers.reaper.framework.daw.data.bank.LayerBankImpl;
@@ -75,7 +76,7 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
     @Override
     public void enableObservers (final boolean enable)
     {
-        this.sender.enableUpdates ("device", enable);
+        this.sender.enableUpdates (Processor.DEVICE, enable);
     }
 
 
@@ -199,7 +200,7 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
     @Override
     public void toggleEnabledState ()
     {
-        this.sender.processBooleanArg ("device", "bypass", this.isEnabled);
+        this.sender.processBooleanArg (Processor.DEVICE, "bypass", this.isEnabled);
     }
 
 
@@ -207,7 +208,7 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
     @Override
     public void toggleWindowOpen ()
     {
-        this.sender.processBooleanArg ("device", "window", !this.isWindowOpen);
+        this.sender.processBooleanArg (Processor.DEVICE, "window", !this.isWindowOpen);
     }
 
 
@@ -216,7 +217,7 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
     public void toggleExpanded ()
     {
         this.isExpanded = !this.isExpanded;
-        this.sender.processBooleanArg ("device", "expand", this.isExpanded);
+        this.sender.processBooleanArg (Processor.DEVICE, "expand", this.isExpanded);
     }
 
 

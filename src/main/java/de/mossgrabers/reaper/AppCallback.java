@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper;
 
 import de.mossgrabers.framework.controller.IControllerDefinition;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.controller.IControllerInstance;
 
 import java.util.List;
@@ -82,5 +83,5 @@ public interface AppCallback
      * @param processor The processor to The processor to dis-/enable
      * @param enable True to enable processor updates, false to disable
      */
-    void enableUpdates (final String processor, final boolean enable);
+    void enableUpdates (final Processor processor, final boolean enable);
 }

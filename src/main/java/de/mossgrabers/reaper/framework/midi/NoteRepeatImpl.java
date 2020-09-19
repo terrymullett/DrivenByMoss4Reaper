@@ -7,6 +7,7 @@ package de.mossgrabers.reaper.framework.midi;
 import de.mossgrabers.framework.daw.midi.ArpeggiatorMode;
 import de.mossgrabers.framework.daw.midi.INoteRepeat;
 import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.communication.Processor;
 
 
 /**
@@ -16,10 +17,8 @@ import de.mossgrabers.reaper.communication.MessageSender;
  */
 public class NoteRepeatImpl implements INoteRepeat
 {
-    private static final String            NOTEREPEAT_TAG = "noterepeat";
-
     /** The available arpeggiator modes. */
-    public static final ArpeggiatorMode [] ARP_MODES      =
+    public static final ArpeggiatorMode [] ARP_MODES    =
     {
         ArpeggiatorMode.DOWN,
         ArpeggiatorMode.UP,
@@ -28,7 +27,7 @@ public class NoteRepeatImpl implements INoteRepeat
     };
 
     private final MessageSender            sender;
-    private boolean                        isNoteRepeat   = false;
+    private boolean                        isNoteRepeat = false;
     private double                         noteRepeatPeriod;
     private double                         noteLength;
     private boolean                        usePressure;
@@ -66,7 +65,7 @@ public class NoteRepeatImpl implements INoteRepeat
     @Override
     public void toggleActive ()
     {
-        this.sender.processBooleanArg (NOTEREPEAT_TAG, "active", !this.isNoteRepeat);
+        this.sender.processBooleanArg (Processor.NOTEREPEAT, "active", !this.isNoteRepeat);
     }
 
 
@@ -77,7 +76,7 @@ public class NoteRepeatImpl implements INoteRepeat
         if (this.isNoteRepeat != active)
         {
             this.isNoteRepeat = active;
-            this.sender.processBooleanArg (NOTEREPEAT_TAG, "active", active);
+            this.sender.processBooleanArg (Processor.NOTEREPEAT, "active", active);
         }
     }
 
@@ -86,7 +85,7 @@ public class NoteRepeatImpl implements INoteRepeat
     @Override
     public void setPeriod (final double period)
     {
-        this.sender.processDoubleArg (NOTEREPEAT_TAG, "rate", 1.0 / period);
+        this.sender.processDoubleArg (Processor.NOTEREPEAT, "rate", 1.0 / period);
     }
 
 
@@ -102,7 +101,7 @@ public class NoteRepeatImpl implements INoteRepeat
     @Override
     public void setNoteLength (final double length)
     {
-        this.sender.processDoubleArg (NOTEREPEAT_TAG, "notelength", length);
+        this.sender.processDoubleArg (Processor.NOTEREPEAT, "notelength", length);
     }
 
 
@@ -143,7 +142,7 @@ public class NoteRepeatImpl implements INoteRepeat
     @Override
     public void toggleUsePressure ()
     {
-        this.sender.processBooleanArg (NOTEREPEAT_TAG, "velocity", !this.usePressure);
+        this.sender.processBooleanArg (Processor.NOTEREPEAT, "velocity", !this.usePressure);
     }
 
 
@@ -172,7 +171,7 @@ public class NoteRepeatImpl implements INoteRepeat
         {
             if (ARP_MODES[i] == mode)
             {
-                this.sender.processIntArg (NOTEREPEAT_TAG, "mode", i);
+                this.sender.processIntArg (Processor.NOTEREPEAT, "mode", i);
                 return;
             }
         }

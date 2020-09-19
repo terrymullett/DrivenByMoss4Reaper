@@ -9,6 +9,7 @@ import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.observer.ObserverManagement;
 import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.communication.Processor;
 
 
 /**
@@ -47,6 +48,18 @@ public abstract class BaseImpl implements ObserverManagement
 
 
     /**
+     * Check if automation recording is enable and currently recording.
+     *
+     * @return True if automation recording is enable and currently recording
+     */
+    public boolean isAutomationRecActive ()
+    {
+        final ITransport transport = this.dataSetup.getTransport ();
+        return transport != null && transport.isWritingArrangerAutomation ();
+    }
+
+
+    /**
      * Invokes the action for the given action identifier.
      *
      * @param id The action identifier, must not be null
@@ -57,14 +70,35 @@ public abstract class BaseImpl implements ObserverManagement
     }
 
 
-    /**
-     * Check if automation recording is enable and currently recording.
-     *
-     * @return True if automation recording is enable and currently recording
-     */
-    public boolean isAutomationRecActive ()
+    protected void sendOSC (final String command)
     {
-        final ITransport transport = this.dataSetup.getTransport ();
-        return transport != null && transport.isWritingArrangerAutomation ();
+        this.sender.processNoArg (this.getProcessor (), command);
     }
+
+
+    protected void sendOSC (final String command, final int value)
+    {
+        this.sender.processIntArg (this.getProcessor (), command, value);
+    }
+
+
+    protected void sendOSC (final String command, final double value)
+    {
+        this.sender.processDoubleArg (this.getProcessor (), command, value);
+    }
+
+
+    protected void sendOSC (final String command, final boolean value)
+    {
+        this.sender.processBooleanArg (this.getProcessor (), command, value);
+    }
+
+
+    protected void sendOSC (final String command, final String value)
+    {
+        this.sender.processStringArg (this.getProcessor (), command, value);
+    }
+
+
+    protected abstract Processor getProcessor ();
 }

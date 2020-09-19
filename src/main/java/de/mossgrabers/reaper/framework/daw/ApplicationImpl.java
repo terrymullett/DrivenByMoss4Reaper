@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.daw.IApplication;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.reaper.ui.utils.RobotUtil;
 
@@ -46,7 +47,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void setEngineActive (final boolean active)
     {
-        this.sender.processBooleanArg ("project", "engine", active);
+        this.sender.processBooleanArg (Processor.PROJECT, "engine", active);
     }
 
 
@@ -218,7 +219,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void redo ()
     {
-        this.sender.processNoArg ("redo");
+        this.sender.processNoArg (Processor.REDO);
     }
 
 
@@ -226,7 +227,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void undo ()
     {
-        this.sender.processNoArg ("undo");
+        this.sender.processNoArg (Processor.UNDO);
     }
 
 
@@ -358,7 +359,15 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void invokeAction (final String id)
     {
-        this.sender.processStringArg ("action", "", id);
+        this.sendOSC ("", id);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
+    {
+        return Processor.ACTION;
     }
 
 

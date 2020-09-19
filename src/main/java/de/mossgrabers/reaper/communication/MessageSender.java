@@ -16,7 +16,7 @@ public interface MessageSender
      *
      * @param processor The processor ID
      */
-    default void processNoArg (final String processor)
+    default void processNoArg (final Processor processor)
     {
         this.processNoArg (processor, null);
     }
@@ -28,7 +28,7 @@ public interface MessageSender
      * @param processor The processor ID
      * @param command The command ID
      */
-    void processNoArg (final String processor, final String command);
+    void processNoArg (final Processor processor, final String command);
 
 
     /**
@@ -38,7 +38,7 @@ public interface MessageSender
      * @param command The command ID
      * @param value A string value
      */
-    void processStringArg (final String processor, final String command, final String value);
+    void processStringArg (final Processor processor, final String command, final String value);
 
 
     /**
@@ -47,7 +47,7 @@ public interface MessageSender
      * @param processor The processor ID
      * @param value An integer value
      */
-    default void processIntArg (final String processor, final int value)
+    default void processIntArg (final Processor processor, final int value)
     {
         this.processIntArg (processor, null, value);
     }
@@ -60,7 +60,7 @@ public interface MessageSender
      * @param command The command ID
      * @param value An integer value
      */
-    void processIntArg (final String processor, final String command, final int value);
+    void processIntArg (final Processor processor, final String command, final int value);
 
 
     /**
@@ -69,7 +69,7 @@ public interface MessageSender
      * @param processor The processor ID
      * @param value A double value
      */
-    default void processDoubleArg (final String processor, final double value)
+    default void processDoubleArg (final Processor processor, final double value)
     {
         this.processDoubleArg (processor, null, value);
     }
@@ -82,7 +82,7 @@ public interface MessageSender
      * @param command The command ID
      * @param value A double value
      */
-    void processDoubleArg (final String processor, final String command, final double value);
+    void processDoubleArg (final Processor processor, final String command, final double value);
 
 
     /**
@@ -92,7 +92,7 @@ public interface MessageSender
      * @param command The command ID
      * @param value A boolean value
      */
-    default void processBooleanArg (final String processor, final String command, final boolean value)
+    default void processBooleanArg (final Processor processor, final String command, final boolean value)
     {
         this.processIntArg (processor, command, value ? 1 : 0);
     }
@@ -102,9 +102,9 @@ public interface MessageSender
      * Delay updates for a specific processor. Use to prevents that Reaper sends old values before
      * the latest ones are applied.
      *
-     * @param processor The processor to delay.
+     * @param processor The processor to delay
      */
-    void delayUpdates (final String processor);
+    void delayUpdates (final Processor processor);
 
 
     /**
@@ -113,7 +113,7 @@ public interface MessageSender
      * @param processor The processor to The processor to dis-/enable
      * @param enable True to enable processor updates, false to disable
      */
-    void enableUpdates (final String processor, final boolean enable);
+    void enableUpdates (final Processor processor, final boolean enable);
 
 
     /**

@@ -7,8 +7,9 @@ package de.mossgrabers.reaper.framework.daw;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.INoteClip;
 import de.mossgrabers.framework.daw.IStepInfo;
-import de.mossgrabers.framework.daw.constants.TransportConstants;
+import de.mossgrabers.framework.daw.constants.Resolution;
 import de.mossgrabers.framework.daw.data.GridStep;
+import de.mossgrabers.reaper.communication.Processor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +69,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void enableObservers (final boolean enable)
     {
-        this.sender.enableUpdates ("clip", enable);
+        this.sender.enableUpdates (Processor.CLIP, enable);
     }
 
 
@@ -96,7 +97,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void setColor (final ColorEx color)
     {
         final int [] rgb = color.toIntRGB255 ();
-        this.sendClipOSC ("color", "RGB(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")");
+        this.sendOSC ("color", "RGB(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")");
     }
 
 
@@ -132,7 +133,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void setPlayStart (final double start)
     {
         this.clipStart = start;
-        this.sendClipOSC ("start", this.clipStart);
+        this.sendOSC ("start", this.clipStart);
         this.updateNoteData ();
     }
 
@@ -143,7 +144,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     {
         if (this.clipStart == -1)
             return;
-        this.setPlayStart (Math.max (0, this.clipStart + this.valueChanger.calcKnobSpeed (control, this.valueChanger.isSlow () ? 0.1 : 1)));
+        this.setPlayStart (Math.max (0, this.clipStart + this.valueChanger.calcKnobChange (control, -100)));
     }
 
 
@@ -160,7 +161,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void setPlayEnd (final double end)
     {
         this.clipEnd = end;
-        this.sendClipOSC ("end", this.clipEnd);
+        this.sendOSC ("end", this.clipEnd);
         this.updateNoteData ();
     }
 
@@ -171,7 +172,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     {
         if (this.clipEnd == -1)
             return;
-        final double speed = this.valueChanger.calcKnobSpeed (control, this.valueChanger.isSlow () ? 0.1 : 1);
+        final double speed = this.valueChanger.calcKnobChange (control, -100);
         this.setPlayEnd (Math.max (0, this.clipEnd + speed));
     }
 
@@ -259,7 +260,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void setLoopEnabled (final boolean enable)
     {
-        this.sendClipOSC ("loop", enable);
+        this.sendOSC ("loop", enable);
     }
 
 
@@ -373,7 +374,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void toggleStep (final int channel, final int step, final int row, final int velocity)
     {
         final double pos = (step + this.editPage * this.numSteps) * this.stepLength;
-        this.sendClipOSC (PATH_NOTE + row + "/toggle", pos + " " + this.stepLength + " " + velocity + " " + channel);
+        this.sendOSC (PATH_NOTE + row + "/toggle", pos + " " + this.stepLength + " " + velocity + " " + channel);
     }
 
 
@@ -382,7 +383,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void setStep (final int channel, final int step, final int row, final int velocity, final double duration)
     {
         final double pos = (step + this.editPage * this.numSteps) * this.stepLength;
-        this.sendClipOSC (PATH_NOTE + row + "/set", pos + " " + duration + " " + velocity + " " + channel);
+        this.sendOSC (PATH_NOTE + row + "/set", pos + " " + duration + " " + velocity + " " + channel);
     }
 
 
@@ -399,8 +400,9 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void changeStepDuration (final int channel, final int step, final int row, final int control)
     {
         final IStepInfo info = this.getStep (channel, step, row);
-        final double frac = this.valueChanger.isSlow () ? TransportConstants.INC_FRACTION_TIME_SLOW / 16.0 : TransportConstants.INC_FRACTION_TIME_SLOW;
-        this.updateStepDuration (channel, step, row, Math.max (0, info.getDuration () + this.valueChanger.calcKnobSpeed (control, frac)));
+        final boolean increase = this.valueChanger.isIncrease (control);
+        final double res = Resolution.RES_1_32.getValue ();
+        this.updateStepDuration (channel, step, row, Math.max (0, info.getDuration () + (increase ? res : -res)));
     }
 
 
@@ -431,7 +433,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void changeStepVelocity (final int channel, final int step, final int row, final int control)
     {
         final IStepInfo info = this.getStep (channel, step, row);
-        final double velocity = info.getVelocity () + this.valueChanger.toNormalizedValue ((int) this.valueChanger.calcKnobSpeed (control));
+        final double velocity = info.getVelocity () + this.valueChanger.toNormalizedValue ((int) this.valueChanger.calcKnobChange (control));
         this.updateStepVelocity (channel, step, row, Math.min (1.0, Math.max (0, velocity)));
     }
 
@@ -609,7 +611,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void clearAll ()
     {
-        this.sendClipOSC ("clear");
+        this.sendOSC ("clear");
     }
 
 
@@ -617,7 +619,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void clearStep (final int channel, final int step, final int row)
     {
-        this.sendClipOSC (PATH_NOTE + row + "/clear/" + channel, (step + this.editPage * this.numSteps) * this.stepLength);
+        this.sendOSC (PATH_NOTE + row + "/clear/" + channel, (step + this.editPage * this.numSteps) * this.stepLength);
     }
 
 
@@ -625,7 +627,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void clearRow (final int channel, final int row)
     {
-        this.sendClipOSC (PATH_NOTE + row + "/clear/" + channel);
+        this.sendOSC (PATH_NOTE + row + "/clear/" + channel);
     }
 
 
@@ -767,7 +769,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void duplicate ()
     {
-        this.sendClipOSC ("duplicate");
+        this.sendOSC ("duplicate");
     }
 
 
@@ -775,7 +777,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void duplicateContent ()
     {
-        this.sendClipOSC ("duplicateContent");
+        this.sendOSC ("duplicateContent");
     }
 
 
@@ -783,7 +785,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void quantize (final double amount)
     {
-        this.sender.processDoubleArg ("quantize", amount);
+        this.sender.processDoubleArg (Processor.QUANTIZE, amount);
     }
 
 
@@ -791,7 +793,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void transpose (final int semitones)
     {
-        this.sendClipOSC ("transpose", semitones);
+        this.sendOSC ("transpose", semitones);
     }
 
 
@@ -893,32 +895,10 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     }
 
 
-    protected void sendClipOSC (final String command)
+    /** {@inheritDoc}} */
+    @Override
+    protected Processor getProcessor ()
     {
-        this.sender.processNoArg ("clip", command);
-    }
-
-
-    protected void sendClipOSC (final String command, final int value)
-    {
-        this.sender.processIntArg ("clip", command, value);
-    }
-
-
-    protected void sendClipOSC (final String command, final double value)
-    {
-        this.sender.processDoubleArg ("clip", command, value);
-    }
-
-
-    protected void sendClipOSC (final String command, final String value)
-    {
-        this.sender.processStringArg ("clip", command, value);
-    }
-
-
-    protected void sendClipOSC (final String command, final boolean value)
-    {
-        this.sender.processBooleanArg ("clip", command, value);
+        return Processor.CLIP;
     }
 }

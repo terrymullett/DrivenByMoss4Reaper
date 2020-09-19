@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.data.IMarker;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
@@ -54,7 +55,7 @@ public class MarkerImpl extends ItemImpl implements IMarker
     @Override
     public void launch (final boolean quantized)
     {
-        this.sendMarkerOSC ("launch");
+        this.sendPositionedItemOSC ("launch");
     }
 
 
@@ -62,7 +63,7 @@ public class MarkerImpl extends ItemImpl implements IMarker
     @Override
     public void removeMarker ()
     {
-        this.sendMarkerOSC ("remove");
+        this.sendPositionedItemOSC ("remove");
     }
 
 
@@ -70,12 +71,14 @@ public class MarkerImpl extends ItemImpl implements IMarker
     @Override
     public void select ()
     {
-        this.sendMarkerOSC ("select");
+        this.sendPositionedItemOSC ("select");
     }
 
 
-    protected void sendMarkerOSC (final String command)
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
     {
-        this.sender.processNoArg ("marker", this.getPosition () + "/" + command);
+        return Processor.MARKER;
     }
 }

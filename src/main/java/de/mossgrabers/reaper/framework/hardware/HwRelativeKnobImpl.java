@@ -36,14 +36,15 @@ import java.util.Map;
  */
 public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements IHwRelativeKnob, IReaperHwControl
 {
-    private final static Map<RelativeEncoding, IValueChanger> VALUE_CHANGERS = new EnumMap<> (RelativeEncoding.class);
+    private final static Map<RelativeEncoding, IValueChanger> VALUE_CHANGERS        = new EnumMap<> (RelativeEncoding.class);
+    private final static DefaultValueChanger                  DEFAULT_VALUE_CHANGER = new DefaultValueChanger (127, 1);
 
     static
     {
-        VALUE_CHANGERS.put (RelativeEncoding.TWOS_COMPLEMENT, new DefaultValueChanger (127, 1, 1));
-        VALUE_CHANGERS.put (RelativeEncoding.OFFSET_BINARY, new Relative3ValueChanger (127, 1, 1));
-        VALUE_CHANGERS.put (RelativeEncoding.SIGNED_BIT, new Relative2ValueChanger (127, 1, 1));
-        VALUE_CHANGERS.put (RelativeEncoding.SIGNED_BIT2, new Relative4ValueChanger (127, 1, 1));
+        VALUE_CHANGERS.put (RelativeEncoding.TWOS_COMPLEMENT, DEFAULT_VALUE_CHANGER);
+        VALUE_CHANGERS.put (RelativeEncoding.OFFSET_BINARY, new Relative3ValueChanger (127, 1));
+        VALUE_CHANGERS.put (RelativeEncoding.SIGNED_BIT, new Relative2ValueChanger (127, 1));
+        VALUE_CHANGERS.put (RelativeEncoding.SIGNED_BIT2, new Relative4ValueChanger (127, 1));
     }
 
     private final HwControlLayout  layout;
@@ -133,13 +134,19 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     @Override
     public void handleValue (final double value)
     {
+        // value is scaled to [0..1] but still encoded
+
+        // scale back to [0..127]
         final int intValue = (int) Math.round (value * 127);
-        final int speed = (int) VALUE_CHANGERS.get (this.encoding).calcKnobSpeed (intValue);
-        final int changeValue = speed < 0 ? speed + 128 : speed;
+
+        // Decode with the hardware encoding and re-encode with default encoding, which is used for
+        // the direct binding
+        final int cv = DEFAULT_VALUE_CHANGER.encode (VALUE_CHANGERS.get (this.encoding).decode (intValue));
+
         if (this.parameter != null)
-            this.parameter.changeValue (changeValue);
+            this.parameter.changeValue (cv);
         else if (this.command != null)
-            this.command.execute (changeValue);
+            this.command.execute (cv);
     }
 
 
@@ -220,5 +227,13 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
         {
             this.host.error ("Invalid MIDI message.", ex);
         }
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setSensitivity (final double sensitivity)
+    {
+        VALUE_CHANGERS.forEach ( (encoding, valueChanger) -> valueChanger.setSensitivity (sensitivity));
     }
 }

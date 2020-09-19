@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper.ui.dialog;
 
 import de.mossgrabers.reaper.AppCallback;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.ui.widget.BoxPanel;
 import de.mossgrabers.reaper.ui.widget.TwoColsPanel;
 
@@ -26,9 +27,9 @@ import java.awt.Window;
  */
 public class DebugDialog extends BasicDialog
 {
-    private static final long      serialVersionUID = 3020319469692178785L;
+    private static final long         serialVersionUID = 3020319469692178785L;
 
-    private static final String [] LABELS           =
+    private static final String []    LABELS           =
     {
         "Transport",
         "Project",
@@ -42,7 +43,7 @@ public class DebugDialog extends BasicDialog
         "Session"
     };
 
-    private static final String [] MNEMONICS        =
+    private static final String []    MNEMONICS        =
     {
         "T",
         "P",
@@ -56,22 +57,22 @@ public class DebugDialog extends BasicDialog
         "S"
     };
 
-    private static final String [] PROCESSORS       =
+    private static final Processor [] PROCESSORS       =
     {
-        "transport",
-        "project",
-        "track",
-        "playingnotes",
-        "device",
-        "mastertrack",
-        "browser",
-        "marker",
-        "clip",
-        "session"
+        Processor.TRANSPORT,
+        Processor.PROJECT,
+        Processor.TRACK,
+        Processor.PLAYINGNOTES,
+        Processor.DEVICE,
+        Processor.MASTER,
+        Processor.BROWSER,
+        Processor.MARKER,
+        Processor.CLIP,
+        Processor.SESSION
     };
 
-    private final AppCallback      callback;
-    private final JCheckBox []     boxes            = new JCheckBox [LABELS.length];
+    private final AppCallback         callback;
+    private final JCheckBox []        boxes            = new JCheckBox [LABELS.length];
 
 
     /**

@@ -6,6 +6,9 @@ package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.IProject;
+import de.mossgrabers.framework.daw.data.IParameter;
+import de.mossgrabers.framework.daw.data.empty.EmptyParameter;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.reaper.framework.daw.data.bank.TrackBankImpl;
 
@@ -39,7 +42,7 @@ public class ProjectImpl extends BaseImpl implements IProject
     @Override
     public void enableObservers (final boolean enable)
     {
-        this.sender.enableUpdates ("project", enable);
+        this.sender.enableUpdates (Processor.PROJECT, enable);
     }
 
 
@@ -91,6 +94,14 @@ public class ProjectImpl extends BaseImpl implements IProject
     public void save ()
     {
         this.sender.invokeAction (Actions.PROJECT_SAVE);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public IParameter getCueVolumeParameter ()
+    {
+        return EmptyParameter.INSTANCE;
     }
 
 
@@ -150,6 +161,14 @@ public class ProjectImpl extends BaseImpl implements IProject
     public void touchCueVolume (final boolean isBeingTouched)
     {
         // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public IParameter getCueMixParameter ()
+    {
+        return EmptyParameter.INSTANCE;
     }
 
 
@@ -241,5 +260,13 @@ public class ProjectImpl extends BaseImpl implements IProject
     public void clearMute ()
     {
         ((TrackBankImpl) this.model.getTrackBank ()).clearMute ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
+    {
+        return Processor.PROJECT;
     }
 }

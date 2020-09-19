@@ -9,6 +9,7 @@ import de.mossgrabers.framework.daw.constants.RecordQuantization;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.ISlotBank;
 import de.mossgrabers.framework.daw.resource.ChannelType;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.bank.AbstractTrackBankImpl;
 import de.mossgrabers.reaper.framework.daw.data.bank.SceneBankImpl;
@@ -147,7 +148,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public void setRecArm (final boolean value)
     {
         this.setRecArmState (value);
-        this.sendTrackOSC ("recarm", value);
+        this.sendPositionedItemOSC ("recarm", value);
     }
 
 
@@ -172,7 +173,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public void setMonitor (final boolean value)
     {
         this.setMonitorState (value);
-        this.sendTrackOSC ("monitor", this.monitor ? 1 : 0);
+        this.sendPositionedItemOSC ("monitor", this.monitor ? 1 : 0);
     }
 
 
@@ -206,7 +207,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public void setAutoMonitor (final boolean value)
     {
         this.setAutoMonitorState (value);
-        this.sendTrackOSC ("autoMonitor", this.autoMonitor);
+        this.sendPositionedItemOSC ("autoMonitor", this.autoMonitor);
     }
 
 
@@ -241,7 +242,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public void select ()
     {
         if (this.doesExist ())
-            this.sendTrackOSC ("select", 1);
+            this.sendPositionedItemOSC ("select", 1);
     }
 
 
@@ -406,7 +407,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public void setRecordQuantizationGrid (final RecordQuantization recordQuantization)
     {
         this.setRecordQuantizationGridState (recordQuantization);
-        this.sendTrackOSC ("inQuantResolution", QUANT_MAP.get (recordQuantization).doubleValue ());
+        this.sendPositionedItemOSC ("inQuantResolution", QUANT_MAP.get (recordQuantization).doubleValue ());
     }
 
 
@@ -456,7 +457,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     @Override
     public void createClip (final int slotIndex, final int lengthInBeats)
     {
-        this.sendTrackOSC ("createClip", lengthInBeats);
+        this.sendPositionedItemOSC ("createClip", lengthInBeats);
     }
 
 
@@ -464,7 +465,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     @Override
     public void addEqualizerDevice ()
     {
-        this.sender.processNoArg ("device", "eq-add");
+        this.sender.processNoArg (Processor.DEVICE, "eq-add");
     }
 
 
@@ -473,7 +474,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
      */
     public void recordClip ()
     {
-        this.sendTrackOSC ("recordClip");
+        this.sendPositionedItemOSC ("recordClip");
     }
 
 

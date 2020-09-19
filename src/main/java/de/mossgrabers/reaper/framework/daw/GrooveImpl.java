@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.daw.IGroove;
 import de.mossgrabers.framework.daw.data.IParameter;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.data.GrooveParameter;
 
@@ -48,5 +49,14 @@ public class GrooveImpl extends BaseImpl implements IGroove
     public void setIndication (final boolean enable)
     {
         // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
+    {
+        // Not used
+        return null;
     }
 }

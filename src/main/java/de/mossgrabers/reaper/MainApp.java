@@ -8,6 +8,7 @@ import de.mossgrabers.framework.controller.IControllerDefinition;
 import de.mossgrabers.framework.utils.OperatingSystem;
 import de.mossgrabers.framework.utils.Pair;
 import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.controller.ControllerInstanceManager;
 import de.mossgrabers.reaper.controller.IControllerInstance;
 import de.mossgrabers.reaper.framework.Actions;
@@ -315,31 +316,106 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
 
     /** {@inheritDoc} */
     @Override
+    public void processNoArg (final Processor processor, final String command)
+    {
+        this.processNoArg (processor.name ().toLowerCase (), command);
+    }
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param processor The processor ID
+     * @param command The command ID
+     */
     public native void processNoArg (final String processor, final String command);
 
 
     /** {@inheritDoc} */
     @Override
+    public void processStringArg (final Processor processor, final String command, final String value)
+    {
+        this.processStringArg (processor.name ().toLowerCase (), command, value);
+    }
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param processor The processor ID
+     * @param command The command ID
+     * @param value A string value
+     */
     public native void processStringArg (final String processor, final String command, final String value);
 
 
     /** {@inheritDoc} */
     @Override
+    public void processIntArg (final Processor processor, final String command, final int value)
+    {
+        this.processIntArg (processor.name ().toLowerCase (), command, value);
+    }
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param processor The processor ID
+     * @param command The command ID
+     * @param value An integer value
+     */
     public native void processIntArg (final String processor, final String command, final int value);
 
 
     /** {@inheritDoc} */
     @Override
+    public void processDoubleArg (final Processor processor, final String command, final double value)
+    {
+        this.processDoubleArg (processor.name ().toLowerCase (), command, value);
+    }
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param processor The processor ID
+     * @param command The command ID
+     * @param value A double value
+     */
     public native void processDoubleArg (final String processor, final String command, final double value);
 
 
     /** {@inheritDoc} */
     @Override
+    public void delayUpdates (final Processor processor)
+    {
+        this.delayUpdates (processor.name ().toLowerCase ());
+    }
+
+
+    /**
+     * Delay updates for a specific processor. Use to prevents that Reaper sends old values before
+     * the latest ones are applied.
+     *
+     * @param processor The processor to delay
+     */
     public native void delayUpdates (final String processor);
 
 
     /** {@inheritDoc} */
     @Override
+    public void enableUpdates (final Processor processor, final boolean enable)
+    {
+        this.enableUpdates (processor.name ().toLowerCase (), enable);
+    }
+
+
+    /**
+     * Dis-/enable an update processor for performance improvements.
+     *
+     * @param processor The processor to The processor to dis-/enable
+     * @param enable True to enable processor updates, false to disable
+     */
     public native void enableUpdates (String processor, boolean enable);
 
 
@@ -483,7 +559,7 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
     @Override
     public void sendRefreshCommand ()
     {
-        this.processNoArg ("refresh");
+        this.processNoArg (Processor.REFRESH);
     }
 
 

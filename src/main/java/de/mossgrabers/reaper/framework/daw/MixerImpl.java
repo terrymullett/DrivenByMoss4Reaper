@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.daw.IMixer;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.Actions;
 
 
@@ -126,5 +127,13 @@ public class MixerImpl extends BaseImpl implements IMixer
     public void toggleSendsSectionVisibility ()
     {
         this.invokeAction (Actions.TOGGLE_FX_SENDS);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
+    {
+        return Processor.ACTION;
     }
 }

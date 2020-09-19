@@ -10,6 +10,7 @@ import de.mossgrabers.framework.daw.data.bank.ISceneBank;
 import de.mossgrabers.framework.daw.data.bank.ITrackBank;
 import de.mossgrabers.framework.daw.data.empty.EmptyTrack;
 import de.mossgrabers.framework.observer.IIndexedValueObserver;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
 
@@ -241,12 +242,12 @@ public abstract class AbstractTrackBankImpl extends AbstractPagedBankImpl<TrackI
 
     protected void sendTrackOSC (final String command, final int value)
     {
-        this.sender.processIntArg ("track", command, value);
+        this.sender.processIntArg (Processor.TRACK, command, value);
     }
 
 
     protected void sendTrackOSC (final String command)
     {
-        this.sender.processNoArg ("track", command);
+        this.sender.processNoArg (Processor.TRACK, command);
     }
 }

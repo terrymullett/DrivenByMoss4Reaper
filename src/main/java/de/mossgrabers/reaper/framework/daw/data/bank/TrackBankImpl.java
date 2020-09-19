@@ -11,6 +11,7 @@ import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.IDrumPadBank;
 import de.mossgrabers.framework.daw.data.bank.ISendBank;
 import de.mossgrabers.framework.observer.NoteObserver;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.TreeNode;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.Note;
@@ -95,7 +96,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     @Override
     public void enableObservers (final boolean enable)
     {
-        this.sender.enableUpdates ("track", enable);
+        this.sender.enableUpdates (Processor.TRACK, enable);
     }
 
 
@@ -486,7 +487,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
         {
             final TrackImpl track = this.getUnpagedItem (i);
 
-            // FIlter deactivated tracks
+            // Filter deactivated tracks
             if (this.skipDisabledItems && !track.isActivated ())
                 continue;
 

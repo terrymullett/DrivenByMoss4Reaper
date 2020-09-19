@@ -94,7 +94,7 @@ public class LaunchkeyMiniMk3ControllerSetup extends AbstractControllerSetup<Lau
         super (factory, host, globalSettings, documentSettings);
 
         this.colorManager = new LaunchkeyMiniMk3ColorManager ();
-        this.valueChanger = new DefaultValueChanger (128, 1, 0.5);
+        this.valueChanger = new DefaultValueChanger (128, 1);
         this.configuration = new LaunchkeyMiniMk3Configuration (host, this.valueChanger, factory.getArpeggiatorModes ());
     }
 
@@ -145,6 +145,8 @@ public class LaunchkeyMiniMk3ControllerSetup extends AbstractControllerSetup<Lau
     @Override
     protected void createObservers ()
     {
+        super.createObservers ();
+
         this.getSurface ().getModeManager ().addModeListener ( (previousViewId, activeViewId) -> this.updateIndication (null));
         this.createScaleObservers (this.configuration);
         this.configuration.registerDeactivatedItemsHandler (this.model);
@@ -163,7 +165,7 @@ public class LaunchkeyMiniMk3ControllerSetup extends AbstractControllerSetup<Lau
         modeManager.registerMode (Modes.SEND1, new SendMode<> (0, surface, this.model, true));
         modeManager.registerMode (Modes.SEND2, new SendMode<> (1, surface, this.model, true));
         modeManager.registerMode (Modes.DEVICE_PARAMS, new ParameterMode<> (surface, this.model, true));
-        modeManager.registerMode (Modes.USER, new UserMode<> (surface, this.model, true, ContinuousID.DEVICE_KNOB1, 8));
+        modeManager.registerMode (Modes.USER, new UserMode<> (surface, this.model, true, ContinuousID.createSequentialList (ContinuousID.DEVICE_KNOB1, 8)));
     }
 
 

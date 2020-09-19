@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.device.column;
 
 import de.mossgrabers.framework.daw.data.IBrowserColumnItem;
 import de.mossgrabers.framework.utils.StringUtils;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.data.ItemImpl;
 
 
@@ -67,6 +68,15 @@ public abstract class BaseColumnItem extends ItemImpl implements IBrowserColumnI
         if (idx != this.position)
             this.updateCache (idx);
         return this.hits;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
+    {
+        // Not used
+        return null;
     }
 
 

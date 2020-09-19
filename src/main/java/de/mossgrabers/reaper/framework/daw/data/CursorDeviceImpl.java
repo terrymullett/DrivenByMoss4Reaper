@@ -7,6 +7,7 @@ package de.mossgrabers.reaper.framework.daw.data;
 import de.mossgrabers.framework.daw.data.ICursorDevice;
 import de.mossgrabers.framework.daw.data.IDevice;
 import de.mossgrabers.framework.daw.data.bank.IDeviceBank;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.bank.DeviceBankImpl;
 
@@ -112,7 +113,7 @@ public class CursorDeviceImpl extends SpecificDeviceImpl implements ICursorDevic
         final int index = this.getIndex ();
         if (index > 0)
             this.setName (this.deviceBank.getItem (index - 1).getName ());
-        this.sender.processNoArg ("device", "-");
+        this.sender.processNoArg (Processor.DEVICE, "-");
     }
 
 
@@ -130,7 +131,7 @@ public class CursorDeviceImpl extends SpecificDeviceImpl implements ICursorDevic
             final IDevice item = this.deviceBank.getItem (index + 1);
             this.setName (item.getName ());
         }
-        this.sender.processNoArg ("device", "+");
+        this.sender.processNoArg (Processor.DEVICE, "+");
     }
 
 

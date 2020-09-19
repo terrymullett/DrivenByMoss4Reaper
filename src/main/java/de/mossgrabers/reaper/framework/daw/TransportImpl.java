@@ -8,6 +8,7 @@ import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.daw.constants.AutomationMode;
 import de.mossgrabers.framework.daw.constants.TransportConstants;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.data.MasterTrackImpl;
@@ -72,7 +73,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void enableObservers (final boolean enable)
     {
-        this.sender.enableUpdates ("transport", enable);
+        this.sender.enableUpdates (Processor.TRANSPORT, enable);
     }
 
 
@@ -81,8 +82,8 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void play ()
     {
         if (this.isPlaying && this.isRecording)
-            this.sender.processNoArg ("record");
-        this.sender.processNoArg ("play");
+            this.sender.processNoArg (Processor.RECORD);
+        this.sender.processNoArg (Processor.PLAY);
     }
 
 
@@ -109,8 +110,8 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void stop ()
     {
         if (this.isPlaying && this.isRecording)
-            this.sender.processNoArg ("record");
-        this.sender.processNoArg ("stop");
+            this.sender.processNoArg (Processor.RECORD);
+        this.sender.processNoArg (Processor.STOP);
     }
 
 
@@ -119,7 +120,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void stopAndRewind ()
     {
         this.stop ();
-        this.sender.processIntArg ("time", 0);
+        this.sender.processIntArg (Processor.TIME, 0);
     }
 
 
@@ -127,7 +128,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void record ()
     {
-        this.sender.processNoArg ("record");
+        this.sender.processNoArg (Processor.RECORD);
     }
 
 
@@ -254,7 +255,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void changeMetronomeVolume (final int control)
     {
-        this.sender.processNoArg ("metro_vol", this.valueChanger.calcKnobSpeed (control) > 0 ? "+" : "-");
+        this.sender.processNoArg (Processor.METRO_VOL, this.valueChanger.isIncrease (control) ? "+" : "-");
     }
 
 
@@ -353,7 +354,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void setPrerollAsBars (final int preroll)
     {
-        this.sender.processIntArg ("inifile", "reaper/prerollmeas", preroll);
+        this.sender.processIntArg (Processor.INIFILE, "reaper/prerollmeas", preroll);
         this.iniFiles.updateMainIniInteger ("reaper", "prerollmeas", preroll);
     }
 
@@ -363,7 +364,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void setLoop (final boolean on)
     {
         if (on && !this.isLooping || !on && this.isLooping)
-            this.sender.processIntArg ("repeat", 1);
+            this.sender.processIntArg (Processor.REPEAT, 1);
     }
 
 
@@ -371,7 +372,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void toggleLoop ()
     {
-        this.sender.processIntArg ("repeat", 1);
+        this.sender.processIntArg (Processor.REPEAT, 1);
     }
 
 
@@ -428,9 +429,9 @@ public class TransportImpl extends BaseImpl implements ITransport
         final TrackImpl selectedTrack = (TrackImpl) this.model.getCurrentTrackBank ().getSelectedItem ();
         final String modeName = "auto" + mode.getIdentifier ();
         if (selectedTrack == null)
-            this.sender.processIntArg ("master", modeName, 1);
+            this.sender.processIntArg (Processor.MASTER, modeName, 1);
         else
-            this.sender.processIntArg ("track", selectedTrack.getPosition () + "/" + modeName, 1);
+            this.sender.processIntArg (Processor.TRACK, selectedTrack.getPosition () + "/" + modeName, 1);
     }
 
 
@@ -542,18 +543,10 @@ public class TransportImpl extends BaseImpl implements ITransport
         synchronized (UPDATE_LOCK)
         {
             if (this.isAutomationRecActive ())
-                this.sender.delayUpdates ("transport");
+                this.sender.delayUpdates (Processor.TRANSPORT);
             this.position = time;
-            this.sender.processDoubleArg ("time", this.position);
+            this.sender.processDoubleArg (Processor.TIME, this.position);
         }
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void changePosition (final boolean increase)
-    {
-        this.changePosition (increase, this.valueChanger.isSlow ());
     }
 
 
@@ -642,10 +635,9 @@ public class TransportImpl extends BaseImpl implements ITransport
 
     /** {@inheritDoc} */
     @Override
-    public void changeTempo (final boolean increase)
+    public void changeTempo (final boolean increase, final boolean slow)
     {
-        final boolean isSlow = this.valueChanger.isSlow ();
-        this.sender.processNoArg ("tempo", increase ? isSlow ? "+" : "++" : isSlow ? "-" : "--");
+        this.sender.processNoArg (Processor.TEMPO, increase ? slow ? "+" : "++" : slow ? "-" : "--");
     }
 
 
@@ -664,7 +656,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void setTempo (final double tempo)
     {
-        this.sender.processDoubleArg ("tempo", tempo);
+        this.sender.processDoubleArg (Processor.TEMPO, tempo);
     }
 
 
@@ -827,5 +819,13 @@ public class TransportImpl extends BaseImpl implements ITransport
     {
         final double v = tempo - TransportConstants.MIN_TEMPO;
         return v * (maxValue - 1) / (TransportConstants.MAX_TEMPO - TransportConstants.MIN_TEMPO);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
+    {
+        return Processor.TRANSPORT;
     }
 }

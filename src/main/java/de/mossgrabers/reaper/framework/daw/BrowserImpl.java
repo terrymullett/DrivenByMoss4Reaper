@@ -12,6 +12,7 @@ import de.mossgrabers.framework.daw.data.ICursorDevice;
 import de.mossgrabers.framework.daw.data.IItem;
 import de.mossgrabers.framework.utils.StringUtils;
 import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.data.CursorDeviceImpl;
 import de.mossgrabers.reaper.framework.daw.data.ItemImpl;
 import de.mossgrabers.reaper.framework.device.Device;
@@ -138,7 +139,7 @@ public class BrowserImpl extends AbstractBrowser
     @Override
     public void enableObservers (final boolean enable)
     {
-        this.sender.enableUpdates ("browser", enable);
+        this.sender.enableUpdates (Processor.BROWSER, enable);
     }
 
 
@@ -298,14 +299,14 @@ public class BrowserImpl extends AbstractBrowser
                     {
                         final Device device = result.getDevice ();
                         if (device != null)
-                            this.sender.processStringArg ("device", "add/" + this.insertPosition + "/", device.getCreationName ());
+                            this.sender.processStringArg (Processor.DEVICE, "add/" + this.insertPosition + "/", device.getCreationName ());
                     }
                     break;
 
                 case PRESET:
                     final int index = this.getSelectedResultIndex ();
                     if (index != -1)
-                        this.sender.processIntArg ("device", "preset", index);
+                        this.sender.processIntArg (Processor.DEVICE, "preset", index);
                     break;
             }
         }
@@ -522,6 +523,15 @@ public class BrowserImpl extends AbstractBrowser
         {
             final int id = BrowserImpl.this.translateBankIndexToPageOfSelectedIndex (this.getIndex ());
             return id < BrowserImpl.this.filteredDevices.size () ? BrowserImpl.this.filteredDevices.get (id) : null;
+        }
+
+
+        /** {@inheritDoc} */
+        @Override
+        protected Processor getProcessor ()
+        {
+            // Never used
+            return null;
         }
     }
 }

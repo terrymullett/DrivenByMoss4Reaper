@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.daw.data.bank;
 
 import de.mossgrabers.framework.daw.data.IDevice;
 import de.mossgrabers.framework.daw.data.bank.IDeviceBank;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.DeviceImpl;
 
@@ -43,7 +44,7 @@ public class DeviceBankImpl extends AbstractBankImpl<IDevice> implements IDevice
     @Override
     public void selectPreviousPage ()
     {
-        this.sender.processNoArg ("device", "page/-");
+        this.sender.processNoArg (Processor.DEVICE, "page/-");
     }
 
 
@@ -51,6 +52,6 @@ public class DeviceBankImpl extends AbstractBankImpl<IDevice> implements IDevice
     @Override
     public void selectNextPage ()
     {
-        this.sender.processNoArg ("device", "page/+");
+        this.sender.processNoArg (Processor.DEVICE, "page/+");
     }
 }

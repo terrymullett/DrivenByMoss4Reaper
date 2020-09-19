@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.daw.data.IEqualizerDevice;
 import de.mossgrabers.framework.daw.data.IParameter;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 import java.util.Arrays;
@@ -94,7 +95,7 @@ public class EqualizerDeviceImpl extends SpecificDeviceImpl implements IEqualize
     {
         final String typeIndex = EQ_TYPE_INDICES.get (type);
         if (typeIndex != null)
-            this.sender.processStringArg ("device", "eq-band/" + index, typeIndex);
+            this.sender.processStringArg (Processor.DEVICE, "eq-band/" + index, typeIndex);
     }
 
 

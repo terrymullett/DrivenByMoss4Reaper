@@ -6,12 +6,15 @@ package de.mossgrabers.framework.mode.device;
 
 import de.mossgrabers.framework.configuration.Configuration;
 import de.mossgrabers.framework.controller.ButtonID;
+import de.mossgrabers.framework.controller.ContinuousID;
 import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ICursorDevice;
 import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.daw.data.bank.IParameterPageBank;
 import de.mossgrabers.framework.mode.AbstractMode;
+
+import java.util.List;
 
 
 /**
@@ -38,7 +41,22 @@ public class ParameterMode<S extends IControlSurface<C>, C extends Configuration
      */
     public ParameterMode (final S surface, final IModel model, final boolean isAbsolute)
     {
-        super ("Parameters", surface, model, isAbsolute, model.getCursorDevice ().getParameterBank (), null, 8);
+        this (surface, model, isAbsolute, null);
+    }
+
+
+    /**
+     * Constructor.
+     *
+     * @param surface The control surface
+     * @param model The model
+     * @param isAbsolute If true the value change is happending with a setter otherwise relative
+     *            change method is used
+     * @param knobs The IDs of the knob to control this mode
+     */
+    public ParameterMode (final S surface, final IModel model, final boolean isAbsolute, final List<ContinuousID> knobs)
+    {
+        super ("Parameters", surface, model, isAbsolute, model.getCursorDevice ().getParameterBank (), knobs);
 
         this.isTemporary = false;
         this.cursorDevice = this.model.getCursorDevice ();

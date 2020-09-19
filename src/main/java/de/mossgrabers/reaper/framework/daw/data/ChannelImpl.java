@@ -10,6 +10,7 @@ import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.daw.data.bank.ISendBank;
 import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.framework.observer.IValueObserver;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.bank.SendBankImpl;
@@ -25,28 +26,22 @@ import java.util.Set;
  */
 public class ChannelImpl extends ItemImpl implements IChannel
 {
-    private static final String                PATH_TRACK         = "track";
-    private static final Object                UPDATE_LOCK        = new Object ();
-    private static final ColorEx               GRAY               = new ColorEx (0.2, 0.2, 0.2);
+    private static final Object                UPDATE_LOCK    = new Object ();
+    private static final ColorEx               GRAY           = new ColorEx (0.2, 0.2, 0.2);
 
-    private final Set<IValueObserver<ColorEx>> colorObservers     = new HashSet<> ();
+    private final Set<IValueObserver<ColorEx>> colorObservers = new HashSet<> ();
 
     private ChannelType                        type;
     private double                             vuLeft;
     private double                             vuRight;
     private boolean                            isMute;
     private boolean                            isSolo;
-    private boolean                            isActivated        = true;
+    private boolean                            isActivated    = true;
     private ColorEx                            color;
 
     private final ParameterImpl                volumeParameter;
     private final ParameterImpl                panParameter;
     private final ISendBank                    sendBank;
-
-    private boolean                            isVolumeBeingTouched;
-    private double                             lastReceivedVolume = -1;
-    private boolean                            isPanBeingTouched;
-    private double                             lastReceivedPan    = -1;
 
 
     /**
@@ -62,9 +57,20 @@ public class ChannelImpl extends ItemImpl implements IChannel
 
         this.setName ("Track");
 
-        this.volumeParameter = new ParameterImpl (dataSetup, index);
-        this.panParameter = new ParameterImpl (dataSetup, index);
+        this.volumeParameter = new TrackParameterImpl (dataSetup, index, "volume");
+        this.panParameter = new TrackParameterImpl (dataSetup, index, "pan");
         this.sendBank = new SendBankImpl (dataSetup, this, numSends);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setExists (final boolean exists)
+    {
+        super.setExists (exists);
+
+        this.volumeParameter.setExists (exists);
+        this.panParameter.setExists (exists);
     }
 
 
@@ -140,11 +146,8 @@ public class ChannelImpl extends ItemImpl implements IChannel
         synchronized (UPDATE_LOCK)
         {
             if (this.isAutomationRecActive ())
-                this.sender.delayUpdates (PATH_TRACK);
-
-            final double v = this.valueChanger.toNormalizedValue (value);
-            this.volumeParameter.setInternalValue (v);
-            this.sendTrackOSC ("volume", v);
+                this.sender.delayUpdates (Processor.TRACK);
+            this.volumeParameter.setValue (value);
         }
     }
 
@@ -161,7 +164,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void touchVolume (final boolean isBeingTouched)
     {
-        this.sendTrackOSC ("volume/touch", isBeingTouched);
+        this.sendPositionedItemOSC ("volume/touch", isBeingTouched);
         this.handleVolumeTouch (isBeingTouched);
     }
 
@@ -174,13 +177,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
      */
     protected void handleVolumeTouch (final boolean isBeingTouched)
     {
-        this.isVolumeBeingTouched = isBeingTouched;
-
-        if (this.isVolumeBeingTouched || this.lastReceivedVolume < 0)
-            return;
-
-        this.volumeParameter.setInternalValue (this.lastReceivedVolume);
-        this.lastReceivedVolume = -1;
+        this.volumeParameter.touchValue (isBeingTouched);
     }
 
 
@@ -248,11 +245,9 @@ public class ChannelImpl extends ItemImpl implements IChannel
         synchronized (UPDATE_LOCK)
         {
             if (this.isAutomationRecActive ())
-                this.sender.delayUpdates (PATH_TRACK);
+                this.sender.delayUpdates (Processor.TRACK);
 
-            final double v = this.valueChanger.toNormalizedValue (value);
-            this.panParameter.setInternalValue (v);
-            this.sendTrackOSC ("pan", v);
+            this.panParameter.setValue (value);
         }
     }
 
@@ -269,7 +264,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void touchPan (final boolean isBeingTouched)
     {
-        this.sendTrackOSC ("pan/touch", isBeingTouched);
+        this.sendPositionedItemOSC ("pan/touch", isBeingTouched);
         this.handlePanTouch (isBeingTouched);
     }
 
@@ -282,13 +277,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
      */
     protected void handlePanTouch (final boolean isBeingTouched)
     {
-        this.isPanBeingTouched = isBeingTouched;
-
-        if (this.isPanBeingTouched || this.lastReceivedPan == -1)
-            return;
-
-        this.panParameter.setInternalValue (this.lastReceivedVolume);
-        this.lastReceivedPan = -1;
+        this.panParameter.touchValue (isBeingTouched);
     }
 
 
@@ -321,7 +310,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     public void setColor (final ColorEx color)
     {
         final int [] rgb = color.toIntRGB255 ();
-        this.sendTrackOSC ("color", "RGB(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")");
+        this.sendPositionedItemOSC ("color", "RGB(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")");
     }
 
 
@@ -370,7 +359,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     public void setIsActivated (final boolean enable)
     {
         this.isActivated = enable;
-        this.sendTrackOSC ("active", enable);
+        this.sendPositionedItemOSC ("active", enable);
     }
 
 
@@ -389,9 +378,9 @@ public class ChannelImpl extends ItemImpl implements IChannel
         synchronized (UPDATE_LOCK)
         {
             if (this.isAutomationRecActive ())
-                this.sender.delayUpdates (PATH_TRACK);
+                this.sender.delayUpdates (Processor.TRACK);
             this.setMuteState (value);
-            this.sendTrackOSC ("mute", value);
+            this.sendPositionedItemOSC ("mute", value);
         }
     }
 
@@ -409,7 +398,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     public void setSolo (final boolean value)
     {
         this.setSoloState (value);
-        this.sendTrackOSC ("solo", value);
+        this.sendPositionedItemOSC ("solo", value);
     }
 
 
@@ -447,10 +436,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
      */
     public void setInternalVolume (final double volume)
     {
-        if (this.isVolumeBeingTouched)
-            this.lastReceivedVolume = volume;
-        else
-            this.volumeParameter.setInternalValue (volume);
+        this.volumeParameter.setInternalValue (volume);
     }
 
 
@@ -472,10 +458,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
      */
     public void setInternalPan (final double pan)
     {
-        if (this.isPanBeingTouched)
-            this.lastReceivedPan = pan;
-        else
-            this.panParameter.setInternalValue (pan);
+        this.panParameter.setInternalValue (pan);
     }
 
 
@@ -570,7 +553,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void remove ()
     {
-        this.sendTrackOSC ("remove");
+        this.sendPositionedItemOSC ("remove");
     }
 
 
@@ -590,44 +573,10 @@ public class ChannelImpl extends ItemImpl implements IChannel
     }
 
 
-    protected void sendTrackOSC (final String command)
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
     {
-        this.sender.processNoArg (this.getProcessor (), this.createCommand (command));
-    }
-
-
-    protected void sendTrackOSC (final String command, final int value)
-    {
-        this.sender.processIntArg (this.getProcessor (), this.createCommand (command), value);
-    }
-
-
-    protected void sendTrackOSC (final String command, final boolean value)
-    {
-        this.sender.processIntArg (this.getProcessor (), this.createCommand (command), value ? 1 : 0);
-    }
-
-
-    protected void sendTrackOSC (final String command, final double value)
-    {
-        this.sender.processDoubleArg (this.getProcessor (), this.createCommand (command), value);
-    }
-
-
-    protected void sendTrackOSC (final String command, final String value)
-    {
-        this.sender.processStringArg (this.getProcessor (), this.createCommand (command), value);
-    }
-
-
-    protected String getProcessor ()
-    {
-        return PATH_TRACK;
-    }
-
-
-    protected String createCommand (final String command)
-    {
-        return this.getPosition () + "/" + command;
+        return Processor.TRACK;
     }
 }

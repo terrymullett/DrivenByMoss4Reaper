@@ -12,6 +12,8 @@ import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ISend;
 import de.mossgrabers.framework.daw.data.ITrack;
 
+import java.util.List;
+
 
 /**
  * Mode for editing Send volumes. The knobs control the volumes of the given send on the selected
@@ -38,7 +40,7 @@ public class SendMode<S extends IControlSurface<C>, C extends Configuration> ext
      */
     public SendMode (final int sendIndex, final S surface, final IModel model, final boolean isAbsolute)
     {
-        this (sendIndex, surface, model, isAbsolute, null, 0);
+        this (sendIndex, surface, model, isAbsolute, null);
     }
 
 
@@ -50,13 +52,11 @@ public class SendMode<S extends IControlSurface<C>, C extends Configuration> ext
      * @param model The model
      * @param isAbsolute If true the value change is happending with a setter otherwise relative
      *            change method is used
-     * @param firstKnob The ID of the first knob to control this mode, all other knobs must be
-     *            follow up IDs
-     * @param numberOfKnobs The number of knobs available to control this mode
+     * @param knobs The IDs of the knob to control this mode
      */
-    public SendMode (final int sendIndex, final S surface, final IModel model, final boolean isAbsolute, final ContinuousID firstKnob, final int numberOfKnobs)
+    public SendMode (final int sendIndex, final S surface, final IModel model, final boolean isAbsolute, final List<ContinuousID> knobs)
     {
-        super ("Send", surface, model, isAbsolute, firstKnob, numberOfKnobs);
+        super ("Send", surface, model, isAbsolute, knobs);
 
         this.sendIndex = sendIndex;
     }

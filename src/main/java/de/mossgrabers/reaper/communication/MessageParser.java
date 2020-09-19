@@ -21,6 +21,7 @@ import de.mossgrabers.framework.daw.data.bank.IDeviceBank;
 import de.mossgrabers.framework.daw.data.bank.ITrackBank;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.daw.resource.ChannelType;
+import de.mossgrabers.framework.mode.Mode;
 import de.mossgrabers.reaper.framework.daw.ApplicationImpl;
 import de.mossgrabers.reaper.framework.daw.BrowserImpl;
 import de.mossgrabers.reaper.framework.daw.ModelImpl;
@@ -292,6 +293,7 @@ public class MessageParser
             {
                 tb.setItemCount (Integer.parseInt (value));
                 tb.markDirty ();
+                this.rebindKnobs ();
             }
             else
                 this.host.error ("Unhandled Track command: " + part);
@@ -477,7 +479,10 @@ public class MessageParser
         {
             // The number of sends on the track
             if (TAG_COUNT.equals (sendCmd))
+            {
                 sendBank.setItemCount (Integer.parseInt (value));
+                this.rebindKnobs ();
+            }
             else
                 this.host.error ("Unhandled Send command: " + sendBank);
         }
@@ -588,7 +593,10 @@ public class MessageParser
         catch (final NumberFormatException ex)
         {
             if (TAG_COUNT.equals (cmd))
+            {
                 device.setParameterCount (Integer.parseInt (value));
+                this.rebindKnobs ();
+            }
             else
                 this.host.error ("Unhandled Device Param parameter: " + cmd);
         }
@@ -614,7 +622,10 @@ public class MessageParser
         catch (final NumberFormatException ex)
         {
             if (TAG_COUNT.equals (cmd))
+            {
                 parameterBank.setItemCount (Integer.parseInt (value));
+                this.rebindKnobs ();
+            }
             else
                 this.host.error ("Unhandled User Param parameter: " + cmd);
         }
@@ -948,5 +959,23 @@ public class MessageParser
     private void updateNoteMapping ()
     {
         this.host.scheduleTask ( () -> this.controllerSetup.getSurface ().getViewManager ().getActiveView ().updateNoteMapping (), 1000);
+    }
+
+
+    /**
+     * If the size of a bank changes (e.g. tracks or parameters) there might be the need to replace
+     * EmptyXXX instances which are bound to knobs with real instances.
+     */
+    private void rebindKnobs ()
+    {
+        this.controllerSetup.getSurfaces ().forEach (surface -> {
+
+            final Mode mode = surface.getModeManager ().getActiveOrTempMode ();
+            if (mode == null)
+                return;
+
+            // Force rebinding parameters to knobs
+            mode.onActivate ();
+        });
     }
 }

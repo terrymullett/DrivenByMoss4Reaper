@@ -36,19 +36,10 @@ public class UserParameterImpl extends ParameterImpl
 
     /** {@inheritDoc} */
     @Override
-    public void setValue (final int value)
-    {
-        if (!this.doesExist ())
-            return;
-        this.value = this.valueChanger.toNormalizedValue (value);
-        this.sendUpdate ();
-    }
-
-
-    protected void sendUpdate ()
+    protected void sendValue ()
     {
         final ITrack selectedTrack = this.model.getSelectedTrack ();
         if (selectedTrack instanceof ChannelImpl)
-            ((ChannelImpl) selectedTrack).sendTrackOSC ("user/param/" + this.getPosition () + "/value", this.value);
+            ((ChannelImpl) selectedTrack).sendPositionedItemOSC ("user/" + this.createCommand ("value"), this.value);
     }
 }

@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.daw.data.IParameter;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
@@ -83,7 +84,7 @@ public class ParameterImpl extends ItemImpl implements IParameter
         if (!this.doesExist ())
             return;
         this.value = this.valueChanger.toNormalizedValue (value);
-        this.sender.processDoubleArg ("device", "param/" + this.getPosition () + "/value", this.value);
+        this.sendValue ();
     }
 
 
@@ -160,5 +161,30 @@ public class ParameterImpl extends ItemImpl implements IParameter
     public void setValueStr (final String valueStr)
     {
         this.valueStr = valueStr == null ? "" : valueStr;
+    }
+
+
+    /**
+     * Send the changed value to Reaper.
+     */
+    protected void sendValue ()
+    {
+        this.sendPositionedItemOSC ("value", this.value);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected String createCommand (final String command)
+    {
+        return "param/" + super.createCommand (command);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
+    {
+        return Processor.DEVICE;
     }
 }

@@ -162,4 +162,40 @@ public abstract class ItemImpl extends BaseImpl implements IItem
     {
         // Intentionally empty
     }
+
+
+    protected void sendPositionedItemOSC (final String command)
+    {
+        this.sender.processNoArg (this.getProcessor (), this.createCommand (command));
+    }
+
+
+    protected void sendPositionedItemOSC (final String command, final int value)
+    {
+        this.sender.processIntArg (this.getProcessor (), this.createCommand (command), value);
+    }
+
+
+    protected void sendPositionedItemOSC (final String command, final boolean value)
+    {
+        this.sender.processIntArg (this.getProcessor (), this.createCommand (command), value ? 1 : 0);
+    }
+
+
+    protected void sendPositionedItemOSC (final String command, final double value)
+    {
+        this.sender.processDoubleArg (this.getProcessor (), this.createCommand (command), value);
+    }
+
+
+    protected void sendPositionedItemOSC (final String command, final String value)
+    {
+        this.sender.processStringArg (this.getProcessor (), this.createCommand (command), value);
+    }
+
+
+    protected String createCommand (final String command)
+    {
+        return this.getPosition () + "/" + command;
+    }
 }

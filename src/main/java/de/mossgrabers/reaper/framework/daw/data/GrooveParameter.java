@@ -4,6 +4,7 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
@@ -15,6 +16,8 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
  */
 public class GrooveParameter extends ParameterImpl
 {
+    private static final String TAG_FINGERS = "fingers";
+
     private static final String [] PARAMETER_NAMES    = new String []
     {
         "Strgth Position",
@@ -61,19 +64,19 @@ public class GrooveParameter extends ParameterImpl
         switch (this.getIndex ())
         {
             case 0:
-                val = this.iniFiles.getMainIniInteger ("fingers", "groove_strength", 100);
+                val = this.iniFiles.getMainIniInteger (TAG_FINGERS, "groove_strength", 100);
                 break;
 
             case 1:
-                val = this.iniFiles.getMainIniInteger ("fingers", "groove_velstrength", 100);
+                val = this.iniFiles.getMainIniInteger (TAG_FINGERS, "groove_velstrength", 100);
                 break;
 
             case 2:
-                val = this.iniFiles.getMainIniInteger ("fingers", "groove_target", 0);
+                val = this.iniFiles.getMainIniInteger (TAG_FINGERS, "groove_target", 0);
                 break;
 
             case 3:
-                val = this.iniFiles.getMainIniInteger ("fingers", "groove_tolerance", 16);
+                val = this.iniFiles.getMainIniInteger (TAG_FINGERS, "groove_tolerance", 16);
                 break;
 
             case 4:
@@ -137,8 +140,8 @@ public class GrooveParameter extends ParameterImpl
         }
 
         final int scaledValue = this.toIniValue (this.value);
-        this.sender.processIntArg ("inifile", "fingers/" + PARAMETER_COMMANDS[this.getIndex ()], scaledValue);
-        this.iniFiles.updateMainIniInteger ("fingers", PARAMETER_COMMANDS[this.getIndex ()], scaledValue);
+        this.sender.processIntArg (Processor.INIFILE, "fingers/" + PARAMETER_COMMANDS[this.getIndex ()], scaledValue);
+        this.iniFiles.updateMainIniInteger (TAG_FINGERS, PARAMETER_COMMANDS[this.getIndex ()], scaledValue);
     }
 
 

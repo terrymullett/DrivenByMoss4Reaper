@@ -7,6 +7,7 @@ package de.mossgrabers.reaper.framework.daw.data.bank;
 import de.mossgrabers.framework.daw.data.IScene;
 import de.mossgrabers.framework.daw.data.bank.ISceneBank;
 import de.mossgrabers.framework.daw.data.empty.EmptyScene;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.SceneImpl;
 
@@ -40,7 +41,7 @@ public class SceneBankImpl extends AbstractPagedBankImpl<SceneImpl, IScene> impl
     @Override
     public void enableObservers (final boolean enable)
     {
-        this.sender.enableUpdates ("session", enable);
+        this.sender.enableUpdates (Processor.SESSION, enable);
     }
 
 

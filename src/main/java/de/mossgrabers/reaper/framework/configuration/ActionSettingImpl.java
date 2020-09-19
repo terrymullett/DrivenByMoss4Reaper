@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.configuration;
 
 import de.mossgrabers.framework.configuration.IActionSetting;
 import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.PropertiesEx;
 import de.mossgrabers.reaper.ui.utils.SafeRunLater;
@@ -54,7 +55,7 @@ public class ActionSettingImpl extends BaseSetting<ActionPanel, String> implemen
         });
 
         this.field.getSelectButton ().addActionListener (e -> {
-            sender.processNoArg ("action", "select");
+            sender.processNoArg (Processor.ACTION, "select");
             this.isSelectionActive = true;
         });
     }
