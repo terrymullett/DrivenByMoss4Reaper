@@ -8,6 +8,7 @@ import de.mossgrabers.framework.configuration.Configuration;
 import de.mossgrabers.framework.controller.IControlSurface;
 import de.mossgrabers.framework.controller.grid.IPadGrid;
 import de.mossgrabers.framework.daw.IModel;
+import de.mossgrabers.framework.featuregroup.AbstractView;
 
 
 /**
@@ -293,7 +294,7 @@ public abstract class AbstractNumberDisplayView<S extends IControlSurface<C>, C 
     public void onGridNote (final int note, final int velocity)
     {
         if (velocity == 0)
-            this.surface.getViewManager ().restoreView ();
+            this.surface.getViewManager ().restore ();
     }
 
 

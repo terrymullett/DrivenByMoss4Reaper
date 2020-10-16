@@ -11,7 +11,7 @@ import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.INoteClip;
 import de.mossgrabers.framework.daw.IStepInfo;
-import de.mossgrabers.framework.mode.ModeManager;
+import de.mossgrabers.framework.featuregroup.ModeManager;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.view.AbstractDrum8View;
@@ -56,9 +56,9 @@ public class Drum8View extends AbstractDrum8View<PushControlSurface, PushConfigu
             return;
 
         final ModeManager modeManager = this.surface.getModeManager ();
-        final NoteMode noteMode = (NoteMode) modeManager.getMode (Modes.NOTE);
+        final NoteMode noteMode = (NoteMode) modeManager.get (Modes.NOTE);
         noteMode.setValues (clip, editMidiChannel, stepX, stepY);
-        modeManager.setActiveMode (Modes.NOTE);
+        modeManager.setActive (Modes.NOTE);
     }
 
 

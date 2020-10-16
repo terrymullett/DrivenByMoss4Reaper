@@ -2,9 +2,8 @@
 // (c) 2017-2020
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
-package de.mossgrabers.framework.mode;
+package de.mossgrabers.framework.featuregroup;
 
-import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
 
@@ -16,49 +15,12 @@ import de.mossgrabers.framework.utils.ButtonEvent;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public interface Mode
+public interface IMode extends IFeatureGroup
 {
-    /**
-     * Get the name of the mode.
-     *
-     * @return The name
-     */
-    String getName ();
-
-
-    /**
-     * Called when a mode is activated.
-     */
-    void onActivate ();
-
-
-    /**
-     * Called when a mode is deactivated.
-     */
-    void onDeactivate ();
-
-
-    /**
-     * Get if this is a mode which is only temporarily displayed.
-     *
-     * @return True if temporary
-     */
-    boolean isTemporary ();
-
-
     /**
      * Update the display.
      */
     void updateDisplay ();
-
-
-    /**
-     * Get the color for a button, which is controlled by the mode.
-     *
-     * @param buttonID The ID of the button
-     * @return A color index
-     */
-    int getButtonColor (ButtonID buttonID);
 
 
     /**

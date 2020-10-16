@@ -10,7 +10,7 @@ import de.mossgrabers.framework.command.core.AbstractContinuousCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.ITrackBank;
-import de.mossgrabers.framework.mode.ModeManager;
+import de.mossgrabers.framework.featuregroup.ModeManager;
 import de.mossgrabers.framework.mode.Modes;
 
 
@@ -43,10 +43,10 @@ public class TrackKnobRowCommand extends AbstractContinuousCommand<SLControlSurf
     public void execute (final int value)
     {
         final ModeManager modeManager = this.surface.getModeManager ();
-        Modes cm = modeManager.getActiveOrTempModeId ();
+        Modes cm = modeManager.getActiveID ();
         if (!Modes.TRACK.equals (cm) && !Modes.MASTER.equals (cm))
         {
-            modeManager.setActiveMode (Modes.TRACK);
+            modeManager.setActive (Modes.TRACK);
             cm = Modes.TRACK;
         }
 

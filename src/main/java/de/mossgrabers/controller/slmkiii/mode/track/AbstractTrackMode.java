@@ -13,7 +13,7 @@ import de.mossgrabers.framework.daw.DAWColor;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.ITrackBank;
-import de.mossgrabers.framework.mode.ModeManager;
+import de.mossgrabers.framework.featuregroup.ModeManager;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.utils.Pair;
@@ -69,8 +69,6 @@ public abstract class AbstractTrackMode extends BaseMode
     {
         super (name, surface, model, model.getCurrentTrackBank ());
 
-        this.isTemporary = false;
-
         model.addTrackBankObserver (this::switchBanks);
 
         for (int i = 0; i < 8; i++)
@@ -95,7 +93,7 @@ public abstract class AbstractTrackMode extends BaseMode
         // Combination with Arrow Down
         if (this.surface.isLongPressed (ButtonID.ARROW_DOWN))
         {
-            this.surface.getModeManager ().setActiveMode (MODES[index]);
+            this.surface.getModeManager ().setActive (MODES[index]);
             this.surface.setTriggerConsumed (ButtonID.ARROW_DOWN);
             return;
         }
@@ -148,7 +146,7 @@ public abstract class AbstractTrackMode extends BaseMode
                 break;
             case 2:
                 if (selectedTrack != null)
-                    this.surface.getViewManager ().setActiveView (Views.COLOR);
+                    this.surface.getViewManager ().setActive (Views.COLOR);
                 break;
             case 5:
                 this.model.getApplication ().addInstrumentTrack ();
@@ -178,7 +176,7 @@ public abstract class AbstractTrackMode extends BaseMode
             return;
         final Modes si = Modes.get (Modes.SEND1, sendIndex);
         final ModeManager modeManager = this.surface.getModeManager ();
-        modeManager.setActiveMode (modeManager.isActiveOrTempMode (si) ? Modes.TRACK : si);
+        modeManager.setActive (modeManager.isActive (si) ? Modes.TRACK : si);
     }
 
 
@@ -219,7 +217,7 @@ public abstract class AbstractTrackMode extends BaseMode
         if (this.surface.isLongPressed (ButtonID.ARROW_DOWN))
         {
             final ModeManager modeManager = this.surface.getModeManager ();
-            return modeManager.isActiveMode (MODES[index]) ? SLMkIIIColorManager.SLMKIII_GREEN : SLMkIIIColorManager.SLMKIII_GREEN_HALF;
+            return modeManager.isActive (MODES[index]) ? SLMkIIIColorManager.SLMKIII_GREEN : SLMkIIIColorManager.SLMKIII_GREEN_HALF;
         }
 
         final ITrack t = tb.getItem (index);
@@ -260,7 +258,7 @@ public abstract class AbstractTrackMode extends BaseMode
             {
                 d.setCell (3, i, MODE_MENU[i]);
                 d.setPropertyColor (i, 2, SLMkIIIColorManager.SLMKIII_GREEN);
-                d.setPropertyValue (i, 1, modeManager.isActiveMode (MODES[i]) ? 1 : 0);
+                d.setPropertyValue (i, 1, modeManager.isActive (MODES[i]) ? 1 : 0);
             }
             return;
         }

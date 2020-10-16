@@ -11,7 +11,7 @@ import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.command.trigger.mode.ModeSelectCommand;
 import de.mossgrabers.framework.daw.IBrowser;
 import de.mossgrabers.framework.daw.IModel;
-import de.mossgrabers.framework.mode.ModeManager;
+import de.mossgrabers.framework.featuregroup.ModeManager;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
@@ -52,9 +52,9 @@ public class DeviceModeCommand extends AbstractTriggerCommand<SLMkIIIControlSurf
             browser.stopBrowsing (!this.surface.isShiftPressed ());
 
         final ModeManager modeManager = this.surface.getModeManager ();
-        if (modeManager.isActiveMode (Modes.DEVICE_PARAMS))
+        if (modeManager.isActive (Modes.DEVICE_PARAMS))
         {
-            final ParametersMode parametersMode = (ParametersMode) modeManager.getMode (Modes.DEVICE_PARAMS);
+            final ParametersMode parametersMode = (ParametersMode) modeManager.get (Modes.DEVICE_PARAMS);
             parametersMode.setShowDevices (!parametersMode.isShowDevices ());
             return;
         }

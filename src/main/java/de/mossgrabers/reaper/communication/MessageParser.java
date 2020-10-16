@@ -21,7 +21,7 @@ import de.mossgrabers.framework.daw.data.bank.IDeviceBank;
 import de.mossgrabers.framework.daw.data.bank.ITrackBank;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.daw.resource.ChannelType;
-import de.mossgrabers.framework.mode.Mode;
+import de.mossgrabers.framework.featuregroup.IMode;
 import de.mossgrabers.reaper.framework.daw.ApplicationImpl;
 import de.mossgrabers.reaper.framework.daw.BrowserImpl;
 import de.mossgrabers.reaper.framework.daw.ModelImpl;
@@ -986,7 +986,7 @@ public class MessageParser
 
     private void updateNoteMapping ()
     {
-        this.host.scheduleTask ( () -> this.controllerSetup.getSurface ().getViewManager ().getActiveView ().updateNoteMapping (), 1000);
+        this.host.scheduleTask ( () -> this.controllerSetup.getSurface ().getViewManager ().getActive ().updateNoteMapping (), 1000);
     }
 
 
@@ -998,7 +998,7 @@ public class MessageParser
     {
         this.controllerSetup.getSurfaces ().forEach (surface -> {
 
-            final Mode mode = surface.getModeManager ().getActiveOrTempMode ();
+            final IMode mode = surface.getModeManager ().getActive ();
             if (mode == null)
                 return;
 

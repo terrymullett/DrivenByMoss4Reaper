@@ -12,8 +12,8 @@ import de.mossgrabers.framework.configuration.Configuration;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.controller.display.IDisplay;
 import de.mossgrabers.framework.daw.IModel;
+import de.mossgrabers.framework.featuregroup.ViewManager;
 import de.mossgrabers.framework.utils.ButtonEvent;
-import de.mossgrabers.framework.view.ViewManager;
 import de.mossgrabers.framework.view.Views;
 
 
@@ -44,16 +44,16 @@ public class SelectSessionViewCommand extends AbstractTriggerCommand<LaunchpadCo
             return;
 
         final ViewManager viewManager = this.surface.getViewManager ();
-        final SessionView sessionView = (SessionView) viewManager.getView (Views.SESSION);
+        final SessionView sessionView = (SessionView) viewManager.get (Views.SESSION);
 
         if (event == ButtonEvent.UP)
         {
             if (this.surface.isShiftPressed ())
             {
-                viewManager.setActiveView (Views.MIX);
+                viewManager.setActive (Views.MIX);
                 this.notifyViewName (Views.MIX, false, false);
             }
-            else if (viewManager.isActiveView (Views.SESSION))
+            else if (viewManager.isActive (Views.SESSION))
             {
                 if (sessionView.isBirdsEyeActive ())
                 {
@@ -70,7 +70,7 @@ public class SelectSessionViewCommand extends AbstractTriggerCommand<LaunchpadCo
             }
             else
             {
-                viewManager.setActiveView (Views.SESSION);
+                viewManager.setActive (Views.SESSION);
                 this.notifyViewName (Views.SESSION, false, false);
             }
         }

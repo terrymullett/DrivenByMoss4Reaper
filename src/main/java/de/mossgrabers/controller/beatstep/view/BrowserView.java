@@ -10,7 +10,7 @@ import de.mossgrabers.controller.beatstep.controller.BeatstepControlSurface;
 import de.mossgrabers.framework.controller.grid.IPadGrid;
 import de.mossgrabers.framework.daw.IBrowser;
 import de.mossgrabers.framework.daw.IModel;
-import de.mossgrabers.framework.view.AbstractView;
+import de.mossgrabers.framework.featuregroup.AbstractView;
 
 
 /**
@@ -96,7 +96,7 @@ public class BrowserView extends AbstractView<BeatstepControlSurface, BeatstepCo
                 if (velocity == 0)
                     return;
                 this.model.getBrowser ().stopBrowsing (false);
-                this.surface.getViewManager ().restoreView ();
+                this.surface.getViewManager ().restore ();
                 break;
 
             // OK
@@ -104,7 +104,7 @@ public class BrowserView extends AbstractView<BeatstepControlSurface, BeatstepCo
                 if (velocity == 0)
                     return;
                 this.model.getBrowser ().stopBrowsing (true);
-                this.surface.getViewManager ().restoreView ();
+                this.surface.getViewManager ().restore ();
                 break;
 
             // Notes for preview

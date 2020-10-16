@@ -12,7 +12,7 @@ import de.mossgrabers.framework.controller.color.ColorManager;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.INoteClip;
 import de.mossgrabers.framework.daw.IStepInfo;
-import de.mossgrabers.framework.mode.ModeManager;
+import de.mossgrabers.framework.featuregroup.ModeManager;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.view.AbstractNoteSequencerView;
@@ -58,16 +58,16 @@ public class SequencerView extends AbstractNoteSequencerView<APCControlSurface, 
             final int state = cursorClip.getStep (editMidiChannel, x, mappedNote).getState ();
             if (state == IStepInfo.NOTE_START)
             {
-                final NoteMode noteMode = (NoteMode) modeManager.getMode (Modes.NOTE);
+                final NoteMode noteMode = (NoteMode) modeManager.get (Modes.NOTE);
                 noteMode.setValues (cursorClip, editMidiChannel, x, mappedNote);
-                modeManager.setActiveMode (Modes.NOTE);
+                modeManager.setActive (Modes.NOTE);
             }
         }
         else
         {
             // Turn off Note mode
-            if (modeManager.isActiveOrTempMode (Modes.NOTE))
-                modeManager.restoreMode ();
+            if (modeManager.isActive (Modes.NOTE))
+                modeManager.restore ();
 
             if (this.isNoteEdited)
             {

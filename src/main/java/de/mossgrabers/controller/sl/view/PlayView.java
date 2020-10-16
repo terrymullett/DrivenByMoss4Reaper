@@ -19,7 +19,7 @@ import de.mossgrabers.framework.daw.data.IDrumDevice;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.IDrumPadBank;
 import de.mossgrabers.framework.daw.data.bank.ITrackBank;
-import de.mossgrabers.framework.mode.ModeManager;
+import de.mossgrabers.framework.featuregroup.ModeManager;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.view.AbstractSequencerView;
@@ -77,25 +77,25 @@ public class PlayView extends AbstractSequencerView<SLControlSurface, SLConfigur
             return;
 
         final ModeManager modeManager = this.surface.getModeManager ();
-        final Modes activeModeId = modeManager.getActiveOrTempModeId ();
+        final Modes activeModeId = modeManager.getActiveID ();
         if (Modes.VIEW_SELECT == activeModeId)
         {
             if (index == 0)
             {
-                this.surface.getViewManager ().setActiveView (Views.CONTROL);
-                if (Modes.VOLUME.equals (modeManager.getPreviousModeId ()))
-                    modeManager.restoreMode ();
+                this.surface.getViewManager ().setActive (Views.CONTROL);
+                if (Modes.VOLUME.equals (modeManager.getPreviousID ()))
+                    modeManager.restore ();
                 else
-                    modeManager.setActiveMode (Modes.TRACK);
+                    modeManager.setActive (Modes.TRACK);
             }
             else
-                modeManager.restoreMode ();
+                modeManager.restore ();
             this.surface.turnOffTransport ();
             return;
         }
 
         if (!Modes.SESSION.equals (activeModeId))
-            modeManager.setActiveMode (Modes.SESSION);
+            modeManager.setActive (Modes.SESSION);
 
         this.model.getSceneBank ().getItem (index).launch ();
     }
@@ -109,9 +109,9 @@ public class PlayView extends AbstractSequencerView<SLControlSurface, SLConfigur
             return;
 
         final ModeManager modeManager = this.surface.getModeManager ();
-        final Modes cm = modeManager.getActiveOrTempModeId ();
+        final Modes cm = modeManager.getActiveID ();
         if (!Modes.PLAY_OPTIONS.equals (cm))
-            modeManager.setActiveMode (Modes.PLAY_OPTIONS);
+            modeManager.setActive (Modes.PLAY_OPTIONS);
 
         switch (index)
         {
@@ -202,7 +202,7 @@ public class PlayView extends AbstractSequencerView<SLControlSurface, SLConfigur
     @Override
     public void onButtonRow1Select ()
     {
-        this.surface.getModeManager ().setActiveMode (Modes.SESSION);
+        this.surface.getModeManager ().setActive (Modes.SESSION);
     }
 
 
@@ -210,7 +210,7 @@ public class PlayView extends AbstractSequencerView<SLControlSurface, SLConfigur
     @Override
     public void onButtonRow2Select ()
     {
-        this.surface.getModeManager ().setActiveMode (Modes.PLAY_OPTIONS);
+        this.surface.getModeManager ().setActive (Modes.PLAY_OPTIONS);
     }
 
 
@@ -221,7 +221,7 @@ public class PlayView extends AbstractSequencerView<SLControlSurface, SLConfigur
         if (event != ButtonEvent.DOWN)
             return;
 
-        final Modes activeModeId = this.surface.getModeManager ().getActiveOrTempModeId ();
+        final Modes activeModeId = this.surface.getModeManager ().getActiveID ();
         if (Modes.SESSION == activeModeId)
         {
             if (isUp)
@@ -246,7 +246,7 @@ public class PlayView extends AbstractSequencerView<SLControlSurface, SLConfigur
         if (Modes.PLAY_OPTIONS.equals (activeModeId))
             return;
 
-        final DeviceParamsMode mode = (DeviceParamsMode) this.surface.getModeManager ().getMode (Modes.DEVICE_PARAMS);
+        final DeviceParamsMode mode = (DeviceParamsMode) this.surface.getModeManager ().get (Modes.DEVICE_PARAMS);
         if (isUp)
             mode.nextPage ();
         else
@@ -274,7 +274,7 @@ public class PlayView extends AbstractSequencerView<SLControlSurface, SLConfigur
             if (buttonIDOrdinal >= ButtonID.ROW3_1.ordinal () && buttonIDOrdinal <= ButtonID.ROW3_8.ordinal ())
                 return SLControlSurface.MKII_BUTTON_STATE_OFF;
 
-            final Modes mode = this.surface.getModeManager ().getActiveOrTempModeId ();
+            final Modes mode = this.surface.getModeManager ().getActiveID ();
             final boolean isSession = Modes.SESSION == mode;
             final boolean isDevice = Modes.DEVICE_PARAMS == mode;
             final boolean isPlayOptions = Modes.PLAY_OPTIONS == mode;

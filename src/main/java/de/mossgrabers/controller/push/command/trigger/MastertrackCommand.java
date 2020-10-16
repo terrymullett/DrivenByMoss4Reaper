@@ -9,7 +9,7 @@ import de.mossgrabers.controller.push.controller.PushControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ITrack;
-import de.mossgrabers.framework.mode.ModeManager;
+import de.mossgrabers.framework.featuregroup.ModeManager;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
@@ -43,7 +43,7 @@ public class MastertrackCommand extends AbstractTriggerCommand<PushControlSurfac
     {
         // Avoid accidentally leaving the browser
         final ModeManager modeManager = this.surface.getModeManager ();
-        if (modeManager.isActiveOrTempMode (Modes.BROWSER))
+        if (modeManager.isActive (Modes.BROWSER))
             return;
 
         switch (event)
@@ -58,7 +58,7 @@ public class MastertrackCommand extends AbstractTriggerCommand<PushControlSurfac
 
             case LONG:
                 this.quitMasterMode = true;
-                modeManager.setActiveMode (Modes.FRAME);
+                modeManager.setTemporary (Modes.FRAME);
                 break;
         }
     }
@@ -68,18 +68,18 @@ public class MastertrackCommand extends AbstractTriggerCommand<PushControlSurfac
     {
         if (this.quitMasterMode)
         {
-            modeManager.restoreMode ();
+            modeManager.restore ();
             return;
         }
 
-        if (Modes.MASTER.equals (modeManager.getActiveOrTempModeId ()))
+        if (Modes.MASTER.equals (modeManager.getActiveID ()))
         {
             if (this.selectedTrackBeforeMasterMode >= 0)
                 this.model.getCurrentTrackBank ().getItem (this.selectedTrackBeforeMasterMode).select ();
             return;
         }
 
-        modeManager.setActiveMode (Modes.MASTER);
+        modeManager.setActive (Modes.MASTER);
         this.model.getMasterTrack ().select ();
         final ITrack track = this.model.getSelectedTrack ();
         this.selectedTrackBeforeMasterMode = track == null ? -1 : track.getIndex ();

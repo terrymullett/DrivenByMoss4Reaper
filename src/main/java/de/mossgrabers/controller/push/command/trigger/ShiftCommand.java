@@ -8,7 +8,7 @@ import de.mossgrabers.controller.push.PushConfiguration;
 import de.mossgrabers.controller.push.controller.PushControlSurface;
 import de.mossgrabers.framework.command.core.AbstractTriggerCommand;
 import de.mossgrabers.framework.daw.IModel;
-import de.mossgrabers.framework.mode.ModeManager;
+import de.mossgrabers.framework.featuregroup.ModeManager;
 import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.utils.ButtonEvent;
 
@@ -37,11 +37,11 @@ public class ShiftCommand extends AbstractTriggerCommand<PushControlSurface, Pus
     public void execute (final ButtonEvent event, final int velocity)
     {
         final ModeManager modeManager = this.surface.getModeManager ();
-        final Modes cm = modeManager.getActiveOrTempModeId ();
+        final Modes cm = modeManager.getActiveID ();
         if (event == ButtonEvent.DOWN && Modes.SCALES.equals (cm))
-            modeManager.setActiveMode (Modes.SCALE_LAYOUT);
+            modeManager.setTemporary (Modes.SCALE_LAYOUT);
         else if (event == ButtonEvent.UP && Modes.SCALE_LAYOUT.equals (cm))
-            modeManager.restoreMode ();
+            modeManager.restore ();
 
         this.surface.setKnobSensitivityIsSlow (this.surface.isShiftPressed ());
     }

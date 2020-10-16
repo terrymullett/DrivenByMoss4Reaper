@@ -9,8 +9,8 @@ import de.mossgrabers.controller.launchpad.controller.LaunchpadControlSurface;
 import de.mossgrabers.framework.command.trigger.view.ToggleShiftViewCommand;
 import de.mossgrabers.framework.controller.ButtonID;
 import de.mossgrabers.framework.daw.IModel;
+import de.mossgrabers.framework.featuregroup.ViewManager;
 import de.mossgrabers.framework.utils.ButtonEvent;
-import de.mossgrabers.framework.view.ViewManager;
 import de.mossgrabers.framework.view.Views;
 
 
@@ -41,9 +41,9 @@ public class LaunchpadToggleShiftViewCommand extends ToggleShiftViewCommand<Laun
             return;
 
         final ViewManager viewManager = this.surface.getViewManager ();
-        if (event == ButtonEvent.DOWN && (viewManager.isActiveView (Views.TEMPO) || viewManager.isActiveView (Views.SHUFFLE)))
+        if (event == ButtonEvent.DOWN && (viewManager.isActive (Views.TEMPO) || viewManager.isActive (Views.SHUFFLE)))
         {
-            viewManager.restoreView ();
+            viewManager.restore ();
             this.surface.setTriggerConsumed (ButtonID.SHIFT);
             return;
         }

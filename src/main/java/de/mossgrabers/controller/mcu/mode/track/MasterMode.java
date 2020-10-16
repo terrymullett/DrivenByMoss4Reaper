@@ -30,8 +30,6 @@ public class MasterMode extends BaseMode
     public MasterMode (final MCUControlSurface surface, final IModel model)
     {
         super ("Master", surface, model);
-
-        this.isTemporary = true;
     }
 
 
@@ -85,7 +83,7 @@ public class MasterMode extends BaseMode
     {
         if (event == ButtonEvent.DOWN && row > 0)
         {
-            this.surface.getModeManager ().restoreMode ();
+            this.surface.getModeManager ().restore ();
             return;
         }
 

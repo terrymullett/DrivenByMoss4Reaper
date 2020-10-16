@@ -13,8 +13,8 @@ import de.mossgrabers.framework.daw.DAWColor;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.IMasterTrack;
 import de.mossgrabers.framework.daw.data.ITrack;
+import de.mossgrabers.framework.featuregroup.AbstractView;
 import de.mossgrabers.framework.view.AbstractSequencerView;
-import de.mossgrabers.framework.view.AbstractView;
 import de.mossgrabers.framework.view.Views;
 
 
@@ -44,7 +44,7 @@ public class ColorView extends AbstractView<SLMkIIIControlSurface, SLMkIIIConfig
     @Override
     public void drawGrid ()
     {
-        ((SessionView) this.surface.getViewManager ().getView (Views.SESSION)).drawLightGuide (this.surface.getLightGuide ());
+        ((SessionView) this.surface.getViewManager ().get (Views.SESSION)).drawLightGuide (this.surface.getLightGuide ());
 
         final IPadGrid padGrid = this.surface.getPadGrid ();
         final DAWColor [] dawColors = DAWColor.values ();
@@ -78,7 +78,7 @@ public class ColorView extends AbstractView<SLMkIIIControlSurface, SLMkIIIConfig
             else
                 t.setColor (entry);
         }
-        this.surface.getViewManager ().restoreView ();
+        this.surface.getViewManager ().restore ();
     }
 
 
