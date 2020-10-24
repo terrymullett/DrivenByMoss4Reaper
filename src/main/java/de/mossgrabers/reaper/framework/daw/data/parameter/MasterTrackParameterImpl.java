@@ -23,10 +23,11 @@ public class MasterTrackParameterImpl extends ParameterImpl
      *
      * @param dataSetup Some configuration variables
      * @param paramName The name of the parameter
+     * @param defaultValue The default value for resetting parameters [0..1]
      */
-    public MasterTrackParameterImpl (final DataSetupEx dataSetup, final String paramName)
+    public MasterTrackParameterImpl (final DataSetupEx dataSetup, final String paramName, final double defaultValue)
     {
-        super (dataSetup, 0);
+        super (dataSetup, 0, defaultValue);
 
         this.paramName = paramName;
     }

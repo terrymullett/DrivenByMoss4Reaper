@@ -29,10 +29,11 @@ public class SendImpl extends ParameterImpl implements ISend
      * @param dataSetup Some configuration variables
      * @param channel The index of the track to which this send belongs
      * @param index The index of the send
+     * @param defaultValue The default value for resetting parameters [0..1]
      */
-    public SendImpl (final DataSetupEx dataSetup, final IChannel channel, final int index)
+    public SendImpl (final DataSetupEx dataSetup, final IChannel channel, final int index, final double defaultValue)
     {
-        super (dataSetup, index);
+        super (dataSetup, index, defaultValue);
 
         this.channel = channel;
     }

@@ -29,7 +29,7 @@ public class UserParameterImpl extends ParameterImpl
      */
     public UserParameterImpl (final DataSetupEx dataSetup, final int index, final IModel model)
     {
-        super (dataSetup, index);
+        super (dataSetup, index, 0);
 
         this.model = model;
     }

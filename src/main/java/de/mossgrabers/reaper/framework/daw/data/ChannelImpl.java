@@ -55,7 +55,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
      */
     public ChannelImpl (final DataSetupEx dataSetup, final int index, final int numSends)
     {
-        this (dataSetup, index, numSends, new TrackParameterImpl (dataSetup, index, "volume"), new TrackParameterImpl (dataSetup, index, "pan"));
+        this (dataSetup, index, numSends, new TrackParameterImpl (dataSetup, index, "volume", 0.716), new TrackParameterImpl (dataSetup, index, "pan", 0.5));
     }
 
 

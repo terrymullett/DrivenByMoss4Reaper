@@ -46,7 +46,7 @@ public class GrooveParameter extends ParameterImpl
      */
     public GrooveParameter (final DataSetupEx dataSetup, final int index, final IniFiles iniFiles)
     {
-        super (dataSetup, index);
+        super (dataSetup, index, 0);
 
         this.iniFiles = iniFiles;
 

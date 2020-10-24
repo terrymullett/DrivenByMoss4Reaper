@@ -22,6 +22,7 @@ public class ParameterImpl extends ItemImpl implements IParameter
 
     protected double value;
     protected double lastReceivedValue = -1;
+    private int      defaultValue;
 
 
     /**
@@ -29,10 +30,13 @@ public class ParameterImpl extends ItemImpl implements IParameter
      *
      * @param dataSetup Some configuration variables
      * @param index The index of the parameter
+     * @param defaultValue The default value for resetting parameters [0..1]
      */
-    public ParameterImpl (final DataSetupEx dataSetup, final int index)
+    public ParameterImpl (final DataSetupEx dataSetup, final int index, final double defaultValue)
     {
         super (dataSetup, index);
+
+        this.defaultValue = this.valueChanger.fromNormalizedValue (defaultValue);
     }
 
 
@@ -130,7 +134,7 @@ public class ParameterImpl extends ItemImpl implements IParameter
     @Override
     public void resetValue ()
     {
-        this.setValue (0);
+        this.setValue (this.defaultValue);
     }
 
 

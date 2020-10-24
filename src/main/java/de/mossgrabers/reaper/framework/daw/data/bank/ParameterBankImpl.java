@@ -34,7 +34,7 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
     @Override
     protected ParameterImpl createItem (final int position)
     {
-        return new ParameterImpl (this.dataSetup, position % this.pageSize);
+        return new ParameterImpl (this.dataSetup, position % this.pageSize, 0);
     }
 
 

@@ -24,10 +24,11 @@ public class TrackParameterImpl extends ParameterImpl
      * @param dataSetup Some configuration variables
      * @param index The index of the send
      * @param paramName The name of the parameter
+     * @param defaultValue The default value for resetting parameters [0..1]
      */
-    public TrackParameterImpl (final DataSetupEx dataSetup, final int index, final String paramName)
+    public TrackParameterImpl (final DataSetupEx dataSetup, final int index, final String paramName, final double defaultValue)
     {
-        super (dataSetup, index);
+        super (dataSetup, index, defaultValue);
 
         this.paramName = paramName;
     }
