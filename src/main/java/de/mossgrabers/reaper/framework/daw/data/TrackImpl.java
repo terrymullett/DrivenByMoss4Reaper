@@ -118,6 +118,14 @@ public class TrackImpl extends ChannelImpl implements ITrack
 
     /** {@inheritDoc} */
     @Override
+    public void setName (final String name)
+    {
+        this.sendPositionedItemOSC ("name", name);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void enter ()
     {
         if (!(this.trackBank instanceof TrackBankImpl))

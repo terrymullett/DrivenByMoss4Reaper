@@ -146,7 +146,7 @@ public class MessageParser
                 switch (projectCmd)
                 {
                     case TAG_NAME:
-                        ((ProjectImpl) this.project).setName (value);
+                        ((ProjectImpl) this.project).setInternalName (value);
                         this.updateNoteMapping ();
                         break;
                     case "engine":
@@ -389,7 +389,7 @@ public class MessageParser
                 break;
 
             case TAG_NAME:
-                track.setName (value);
+                track.setInternalName (value);
                 break;
 
             case TAG_VOLUME:
@@ -524,7 +524,7 @@ public class MessageParser
         switch (command)
         {
             case TAG_NAME:
-                sendImpl.setName (value);
+                sendImpl.setInternalName (value);
                 sendImpl.setExists (value != null && !value.isEmpty ());
                 break;
 
@@ -565,7 +565,7 @@ public class MessageParser
                 break;
 
             case TAG_NAME:
-                device.setName (value);
+                device.setInternalName (value);
                 break;
 
             case "window":
@@ -672,7 +672,7 @@ public class MessageParser
                 final ItemImpl sibling = (ItemImpl) deviceBank.getItem (siblingNo);
                 if (TAG_NAME.equals (parts.poll ()))
                 {
-                    sibling.setName (value);
+                    sibling.setInternalName (value);
                     sibling.setExists (value != null && !value.isEmpty ());
                 }
                 else
@@ -693,7 +693,7 @@ public class MessageParser
         switch (command)
         {
             case TAG_NAME:
-                p.setName (value);
+                p.setInternalName (value);
                 p.setPosition (paramNo);
                 p.setExists (value != null && !value.isEmpty ());
                 break;
@@ -719,7 +719,7 @@ public class MessageParser
         switch (command)
         {
             case TAG_NAME:
-                p.setName (value);
+                p.setInternalName (value);
                 p.setPosition (paramNo);
                 p.setExists (value != null && !value.isEmpty ());
                 break;
@@ -835,7 +835,7 @@ public class MessageParser
                 break;
 
             case TAG_NAME:
-                markerImpl.setName (value);
+                markerImpl.setInternalName (value);
                 break;
 
             case TAG_COLOR:
@@ -866,7 +866,7 @@ public class MessageParser
                 break;
 
             case TAG_NAME:
-                sceneImpl.setName (value);
+                sceneImpl.setInternalName (value);
                 break;
 
             case TAG_COLOR:

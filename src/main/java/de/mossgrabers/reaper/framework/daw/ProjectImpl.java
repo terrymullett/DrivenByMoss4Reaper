@@ -83,7 +83,7 @@ public class ProjectImpl extends BaseImpl implements IProject
      *
      * @param name The name of the project
      */
-    public void setName (final String name)
+    public void setInternalName (final String name)
     {
         this.name = name;
     }

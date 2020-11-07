@@ -106,6 +106,14 @@ public class QFactorInvertedParameter implements IParameter
 
     /** {@inheritDoc} */
     @Override
+    public void setName (final String name)
+    {
+        this.parameter.setName (name);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void enableObservers (final boolean enable)
     {
         this.parameter.enableObservers (enable);

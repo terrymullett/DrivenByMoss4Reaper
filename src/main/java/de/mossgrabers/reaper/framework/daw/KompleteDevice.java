@@ -133,6 +133,14 @@ public class KompleteDevice implements ISpecificDevice
 
     /** {@inheritDoc} */
     @Override
+    public void setName (final String name)
+    {
+        this.instrumentDevice.setName (name);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void enableObservers (final boolean enable)
     {
         this.instrumentDevice.enableObservers (enable);

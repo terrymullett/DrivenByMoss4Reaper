@@ -105,7 +105,7 @@ public abstract class ItemImpl extends BaseImpl implements IItem
     @Override
     public String getName ()
     {
-        return this.exists ? this.name : "";
+        return this.exists && this.name != null ? this.name : "";
     }
 
 
@@ -125,12 +125,20 @@ public abstract class ItemImpl extends BaseImpl implements IItem
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    public void setName (final String name)
+    {
+        // Overwrite to support
+    }
+
+
     /**
      * Set the name of the parameter.
      *
      * @param name The name
      */
-    public void setName (final String name)
+    public void setInternalName (final String name)
     {
         if (this.name.equals (name))
             return;
