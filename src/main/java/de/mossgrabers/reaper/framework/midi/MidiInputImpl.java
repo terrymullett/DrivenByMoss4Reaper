@@ -19,6 +19,7 @@ import de.mossgrabers.framework.daw.midi.INoteInput;
 import de.mossgrabers.framework.daw.midi.MidiShortCallback;
 import de.mossgrabers.framework.daw.midi.MidiSysExCallback;
 import de.mossgrabers.framework.utils.ButtonEvent;
+import de.mossgrabers.framework.utils.OperatingSystem;
 import de.mossgrabers.reaper.communication.MessageSender;
 
 import javax.sound.midi.MidiDevice;
@@ -57,7 +58,6 @@ public class MidiInputImpl implements IMidiInput
     private final Map<Integer, IHwContinuousControl>                  pitchbendContinuousMatchers = new HashMap<> ();
     private final Map<Integer, Map<Integer, IHwContinuousControl>>    ccTouchMatchers             = new HashMap<> ();
     private final Map<Integer, Map<Integer, IHwContinuousControl>>    noteTouchMatchers           = new HashMap<> ();
-
 
     /**
      * Constructor.
@@ -293,11 +293,20 @@ public class MidiInputImpl implements IMidiInput
     private void handleShortMessage (final ShortMessage message)
     {
         final int status = message.getStatus ();
-        final int data1 = message.getData1 ();
-        final int data2 = message.getData2 ();
+        int data1 = message.getData1 ();
+        int data2 = message.getData2 ();
 
         final int command = status & 0xF0;
         final int channel = status & 0xF;
+
+        // Fix for wrong pitchbend values, see https://bugs.openjdk.java.net/browse/JDK-8075073
+        if (OperatingSystem.get () == OperatingSystem.LINUX && command == 0xE0)
+        {
+            int pitchbendValue = data2 * 128 + data1;
+            pitchbendValue = pitchbendValue ^ 0x2000;
+            data1 = pitchbendValue % 128;
+            data2 = pitchbendValue / 128;
+        }
 
         final boolean isProcessed = this.handleControls (command, channel, data1, data2);
 
