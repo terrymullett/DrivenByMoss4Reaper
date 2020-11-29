@@ -52,7 +52,7 @@ public class GrooveParameter extends ParameterImpl
 
         this.setExists (true);
 
-        this.setName (PARAMETER_NAMES[index]);
+        this.setInternalName (PARAMETER_NAMES[index]);
     }
 
 

@@ -63,7 +63,7 @@ public class NoteInputImpl implements INoteInput
                 replaced.add (trim);
                 while (replaced.get (0).contains (" "))
                 {
-                    List<String> replaced2 = new ArrayList<> ();
+                    final List<String> replaced2 = new ArrayList<> ();
                     for (final String f: replaced)
                     {
                         for (int i = 0; i <= 0xF; i++)

@@ -59,6 +59,7 @@ public class MidiInputImpl implements IMidiInput
     private final Map<Integer, Map<Integer, IHwContinuousControl>>    ccTouchMatchers             = new HashMap<> ();
     private final Map<Integer, Map<Integer, IHwContinuousControl>>    noteTouchMatchers           = new HashMap<> ();
 
+
     /**
      * Constructor.
      *

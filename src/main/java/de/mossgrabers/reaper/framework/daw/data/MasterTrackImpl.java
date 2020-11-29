@@ -52,7 +52,7 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
         // Master channel does always exist
         this.setExists (true);
 
-        this.setName ("Master");
+        this.setInternalName ("Master");
         this.setType (ChannelType.MASTER);
     }
 

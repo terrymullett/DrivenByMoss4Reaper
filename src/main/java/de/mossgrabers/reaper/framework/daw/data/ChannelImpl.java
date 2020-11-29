@@ -72,7 +72,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     {
         super (dataSetup, index);
 
-        this.setName ("Track");
+        this.setInternalName ("Track");
 
         this.volumeParameter = volumeParameter;
         this.panParameter = panParameter;

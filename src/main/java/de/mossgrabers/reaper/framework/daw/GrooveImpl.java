@@ -4,11 +4,15 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
+import de.mossgrabers.framework.daw.GrooveParameterID;
 import de.mossgrabers.framework.daw.IGroove;
 import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.daw.data.parameter.GrooveParameter;
+
+import java.util.EnumMap;
+import java.util.Map;
 
 
 /**
@@ -18,7 +22,7 @@ import de.mossgrabers.reaper.framework.daw.data.parameter.GrooveParameter;
  */
 public class GrooveImpl extends BaseImpl implements IGroove
 {
-    private final GrooveParameter [] parameters = new GrooveParameter [4];
+    private Map<GrooveParameterID, IParameter> parameters = new EnumMap<> (GrooveParameterID.class);
 
 
     /**
@@ -31,16 +35,19 @@ public class GrooveImpl extends BaseImpl implements IGroove
     {
         super (dataSetup);
 
-        for (int i = 0; i < this.parameters.length; i++)
-            this.parameters[i] = new GrooveParameter (dataSetup, i, iniFiles);
+        this.parameters.put (GrooveParameterID.SHUFFLE_AMOUNT, new GrooveParameter (dataSetup, 0, iniFiles));
+        this.parameters.put (GrooveParameterID.SHUFFLE_RATE, new GrooveParameter (dataSetup, 1, iniFiles));
+
+        this.parameters.put (GrooveParameterID.ACCENT_AMOUNT, new GrooveParameter (dataSetup, 2, iniFiles));
+        this.parameters.put (GrooveParameterID.ACCENT_PHASE, new GrooveParameter (dataSetup, 3, iniFiles));
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public IParameter [] getParameters ()
+    public IParameter getParameter (final GrooveParameterID id)
     {
-        return this.parameters;
+        return this.parameters.get (id);
     }
 
 
