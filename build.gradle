@@ -87,8 +87,8 @@ installDist {
         }
 
         // Mac
-        String macosTar = name + '-Macos.tar'
-        ant.zip (destfile: macosTar) {
+        String macosTar = name + '-Macos.tar.gz'
+        ant.tar (destfile: macosTar, compression: 'gzip') {
             tarfileset(dir: destinationDir) {
                 exclude(name: '**/libusb4java-1.3.0-darwin-x86-64.jar')
             }
@@ -106,11 +106,10 @@ installDist {
                 include(name: '**/lib/jspawnhelper')
             }
         }
-        ant.gzip (src: macosTar, destfile: macosTar + '.gz')
 
         // Linux
-        String linuxTar = name + '-Linux.tar'
-        ant.tar (destfile: linuxTar) {
+        String linuxTar = name + '-Linux.tar.gz'
+        ant.tar (destfile: linuxTar, compression: 'gzip') {
             tarfileset(dir: destinationDir)
             tarfileset(dir: new File ('runtime', 'linux'), filemode: 664) {
                 exclude(name: '**/bin/java')
@@ -125,7 +124,6 @@ installDist {
                 include(name: '**/lib/jspawnhelper')
             }
         }
-        ant.gzip (src: linuxTar, destfile: linuxTar + '.gz')
     }
 }
 
