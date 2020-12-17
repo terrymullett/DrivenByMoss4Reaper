@@ -13,7 +13,6 @@ public class Controller
 {
     private static MainApp app;
 
-
     /**
      * Private due to the fact that it only provides static functions.
      */
@@ -81,7 +80,8 @@ public class Controller
      */
     public static void setDefaultDocumentSettings ()
     {
-        app.setDefaultDocumentSettings ();
+        if (app != null)
+            app.setDefaultDocumentSettings ();
     }
 
 
@@ -92,7 +92,7 @@ public class Controller
      */
     public static String getFormattedDocumentSettings ()
     {
-        return app.getFormattedDocumentSettings ();
+        return app == null ? "" : app.getFormattedDocumentSettings ();
     }
 
 
@@ -103,6 +103,7 @@ public class Controller
      */
     public static void setFormattedDocumentSettings (final String data)
     {
-        app.setFormattedDocumentSettings (data);
+        if (app != null)
+            app.setFormattedDocumentSettings (data);
     }
 }
