@@ -21,6 +21,7 @@ public class LaunchkeyMk3ControllerDefinition extends DefaultControllerDefinitio
 {
     private static final UUID EXTENSION_ID = UUID.fromString ("10CB5692-541C-4A5D-9EB4-07D80F34A02C");
 
+
     /**
      * Constructor.
      */
@@ -116,6 +117,40 @@ public class LaunchkeyMk3ControllerDefinition extends DefaultControllerDefinitio
                 }, new String []
                 {
                     "Launchkey MK3 61 MIDI 2"
+                }));
+
+                // Reaper specific
+                midiDiscoveryPairs.add (this.addDeviceDiscoveryPair (new String []
+                {
+                    "L25 [hw:1,0,1]",
+                    "L25 [hw:1,0,0]"
+                }, new String []
+                {
+                    "L25 [hw:1,0,1]"
+                }));
+                midiDiscoveryPairs.add (this.addDeviceDiscoveryPair (new String []
+                {
+                    "L37 [hw:1,0,1]",
+                    "L37 [hw:1,0,0]"
+                }, new String []
+                {
+                    "L37 [hw:1,0,1]"
+                }));
+                midiDiscoveryPairs.add (this.addDeviceDiscoveryPair (new String []
+                {
+                    "L49 [hw:1,0,1]",
+                    "L49 [hw:1,0,0]"
+                }, new String []
+                {
+                    "L49 [hw:1,0,1]"
+                }));
+                midiDiscoveryPairs.add (this.addDeviceDiscoveryPair (new String []
+                {
+                    "L61 [hw:1,0,1]",
+                    "L61 [hw:1,0,0]"
+                }, new String []
+                {
+                    "L61 [hw:1,0,1]"
                 }));
                 break;
         }
