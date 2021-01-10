@@ -574,6 +574,14 @@ public class TransportImpl extends BaseImpl implements ITransport
 
     /** {@inheritDoc} */
     @Override
+    public void setPositionToEnd ()
+    {
+        this.invokeAction (40043);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void changePosition (final boolean increase, final boolean slow)
     {
         final double frac = slow ? TransportConstants.INC_FRACTION_TIME_SLOW : TransportConstants.INC_FRACTION_TIME;

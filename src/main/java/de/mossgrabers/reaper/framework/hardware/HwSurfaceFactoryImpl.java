@@ -189,7 +189,7 @@ public class HwSurfaceFactoryImpl implements IHwSurfaceFactory
     {
         this.controls.forEach (control -> {
             if (control instanceof IHwLight)
-                ((IHwLight) control).clearCache ();
+                ((IHwLight) control).forceFlush ();
         });
     }
 

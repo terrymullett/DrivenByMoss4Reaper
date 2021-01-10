@@ -82,7 +82,7 @@ public class HwLightImpl extends AbstractHwControl implements IHwLight, IReaperH
 
     /** {@inheritDoc} */
     @Override
-    public void clearCache ()
+    public void forceFlush ()
     {
         this.colorState = null;
         this.intState = -1;
