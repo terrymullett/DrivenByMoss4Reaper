@@ -413,6 +413,10 @@ public class MessageParser
                     track.setPanStr (value);
                 break;
 
+            case "vu":
+                track.setVu (Double.parseDouble (value));
+                break;
+
             case "vuleft":
                 track.setVuLeft (Double.parseDouble (value));
                 break;

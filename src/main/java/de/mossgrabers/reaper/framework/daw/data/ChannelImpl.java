@@ -34,6 +34,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     private final Set<IValueObserver<ColorEx>> colorObservers = new HashSet<> ();
 
     private ChannelType                        type;
+    private double                             vu;
     private double                             vuLeft;
     private double                             vuRight;
     private boolean                            isMute;
@@ -351,7 +352,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public int getVu ()
     {
-        return this.valueChanger.fromNormalizedValue ((this.vuLeft + this.vuRight) / 2.0);
+        return this.valueChanger.fromNormalizedValue (this.vu);
     }
 
 
@@ -487,6 +488,17 @@ public class ChannelImpl extends ItemImpl implements IChannel
     public void setPanStr (final String panStr)
     {
         this.panParameter.setValueStr (panStr);
+    }
+
+
+    /**
+     * Set the mono merged VU.
+     *
+     * @param vu The VU normalized to 0..1
+     */
+    public void setVu (final double vu)
+    {
+        this.vu = vu;
     }
 
 
