@@ -4,6 +4,7 @@
 
 package de.mossgrabers.reaper.framework.daw.data.parameter;
 
+import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
@@ -89,7 +90,15 @@ public class ParameterImpl extends ItemImpl implements IParameter
     @Override
     public void changeValue (final int value)
     {
-        this.setValue (this.valueChanger.changeValue (value, this.getValue ()));
+        this.changeValue (this.valueChanger, value);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void changeValue (final IValueChanger valueChanger, final int value)
+    {
+        this.setValue (valueChanger.changeValue (value, this.getValue ()));
     }
 
 

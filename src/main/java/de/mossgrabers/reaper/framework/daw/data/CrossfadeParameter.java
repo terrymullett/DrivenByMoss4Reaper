@@ -114,6 +114,14 @@ public class CrossfadeParameter extends AbstractParameterImpl
 
     /** {@inheritDoc} */
     @Override
+    public void changeValue (final IValueChanger valueChanger, final int value)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void resetValue ()
     {
         // Not supported

@@ -10,7 +10,7 @@ plugins {
 sourceCompatibility = 15
 targetCompatibility = 15
 
-version = '11.5.2'
+version = '11.5.3'
 
 jar {
     manifest {
@@ -142,8 +142,8 @@ dependencies {
     implementation group: 'com.illposed.osc', name: 'javaosc-core', version: '0.7'
     implementation group: 'uk.co.xfactory-librarians', name: 'coremidi4j', version: '1.5'
     implementation group: 'com.nikhaldimann', name: 'inieditor', version: 'r6'
-    implementation group: 'net.java.dev.jna', name: 'jna', version: '5.6.0'
-    implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.6.0'
+    implementation group: 'net.java.dev.jna', name: 'jna', version: '5.7.0'
+    implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.7.0'
     implementation group: 'com.weblookandfeel', name: 'svg-salamander', version: '1.1.2.2'
     implementation fileTree(dir: 'libs', include: '*.jar')
 }

@@ -4,6 +4,7 @@
 
 package de.mossgrabers.reaper.framework.daw.data.parameter;
 
+import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
 import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.observer.IValueObserver;
 
@@ -181,6 +182,14 @@ public class QFactorInvertedParameter implements IParameter
     public void changeValue (final int value)
     {
         this.parameter.changeValue (value);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void changeValue (final IValueChanger valueChanger, final int value)
+    {
+        this.parameter.changeValue (valueChanger, value);
     }
 
 
