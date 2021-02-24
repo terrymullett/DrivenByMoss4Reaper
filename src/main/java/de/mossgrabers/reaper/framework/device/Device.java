@@ -7,6 +7,7 @@ package de.mossgrabers.reaper.framework.device;
 import de.mossgrabers.framework.daw.data.IDeviceMetadata;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,13 +19,14 @@ import java.util.Set;
  */
 public class Device implements IDeviceMetadata
 {
-    private final String         name;
-    private final String         module;
-    private final DeviceFileType fileType;
-    private final String         creationName;
-    private String               vendor;
-    private final Set<String>    categories = new HashSet<> (1);
+    private final static Set<DeviceFileType> INSTRUMENT_TYPES = EnumSet.of (DeviceFileType.VSTI, DeviceFileType.VST3I, DeviceFileType.AUI);
 
+    private final String                     name;
+    private final String                     module;
+    private final DeviceFileType             fileType;
+    private final String                     creationName;
+    private String                           vendor;
+    private final Set<String>                categories       = new HashSet<> (1);
 
     /**
      * Constructor.
@@ -125,7 +127,13 @@ public class Device implements IDeviceMetadata
      */
     public DeviceLocation getLocation ()
     {
-        return this.fileType == DeviceFileType.JS ? DeviceLocation.JS : DeviceLocation.VST;
+        if (this.fileType == DeviceFileType.JS)
+            return DeviceLocation.JS;
+
+        if (this.fileType == DeviceFileType.AU || this.fileType == DeviceFileType.AUI)
+            return DeviceLocation.AU;
+
+        return DeviceLocation.VST;
     }
 
 
@@ -159,12 +167,8 @@ public class Device implements IDeviceMetadata
      */
     public DeviceType getType ()
     {
-        if (this.fileType == DeviceFileType.VST || this.fileType == DeviceFileType.VST3)
-            return DeviceType.AUDIO_EFFECT;
-
-        if (this.fileType == DeviceFileType.VSTI || this.fileType == DeviceFileType.VST3I)
+        if (INSTRUMENT_TYPES.contains (this.fileType))
             return DeviceType.INSTRUMENT;
-
         return this.hasCategory ("MIDI") ? DeviceType.MIDI_EFFECT : DeviceType.AUDIO_EFFECT;
     }
 }
