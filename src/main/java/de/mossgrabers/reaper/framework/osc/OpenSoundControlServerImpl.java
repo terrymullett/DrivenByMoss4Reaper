@@ -15,7 +15,7 @@ import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCPacket;
 import com.illposed.osc.OSCPacketEvent;
 import com.illposed.osc.OSCPacketListener;
-import com.illposed.osc.transport.udp.OSCPortIn;
+import com.illposed.osc.transport.OSCPortIn;
 
 import java.io.IOException;
 import java.util.ArrayList;

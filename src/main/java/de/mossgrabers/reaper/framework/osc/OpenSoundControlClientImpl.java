@@ -11,7 +11,7 @@ import de.mossgrabers.framework.osc.IOpenSoundControlMessage;
 import com.illposed.osc.OSCBundle;
 import com.illposed.osc.OSCMessage;
 import com.illposed.osc.OSCSerializeException;
-import com.illposed.osc.transport.udp.OSCPortOut;
+import com.illposed.osc.transport.OSCPortOut;
 
 import java.io.IOException;
 import java.net.InetAddress;
