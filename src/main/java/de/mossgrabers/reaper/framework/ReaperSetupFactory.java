@@ -22,6 +22,8 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 
 import javax.sound.midi.MidiDevice;
 
+import java.util.List;
+
 
 /**
  * Factory for creating Reaper objects.
@@ -83,7 +85,7 @@ public class ReaperSetupFactory implements ISetupFactory
 
     /** {@inheritDoc} */
     @Override
-    public ArpeggiatorMode [] getArpeggiatorModes ()
+    public List<ArpeggiatorMode> getArpeggiatorModes ()
     {
         return NoteRepeatImpl.ARP_MODES;
     }

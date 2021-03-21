@@ -40,11 +40,11 @@ import java.util.List;
  */
 public class SimulatorWindow extends JFrame
 {
-    private static final long          serialVersionUID = 683494997839264599L;
+    private static final long                    serialVersionUID = 683494997839264599L;
 
-    private final HwSurfaceFactoryImpl surfaceFactory;
-    private final IControlSurface<?>   surface;
-    private double                     scaleFactor      = -1;
+    private final transient HwSurfaceFactoryImpl surfaceFactory;
+    private final transient IControlSurface<?>   surface;
+    private double                               scaleFactor      = -1;
 
 
     /**

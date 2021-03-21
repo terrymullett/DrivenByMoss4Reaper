@@ -22,7 +22,6 @@ import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 
 
 /**
@@ -275,16 +274,7 @@ public class GraphicsContextImpl implements IGraphicsContext
     @Override
     public void maskImage (final IImage image, final double x, final double y, final ColorEx maskColor)
     {
-        SVGImage svgImage = (SVGImage) image;
-        try
-        {
-            svgImage = SVGImage.getSVGImage (svgImage.getImageName (), convertColor (maskColor));
-        }
-        catch (final IOException ex)
-        {
-            // Ignore
-        }
-
+        final SVGImage svgImage = SVGImage.getSVGImage (((SVGImage) image).getImageName (), convertColor (maskColor));
         this.gc.drawImage (svgImage.getImage (), (int) x, (int) y, null);
     }
 

@@ -91,7 +91,7 @@ public class ConfigurationDialog extends BasicDialog
 
     /** {@inheritDoc} */
     @Override
-    protected Container init () throws Exception
+    protected Container init ()
     {
         final JPanel contentPane = new JPanel (new BorderLayout ());
 

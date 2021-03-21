@@ -9,6 +9,8 @@ import de.mossgrabers.framework.daw.midi.INoteRepeat;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.communication.Processor;
 
+import java.util.List;
+
 
 /**
  * Implementation for a note repeat.
@@ -18,20 +20,14 @@ import de.mossgrabers.reaper.communication.Processor;
 public class NoteRepeatImpl implements INoteRepeat
 {
     /** The available arpeggiator modes. */
-    public static final ArpeggiatorMode [] ARP_MODES    =
-    {
-        ArpeggiatorMode.DOWN,
-        ArpeggiatorMode.UP,
-        ArpeggiatorMode.DOWN_UP,
-        ArpeggiatorMode.UP_DOWN
-    };
+    public static final List<ArpeggiatorMode> ARP_MODES    = List.of (ArpeggiatorMode.DOWN, ArpeggiatorMode.UP, ArpeggiatorMode.DOWN_UP, ArpeggiatorMode.UP_DOWN);
 
-    private final MessageSender            sender;
-    private boolean                        isNoteRepeat = false;
-    private double                         noteRepeatPeriod;
-    private double                         noteLength;
-    private boolean                        usePressure;
-    private ArpeggiatorMode                mode;
+    private final MessageSender               sender;
+    private boolean                           isNoteRepeat = false;
+    private double                            noteRepeatPeriod;
+    private double                            noteLength;
+    private boolean                           usePressure;
+    private ArpeggiatorMode                   mode;
 
 
     /**
@@ -167,14 +163,9 @@ public class NoteRepeatImpl implements INoteRepeat
     @Override
     public void setMode (final ArpeggiatorMode mode)
     {
-        for (int i = 0; i < ARP_MODES.length; i++)
-        {
-            if (ARP_MODES[i] == mode)
-            {
-                this.sender.processIntArg (Processor.NOTEREPEAT, "mode", i);
-                return;
-            }
-        }
+        final int index = ARP_MODES.indexOf (mode);
+        if (index >= 0)
+            this.sender.processIntArg (Processor.NOTEREPEAT, "mode", index);
     }
 
 
@@ -243,6 +234,6 @@ public class NoteRepeatImpl implements INoteRepeat
      */
     public void setInternalMode (final int modeIndex)
     {
-        this.mode = ARP_MODES[modeIndex >= 0 && modeIndex < ARP_MODES.length ? modeIndex : 0];
+        this.mode = ARP_MODES.get (modeIndex >= 0 && modeIndex < ARP_MODES.size () ? modeIndex : 0);
     }
 }

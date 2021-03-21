@@ -869,35 +869,37 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
                         stepInfo.setState (IStepInfo.NOTE_OFF);
                 }
             }
-
-            for (final Note note: this.notes)
-            {
-                // Is the note on the current page window?
-                final int row = note.getPitch ();
-                if (row < 0 || row >= this.numRows)
-                    continue;
-                final int step = (int) Math.floor (note.getStart () / this.stepLength);
-                final int pageOffset = this.editPage * this.numSteps;
-                final int relToPage = step - pageOffset;
-                if (relToPage < 0 || relToPage >= this.numSteps)
-                    continue;
-
-                final StepInfoImpl stepInfo = this.data[relToPage][row];
-                if (this.editStep.isSet ())
-                    continue;
-
-                stepInfo.setState (IStepInfo.NOTE_START);
-                stepInfo.setDuration (note.getEnd () - note.getStart ());
-                stepInfo.setVelocity (note.getVelocity () / 127.0);
-
-                // Extend longer notes
-                final int endStep = Math.min ((int) Math.floor (note.getEnd () / this.stepLength) - pageOffset, this.numSteps);
-                for (int i = relToPage + 1; i < endStep; i++)
-                    this.data[i][row].setState (IStepInfo.NOTE_CONTINUE);
-            }
-
+            this.notes.forEach (this::updateNote);
             this.calcPages ();
         }
+    }
+
+
+    private void updateNote (final Note note)
+    {
+        // Is the note on the current page window?
+        final int row = note.getPitch ();
+        if (row < 0 || row >= this.numRows)
+            return;
+
+        final int step = (int) Math.floor (note.getStart () / this.stepLength);
+        final int pageOffset = this.editPage * this.numSteps;
+        final int relToPage = step - pageOffset;
+        if (relToPage < 0 || relToPage >= this.numSteps)
+            return;
+
+        final StepInfoImpl stepInfo = this.data[relToPage][row];
+        if (this.editStep.isSet ())
+            return;
+
+        stepInfo.setState (IStepInfo.NOTE_START);
+        stepInfo.setDuration (note.getEnd () - note.getStart ());
+        stepInfo.setVelocity (note.getVelocity () / 127.0);
+
+        // Extend longer notes
+        final int endStep = Math.min ((int) Math.floor (note.getEnd () / this.stepLength) - pageOffset, this.numSteps);
+        for (int i = relToPage + 1; i < endStep; i++)
+            this.data[i][row].setState (IStepInfo.NOTE_CONTINUE);
     }
 
 

@@ -186,7 +186,7 @@ public class BitmapImpl implements IBitmap
 
         /** {@inheritDoc} */
         @Override
-        protected Container init () throws Exception
+        protected Container init ()
         {
             final JPanel contentPane = new JPanel (new BorderLayout ());
 

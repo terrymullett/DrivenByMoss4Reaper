@@ -27,9 +27,9 @@ import java.awt.Window;
  */
 public class DebugDialog extends BasicDialog
 {
-    private static final long         serialVersionUID = 3020319469692178785L;
+    private static final long           serialVersionUID = 3020319469692178785L;
 
-    private static final String []    LABELS           =
+    private static final String []      LABELS           =
     {
         "Transport",
         "Project",
@@ -43,7 +43,7 @@ public class DebugDialog extends BasicDialog
         "Session"
     };
 
-    private static final String []    MNEMONICS        =
+    private static final String []      MNEMONICS        =
     {
         "T",
         "P",
@@ -57,7 +57,7 @@ public class DebugDialog extends BasicDialog
         "S"
     };
 
-    private static final Processor [] PROCESSORS       =
+    private static final Processor []   PROCESSORS       =
     {
         Processor.TRANSPORT,
         Processor.PROJECT,
@@ -71,8 +71,8 @@ public class DebugDialog extends BasicDialog
         Processor.SESSION
     };
 
-    private final AppCallback         callback;
-    private final JCheckBox []        boxes            = new JCheckBox [LABELS.length];
+    private final transient AppCallback callback;
+    private final JCheckBox []          boxes            = new JCheckBox [LABELS.length];
 
 
     /**
@@ -96,7 +96,7 @@ public class DebugDialog extends BasicDialog
 
     /** {@inheritDoc} */
     @Override
-    protected Container init () throws Exception
+    protected Container init ()
     {
         final JPanel contentPane = new JPanel (new BorderLayout ());
 

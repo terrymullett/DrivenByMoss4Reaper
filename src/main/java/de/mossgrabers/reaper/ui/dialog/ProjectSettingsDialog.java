@@ -66,7 +66,7 @@ public class ProjectSettingsDialog extends BasicDialog
 
     /** {@inheritDoc} */
     @Override
-    protected Container init () throws Exception
+    protected Container init ()
     {
         final JPanel contentPane = new JPanel (new BorderLayout ());
         final JTabbedPane tabbedPane = new JTabbedPane ();
@@ -74,45 +74,8 @@ public class ProjectSettingsDialog extends BasicDialog
 
         for (final IControllerInstance instance: this.instances)
         {
-            if (!instance.isRunning ())
-                continue;
-
-            final JPanel tabContentPane = new JPanel (new BorderLayout ());
-            final IControllerDefinition definition = instance.getDefinition ();
-            tabbedPane.addTab (definition.getHardwareModel (), tabContentPane);
-
-            final TwoColsPanel mainColumn = new TwoColsPanel (true);
-            final JPanel wrapper = new JPanel (new BorderLayout ());
-            wrapper.add (mainColumn, BorderLayout.NORTH);
-
-            final JScrollPane scrollPane = new JScrollPane (wrapper);
-            scrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            scrollPane.setVerticalScrollBarPolicy (ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-
-            tabContentPane.add (scrollPane, BorderLayout.CENTER);
-
-            String category = null;
-            final ISettingsUI settings = instance.getDocumentSettingsUI ();
-            final List<IfxSetting> ifxSettings = ((DocumentSettingsUI) settings).getSettings ();
-            if (ifxSettings.isEmpty ())
-            {
-                mainColumn.add (new JLabel ("This device has no project settings."));
-                continue;
-            }
-            for (final IfxSetting s: ifxSettings)
-            {
-                final String cat = s.getCategory ();
-                if (category == null || !category.equals (cat))
-                {
-                    category = s.getCategory ();
-                    mainColumn.addComponent (new TitledSeparator (category), BoxPanel.NORMAL);
-                }
-
-                final JLabel label = s.getLabelWidget ();
-                final JComponent widget = s.getWidget ();
-
-                mainColumn.addComponent (widget, label, null, BoxPanel.NORMAL);
-            }
+            if (instance.isRunning ())
+                createDocumentSettings (instance, tabbedPane);
         }
 
         // Close button
@@ -139,5 +102,47 @@ public class ProjectSettingsDialog extends BasicDialog
         });
 
         return contentPane;
+    }
+
+
+    private static void createDocumentSettings (final IControllerInstance instance, final JTabbedPane tabbedPane)
+    {
+        final JPanel tabContentPane = new JPanel (new BorderLayout ());
+        final IControllerDefinition definition = instance.getDefinition ();
+        tabbedPane.addTab (definition.getHardwareModel (), tabContentPane);
+
+        final TwoColsPanel mainColumn = new TwoColsPanel (true);
+        final JPanel wrapper = new JPanel (new BorderLayout ());
+        wrapper.add (mainColumn, BorderLayout.NORTH);
+
+        final JScrollPane scrollPane = new JScrollPane (wrapper);
+        scrollPane.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setVerticalScrollBarPolicy (ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+        tabContentPane.add (scrollPane, BorderLayout.CENTER);
+
+        String category = null;
+        final ISettingsUI settings = instance.getDocumentSettingsUI ();
+        final List<IfxSetting> ifxSettings = ((DocumentSettingsUI) settings).getSettings ();
+        if (ifxSettings.isEmpty ())
+        {
+            mainColumn.add (new JLabel ("This device has no project settings."));
+            return;
+        }
+
+        for (final IfxSetting s: ifxSettings)
+        {
+            final String cat = s.getCategory ();
+            if (category == null || !category.equals (cat))
+            {
+                category = s.getCategory ();
+                mainColumn.addComponent (new TitledSeparator (category), BoxPanel.NORMAL);
+            }
+
+            final JLabel label = s.getLabelWidget ();
+            final JComponent widget = s.getWidget ();
+
+            mainColumn.addComponent (widget, label, null, BoxPanel.NORMAL);
+        }
     }
 }

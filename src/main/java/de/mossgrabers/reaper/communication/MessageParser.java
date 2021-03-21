@@ -51,6 +51,7 @@ import de.mossgrabers.reaper.framework.daw.data.parameter.ParameterImpl;
 import de.mossgrabers.reaper.framework.midi.NoteRepeatImpl;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -351,7 +352,7 @@ public class MessageParser
                 // Drop index
                 parts.poll ();
                 final IParameter crossfaderParam = masterTrack.getCrossfaderParameter ();
-                this.parseUserParamValue (0, crossfaderParam, parts, value);
+                this.parseDeviceParamValue (0, crossfaderParam, parts, value);
                 return;
             }
         }
@@ -474,9 +475,9 @@ public class MessageParser
                 break;
 
             case TAG_COLOR:
-                final double [] color = ((ModelImpl) this.model).parseColor (value);
-                if (color != null)
-                    track.setColorState (color);
+                final Optional<double []> color = ((ModelImpl) this.model).parseColor (value);
+                if (color.isPresent ())
+                    track.setColorState (color.get ());
                 break;
 
             case "send":
@@ -657,7 +658,7 @@ public class MessageParser
         try
         {
             final int paramNo = Integer.parseInt (cmd);
-            this.parseUserParamValue (paramNo, parameterBank.getUnpagedItem (paramNo), parts, value);
+            this.parseDeviceParamValue (paramNo, parameterBank.getUnpagedItem (paramNo), parts, value);
         }
         catch (final NumberFormatException ex)
         {
@@ -699,32 +700,6 @@ public class MessageParser
 
 
     private void parseDeviceParamValue (final int paramNo, final IParameter param, final Queue<String> parts, final String value)
-    {
-        final String command = parts.poll ();
-        final ParameterImpl p = (ParameterImpl) param;
-        switch (command)
-        {
-            case TAG_NAME:
-                p.setInternalName (value);
-                p.setPosition (paramNo);
-                p.setExists (value != null && !value.isEmpty ());
-                break;
-
-            case "value":
-                if (parts.isEmpty ())
-                    p.setInternalValue (Double.parseDouble (value));
-                else if ("str".equals (parts.poll ()))
-                    p.setValueStr (value);
-                break;
-
-            default:
-                this.host.error ("Unhandled FX Param Value: " + command);
-                break;
-        }
-    }
-
-
-    private void parseUserParamValue (final int paramNo, final IParameter param, final Queue<String> parts, final String value)
     {
         final String command = parts.poll ();
         final ParameterImpl p = (ParameterImpl) param;
@@ -851,9 +826,9 @@ public class MessageParser
                 break;
 
             case TAG_COLOR:
-                final double [] color = ((ModelImpl) this.model).parseColor (value);
-                if (color != null)
-                    markerImpl.setColorState (color);
+                final Optional<double []> color = ((ModelImpl) this.model).parseColor (value);
+                if (color.isPresent ())
+                    markerImpl.setColorState (color.get ());
                 break;
 
             default:
@@ -882,9 +857,9 @@ public class MessageParser
                 break;
 
             case TAG_COLOR:
-                final double [] color = ((ModelImpl) this.model).parseColor (value);
-                if (color != null)
-                    sceneImpl.setColor (new ColorEx (color));
+                final Optional<double []> color = ((ModelImpl) this.model).parseColor (value);
+                if (color.isPresent ())
+                    sceneImpl.setColor (new ColorEx (color.get ()));
                 break;
 
             default:
@@ -917,9 +892,9 @@ public class MessageParser
                 break;
 
             case TAG_COLOR:
-                final double [] color = modelImpl.parseColor (value);
-                if (color != null)
-                    modelImpl.setCursorClipColorValue (color);
+                final Optional<double []> color = modelImpl.parseColor (value);
+                if (color.isPresent ())
+                    modelImpl.setCursorClipColorValue (color.get ());
                 break;
 
             case "loop":

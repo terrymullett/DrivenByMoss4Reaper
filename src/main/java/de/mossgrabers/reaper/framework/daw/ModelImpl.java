@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -353,14 +354,14 @@ public class ModelImpl extends AbstractModel
             {
                 final String name = clipParts[pos++];
                 final boolean isSelected = Integer.parseInt (clipParts[pos++]) > 0;
-                final double [] color = this.parseColor (clipParts[pos++]);
+                final Optional<double []> color = this.parseColor (clipParts[pos++]);
 
                 final SlotImpl slot = slotBank.getUnpagedItem (i);
                 slot.setPosition (i);
                 slot.setSelected (isSelected);
                 slot.setName (name);
-                if (color != null)
-                    slot.setColor (new ColorEx (color));
+                if (color.isPresent ())
+                    slot.setColor (new ColorEx (color.get ()));
                 slot.setExists (true);
             }
         }
@@ -382,7 +383,7 @@ public class ModelImpl extends AbstractModel
      * @param value The string to parse
      * @return The three double values
      */
-    public double [] parseColor (final String value)
+    public Optional<double []> parseColor (final String value)
     {
         final String [] values = value.split (" ");
         if (values.length != 3)
@@ -392,17 +393,17 @@ public class ModelImpl extends AbstractModel
             for (final String value2: values)
                 str.append (value2).append (':');
             this.host.error (str.toString ());
-            return null;
+            return Optional.empty ();
         }
         final double d1 = Double.parseDouble (values[0]);
         if (d1 < 0)
-            return null;
-        return new double []
+            return Optional.empty ();
+        return Optional.of (new double []
         {
             d1 / 255.0,
             Double.parseDouble (values[1]) / 255.0,
             Double.parseDouble (values[2]) / 255.0
-        };
+        });
     }
 
 

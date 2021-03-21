@@ -20,6 +20,7 @@ import static java.awt.RenderingHints.VALUE_STROKE_PURE;
 import static java.awt.RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
 
 import de.mossgrabers.framework.graphics.IImage;
+import de.mossgrabers.framework.utils.FrameworkException;
 
 import com.kitfox.svg.SVGDiagram;
 import com.kitfox.svg.SVGElement;
@@ -65,22 +66,25 @@ public class SVGImage implements IImage
      * @param imageName The name (absolute path) of the image
      * @param color The color for replacement
      * @return The buffered image
-     * @throws IOException Could not load the image
      */
-    public static SVGImage getSVGImage (final String imageName, final Color color) throws IOException
+    public static SVGImage getSVGImage (final String imageName, final Color color)
     {
-        SVGImage svgImage;
         synchronized (CACHE_LOCK)
         {
             final Map<Color, SVGImage> images = CACHE.computeIfAbsent (imageName, in -> new HashMap<> ());
-            svgImage = images.get (color);
-            if (svgImage == null)
-            {
-                svgImage = new SVGImage (imageName, color);
-                images.put (color, svgImage);
-            }
+            return images.computeIfAbsent (color, col -> {
+
+                try
+                {
+                    return new SVGImage (imageName, color);
+                }
+                catch (IOException ex)
+                {
+                    throw new FrameworkException ("SVG image not found.", ex);
+                }
+
+            });
         }
-        return svgImage;
     }
 
 

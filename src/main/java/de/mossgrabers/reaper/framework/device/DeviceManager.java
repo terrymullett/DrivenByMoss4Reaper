@@ -39,7 +39,7 @@ public class DeviceManager
     private static final String          SECTION_FOLDERS                = "Folders";
     private static final Pattern         PATTERN_VST                    = Pattern.compile (".+?,.+?,(.+?)(\\!\\!\\!VSTi)?");
     private static final Pattern         PATTERN_COMPANY                = Pattern.compile ("(.*?)\\s*\\((.*?)\\)");
-    private static final Pattern         PATTERN_AU_COMPANY_DEVICE_NAME = Pattern.compile ("(.+?):\\s*(.+?)");
+    private static final Pattern         PATTERN_AU_COMPANY_DEVICE_NAME = Pattern.compile ("(.+?):\\s*(.+)");
     private static final Pattern         PATTERN_JSFX                   = Pattern.compile ("NAME\\s?((\")?.+?(\")?)\\s?\"(.+?)\"");
     private static final String          IS_INSTRUMENT_TAG              = "<inst>";
 
@@ -221,25 +221,29 @@ public class DeviceManager
         {
             for (final Device d: this.devices)
             {
-                if (fileType != null && d.getFileType () != fileType)
-                    continue;
-
-                if (category != null && !d.hasCategory (category))
-                    continue;
-
-                if (vendor != null && !vendor.equals (d.getVendor ()))
-                    continue;
-
-                if (location != null && d.getLocation () != location)
-                    continue;
-
-                if (deviceType != null && d.getType () != deviceType)
-                    continue;
-
-                results.add (d);
+                if (accept (d, fileType, category, vendor, location, deviceType))
+                    results.add (d);
             }
         }
         return collection == null ? results : collection.filter (results);
+    }
+
+
+    private static boolean accept (final Device d, final DeviceFileType fileType, final String category, final String vendor, final DeviceLocation location, final DeviceType deviceType)
+    {
+        if (fileType != null && d.getFileType () != fileType)
+            return false;
+
+        if (category != null && !d.hasCategory (category))
+            return false;
+
+        if (vendor != null && !vendor.equals (d.getVendor ()))
+            return false;
+
+        if (location != null && d.getLocation () != location)
+            return false;
+
+        return deviceType == null || d.getType () == deviceType;
     }
 
 
@@ -439,23 +443,24 @@ public class DeviceManager
         for (int i = 0; i < getInt (iniFile, SECTION_FOLDERS, "NbFolders", 0); i++)
         {
             final int id = getInt (iniFile, SECTION_FOLDERS, "Id" + i, -1);
-            if (id < 0)
-                continue;
-            final String collectionName = iniFile.get (SECTION_FOLDERS, "Name" + i);
-            if (collectionName == null)
-                continue;
-
-            final DeviceCollection deviceCollection = new DeviceCollection (collectionName);
-            this.collections.add (deviceCollection);
-
-            final String collectionSection = "Folder" + id;
-            for (int j = 0; j < getInt (iniFile, collectionSection, "Nb", 0); j++)
+            if (id >= 0)
             {
-                final String item = iniFile.get (collectionSection, "Item" + j);
-                if (item == null)
-                    continue;
-                final int type = getInt (iniFile, collectionSection, "Type" + j, 0);
-                deviceCollection.addItem (item, type);
+                final String collectionName = iniFile.get (SECTION_FOLDERS, "Name" + i);
+                if (collectionName != null)
+                {
+                    final DeviceCollection deviceCollection = new DeviceCollection (collectionName);
+                    this.collections.add (deviceCollection);
+
+                    final String collectionSection = "Folder" + id;
+                    for (int j = 0; j < getInt (iniFile, collectionSection, "Nb", 0); j++)
+                    {
+                        final String item = iniFile.get (collectionSection, "Item" + j);
+                        if (item == null)
+                            continue;
+                        final int type = getInt (iniFile, collectionSection, "Type" + j, 0);
+                        deviceCollection.addItem (item, type);
+                    }
+                }
             }
         }
     }

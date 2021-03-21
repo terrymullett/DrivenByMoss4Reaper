@@ -5,7 +5,6 @@
 package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.daw.data.ISpecificDevice;
-import de.mossgrabers.framework.daw.data.bank.IChannelBank;
 import de.mossgrabers.framework.daw.data.bank.IDrumPadBank;
 import de.mossgrabers.framework.daw.data.bank.ILayerBank;
 import de.mossgrabers.framework.daw.data.bank.IParameterBank;
@@ -296,13 +295,5 @@ public class KompleteDevice implements ISpecificDevice
     public IDrumPadBank getDrumPadBank ()
     {
         return this.instrumentDevice.getDrumPadBank ();
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public IChannelBank<?> getLayerOrDrumPadBank ()
-    {
-        return this.instrumentDevice.getLayerOrDrumPadBank ();
     }
 }

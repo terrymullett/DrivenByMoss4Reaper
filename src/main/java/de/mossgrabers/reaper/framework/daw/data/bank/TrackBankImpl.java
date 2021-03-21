@@ -129,9 +129,8 @@ public class TrackBankImpl extends AbstractTrackBankImpl
                 // Make the found track the new current folder
                 this.currentFolder = node;
                 final List<TreeNode<TrackImpl>> children = node.getChildren ();
-                if (children.isEmpty ())
-                    break;
-                children.get (0).getData ().select ();
+                if (!children.isEmpty ())
+                    children.get (0).getData ().select ();
                 break;
             }
         }
@@ -439,41 +438,43 @@ public class TrackBankImpl extends AbstractTrackBankImpl
         hierarchy.add (newRoot);
 
         for (int i = 0; i < super.getItemCount (); i++)
-        {
-            final TrackImpl track = this.getUnpagedItem (i);
-
-            // FIlter deactivated tracks
-            if (this.skipDisabledItems && !track.isActivated ())
-                continue;
-
-            final int depth = track.getDepth ();
-
-            // This might happen if the parent folder is hidden!
-            if (depth >= hierarchy.size ())
-                continue;
-
-            final TreeNode<TrackImpl> p = hierarchy.get (depth);
-            final TreeNode<TrackImpl> child = p.addChild (track);
-            final int childrenSize = p.getChildren ().size ();
-            track.setIndex ((childrenSize - 1) % this.pageSize);
-
-            final int index = depth + 1;
-            if (index < hierarchy.size ())
-                hierarchy.set (index, child);
-            else
-                hierarchy.add (index, child);
-
-            if (track.isSelected ())
-            {
-                this.currentFolder = p;
-                this.bankOffset = childrenSize / this.pageSize * this.pageSize;
-            }
-        }
+            insertInHierarchy (this.getUnpagedItem (i), hierarchy);
 
         this.rootTrack = newRoot;
 
         if (this.currentFolder == null)
             this.currentFolder = newRoot;
+    }
+
+
+    private void insertInHierarchy (final TrackImpl track, final List<TreeNode<TrackImpl>> hierarchy)
+    {
+        // Filter deactivated tracks
+        if (this.skipDisabledItems && !track.isActivated ())
+            return;
+
+        final int depth = track.getDepth ();
+
+        // This might happen if the parent folder is hidden!
+        if (depth >= hierarchy.size ())
+            return;
+
+        final TreeNode<TrackImpl> p = hierarchy.get (depth);
+        final TreeNode<TrackImpl> child = p.addChild (track);
+        final int childrenSize = p.getChildren ().size ();
+        track.setIndex ((childrenSize - 1) % this.pageSize);
+
+        final int index = depth + 1;
+        if (index < hierarchy.size ())
+            hierarchy.set (index, child);
+        else
+            hierarchy.add (index, child);
+
+        if (track.isSelected ())
+        {
+            this.currentFolder = p;
+            this.bankOffset = childrenSize / this.pageSize * this.pageSize;
+        }
     }
 
 

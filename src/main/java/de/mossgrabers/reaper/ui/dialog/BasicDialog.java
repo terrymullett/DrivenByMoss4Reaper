@@ -166,17 +166,14 @@ public abstract class BasicDialog extends JDialog
      * Overwrite this function to create and add the widgets of the dialog.
      *
      * @return The panel that should be set as the content-pane
-     * @exception java.lang.Exception Oops, something crashed...
      */
-    protected abstract Container init () throws Exception;
+    protected abstract Container init ();
 
 
     /**
      * Overwrite this function to set the widgets of the dialog to the correct values.
-     *
-     * @exception java.lang.Exception Oops, something crashed...
      */
-    protected void set () throws Exception
+    protected void set ()
     {
         // Intentionally empty
     }

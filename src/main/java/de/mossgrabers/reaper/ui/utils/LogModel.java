@@ -78,7 +78,6 @@ public class LogModel
                     this.logMessage.append (message);
                     this.logMessage.append ("\n");
                 }
-                System.out.println (message);
             }
         });
     }

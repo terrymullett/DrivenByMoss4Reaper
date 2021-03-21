@@ -31,7 +31,6 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
 import java.awt.Color;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -188,15 +187,7 @@ public class HostImpl implements IHost
     public IImage loadSVG (final String imageName, final int scale)
     {
         final String filename = "/images/" + imageName;
-        try
-        {
-            return SVGImage.getSVGImage (filename, Color.BLACK);
-        }
-        catch (final IOException ex)
-        {
-            this.error ("Could not load SVG image: " + filename, ex);
-            return null;
-        }
+        return SVGImage.getSVGImage (filename, Color.BLACK);
     }
 
 

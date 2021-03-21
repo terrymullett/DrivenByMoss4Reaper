@@ -136,10 +136,6 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
         {
             this.logModel.error ("Could not initialise LibUsb.", ex);
         }
-        catch (final Throwable ex)
-        {
-            this.logModel.error ("Could not LibUsb library.", ex);
-        }
     }
 
 
@@ -463,33 +459,37 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
 
             for (final Pair<String [], String []> pair: definition.getMidiDiscoveryPairs (OperatingSystem.get ()))
             {
-                final String [] ins = pair.getKey ();
-                final String [] outs = pair.getValue ();
-
-                // Ignore utility extensions, which would always match
-                if (ins.length == 0 && outs.length == 0)
-                    continue;
-
-                // Is there a match?
-                final List<MidiDevice> inputDevices = lookupInputs (ins);
-                if (ins.length != inputDevices.size ())
-                    continue;
-                final List<MidiDevice> outputDevices = lookupOutputs (outs);
-                if (outs.length != outputDevices.size ())
-                    continue;
-
-                // Is one of the midi device already in use?
-                if (this.instanceManager.areInUse (inputDevices, outputDevices))
-                    continue;
-
-                // Found!
-                final IControllerInstance c = this.addController (definition);
-                if (c != null)
-                    addedControllers.add (c);
+                if (this.matchPorts (pair.getKey (), pair.getValue ()))
+                {
+                    // Found!
+                    final IControllerInstance c = this.addController (definition);
+                    if (c != null)
+                        addedControllers.add (c);
+                }
             }
         }
 
         return addedControllers;
+    }
+
+
+    private boolean matchPorts (final String [] ins, final String [] outs)
+    {
+        // Ignore utility extensions, which would always match
+        if (ins.length == 0 && outs.length == 0)
+            return false;
+
+        // Is there a match?
+        final List<MidiDevice> inputDevices = lookupInputs (ins);
+        if (ins.length != inputDevices.size ())
+            return false;
+
+        final List<MidiDevice> outputDevices = lookupOutputs (outs);
+        if (outs.length != outputDevices.size ())
+            return false;
+
+        // Is one of the midi device already in use?
+        return !this.instanceManager.areInUse (inputDevices, outputDevices);
     }
 
 
