@@ -90,7 +90,7 @@ public class MidiConnection
 
 
     /**
-     * Sets a midi device as the output device. It opens the device if it is not already in use and
+     * Sets a MIDI device as the output device. It opens the device if it is not already in use and
      * creates a receiver. If there is already a receiver opened it is closed.
      *
      * @param device The MIDI device to set

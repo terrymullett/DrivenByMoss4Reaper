@@ -207,7 +207,7 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
 
 
     /**
-     * Start scripting engine, open osc and midi ports.
+     * Start scripting engine, open OSC and MIDI ports.
      */
     private void startupInfrastructure ()
     {
@@ -488,7 +488,7 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
         if (outs.length != outputDevices.size ())
             return false;
 
-        // Is one of the midi device already in use?
+        // Is one of the MIDI device already in use?
         return !this.instanceManager.areInUse (inputDevices, outputDevices);
     }
 
@@ -700,7 +700,7 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
 
 
     /**
-     * Shows the application stage and ensures that it is brought ot the front of all stages.
+     * Shows the application stage and ensures that it is brought to the front of all stages.
      */
     public void showStage ()
     {
@@ -722,7 +722,7 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
 
 
     /**
-     * Shows the application stage and ensures that it is brought ot the front of all stages. After
+     * Shows the application stage and ensures that it is brought to the front of all stages. After
      * that the project settings window is displayed.
      */
     public void showProjectWindow ()

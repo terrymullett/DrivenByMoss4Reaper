@@ -20,7 +20,7 @@ class MidiOutputImpl extends AbstractMidiOutputImpl
     /**
      * Constructor.
      *
-     * @param midiConnection The midi connection to send outgoing data to
+     * @param midiConnection The MIDI connection to send outgoing data to
      */
     public MidiOutputImpl (final MidiConnection midiConnection)
     {

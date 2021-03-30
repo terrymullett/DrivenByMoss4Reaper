@@ -106,10 +106,10 @@ public class NoteInputImpl implements INoteInput
 
 
     /**
-     * Test if one of the configured note intput filters accept the given midi message.
+     * Test if one of the configured note input filters accept the given MIDI message.
      *
-     * @param status The status code of the midi message
-     * @param data1 The first data byte of the midi message
+     * @param status The status code of the MIDI message
+     * @param data1 The first data byte of the MIDI message
      * @return True if accepted
      */
     public boolean acceptFilter (final int status, final int data1)

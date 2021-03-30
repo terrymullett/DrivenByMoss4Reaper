@@ -183,7 +183,7 @@ public abstract class AbstractControllerInstance implements IControllerInstance,
                 this.host.releaseOSC ();
             }
 
-            this.logModel.info ("Closing midi connections...");
+            this.logModel.info ("Closing MIDI connections...");
             if (this.setupFactory != null)
                 this.setupFactory.cleanup ();
 

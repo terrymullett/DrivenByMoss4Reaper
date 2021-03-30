@@ -282,7 +282,7 @@ public class MidiInputImpl implements IMidiInput
         }
         catch (final RuntimeException ex)
         {
-            this.host.error ("Could not handle midi message.", ex);
+            this.host.error ("Could not handle MIDI message.", ex);
         }
     }
 
@@ -351,7 +351,7 @@ public class MidiInputImpl implements IMidiInput
      * @param channel The MIDI channel
      * @param data1 The first data byte
      * @param data2 The second data byte
-     * @return True if the midi event was matched
+     * @return True if the MIDI event was matched
      */
     private boolean handleControls (final int code, final int channel, final int data1, final int data2)
     {
@@ -380,7 +380,7 @@ public class MidiInputImpl implements IMidiInput
      * @param data1 The first data byte
      * @param data2 The second data byte
      * @param isNoteOff True if the MIDI event is Note Off (otherwise Note On)
-     * @return True if the midi event was matched
+     * @return True if the MIDI event was matched
      */
     protected boolean handleControlsNote (final int channel, final int data1, final int data2, final boolean isNoteOff)
     {

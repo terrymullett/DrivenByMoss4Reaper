@@ -15,7 +15,7 @@ import java.util.List;
 
 
 /**
- * Helper functions for looking up midi devices.
+ * Helper functions for looking up MIDI devices.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
@@ -71,7 +71,7 @@ public class Midi
 
 
     /**
-     * Get all midi devices which can be used as an input. readDeviceMetadata must have called
+     * Get all MIDI devices which can be used as an input. readDeviceMetadata must have called
      * before.
      *
      * @return All output devices
