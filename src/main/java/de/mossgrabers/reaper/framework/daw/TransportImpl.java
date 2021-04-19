@@ -7,6 +7,8 @@ package de.mossgrabers.reaper.framework.daw;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.daw.constants.AutomationMode;
+import de.mossgrabers.framework.daw.constants.LaunchQuantization;
+import de.mossgrabers.framework.daw.constants.PostRecordingAction;
 import de.mossgrabers.framework.daw.constants.TransportConstants;
 import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.daw.data.ITrack;
@@ -872,7 +874,7 @@ public class TransportImpl extends BaseImpl implements ITransport
 
     /** {@inheritDoc} */
     @Override
-    public double rescaleTempo (final double tempo, final int maxValue)
+    public double scaleTempo (final double tempo, final int maxValue)
     {
         final double v = tempo - TransportConstants.MIN_TEMPO;
         return v * (maxValue - 1) / (TransportConstants.MAX_TEMPO - TransportConstants.MIN_TEMPO);
@@ -884,5 +886,56 @@ public class TransportImpl extends BaseImpl implements ITransport
     protected Processor getProcessor ()
     {
         return Processor.TRANSPORT;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public PostRecordingAction getClipLauncherPostRecordingAction ()
+    {
+        // Not supported
+        return PostRecordingAction.OFF;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setClipLauncherPostRecordingAction (PostRecordingAction action)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public double getClipLauncherPostRecordingTimeOffset ()
+    {
+        // Not supported
+        return 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setClipLauncherPostRecordingTimeOffset (double beats)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public LaunchQuantization getDefaultLaunchQuantization ()
+    {
+        // Not supported
+        return LaunchQuantization.RES_NONE;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setDefaultLaunchQuantization (LaunchQuantization launchQuantization)
+    {
+        // Not supported
     }
 }
