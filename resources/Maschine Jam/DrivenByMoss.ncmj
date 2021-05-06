@@ -9,7 +9,7 @@
     <wrapmode>0</wrapmode>
     <controls>
       <button version="1" id="BtnArpRepeat">
-        <name>NR</name>
+        <name>Note Repeat</name>
         <controller>35</controller>
         <channel>0</channel>
         <off>0</off>
@@ -90,7 +90,7 @@
         <reaction>ondown</reaction>
       </button>
       <button version="1" id="BtnCue">
-        <name>MetroLvl</name>
+        <name>Headphone</name>
         <controller>61</controller>
         <channel>0</channel>
         <off>0</off>
@@ -306,7 +306,7 @@
         <reaction>ondown</reaction>
       </button>
       <button version="1" id="BtnIn1">
-        <name>Stop All</name>
+        <name>IN</name>
         <controller>60</controller>
         <channel>0</channel>
         <off>0</off>
@@ -315,7 +315,7 @@
         <reaction>ondown</reaction>
       </button>
       <button version="1" id="BtnLevel">
-        <name>Lvl/Pan</name>
+        <name>Level</name>
         <controller>37</controller>
         <channel>0</channel>
         <off>0</off>
@@ -360,7 +360,7 @@
         <reaction>ondown</reaction>
       </button>
       <button version="1" id="BtnPadMode">
-        <name>Pad</name>
+        <name>Pad Mode</name>
         <controller>32</controller>
         <channel>0</channel>
         <off>0</off>
@@ -369,7 +369,7 @@
         <reaction>ondown</reaction>
       </button>
       <button version="1" id="BtnPerform">
-        <name>FX/MST</name>
+        <name>Perform</name>
         <controller>55</controller>
         <channel>0</channel>
         <off>0</off>
@@ -585,6 +585,7 @@
         <reaction>ondown</reaction>
       </button>
       <button version="1" id="BtnTune">
+        <name>Tune</name>
         <controller>52</controller>
         <channel>0</channel>
         <off>0</off>
@@ -593,6 +594,7 @@
         <reaction>ondown</reaction>
       </button>
       <button version="1" id="BtnVariation">
+        <name>Notes</name>
         <controller>54</controller>
         <channel>0</channel>
         <off>0</off>
@@ -11945,196 +11947,196 @@
           <reaction>ondown</reaction>
         </button>
         <knob version="1" id="TstA">
-          <pitchbend />
+          <controller>8</controller>
           <channel>0</channel>
           <min>0</min>
-          <max>16383</max>
-          <default>8192</default>
+          <max>127</max>
+          <default>0</default>
           <range>360</range>
           <steps>20</steps>
           <bipolar>off</bipolar>
           <min>0</min>
-          <max>16383</max>
-          <ledPattern>0</ledPattern>
+          <max>127</max>
+          <ledPattern>1</ledPattern>
           <behavior>none</behavior>
         </knob>
         <led version="1" id="TstAIDX">
           <display type="0">
-            <unit color-type="1" color-mode="0" color-on-index="16" color-off-index="1" />
+            <unit color-type="1" color-mode="0" color-on-index="1" color-off-index="1" />
           </display>
-          <pitchbend />
+          <controller>8</controller>
           <channel>0</channel>
-          <min>8192</min>
-          <max>16383</max>
-          <default>8192</default>
+          <min>0</min>
+          <max>127</max>
+          <default>0</default>
         </led>
         <knob version="1" id="TstB">
-          <pitchbend />
-          <channel>1</channel>
+          <controller>9</controller>
+          <channel>0</channel>
           <min>0</min>
-          <max>16383</max>
-          <default>8192</default>
+          <max>127</max>
+          <default>0</default>
           <range>360</range>
           <steps>20</steps>
           <bipolar>off</bipolar>
           <min>0</min>
-          <max>16383</max>
-          <ledPattern>0</ledPattern>
+          <max>127</max>
+          <ledPattern>1</ledPattern>
           <behavior>none</behavior>
         </knob>
         <led version="1" id="TstBIDX">
           <display type="0">
-            <unit color-type="1" color-mode="0" color-on-index="16" color-off-index="1" />
+            <unit color-type="1" color-mode="0" color-on-index="1" color-off-index="1" />
           </display>
-          <pitchbend />
+          <controller>9</controller>
           <channel>0</channel>
-          <min>8192</min>
-          <max>16383</max>
-          <default>8192</default>
+          <min>0</min>
+          <max>127</max>
+          <default>0</default>
         </led>
         <knob version="1" id="TstC">
-          <pitchbend />
-          <channel>2</channel>
+          <controller>10</controller>
+          <channel>0</channel>
           <min>0</min>
-          <max>16383</max>
-          <default>8192</default>
+          <max>127</max>
+          <default>0</default>
           <range>360</range>
           <steps>20</steps>
           <bipolar>off</bipolar>
           <min>0</min>
-          <max>16383</max>
-          <ledPattern>0</ledPattern>
+          <max>127</max>
+          <ledPattern>1</ledPattern>
           <behavior>none</behavior>
         </knob>
         <led version="1" id="TstCIDX">
           <display type="0">
-            <unit color-type="1" color-mode="0" color-on-index="16" color-off-index="1" />
+            <unit color-type="1" color-mode="0" color-on-index="1" color-off-index="1" />
           </display>
-          <pitchbend />
+          <controller>10</controller>
           <channel>0</channel>
-          <min>8192</min>
-          <max>16383</max>
-          <default>8192</default>
+          <min>0</min>
+          <max>127</max>
+          <default>0</default>
         </led>
         <knob version="1" id="TstD">
-          <pitchbend />
-          <channel>3</channel>
+          <controller>11</controller>
+          <channel>0</channel>
           <min>0</min>
-          <max>16383</max>
-          <default>8192</default>
+          <max>127</max>
+          <default>0</default>
           <range>360</range>
           <steps>20</steps>
           <bipolar>off</bipolar>
           <min>0</min>
-          <max>16383</max>
-          <ledPattern>0</ledPattern>
+          <max>127</max>
+          <ledPattern>1</ledPattern>
           <behavior>none</behavior>
         </knob>
         <led version="1" id="TstDIDX">
           <display type="0">
-            <unit color-type="1" color-mode="0" color-on-index="16" color-off-index="1" />
+            <unit color-type="1" color-mode="0" color-on-index="1" color-off-index="1" />
           </display>
-          <pitchbend />
+          <controller>11</controller>
           <channel>0</channel>
-          <min>8192</min>
-          <max>16383</max>
-          <default>8192</default>
+          <min>0</min>
+          <max>127</max>
+          <default>0</default>
         </led>
         <knob version="1" id="TstE">
-          <pitchbend />
-          <channel>4</channel>
+          <controller>12</controller>
+          <channel>0</channel>
           <min>0</min>
-          <max>16383</max>
-          <default>8192</default>
+          <max>127</max>
+          <default>0</default>
           <range>360</range>
           <steps>20</steps>
           <bipolar>off</bipolar>
           <min>0</min>
-          <max>16383</max>
-          <ledPattern>0</ledPattern>
+          <max>127</max>
+          <ledPattern>1</ledPattern>
           <behavior>none</behavior>
         </knob>
         <led version="1" id="TstEIDX">
           <display type="0">
-            <unit color-type="1" color-mode="0" color-on-index="16" color-off-index="1" />
+            <unit color-type="1" color-mode="0" color-on-index="1" color-off-index="1" />
           </display>
-          <pitchbend />
+          <controller>12</controller>
           <channel>0</channel>
-          <min>8192</min>
-          <max>16383</max>
-          <default>8192</default>
+          <min>0</min>
+          <max>127</max>
+          <default>0</default>
         </led>
         <knob version="1" id="TstF">
-          <pitchbend />
-          <channel>5</channel>
+          <controller>13</controller>
+          <channel>0</channel>
           <min>0</min>
-          <max>16383</max>
-          <default>8192</default>
+          <max>127</max>
+          <default>0</default>
           <range>360</range>
           <steps>20</steps>
           <bipolar>off</bipolar>
           <min>0</min>
-          <max>16383</max>
-          <ledPattern>0</ledPattern>
+          <max>127</max>
+          <ledPattern>1</ledPattern>
           <behavior>none</behavior>
         </knob>
         <led version="1" id="TstFIDX">
           <display type="0">
-            <unit color-type="1" color-mode="0" color-on-index="16" color-off-index="1" />
+            <unit color-type="1" color-mode="0" color-on-index="1" color-off-index="1" />
           </display>
-          <pitchbend />
+          <controller>13</controller>
           <channel>0</channel>
-          <min>8192</min>
-          <max>16383</max>
-          <default>8192</default>
+          <min>0</min>
+          <max>127</max>
+          <default>0</default>
         </led>
         <knob version="1" id="TstG">
-          <pitchbend />
-          <channel>6</channel>
+          <controller>14</controller>
+          <channel>0</channel>
           <min>0</min>
-          <max>16383</max>
-          <default>8192</default>
+          <max>127</max>
+          <default>0</default>
           <range>360</range>
           <steps>20</steps>
           <bipolar>off</bipolar>
           <min>0</min>
-          <max>16383</max>
-          <ledPattern>0</ledPattern>
+          <max>127</max>
+          <ledPattern>1</ledPattern>
           <behavior>none</behavior>
         </knob>
         <led version="1" id="TstGIDX">
           <display type="0">
-            <unit color-type="1" color-mode="0" color-on-index="16" color-off-index="1" />
+            <unit color-type="1" color-mode="0" color-on-index="1" color-off-index="1" />
           </display>
-          <pitchbend />
+          <controller>14</controller>
           <channel>0</channel>
-          <min>8192</min>
-          <max>16383</max>
-          <default>8192</default>
+          <min>0</min>
+          <max>127</max>
+          <default>0</default>
         </led>
         <knob version="1" id="TstH">
-          <pitchbend />
-          <channel>7</channel>
+          <controller>15</controller>
+          <channel>0</channel>
           <min>0</min>
-          <max>16383</max>
-          <default>8192</default>
+          <max>127</max>
+          <default>0</default>
           <range>360</range>
           <steps>20</steps>
           <bipolar>off</bipolar>
           <min>0</min>
-          <max>16383</max>
-          <ledPattern>0</ledPattern>
+          <max>127</max>
+          <ledPattern>1</ledPattern>
           <behavior>none</behavior>
         </knob>
         <led version="1" id="TstHIDX">
           <display type="0">
-            <unit color-type="1" color-mode="0" color-on-index="16" color-off-index="1" />
+            <unit color-type="1" color-mode="0" color-on-index="1" color-off-index="1" />
           </display>
-          <pitchbend />
+          <controller>15</controller>
           <channel>0</channel>
-          <min>8192</min>
-          <max>16383</max>
-          <default>8192</default>
+          <min>0</min>
+          <max>127</max>
+          <default>0</default>
         </led>
       </page>
     </touchstripPages>

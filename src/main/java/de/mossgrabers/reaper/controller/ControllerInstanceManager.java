@@ -27,8 +27,9 @@ import de.mossgrabers.reaper.controller.ni.kontrol.mki.KontrolMkIS61ControllerIn
 import de.mossgrabers.reaper.controller.ni.kontrol.mki.KontrolMkIS88ControllerInstance;
 import de.mossgrabers.reaper.controller.ni.kontrol.mkii.KontrolProtocolV1ControllerInstance;
 import de.mossgrabers.reaper.controller.ni.kontrol.mkii.KontrolProtocolV2ControllerInstance;
-import de.mossgrabers.reaper.controller.ni.maschine.MaschineMikroMk3ControllerInstance;
-import de.mossgrabers.reaper.controller.ni.maschine.MaschineMk3ControllerInstance;
+import de.mossgrabers.reaper.controller.ni.maschine.jam.MaschineJamControllerInstance;
+import de.mossgrabers.reaper.controller.ni.maschine.mk3.MaschineMikroMk3ControllerInstance;
+import de.mossgrabers.reaper.controller.ni.maschine.mk3.MaschineMk3ControllerInstance;
 import de.mossgrabers.reaper.controller.novation.launchkey.LaunchkeyMiniMk3ControllerInstance;
 import de.mossgrabers.reaper.controller.novation.launchkey.LaunchkeyMk3ControllerInstance;
 import de.mossgrabers.reaper.controller.novation.launchpad.LaunchpadMiniMkIIIControllerInstance;
@@ -98,6 +99,7 @@ public class ControllerInstanceManager
         DEF_TO_CLASS.put (LaunchpadProMk3ControllerInstance.CONTROLLER_DEFINITION, LaunchpadProMk3ControllerInstance.class);
         DEF_TO_CLASS.put (MaschineMikroMk3ControllerInstance.CONTROLLER_DEFINITION, MaschineMikroMk3ControllerInstance.class);
         DEF_TO_CLASS.put (MaschineMk3ControllerInstance.CONTROLLER_DEFINITION, MaschineMk3ControllerInstance.class);
+        DEF_TO_CLASS.put (MaschineJamControllerInstance.CONTROLLER_DEFINITION, MaschineJamControllerInstance.class);
         DEF_TO_CLASS.put (MidiMonitorInstance.CONTROLLER_DEFINITION, MidiMonitorInstance.class);
         DEF_TO_CLASS.put (MCU1ControllerInstance.CONTROLLER_DEFINITION, MCU1ControllerInstance.class);
         DEF_TO_CLASS.put (MCU2ControllerInstance.CONTROLLER_DEFINITION, MCU2ControllerInstance.class);

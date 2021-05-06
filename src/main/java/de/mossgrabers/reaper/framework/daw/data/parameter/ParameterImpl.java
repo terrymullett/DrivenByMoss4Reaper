@@ -168,7 +168,7 @@ public class ParameterImpl extends ItemImpl implements IParameter
     public void touchValue (final boolean isBeingTouched)
     {
         // Prevent updating of the value from the DAW when the user edits the value, otherwise the
-        // value "jumps" due to roundtrip delays
+        // value "jumps" due to round-trip delays
 
         this.isBeingTouched = isBeingTouched;
 
