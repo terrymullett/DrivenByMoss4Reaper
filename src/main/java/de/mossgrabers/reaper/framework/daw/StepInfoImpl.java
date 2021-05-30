@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper.framework.daw;
 
 import de.mossgrabers.framework.daw.IStepInfo;
+import de.mossgrabers.framework.daw.NoteOccurrenceType;
 
 
 /**
@@ -100,6 +101,123 @@ public class StepInfoImpl implements IStepInfo
     /** {@inheritDoc} */
     @Override
     public double getGain ()
+    {
+        // Not supported
+        return 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public double getVelocitySpread ()
+    {
+        // Not supported
+        return 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isChanceEnabled ()
+    {
+        // Not supported
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public double getChance ()
+    {
+        // Not supported
+        return 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isOccurrenceEnabled ()
+    {
+        // Not supported
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public NoteOccurrenceType getOccurrence ()
+    {
+        // Not supported
+        return null;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isRecurrenceEnabled ()
+    {
+        // Not supported
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public int getRecurrenceLength ()
+    {
+        // Not supported
+        return 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public int getRecurrenceMask ()
+    {
+        // Not supported
+        return 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isRepeatEnabled ()
+    {
+        // Not supported
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public int getRepeatCount ()
+    {
+        // Not supported
+        return 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public double getRepeatCurve ()
+    {
+        // Not supported
+        return 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public double getRepeatVelocityCurve ()
+    {
+        // Not supported
+        return 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public double getRepeatVelocityEnd ()
     {
         // Not supported
         return 0;
