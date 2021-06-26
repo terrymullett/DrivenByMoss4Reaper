@@ -9,12 +9,12 @@ import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.hardware.AbstractHwContinuousControl;
 import de.mossgrabers.framework.controller.hardware.BindType;
 import de.mossgrabers.framework.controller.hardware.IHwRelativeKnob;
-import de.mossgrabers.framework.controller.valuechanger.DefaultValueChanger;
 import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
-import de.mossgrabers.framework.controller.valuechanger.Relative2ValueChanger;
-import de.mossgrabers.framework.controller.valuechanger.Relative3ValueChanger;
-import de.mossgrabers.framework.controller.valuechanger.Relative4ValueChanger;
+import de.mossgrabers.framework.controller.valuechanger.OffsetBinaryRelativeValueChanger;
 import de.mossgrabers.framework.controller.valuechanger.RelativeEncoding;
+import de.mossgrabers.framework.controller.valuechanger.SignedBit2RelativeValueChanger;
+import de.mossgrabers.framework.controller.valuechanger.SignedBitRelativeValueChanger;
+import de.mossgrabers.framework.controller.valuechanger.TwosComplementValueChanger;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
@@ -39,14 +39,14 @@ import java.util.Map;
 public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements IHwRelativeKnob, IReaperHwControl
 {
     private static final Map<RelativeEncoding, IValueChanger> VALUE_CHANGERS        = new EnumMap<> (RelativeEncoding.class);
-    private static final DefaultValueChanger                  DEFAULT_VALUE_CHANGER = new DefaultValueChanger (127, 1);
+    private static final TwosComplementValueChanger           DEFAULT_VALUE_CHANGER = new TwosComplementValueChanger (127, 1);
 
     static
     {
         VALUE_CHANGERS.put (RelativeEncoding.TWOS_COMPLEMENT, DEFAULT_VALUE_CHANGER);
-        VALUE_CHANGERS.put (RelativeEncoding.OFFSET_BINARY, new Relative3ValueChanger (127, 1));
-        VALUE_CHANGERS.put (RelativeEncoding.SIGNED_BIT, new Relative2ValueChanger (127, 1));
-        VALUE_CHANGERS.put (RelativeEncoding.SIGNED_BIT2, new Relative4ValueChanger (127, 1));
+        VALUE_CHANGERS.put (RelativeEncoding.OFFSET_BINARY, new OffsetBinaryRelativeValueChanger (127, 1));
+        VALUE_CHANGERS.put (RelativeEncoding.SIGNED_BIT, new SignedBitRelativeValueChanger (127, 1));
+        VALUE_CHANGERS.put (RelativeEncoding.SIGNED_BIT2, new SignedBit2RelativeValueChanger (127, 1));
     }
 
     private final HwControlLayout  layout;
