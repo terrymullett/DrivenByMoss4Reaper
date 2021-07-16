@@ -7,6 +7,8 @@ package de.mossgrabers.reaper.framework.daw;
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.INoteClip;
 import de.mossgrabers.framework.daw.IStepInfo;
+import de.mossgrabers.framework.daw.NoteOccurrenceType;
+import de.mossgrabers.framework.daw.StepState;
 import de.mossgrabers.framework.daw.constants.Resolution;
 import de.mossgrabers.framework.daw.constants.TransportConstants;
 import de.mossgrabers.framework.daw.data.GridStep;
@@ -380,16 +382,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void toggleStep (final int channel, final int step, final int row, final int velocity)
     {
         final double pos = (step + this.editPage * this.numSteps) * this.stepLength;
-        this.sendOSC (PATH_NOTE + row + "/toggle", pos + " " + this.stepLength + " " + velocity + " " + channel);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void setStep (final int channel, final int step, final int row, final int velocity, final double duration)
-    {
-        final double pos = (step + this.editPage * this.numSteps) * this.stepLength;
-        this.sendOSC (PATH_NOTE + row + "/set", pos + " " + duration + " " + velocity + " " + channel);
+        this.sendOSC (PATH_NOTE + row + "/toggle", pos + " " + this.stepLength + " " + velocity + " " + channel + " 0");
     }
 
 
@@ -398,6 +391,57 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void setStep (final int channel, final int step, final int row, final IStepInfo noteStep)
     {
         this.setStep (channel, step, row, (int) (noteStep.getVelocity () * 127.0), noteStep.getDuration ());
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setStep (final int channel, final int step, final int row, final int velocity, final double duration)
+    {
+        final double pos = (step + this.editPage * this.numSteps) * this.stepLength;
+        this.sendOSC (PATH_NOTE + row + "/set", pos + " " + duration + " " + velocity + " " + channel + " 0");
+    }
+
+
+    /**
+     * Update the values of an existing note.
+     *
+     * @param channel The MIDI channel
+     * @param step The step
+     * @param row The note row
+     * @param velocity The velocity of the note
+     * @param duration The length of the note
+     * @param isMuted True if the note is muted
+     */
+    public void updateStep (final int channel, final int step, final int row, final int velocity, final double duration, final boolean isMuted)
+    {
+        final double pos = (step + this.editPage * this.numSteps) * this.stepLength;
+        this.sendOSC (PATH_NOTE + row + "/update", pos + " " + duration + " " + velocity + " " + channel + " " + (isMuted ? "1" : "0"));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void changeMuteState (int channel, int step, int row, int control)
+    {
+        this.updateMuteState (channel, step, row, this.valueChanger.isIncrease (control));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void updateMuteState (final int channel, final int step, final int row, final boolean isMuted)
+    {
+        final StepInfoImpl stepInfo = this.getStep (channel, step, row);
+        if (stepInfo.getState () == StepState.OFF)
+            return;
+
+        stepInfo.setMuted (isMuted);
+        if (this.editStep.isSet ())
+            return;
+
+        final double velocity = stepInfo.getVelocity ();
+        this.updateStep (channel, step, row, (int) (velocity * 127), stepInfo.getDuration (), isMuted);
     }
 
 
@@ -421,7 +465,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
             return;
 
         final StepInfoImpl stepInfo = this.getStep (channel, step, row);
-        if (stepInfo.getState () == IStepInfo.NOTE_OFF)
+        if (stepInfo.getState () == StepState.OFF)
             return;
 
         stepInfo.setDuration (duration);
@@ -429,8 +473,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
             return;
 
         final double velocity = stepInfo.getVelocity ();
-        this.clearStep (channel, step, row);
-        this.setStep (channel, step, row, (int) (velocity * 127), duration);
+        this.updateStep (channel, step, row, (int) (velocity * 127), duration, stepInfo.isMuted ());
     }
 
 
@@ -448,12 +491,14 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void updateStepVelocity (final int channel, final int step, final int row, final double velocity)
     {
+        final int midiVelocity = (int) (velocity * 127);
+
         // Velocity of 0 fully deletes the note
-        if (velocity == 0)
+        if (midiVelocity == 0)
             return;
 
         final StepInfoImpl stepInfo = this.getStep (channel, step, row);
-        if (stepInfo.getState () == IStepInfo.NOTE_OFF)
+        if (stepInfo.getState () == StepState.OFF)
             return;
 
         stepInfo.setVelocity (velocity);
@@ -461,8 +506,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
             return;
 
         final double duration = stepInfo.getDuration ();
-        this.clearStep (channel, step, row);
-        this.setStep (channel, step, row, (int) (velocity * 127), duration);
+        this.updateStep (channel, step, row, midiVelocity, duration, stepInfo.isMuted ());
     }
 
 
@@ -561,173 +605,173 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         // Not supported
     }
 
-    // TODO Version #13
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void updateVelocitySpread (int channel, int step, int row, double velocitySpread)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void changeVelocitySpread (int channel, int step, int row, int control)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void updateIsChanceEnabled (int channel, int step, int row, boolean isEnabled)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void updateChance (int channel, int step, int row, double chance)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void changeChance (int channel, int step, int row, int control)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void updateIsOccurrenceEnabled (int channel, int step, int row, boolean isEnabled)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void setPrevNextOccurrence (int channel, int step, int row, boolean increase)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void setOccurrence (int channel, int step, int row, NoteOccurrenceType occurrence)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void updateIsRecurrenceEnabled (int channel, int step, int row, boolean isEnabled)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void updateRecurrenceLength (int channel, int step, int row, int recurrenceLength)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void updateRecurrenceMask (int channel, int step, int row, int mask)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void changeRecurrenceLength (int channel, int step, int row, int control)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void updateIsRepeatEnabled (int channel, int step, int row, boolean isEnabled)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void updateRepeatCount (int channel, int step, int row, int value)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void changeRepeatCount (int channel, int step, int row, int control)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void updateRepeatCurve (int channel, int step, int row, double value)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void changeRepeatCurve (int channel, int step, int row, int control)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void updateRepeatVelocityCurve (int channel, int step, int row, double value)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void changeRepeatVelocityCurve (int channel, int step, int row, int control)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void updateRepeatVelocityEnd (int channel, int step, int row, double value)
-    // {
-    // // Not supported
-    // }
-    //
-    //
-    // /** {@inheritDoc}} */
-    // @Override
-    // public void changeRepeatVelocityEnd (int channel, int step, int row, int control)
-    // {
-    // // Not supported
-    // }
+
+    /** {@inheritDoc}} */
+    @Override
+    public void updateVelocitySpread (int channel, int step, int row, double velocitySpread)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void changeVelocitySpread (int channel, int step, int row, int control)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void updateIsChanceEnabled (int channel, int step, int row, boolean isEnabled)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void updateChance (int channel, int step, int row, double chance)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void changeChance (int channel, int step, int row, int control)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void updateIsOccurrenceEnabled (int channel, int step, int row, boolean isEnabled)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void setPrevNextOccurrence (int channel, int step, int row, boolean increase)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void setOccurrence (int channel, int step, int row, NoteOccurrenceType occurrence)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void updateIsRecurrenceEnabled (int channel, int step, int row, boolean isEnabled)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void updateRecurrenceLength (int channel, int step, int row, int recurrenceLength)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void updateRecurrenceMask (int channel, int step, int row, int mask)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void changeRecurrenceLength (int channel, int step, int row, int control)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void updateIsRepeatEnabled (int channel, int step, int row, boolean isEnabled)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void updateRepeatCount (int channel, int step, int row, int value)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void changeRepeatCount (int channel, int step, int row, int control)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void updateRepeatCurve (int channel, int step, int row, double value)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void changeRepeatCurve (int channel, int step, int row, int control)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void updateRepeatVelocityCurve (int channel, int step, int row, double value)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void changeRepeatVelocityCurve (int channel, int step, int row, int control)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void updateRepeatVelocityEnd (int channel, int step, int row, double value)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc}} */
+    @Override
+    public void changeRepeatVelocityEnd (int channel, int step, int row, int control)
+    {
+        // Not supported
+    }
 
 
     /** {@inheritDoc} */
@@ -774,10 +818,8 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     private void sendClipData (final int channel, final int step, final int row)
     {
         final IStepInfo stepInfo = this.data[step][row];
-        final double duration = stepInfo.getDuration ();
         final double velocity = stepInfo.getVelocity ();
-        this.clearStep (channel, step, row);
-        this.setStep (channel, step, row, (int) (velocity * 127), duration);
+        this.updateStep (channel, step, row, (int) (velocity * 127), stepInfo.getDuration (), stepInfo.isMuted ());
     }
 
 
@@ -813,7 +855,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         {
             for (int step = 0; step < this.numSteps; step++)
             {
-                if (this.data[step][row].getState () > 0)
+                if (this.data[step][row].getState () != StepState.OFF)
                     return true;
             }
             return false;
@@ -1034,7 +1076,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
                 {
                     final StepInfoImpl stepInfo = this.data[step][row];
                     if (!this.editStep.isSet ())
-                        stepInfo.setState (IStepInfo.NOTE_OFF);
+                        stepInfo.setState (StepState.OFF);
                 }
             }
             this.notes.forEach (this::updateNote);
@@ -1060,14 +1102,15 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         if (this.editStep.isSet ())
             return;
 
-        stepInfo.setState (IStepInfo.NOTE_START);
+        stepInfo.setMuted (note.isMuted ());
+        stepInfo.setState (StepState.START);
         stepInfo.setDuration (note.getEnd () - note.getStart ());
         stepInfo.setVelocity (note.getVelocity () / 127.0);
 
         // Extend longer notes
         final int endStep = Math.min ((int) Math.floor (note.getEnd () / this.stepLength) - pageOffset, this.numSteps);
         for (int i = relToPage + 1; i < endStep; i++)
-            this.data[i][row].setState (IStepInfo.NOTE_CONTINUE);
+            this.data[i][row].setState (StepState.CONTINUE);
     }
 
 

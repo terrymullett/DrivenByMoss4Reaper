@@ -900,7 +900,7 @@ public class TransportImpl extends BaseImpl implements ITransport
 
     /** {@inheritDoc} */
     @Override
-    public void setClipLauncherPostRecordingAction (PostRecordingAction action)
+    public void setClipLauncherPostRecordingAction (final PostRecordingAction action)
     {
         // Not supported
     }
@@ -917,7 +917,7 @@ public class TransportImpl extends BaseImpl implements ITransport
 
     /** {@inheritDoc} */
     @Override
-    public void setClipLauncherPostRecordingTimeOffset (double beats)
+    public void setClipLauncherPostRecordingTimeOffset (final double beats)
     {
         // Not supported
     }
@@ -934,7 +934,32 @@ public class TransportImpl extends BaseImpl implements ITransport
 
     /** {@inheritDoc} */
     @Override
-    public void setDefaultLaunchQuantization (LaunchQuantization launchQuantization)
+    public void setDefaultLaunchQuantization (final LaunchQuantization launchQuantization)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isFillModeActive ()
+    {
+        // Not supported
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setFillModeActive (final boolean isActive)
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void toggleFillModeActive ()
     {
         // Not supported
     }

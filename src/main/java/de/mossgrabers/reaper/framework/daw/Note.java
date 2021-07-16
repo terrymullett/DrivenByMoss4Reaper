@@ -15,27 +15,41 @@ import java.util.List;
  */
 public class Note
 {
-    private double start;
-    private double end;
-    private int    pitch;
-    private int    velocity;
+    private final boolean isMuted;
+    private final double  start;
+    private final double  end;
+    private final int     pitch;
+    private final int     velocity;
 
 
     /**
      * Constructor.
-     *
+     * 
+     * @param isMuted True if muted
      * @param start The start of the note
      * @param end The end of the note
      * @param channel The MIDI channel
      * @param pitch The pitch of the note
      * @param velocity The velocity of the note
      */
-    public Note (final double start, final double end, final int channel, final int pitch, final int velocity)
+    public Note (final boolean isMuted, final double start, final double end, final int channel, final int pitch, final int velocity)
     {
+        this.isMuted = isMuted;
         this.start = start;
         this.end = end;
         this.pitch = pitch;
         this.velocity = velocity;
+    }
+
+
+    /**
+     * Check if the note is muted.
+     *
+     * @return True if muted
+     */
+    public boolean isMuted ()
+    {
+        return this.isMuted;
     }
 
 
@@ -97,7 +111,13 @@ public class Note
             for (final String part: notesStr.trim ().split (";"))
             {
                 final String [] noteParts = part.split (":");
-                notes.add (new Note (Double.parseDouble (noteParts[0]), Double.parseDouble (noteParts[1]), Integer.parseInt (noteParts[2]), Integer.parseInt (noteParts[3]), Integer.parseInt (noteParts[4])));
+                final boolean isMuted = Integer.parseInt (noteParts[0]) > 0;
+                final double start = Double.parseDouble (noteParts[1]);
+                final double end = Double.parseDouble (noteParts[2]);
+                final int channel = Integer.parseInt (noteParts[3]);
+                final int pitch = Integer.parseInt (noteParts[4]);
+                final int velocity = Integer.parseInt (noteParts[5]);
+                notes.add (new Note (isMuted, start, end, channel, pitch, velocity));
             }
         }
         return notes;

@@ -32,6 +32,7 @@ public class ModeCursorCommand<S extends IControlSurface<C>, C extends Configura
     protected boolean               canScrollDown;
     protected final boolean         notifySelection;
     protected final BooleanSupplier alternateMode;
+    protected ButtonEvent           triggerEvent = ButtonEvent.DOWN;
 
 
     /**
@@ -57,7 +58,7 @@ public class ModeCursorCommand<S extends IControlSurface<C>, C extends Configura
      */
     public ModeCursorCommand (final Direction direction, final IModel model, final S surface, final boolean notifySelection)
     {
-        this (direction, model, surface, true, null);
+        this (direction, model, surface, notifySelection, null);
     }
 
 
@@ -85,7 +86,7 @@ public class ModeCursorCommand<S extends IControlSurface<C>, C extends Configura
     @Override
     public void execute (final ButtonEvent event, final int velocity)
     {
-        if (event != ButtonEvent.DOWN)
+        if (event != this.triggerEvent)
             return;
 
         switch (this.direction)
