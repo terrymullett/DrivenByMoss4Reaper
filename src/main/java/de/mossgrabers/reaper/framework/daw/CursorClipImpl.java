@@ -41,7 +41,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     private final StepInfoImpl [] []  data;
     private int                       editPage     = 0;
     private int                       maxPage      = 1;
-    private final GridStep            editStep     = new GridStep ();
+    private final List<GridStep>      editSteps    = new ArrayList<> ();
 
 
     /**
@@ -437,7 +437,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
             return;
 
         stepInfo.setMuted (isMuted);
-        if (this.editStep.isSet ())
+        if (this.editSteps.isEmpty ())
             return;
 
         final double velocity = stepInfo.getVelocity ();
@@ -469,7 +469,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
             return;
 
         stepInfo.setDuration (duration);
-        if (this.editStep.isSet ())
+        if (this.editSteps.isEmpty ())
             return;
 
         final double velocity = stepInfo.getVelocity ();
@@ -502,7 +502,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
             return;
 
         stepInfo.setVelocity (velocity);
-        if (this.editStep.isSet ())
+        if (this.editSteps.isEmpty ())
             return;
 
         final double duration = stepInfo.getDuration ();
@@ -776,13 +776,14 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
     /** {@inheritDoc} */
     @Override
-    public void startEdit (final int channel, final int step, final int row)
+    public void startEdit (final List<GridStep> editSteps)
     {
         // Is there a previous edit, which is not stopped yet?
         this.stopEdit ();
 
-        this.editStep.set (this, channel, step, row);
-        this.delayedUpdate (channel, step, row);
+        this.editSteps.addAll (editSteps);
+        for (final GridStep step: this.editSteps)
+            this.delayedUpdate (step);
     }
 
 
@@ -790,21 +791,26 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void stopEdit ()
     {
-        if (!this.editStep.isSet ())
+        if (this.editSteps.isEmpty ())
             return;
-        this.sendClipData (this.editStep.getChannel (), this.editStep.getStep (), this.editStep.getNote ());
-        this.editStep.reset ();
+
+        for (final GridStep editStep: this.editSteps)
+            this.sendClipData (editStep.getChannel (), editStep.getStep (), editStep.getNote ());
+        this.editSteps.clear ();
 
         this.updateNoteData ();
     }
 
 
-    private void delayedUpdate (final int channel, final int step, final int row)
+    private void delayedUpdate (final GridStep editStep)
     {
-        if (!this.editStep.isSet ())
+        if (this.editSteps.isEmpty ())
             return;
-        this.sendClipData (channel, step, row);
-        this.host.scheduleTask ( () -> this.delayedUpdate (channel, step, row), 100);
+        final int channel = editStep.getChannel ();
+        final int step = editStep.getStep ();
+        final int note = editStep.getNote ();
+        this.sendClipData (channel, step, note);
+        this.host.scheduleTask ( () -> this.delayedUpdate (new GridStep (channel, step, note)), 100);
     }
 
 
@@ -1075,7 +1081,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
                 for (int step = 0; step < this.numSteps; step++)
                 {
                     final StepInfoImpl stepInfo = this.data[step][row];
-                    if (!this.editStep.isSet ())
+                    if (this.editSteps.isEmpty ())
                         stepInfo.setState (StepState.OFF);
                 }
             }
@@ -1099,7 +1105,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
             return;
 
         final StepInfoImpl stepInfo = this.data[relToPage][row];
-        if (this.editStep.isSet ())
+        if (!this.editSteps.isEmpty ())
             return;
 
         stepInfo.setMuted (note.isMuted ());
