@@ -33,6 +33,8 @@ import de.mossgrabers.reaper.framework.device.column.DeviceTypeFilterColumn;
 import de.mossgrabers.reaper.framework.device.column.EmptyFilterColumn;
 import de.mossgrabers.reaper.ui.dialog.BrowserDialog;
 
+import javax.swing.SwingUtilities;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -229,16 +231,13 @@ public class BrowserImpl extends AbstractBrowser
         this.columnData = this.columnDataContentTypes[id];
         this.selectedIndex = 0;
 
-        this.browserWindow.updateFilters ();
-
         if (contentType == ContentType.DEVICE)
             this.updateFilteredDevices ();
-        else
-        {
-            this.host.scheduleTask ( () -> {
-                this.browserWindow.updateResults (this.selectedIndex);
-            }, 1000);
-        }
+
+        SwingUtilities.invokeLater ( () -> {
+            this.browserWindow.updateFilters ();
+            this.host.scheduleTask ( () -> this.browserWindow.updateResults (this.selectedIndex), 1000);
+        });
     }
 
 
@@ -291,7 +290,7 @@ public class BrowserImpl extends AbstractBrowser
     {
         this.stopBrowsing (false);
 
-        this.browserWindow.open (this);
+        SwingUtilities.invokeLater ( () -> this.browserWindow.open (this));
 
         this.enableObservers (true);
         this.insertPosition = insertPos;
@@ -396,7 +395,7 @@ public class BrowserImpl extends AbstractBrowser
     {
         final int length = this.isPresetContentType () ? this.presetCount : this.filteredDevices.size ();
         this.selectedIndex = Math.min (Math.max (0, index), length - 1);
-        this.browserWindow.updateResultSelection (this.selectedIndex);
+        SwingUtilities.invokeLater ( () -> this.browserWindow.updateResultSelection (this.selectedIndex));
     }
 
 
@@ -488,7 +487,7 @@ public class BrowserImpl extends AbstractBrowser
         if (this.selectedIndex >= this.filteredDevices.size ())
             this.selectedIndex = 0;
 
-        this.browserWindow.updateResults (this.selectedIndex);
+        SwingUtilities.invokeLater ( () -> this.browserWindow.updateResults (this.selectedIndex));
     }
 
 

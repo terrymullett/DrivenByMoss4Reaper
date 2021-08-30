@@ -6,8 +6,7 @@ package de.mossgrabers.reaper.framework.daw.data.bank;
 
 import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.DAWColor;
-import de.mossgrabers.framework.daw.IApplication;
-import de.mossgrabers.framework.daw.data.ICursorTrack;
+import de.mossgrabers.framework.daw.data.IDeviceMetadata;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.ISceneBank;
 import de.mossgrabers.framework.daw.data.bank.ITrackBank;
@@ -15,9 +14,12 @@ import de.mossgrabers.framework.daw.data.empty.EmptyTrack;
 import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.framework.observer.IIndexedValueObserver;
 import de.mossgrabers.reaper.communication.Processor;
+import de.mossgrabers.reaper.framework.daw.ApplicationImpl;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -28,31 +30,28 @@ import java.util.Optional;
  */
 public abstract class AbstractTrackBankImpl extends AbstractPagedBankImpl<TrackImpl, ITrack> implements ITrackBank
 {
-    private static final String SELECT_COMMAND = "/select";
+    private static final String   SELECT_COMMAND = "/select";
 
-    private final IApplication  application;
-    private final ICursorTrack  cursorTrack;
-    private final int           numScenes;
-    private final int           numSends;
-    private final ISceneBank    sceneBank;
+    private final ApplicationImpl application;
+    private final int             numScenes;
+    private final int             numSends;
+    private final ISceneBank      sceneBank;
 
 
     /**
      * Constructor.
      *
      * @param dataSetup Some configuration variables
-     * @param cursorTrack The cursor track
      * @param application The application
      * @param numTracks The number of tracks of a bank page
      * @param numScenes The number of scenes of a bank page
      * @param numSends The number of sends of a bank page
      */
-    protected AbstractTrackBankImpl (final DataSetupEx dataSetup, final ICursorTrack cursorTrack, final IApplication application, final int numTracks, final int numScenes, final int numSends)
+    protected AbstractTrackBankImpl (final DataSetupEx dataSetup, final ApplicationImpl application, final int numTracks, final int numScenes, final int numSends)
     {
         super (dataSetup, numTracks, EmptyTrack.INSTANCE);
 
         this.application = application;
-        this.cursorTrack = cursorTrack;
 
         this.numScenes = numScenes;
         this.numSends = numSends;
@@ -267,8 +266,7 @@ public abstract class AbstractTrackBankImpl extends AbstractPagedBankImpl<TrackI
     @Override
     public void addChannel (final ChannelType type, final String name)
     {
-        final DAWColor color = DAWColor.getNextColor ();
-        this.addChannel (type, name, color.getColor ());
+        this.addChannel (type, name, DAWColor.getNextColor ().getColor ());
     }
 
 
@@ -276,47 +274,15 @@ public abstract class AbstractTrackBankImpl extends AbstractPagedBankImpl<TrackI
     @Override
     public void addChannel (final ChannelType type, final String name, final ColorEx color)
     {
-        this.addTrack (type);
-
-        if (name == null && color == null)
-            return;
-
-        this.host.scheduleTask ( () -> {
-
-            if (!this.cursorTrack.doesExist ())
-                return;
-            if (name != null)
-                this.cursorTrack.setName (name);
-            if (color != null)
-                this.cursorTrack.setColor (color);
-
-        }, 300);
+        this.application.addChannel (type, name, color, Collections.emptyList ());
     }
 
 
-    /**
-     * Adds a new track to this track bank.
-     *
-     * @param type The type of the track to add
-     */
-    protected void addTrack (final ChannelType type)
+    /** {@inheritDoc} */
+    @Override
+    public void addChannel (final ChannelType type, final String name, final List<IDeviceMetadata> devices)
     {
-        switch (type)
-        {
-            case HYBRID:
-            case INSTRUMENT:
-                this.application.addInstrumentTrack ();
-                break;
-
-            case EFFECT:
-                this.application.addEffectTrack ();
-                break;
-
-            default:
-            case AUDIO:
-                this.application.addAudioTrack ();
-                break;
-        }
+        this.application.addChannel (type, name, DAWColor.getNextColor ().getColor (), devices);
     }
 
 

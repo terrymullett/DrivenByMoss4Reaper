@@ -352,6 +352,24 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
 
     /** {@inheritDoc} */
     @Override
+    public void processStringArgs (final Processor processor, final String command, final String [] values)
+    {
+        this.processStringArgs (processor.name ().toLowerCase (Locale.US), command, values);
+    }
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param processor The processor ID
+     * @param command The command ID
+     * @param values Several string values
+     */
+    public native void processStringArgs (final String processor, final String command, final String [] values);
+
+
+    /** {@inheritDoc} */
+    @Override
     public void processIntArg (final Processor processor, final String command, final int value)
     {
         this.processIntArg (processor.name ().toLowerCase (Locale.US), command, value);

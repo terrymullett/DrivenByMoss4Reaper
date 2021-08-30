@@ -4,12 +4,19 @@
 
 package de.mossgrabers.reaper.framework.daw;
 
+import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.IApplication;
+import de.mossgrabers.framework.daw.data.IDeviceMetadata;
+import de.mossgrabers.framework.daw.resource.ChannelType;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.Actions;
+import de.mossgrabers.reaper.framework.device.Device;
 import de.mossgrabers.reaper.ui.utils.RobotUtil;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 
 /**
@@ -235,7 +242,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void addAudioTrack ()
     {
-        this.sender.invokeAction (Actions.INSERT_NEW_TRACK);
+        this.addChannel (ChannelType.AUDIO, null, null, Collections.emptyList ());
     }
 
 
@@ -243,7 +250,7 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void addEffectTrack ()
     {
-        this.sender.invokeAction (Actions.INSERT_NEW_TRACK);
+        this.addChannel (ChannelType.EFFECT, null, null, Collections.emptyList ());
     }
 
 
@@ -251,7 +258,58 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     @Override
     public void addInstrumentTrack ()
     {
-        this.sender.invokeAction (Actions.INSERT_NEW_TRACK);
+        this.addChannel (ChannelType.INSTRUMENT, null, null, Collections.emptyList ());
+    }
+
+
+    /**
+     * Create a new channel.
+     *
+     * @param type The type of the channel
+     * @param name The name of the channel, might be null
+     * @param color The color of the channel, might be null
+     * @param devices An optional list of devices to add to the channel, must not be null
+     */
+    public void addChannel (final ChannelType type, final String name, final ColorEx color, final List<IDeviceMetadata> devices)
+    {
+        final List<String> params = new ArrayList<> ();
+
+        final String typeStr;
+        switch (type)
+        {
+            case HYBRID:
+            case INSTRUMENT:
+                typeStr = "INSTRUMENT";
+                break;
+
+            case EFFECT:
+                typeStr = "EFFECT";
+                break;
+
+            default:
+            case AUDIO:
+                typeStr = "AUDIO";
+                break;
+        }
+
+        params.add (typeStr);
+        params.add (name == null ? "" : name);
+
+        // Add the color, if any
+        final String colorTxt;
+        if (color == null)
+            colorTxt = "";
+        else
+        {
+            final int [] rgb = color.toIntRGB255 ();
+            colorTxt = "RGB(" + rgb[0] + "," + rgb[1] + "," + rgb[2] + ")";
+        }
+        params.add (colorTxt);
+
+        for (final IDeviceMetadata device: devices)
+            params.add (((Device) device).getCreationName ());
+
+        this.sender.processStringArgs (Processor.TRACK, "addTrack", params.toArray (new String [params.size ()]));
     }
 
 

@@ -4,8 +4,6 @@
 
 package de.mossgrabers.reaper.framework.daw.data.bank;
 
-import de.mossgrabers.framework.daw.IApplication;
-import de.mossgrabers.framework.daw.data.ICursorTrack;
 import de.mossgrabers.framework.daw.data.IDrumDevice;
 import de.mossgrabers.framework.daw.data.IMasterTrack;
 import de.mossgrabers.framework.daw.data.ISend;
@@ -15,6 +13,7 @@ import de.mossgrabers.framework.daw.data.bank.ISendBank;
 import de.mossgrabers.framework.observer.INoteObserver;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.TreeNode;
+import de.mossgrabers.reaper.framework.daw.ApplicationImpl;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.Note;
 import de.mossgrabers.reaper.framework.daw.data.DrumPadImpl;
@@ -56,7 +55,6 @@ public class TrackBankImpl extends AbstractTrackBankImpl
      * Constructor.
      *
      * @param dataSetup Some configuration variables
-     * @param cursorTrack The cursor track
      * @param application The application
      * @param numTracks The number of tracks in a bank page
      * @param numScenes The number of scenes in a bank page
@@ -66,9 +64,9 @@ public class TrackBankImpl extends AbstractTrackBankImpl
      * @param hasFullFlatTrackList True if the track navigation should include effect and master
      *            tracks if flat
      */
-    public TrackBankImpl (final DataSetupEx dataSetup, final ICursorTrack cursorTrack, final IApplication application, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final boolean hasFullFlatTrackList)
+    public TrackBankImpl (final DataSetupEx dataSetup, final ApplicationImpl application, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final boolean hasFullFlatTrackList)
     {
-        this (dataSetup, cursorTrack, application, null, numTracks, numScenes, numSends, hasFlatTrackList, hasFullFlatTrackList);
+        this (dataSetup, application, null, numTracks, numScenes, numSends, hasFlatTrackList, hasFullFlatTrackList);
     }
 
 
@@ -76,7 +74,6 @@ public class TrackBankImpl extends AbstractTrackBankImpl
      * Constructor.
      *
      * @param dataSetup Some configuration variables
-     * @param cursorTrack The cursor track
      * @param application The application
      * @param drumDevices The drum devices to update the drum pads
      * @param numTracks The number of tracks in a bank page
@@ -87,9 +84,9 @@ public class TrackBankImpl extends AbstractTrackBankImpl
      * @param hasFullFlatTrackList True if the track navigation should include effect and master
      *            tracks if flat
      */
-    public TrackBankImpl (final DataSetupEx dataSetup, final ICursorTrack cursorTrack, final IApplication application, final List<IDrumDevice> drumDevices, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final boolean hasFullFlatTrackList)
+    public TrackBankImpl (final DataSetupEx dataSetup, final ApplicationImpl application, final List<IDrumDevice> drumDevices, final int numTracks, final int numScenes, final int numSends, final boolean hasFlatTrackList, final boolean hasFullFlatTrackList)
     {
-        super (dataSetup, cursorTrack, application, numTracks, numScenes, numSends);
+        super (dataSetup, application, numTracks, numScenes, numSends);
 
         this.drumDevices = drumDevices;
 

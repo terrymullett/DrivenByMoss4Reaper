@@ -45,6 +45,16 @@ public interface MessageSender
      * Call Reaper command in DLL.
      *
      * @param processor The processor ID
+     * @param command The command ID
+     * @param values Several string values
+     */
+    void processStringArgs (final Processor processor, final String command, final String [] values);
+
+
+    /**
+     * Call Reaper command in DLL.
+     *
+     * @param processor The processor ID
      * @param value An integer value
      */
     default void processIntArg (final Processor processor, final int value)
