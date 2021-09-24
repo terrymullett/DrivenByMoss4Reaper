@@ -74,7 +74,16 @@ public class ProjectImpl extends BaseImpl implements IProject
     @Override
     public void createSceneFromPlayingLauncherClips ()
     {
-        // Not supported
+        // TODO Create a marker from the maximum range of clips where the play cursor is currently
+        // playing
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void createScene ()
+    {
+        // TODO Create a marker of length "new clip"
     }
 
 
@@ -94,6 +103,14 @@ public class ProjectImpl extends BaseImpl implements IProject
     public void save ()
     {
         this.sender.invokeAction (Actions.PROJECT_SAVE);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void load ()
+    {
+        this.sender.invokeAction (Actions.PROJECT_LOAD);
     }
 
 

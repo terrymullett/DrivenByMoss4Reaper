@@ -64,7 +64,7 @@ public class ModelImpl extends AbstractModel
         this.dataSetup = dataSetup;
 
         this.application = new ApplicationImpl (dataSetup);
-        this.arranger = new ArrangerImpl ();
+        this.arranger = new ArrangerImpl (dataSetup);
         this.mixer = new MixerImpl (dataSetup);
         this.project = new ProjectImpl (dataSetup, this);
         this.transport = new TransportImpl (dataSetup, this, iniFiles);
@@ -109,8 +109,7 @@ public class ModelImpl extends AbstractModel
         {
             switch (deviceID)
             {
-                case FIRST_INSTRUMENT:
-                case NI_KOMPLETE:
+                case FIRST_INSTRUMENT, NI_KOMPLETE:
                     final ISpecificDevice specificDevice = new CursorDeviceImpl (dataSetup, numSends, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
                     this.specificDevices.put (DeviceID.FIRST_INSTRUMENT, specificDevice);
                     if (deviceID == DeviceID.NI_KOMPLETE)
@@ -364,6 +363,7 @@ public class ModelImpl extends AbstractModel
                 if (color.isPresent ())
                     slot.setColor (new ColorEx (color.get ()));
                 slot.setExists (true);
+                slot.setHasContent (true);
             }
         }
 
@@ -373,7 +373,16 @@ public class ModelImpl extends AbstractModel
         {
             final TrackImpl track = tb.getUnpagedItem (i);
             final SlotBankImpl slotBank = (SlotBankImpl) track.getSlotBank ();
+
+            final int itemCount = slotBank.getItemCount ();
             slotBank.setMaxSlotCount (maxSlotCount);
+
+            for (int slotIndex = itemCount; slotIndex < maxSlotCount; slotIndex++)
+            {
+                final SlotImpl slot = slotBank.getUnpagedItem (slotIndex);
+                slot.setExists (true);
+                slot.setHasContent (false);
+            }
         }
     }
 
