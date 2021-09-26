@@ -62,7 +62,7 @@ public class HostImpl implements IHost
      *
      * @param logModel The logging model
      * @param windowManager The window manager for the bitmap display window
-     * @param controllerInstance The controller instacne for restarting it
+     * @param controllerInstance The controller instance for restarting it
      */
     public HostImpl (final LogModel logModel, final WindowManager windowManager, final IControllerInstance controllerInstance)
     {

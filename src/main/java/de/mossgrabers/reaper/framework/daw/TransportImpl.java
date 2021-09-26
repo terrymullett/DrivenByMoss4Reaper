@@ -170,7 +170,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     public boolean isLauncherOverdub ()
     {
         final Optional<ITrack> selectedTrackOpt = this.model.getCurrentTrackBank ().getSelectedItem ();
-        return selectedTrackOpt.isPresent () && selectedTrackOpt.get () instanceof TrackImpl trackImpl && trackImpl.isOverdub ();
+        return selectedTrackOpt.isPresent () && selectedTrackOpt.get ()instanceof final TrackImpl trackImpl && trackImpl.isOverdub ();
     }
 
 
