@@ -58,19 +58,21 @@ import java.util.regex.Pattern;
  */
 public class MainApp implements MessageSender, AppCallback, WindowManager
 {
-    private static final int                DEVICE_UPDATE_RATE = 30;
-    private static final Pattern            TAG_PATTERN        = Pattern.compile ("(.*?)=\"(.*?)\"\\s*");
+    private static final int                DEVICE_UPDATE_RATE           = 30;
+    private static final Pattern            TAG_PATTERN                  = Pattern.compile ("(.*?)=\"(.*?)\"\\s*");
 
-    private final LogModel                  logModel           = new LogModel ();
+    private static final String             CONFIG_DISABLE_CHUNK_READING = "DisableChunkReading";
 
-    private final MainConfiguration         mainConfiguration  = new MainConfiguration ();
-    private final Object                    mainFrameLock      = new Object ();
+    private final LogModel                  logModel                     = new LogModel ();
+
+    private final MainConfiguration         mainConfiguration            = new MainConfiguration ();
+    private final Object                    mainFrameLock                = new Object ();
     private MainFrame                       mainFrame;
 
     private final ControllerInstanceManager instanceManager;
     private Timer                           animationTimer;
     private final String                    iniPath;
-    private final IniFiles                  iniFiles           = new IniFiles ();
+    private final IniFiles                  iniFiles                     = new IniFiles ();
 
 
     /**
@@ -429,10 +431,20 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    public void toggleTrackChunkReading ()
+    {
+        final boolean disableChunkRead = !this.mainConfiguration.getBoolean (CONFIG_DISABLE_CHUNK_READING);
+        this.mainConfiguration.putBoolean (CONFIG_DISABLE_CHUNK_READING, disableChunkRead);
+        enableUpdates (Processor.CHUNK, disableChunkRead);
+    }
+
+
     /**
-     * Dis-/enable an update processor for performance improvements.
+     * Disable/enable an update processor for performance improvements.
      *
-     * @param processor The processor to The processor to dis-/enable
+     * @param processor The processor to The processor to disable/enable
      * @param enable True to enable processor updates, false to disable
      */
     public native void enableUpdates (String processor, boolean enable);
@@ -772,7 +784,9 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
             if (this.mainFrame == null)
             {
                 setSystemLF ();
-                this.mainFrame = new MainFrame (this, this.instanceManager, this.logModel);
+                final boolean disableChunkReading = this.mainConfiguration.getBoolean (CONFIG_DISABLE_CHUNK_READING, true);
+                enableUpdates (Processor.CHUNK, disableChunkReading);
+                this.mainFrame = new MainFrame (this, this.instanceManager, this.logModel, disableChunkReading);
                 this.mainConfiguration.restoreStagePlacement (this.mainFrame);
             }
             return this.mainFrame;

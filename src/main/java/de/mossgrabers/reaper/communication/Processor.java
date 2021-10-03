@@ -54,7 +54,7 @@ public enum Processor
     ACTION,
     /** Single commands - quantize. */
     QUANTIZE,
-    /** Single commands - metro volume. */
+    /** Single commands - metronome volume. */
     METRO_VOL,
     /** Single commands - undo. */
     UNDO,
@@ -64,6 +64,9 @@ public enum Processor
     CURSOR,
     /** Single commands - refresh. */
     REFRESH,
-    /** Single commands - inifile. */
-    INIFILE;
+    /** Single commands - INI file. */
+    INIFILE,
+
+    /** Option to disable reading the track chunk. */
+    CHUNK;
 }

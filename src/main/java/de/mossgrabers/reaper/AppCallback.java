@@ -30,7 +30,7 @@ public interface AppCallback
      * Add and create a controller from a controller definition.
      *
      * @param definition The controller definition
-     * @return The created controller instance or null if an error occured
+     * @return The created controller instance or null if an error occurred
      */
     IControllerInstance addController (IControllerDefinition definition);
 
@@ -80,8 +80,14 @@ public interface AppCallback
     /**
      * Disable/enable an update processor for performance improvements.
      *
-     * @param processor The processor to The processor to dis-/enable
+     * @param processor The processor to The processor to disable/enable
      * @param enable True to enable processor updates, false to disable
      */
     void enableUpdates (final Processor processor, final boolean enable);
+
+
+    /**
+     * Toggle reading (slow) track chunk reading.
+     */
+    void toggleTrackChunkReading ();
 }

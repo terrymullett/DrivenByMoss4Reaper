@@ -17,6 +17,7 @@ import de.mossgrabers.reaper.ui.widget.CheckboxListRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -72,8 +73,9 @@ public class MainFrame extends JFrame
      * @param callback The callback from the user interface
      * @param instanceManager The available controller definitions
      * @param logModel The logging model
+     * @param disableChunkReading Disable reading of the track chunk
      */
-    public MainFrame (final AppCallback callback, final ControllerInstanceManager instanceManager, final LogModel logModel)
+    public MainFrame (final AppCallback callback, final ControllerInstanceManager instanceManager, final LogModel logModel, final boolean disableChunkReading)
     {
         this.callback = callback;
 
@@ -120,7 +122,7 @@ public class MainFrame extends JFrame
         enableButton.addActionListener (event -> this.toggleEnableController ());
 
         final JButton debugButton = new JButton ("Debug");
-        this.configureDebugButton (debugButton);
+        this.configureDebugButton (debugButton, disableChunkReading);
 
         final JPanel deviceButtonContainer = new JPanel ();
         deviceButtonContainer.setBorder (new EmptyBorder (0, GAP, 0, 0));
@@ -234,7 +236,7 @@ public class MainFrame extends JFrame
 
 
     /**
-     * Dis-/enable the currently selected controller, if any.
+     * Disable/enable the currently selected controller, if any.
      */
     private void toggleEnableController ()
     {
@@ -249,6 +251,9 @@ public class MainFrame extends JFrame
     }
 
 
+    /**
+     * Set the window title and add the version number.
+     */
     protected void setTitle ()
     {
         final StringBuilder sb = new StringBuilder ("DrivenByMoss 4 Reaper");
@@ -329,9 +334,14 @@ public class MainFrame extends JFrame
     }
 
 
-    private void configureDebugButton (final JButton debugButton)
+    private void configureDebugButton (final JButton debugButton, final boolean disableChunkReading)
     {
         final JPopupMenu popup = new JPopupMenu ();
+
+        final JCheckBoxMenuItem disableTrackChunkItem = new JCheckBoxMenuItem ("Disable track chunk", null, disableChunkReading);
+        disableTrackChunkItem.setToolTipText ("Improves performance with sample heavy devices. Loses track deactivation state and track record quantization.");
+        disableTrackChunkItem.addActionListener (event -> this.callback.toggleTrackChunkReading ());
+        popup.add (disableTrackChunkItem);
 
         final JMenuItem refreshItem = new JMenuItem ("Data Refresh");
         refreshItem.addActionListener (event -> this.callback.sendRefreshCommand ());
