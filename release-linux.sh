@@ -1,3 +1,3 @@
-export JAVA_HOME=/home/mos/java/jdk-16.0.2+7/
+export JAVA_HOME=export JAVA_HOME=/home/mos/java/jdk-17.0.1+12/
 
 ./gradlew clean generateLicenseReport installDist
