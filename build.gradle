@@ -7,10 +7,10 @@ plugins {
     id 'eclipse'
 }
 
-sourceCompatibility = 16
-targetCompatibility = 16
+sourceCompatibility = 17
+targetCompatibility = 17
 
-version = '14.1.0'
+version = '14.2.0'
 
 jar {
     manifest {
