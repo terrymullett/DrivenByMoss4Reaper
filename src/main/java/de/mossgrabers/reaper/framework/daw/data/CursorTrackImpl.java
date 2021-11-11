@@ -25,15 +25,16 @@ import java.util.Optional;
 
 
 /**
- * The master track.
+ * The cursor track.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
 public class CursorTrackImpl implements ICursorTrack
 {
     private final IModel model;
-    private boolean      isPinned    = false;
-    private ITrack       pinnedTrack = null;
+    private boolean      isGroupExpanded = true;
+    private boolean      isPinned        = false;
+    private ITrack       pinnedTrack     = null;
 
 
     /**
@@ -62,6 +63,34 @@ public class CursorTrackImpl implements ICursorTrack
     {
         final ITrack selectedTrack = this.getPinnedOrSelectedTrack ();
         return selectedTrack != null && selectedTrack.isGroup ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isGroupExpanded ()
+    {
+        return this.isGroupExpanded;
+    }
+
+
+    /**
+     * Set the group expanded state.
+     *
+     * @param isGroupExpanded The group expanded state
+     */
+    public void setIsGroupExpanded (final boolean isGroupExpanded)
+    {
+        this.isGroupExpanded = isGroupExpanded;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void toggleGroupExpanded ()
+    {
+        // TODO Auto-generated method stub
+
     }
 
 

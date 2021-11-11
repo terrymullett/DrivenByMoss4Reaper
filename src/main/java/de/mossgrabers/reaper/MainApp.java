@@ -437,7 +437,7 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
     {
         final boolean disableChunkRead = !this.mainConfiguration.getBoolean (CONFIG_DISABLE_CHUNK_READING);
         this.mainConfiguration.putBoolean (CONFIG_DISABLE_CHUNK_READING, disableChunkRead);
-        enableUpdates (Processor.CHUNK, disableChunkRead);
+        this.enableUpdates (Processor.CHUNK, disableChunkRead);
     }
 
 
@@ -785,7 +785,7 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
             {
                 setSystemLF ();
                 final boolean disableChunkReading = this.mainConfiguration.getBoolean (CONFIG_DISABLE_CHUNK_READING, true);
-                enableUpdates (Processor.CHUNK, disableChunkReading);
+                this.enableUpdates (Processor.CHUNK, disableChunkReading);
                 this.mainFrame = new MainFrame (this, this.instanceManager, this.logModel, disableChunkReading);
                 this.mainConfiguration.restoreStagePlacement (this.mainFrame);
             }

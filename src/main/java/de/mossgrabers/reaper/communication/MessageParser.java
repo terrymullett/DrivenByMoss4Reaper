@@ -161,6 +161,12 @@ public class MessageParser
                     case "engine":
                         this.application.setInternalEngineActive (Integer.parseInt (value) > 0);
                         break;
+                    case "canUndo":
+                        this.application.setCanUndoState (Integer.parseInt (value) > 0);
+                        break;
+                    case "canRedo":
+                        this.application.setCanRedoState (Integer.parseInt (value) > 0);
+                        break;
                     default:
                         this.host.error ("Unhandled Project parameter: " + projectCmd);
                         break;
@@ -288,10 +294,7 @@ public class MessageParser
                 break;
 
             case "time":
-                if (parts.isEmpty ())
-                    this.transport.setPositionValue (Double.parseDouble (value));
-                else if ("str".equals (parts.poll ()))
-                    this.transport.setPositionText (value);
+                this.parseTime (parts, value);
                 break;
 
             case "beat":
@@ -319,6 +322,57 @@ public class MessageParser
                 return false;
         }
         return true;
+    }
+
+
+    protected void parseTime (final Queue<String> parts, final String value)
+    {
+        // Parse play position values
+
+        if (parts.isEmpty ())
+        {
+            this.transport.setPositionValue (Double.parseDouble (value));
+            return;
+        }
+
+        final String cmd = parts.poll ();
+        if ("str".equals (cmd))
+        {
+            this.transport.setPositionText (value);
+            return;
+        }
+
+        // Parse loop start and end values
+
+        if (!"loop".equals (cmd) || parts.isEmpty ())
+            return;
+
+        final String loopCmd = parts.poll ();
+        switch (loopCmd)
+        {
+            case "start":
+                if (parts.isEmpty ())
+                {
+                    this.transport.setLoopStartValue (Double.parseDouble (value));
+                    return;
+                }
+                if ("str".equals (parts.poll ()))
+                    this.transport.setLoopStartText (value);
+                else
+                    this.transport.setLoopStartBeatText (value);
+                break;
+
+            case "length":
+                if (parts.isEmpty ())
+                    this.transport.setLoopLengthValue (Double.parseDouble (value));
+                else
+                    this.transport.setLoopLengthBeatText (value);
+                break;
+
+            default:
+                // Not supported
+                return;
+        }
     }
 
 
@@ -390,6 +444,10 @@ public class MessageParser
 
             case "type":
                 track.setType (ChannelType.valueOf (value));
+                break;
+
+            case "isGroupExpanded":
+                track.setIsGroupExpanded (Integer.parseInt (value) > 0);
                 break;
 
             case TAG_SELECT:

@@ -29,6 +29,8 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     private String  panelLayout  = IApplication.PANEL_LAYOUT_ARRANGE;
     private boolean engineActive = true;
     private int     windowLayout = 0;
+    private boolean canUndoState = true;
+    private boolean canRedoState = true;
 
 
     /**
@@ -224,6 +226,33 @@ public class ApplicationImpl extends BaseImpl implements IApplication
 
     /** {@inheritDoc} */
     @Override
+    public void undo ()
+    {
+        this.sender.processNoArg (Processor.UNDO);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean canUndo ()
+    {
+        return this.canUndoState;
+    }
+
+
+    /**
+     * Set the state of canUndo.
+     *
+     * @param canUndoState The state
+     */
+    public void setCanUndoState (final boolean canUndoState)
+    {
+        this.canUndoState = canUndoState;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void redo ()
     {
         this.sender.processNoArg (Processor.REDO);
@@ -232,9 +261,20 @@ public class ApplicationImpl extends BaseImpl implements IApplication
 
     /** {@inheritDoc} */
     @Override
-    public void undo ()
+    public boolean canRedo ()
     {
-        this.sender.processNoArg (Processor.UNDO);
+        return this.canRedoState;
+    }
+
+
+    /**
+     * Set the state of canRedo.
+     *
+     * @param canRedoState The state
+     */
+    public void setCanRedoState (final boolean canRedoState)
+    {
+        this.canRedoState = canRedoState;
     }
 
 

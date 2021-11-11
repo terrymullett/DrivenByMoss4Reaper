@@ -31,30 +31,36 @@ import java.util.Optional;
  */
 public class TransportImpl extends BaseImpl implements ITransport
 {
-    private static final int                   PUNCH_OFF     = 0;
-    private static final int                   PUNCH_ITEMS   = 1;
-    private static final int                   PUNCH_LOOP    = 2;
+    private static final int                   PUNCH_OFF          = 0;
+    private static final int                   PUNCH_ITEMS        = 1;
+    private static final int                   PUNCH_LOOP         = 2;
 
-    private static final Object                UPDATE_LOCK   = new Object ();
+    private static final Object                UPDATE_LOCK        = new Object ();
 
     private final IModel                       model;
     private final IniFiles                     iniFiles;
 
-    private double                             position      = 0;            // Time
-    private String                             positionStr   = "";
-    private String                             beatsStr      = "";
+    private double                             position           = 0;            // Time
+    private String                             positionStr        = "";
+    private String                             beatsStr           = "";
+    private double                             loopStart          = 0;
+    private double                             loopLength         = 0;
+    private String                             loopStartBeatsStr  = "";
+    private String                             loopLengthBeatsStr = "";
+    private String                             loopStartStr       = "";
+    private String                             loopLengthStr      = "";
 
-    private boolean                            isMetronomeOn = false;
-    private boolean                            isPlaying     = false;
-    private boolean                            isRecording   = false;
-    private boolean                            isLooping     = false;
+    private boolean                            isMetronomeOn      = false;
+    private boolean                            isPlaying          = false;
+    private boolean                            isRecording        = false;
+    private boolean                            isLooping          = false;
 
-    private int                                numerator     = 4;
-    private int                                denominator   = 4;
-    private boolean                            prerollClick  = false;
-    private int                                preroll       = 2;
+    private int                                numerator          = 4;
+    private int                                denominator        = 4;
+    private boolean                            prerollClick       = false;
+    private int                                preroll            = 2;
 
-    private int                                punchMode     = PUNCH_OFF;
+    private int                                punchMode          = PUNCH_OFF;
     private final MetronomeVolumeParameterImpl metronomeVolumeParameter;
     private final TempoParameterImpl           tempoParameter;
 
@@ -523,17 +529,7 @@ public class TransportImpl extends BaseImpl implements ITransport
      */
     public void setPositionText (final String positionStr)
     {
-        final String [] split = positionStr.split ("\\.");
-        if (split.length == 0)
-        {
-            this.positionStr = "0:000";
-            return;
-        }
-        final String replace = split[0].replace (':', '.');
-        if (split.length == 1)
-            this.positionStr = replace;
-        else
-            this.positionStr = replace + ":" + split[1];
+        this.positionStr = reformatTime (positionStr);
     }
 
 
@@ -544,21 +540,7 @@ public class TransportImpl extends BaseImpl implements ITransport
      */
     public void setBeats (final String beats)
     {
-        final int pos = beats.lastIndexOf ('.');
-        if (pos < 1)
-        {
-            this.beatsStr = "0:00";
-            return;
-        }
-
-        final String ticksStr = beats.substring (pos + 1);
-        // Ticks are 0-99
-        int ticks = Integer.parseInt (ticksStr);
-        // Scale to 1-4:0-99 (= 0-399)
-        final int scaled = (int) Math.round (ticks * 399.0 / 99.0);
-        final int subBeats = scaled / 100;
-        ticks = scaled % 100;
-        this.beatsStr = String.format ("%s.%d:%02d", beats.substring (0, pos), Integer.valueOf (subBeats + 1), Integer.valueOf (ticks));
+        this.beatsStr = reformatBeats (beats, 1);
     }
 
 
@@ -601,6 +583,162 @@ public class TransportImpl extends BaseImpl implements ITransport
     {
         final double frac = slow ? TransportConstants.INC_FRACTION_TIME_SLOW : TransportConstants.INC_FRACTION_TIME;
         this.setPosition (increase ? this.position + frac : Math.max (this.position - frac, 0.0));
+    }
+
+
+    /**
+     * Set the loop start value.
+     *
+     * @param time The loop start in seconds
+     */
+    public void setLoopStartValue (final double time)
+    {
+        this.loopStart = time;
+    }
+
+
+    /**
+     * Set the text for the loop start (time).
+     *
+     * @param time The loop start in seconds
+     */
+    public void setLoopStartText (final String time)
+    {
+        this.loopStartStr = reformatTime (time);
+    }
+
+
+    /**
+     * Get the text for the loop start (time).
+     *
+     * @return The loop start in seconds
+     */
+    public String getLoopStartStr ()
+    {
+        return this.loopStartStr;
+    }
+
+
+    /**
+     * Set the text for the loop start (beats).
+     *
+     * @param beats The loop start in beats
+     */
+    public void setLoopStartBeatText (final String beats)
+    {
+        this.loopStartBeatsStr = reformatBeats (beats, 1);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public String getLoopStartBeatText ()
+    {
+        return this.loopStartBeatsStr;
+    }
+
+
+    /**
+     * Set the arranger loop start.
+     *
+     * @param time The loop start to set
+     */
+    public void setLoopStart (final double time)
+    {
+        synchronized (UPDATE_LOCK)
+        {
+            if (this.isAutomationRecActive ())
+                this.sender.delayUpdates (Processor.TRANSPORT);
+            this.loopStart = time;
+            this.sender.processDoubleArg (Processor.TIME, "loop/start", this.loopStart);
+        }
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void changeLoopStart (final boolean increase, final boolean slow)
+    {
+        final double frac = slow ? TransportConstants.INC_FRACTION_TIME_SLOW : TransportConstants.INC_FRACTION_TIME;
+        this.setLoopStart (increase ? this.loopStart + frac : Math.max (this.loopStart - frac, 0.0));
+    }
+
+
+    /**
+     * Set the text for the loop length (time).
+     *
+     * @param time The loop length in seconds
+     */
+    public void setLoopLengthText (final String time)
+    {
+        this.loopLengthStr = reformatTime (time);
+    }
+
+
+    /**
+     * Get the text for the loop length (time).
+     *
+     * @return The loop length in seconds
+     */
+    public String getLoopLengthStr ()
+    {
+        return this.loopLengthStr;
+    }
+
+
+    /**
+     * Set the loop length value.
+     *
+     * @param time The loop length in seconds
+     */
+    public void setLoopLengthValue (final double time)
+    {
+        this.loopLength = time;
+    }
+
+
+    /**
+     * Set the text for the loop length (beats).
+     *
+     * @param beats The loop length in beats
+     */
+    public void setLoopLengthBeatText (final String beats)
+    {
+        this.loopLengthBeatsStr = reformatBeats (beats, 0);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public String getLoopLengthBeatText ()
+    {
+        return this.loopLengthBeatsStr;
+    }
+
+
+    /**
+     * Set the arranger loop length.
+     *
+     * @param time The loop length to set
+     */
+    public void setLoopLength (final double time)
+    {
+        synchronized (UPDATE_LOCK)
+        {
+            if (this.isAutomationRecActive ())
+                this.sender.delayUpdates (Processor.TRANSPORT);
+            this.loopLength = time;
+            this.sender.processDoubleArg (Processor.TIME, "loop/length", this.loopLength);
+        }
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void changeLoopLength (final boolean increase, final boolean slow)
+    {
+        final double frac = slow ? TransportConstants.INC_FRACTION_TIME_SLOW : TransportConstants.INC_FRACTION_TIME;
+        this.setLoopLength (increase ? this.loopLength + frac : Math.max (this.loopLength - frac, 0.0));
     }
 
 
@@ -954,5 +1092,35 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void toggleFillModeActive ()
     {
         // Not supported
+    }
+
+
+    private static String reformatBeats (final String beatsStr, final int offset)
+    {
+        final int pos = beatsStr.lastIndexOf ('.');
+        if (pos < 1)
+            return "0:00";
+
+        final String ticksStr = beatsStr.substring (pos + 1);
+        // Ticks are 0-99
+        int ticks = Integer.parseInt (ticksStr);
+        // Scale to 1-4:0-99 (= 0-399)
+        final int scaled = (int) Math.round (ticks * 399.0 / 99.0);
+        final int subBeats = scaled / 100;
+        ticks = scaled % 100;
+        return String.format ("%s.%d:%02d", beatsStr.substring (0, pos), Integer.valueOf (subBeats + offset), Integer.valueOf (ticks));
+    }
+
+
+    private static String reformatTime (final String timeStr)
+    {
+        final String [] split = timeStr.split ("\\.");
+        if (split.length == 0)
+            return "0:000";
+
+        final String replace = split[0].replace (':', '.');
+        if (split.length == 1)
+            return replace;
+        return replace + ":" + split[1];
     }
 }

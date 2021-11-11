@@ -59,16 +59,17 @@ public class TrackImpl extends ChannelImpl implements ITrack
 
     protected final AbstractTrackBankImpl trackBank;
 
+    private boolean                       isGroupExpanded = true;
     private boolean                       isRecArm;
     private boolean                       monitor;
     private boolean                       autoMonitor;
-    private AutomationMode                automationMode = AutomationMode.TRIM_READ;
+    private AutomationMode                automationMode  = AutomationMode.TRIM_READ;
     private final ISlotBank               slotBank;
     private int                           depth;
     private boolean                       recordQuantizationNoteLength;
     private RecordQuantization            recordQuantization;
     private final IParameter              crossfadeParameter;
-    private boolean                       isOverdub      = false;
+    private boolean                       isOverdub       = false;
 
 
     /**
@@ -189,6 +190,34 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public boolean isGroup ()
     {
         return this.getType () == ChannelType.GROUP;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isGroupExpanded ()
+    {
+        return this.isGroupExpanded;
+    }
+
+
+    /**
+     * Set the group expanded state.
+     *
+     * @param isGroupExpanded The group expanded state
+     */
+    public void setIsGroupExpanded (final boolean isGroupExpanded)
+    {
+        this.isGroupExpanded = isGroupExpanded;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void toggleGroupExpanded ()
+    {
+        this.isGroupExpanded = !this.isGroupExpanded;
+        this.sendPositionedItemOSC ("isGroupExpanded", this.isGroupExpanded);
     }
 
 
