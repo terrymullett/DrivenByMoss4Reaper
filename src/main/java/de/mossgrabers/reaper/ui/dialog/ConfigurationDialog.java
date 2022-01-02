@@ -1,5 +1,5 @@
 // Written by Jürgen Moßgraber - mossgrabers.de
-// (c) 2017-2021
+// (c) 2017-2022
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
 package de.mossgrabers.reaper.ui.dialog;
@@ -50,6 +50,7 @@ public class ConfigurationDialog extends BasicDialog
     private List<JComboBoxX<MidiDevice>>     midiOutputBoxes;
     private final transient LogModel         model;
     private final transient GlobalSettingsUI settings;
+
 
     /**
      * Constructor.

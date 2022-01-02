@@ -1,11 +1,10 @@
 // Written by Jürgen Moßgraber - mossgrabers.de
-// (c) 2017-2021
+// (c) 2017-2022
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
 package de.mossgrabers.reaper.framework.midi;
 
-import de.mossgrabers.framework.daw.midi.INoteInput;
-import de.mossgrabers.framework.daw.midi.INoteRepeat;
+import de.mossgrabers.framework.daw.midi.AbstractNoteInput;
 import de.mossgrabers.reaper.communication.MessageSender;
 
 import java.util.ArrayList;
@@ -20,19 +19,17 @@ import java.util.Set;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class NoteInputImpl implements INoteInput
+public class NoteInputImpl extends AbstractNoteInput
 {
     private Integer []        keyTranslationTable;
     private Integer []        velocityTranslationTable;
     private final Set<String> filters = new HashSet<> ();
-    private final INoteRepeat noteRepeat;
 
 
     /**
      * Constructor.
      *
-     * @param sender
-     *
+     * @param sender Interface to the C++ backend
      * @param filters a filter string formatted as hexadecimal value with '?' as wildcard. For
      *            example '80????' would match note-off on channel 1 (0). When this parameter is
      *            {@null}, a standard filter will be used to forward note-related messages on
@@ -99,9 +96,17 @@ public class NoteInputImpl implements INoteInput
 
     /** {@inheritDoc} */
     @Override
-    public INoteRepeat getNoteRepeat ()
+    public void enableMPE (final boolean enable)
     {
-        return this.noteRepeat;
+        this.isMPEEnabled = enable;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setMPEPitchBendSensitivity (final int pitchBendRange)
+    {
+        this.mpePitchBendSensitivity = pitchBendRange;
     }
 
 

@@ -1,10 +1,10 @@
 // Written by Jürgen Moßgraber - mossgrabers.de
-// (c) 2017-2021
+// (c) 2017-2022
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
 package de.mossgrabers.reaper.framework.midi;
 
-import de.mossgrabers.framework.daw.midi.AbstractMidiOutputImpl;
+import de.mossgrabers.framework.daw.midi.AbstractMidiOutput;
 
 
 /**
@@ -12,7 +12,7 @@ import de.mossgrabers.framework.daw.midi.AbstractMidiOutputImpl;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-class MidiOutputImpl extends AbstractMidiOutputImpl
+class MidiOutputImpl extends AbstractMidiOutput
 {
     private final MidiConnection midiConnection;
 
