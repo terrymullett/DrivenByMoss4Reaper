@@ -630,6 +630,10 @@ public class MessageParser
         final String command = parts.poll ();
         switch (command)
         {
+            case "guid":
+                device.setGUID (value);
+                break;
+
             case TAG_COUNT:
                 if (device instanceof final CursorDeviceImpl cdi)
                     cdi.setDeviceCount (Integer.parseInt (value));
