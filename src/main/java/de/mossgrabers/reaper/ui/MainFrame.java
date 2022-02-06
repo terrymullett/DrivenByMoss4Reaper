@@ -29,10 +29,10 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Image;
@@ -58,8 +58,8 @@ public class MainFrame extends JFrame
 
     private final transient AppCallback              callback;
     private final JTextArea                          loggingTextArea  = new JTextArea ();
-    private final JButton                            removeButton     = new JButton ("Remove");
-    private final JButton                            configButton     = new JButton ("Configuration");
+    private JButton                                  removeButton;
+    private JButton                                  configButton;
     private final DefaultListModel<CheckboxListItem> listModel        = new DefaultListModel<> ();
     private final JList<CheckboxListItem>            controllerList   = new JList<> (this.listModel);
 
@@ -81,8 +81,10 @@ public class MainFrame extends JFrame
 
         logModel.setTextArea (this.loggingTextArea);
 
-        final URL resource = this.getClass ().getResource ("/images/AppIcon.gif");
-        final Image image = Toolkit.getDefaultToolkit ().getImage (resource);
+        final Class<? extends MainFrame> clazz = this.getClass ();
+        final URL resource = clazz.getResource ("/images/AppIcon.gif");
+        final Toolkit toolkit = Toolkit.getDefaultToolkit ();
+        final Image image = toolkit.getImage (resource);
         if (image != null)
             this.setIconImage (image);
 
@@ -94,36 +96,45 @@ public class MainFrame extends JFrame
         // Top pane
 
         // Center pane with device configuration and logging
+
+        final ImageIcon configureIcon = loadIcon ("Configure");
+        this.configButton = new JButton ("Configuration");
+        addIcon (this.configButton, configureIcon);
         this.configButton.addActionListener (event -> this.editController ());
         this.configButton.setToolTipText ("Open the configuration dialog of the selected controller.");
 
-        setButtonBackground (this.configButton, Color.YELLOW);
-
+        final ImageIcon addIcon = loadIcon ("Add");
         final JButton addButton = new JButton ("Add");
+        addIcon (addButton, addIcon);
         addButton.setToolTipText ("Not all controllers can be detected automatically. Use the Add button and select the controller to add from the appearing menu.");
 
-        setButtonBackground (addButton, Color.GREEN);
         this.configureAddButton (addButton, instanceManager.getDefinitions ());
 
         final JButton detectButton = new JButton ("Detect");
+        addIcon (detectButton, addIcon);
         detectButton.setToolTipText ("Automatically adds connected controllers.");
-        setButtonBackground (detectButton, Color.GREEN);
         detectButton.addActionListener (event -> this.detectControllers ());
 
+        final ImageIcon removeIcon = loadIcon ("Remove");
+        this.removeButton = new JButton ("Remove");
+        addIcon (this.removeButton, removeIcon);
         this.removeButton.addActionListener (event -> this.removeController ());
         this.removeButton.setToolTipText ("Removes the controller which is selected in the list.");
-        setButtonBackground (this.removeButton, Color.RED);
 
         final JButton projectButton = new JButton ("Project");
+        addIcon (projectButton, configureIcon);
         projectButton.setToolTipText ("Open the dialog with controller settings which are stored individually with each Reaper project, e.g. Scale settings.");
-        setButtonBackground (projectButton, Color.YELLOW);
         projectButton.addActionListener (event -> this.projectSettings ());
 
+        final ImageIcon enableIcon = loadIcon ("OnOff");
         final JButton enableButton = new JButton ("Dis-/enable");
+        addIcon (enableButton, enableIcon);
         enableButton.setToolTipText ("Disable a controller to save performance if you do not use it (or it is not connected).");
         enableButton.addActionListener (event -> this.toggleEnableController ());
 
+        final ImageIcon debugIcon = loadIcon ("Debug");
         final JButton debugButton = new JButton ("Debug");
+        addIcon (debugButton, debugIcon);
         this.configureDebugButton (debugButton, disableChunkReading);
 
         final JPanel deviceButtonContainer = new JPanel ();
@@ -171,6 +182,14 @@ public class MainFrame extends JFrame
             this.listModel.addElement (new CheckboxListItem (instance));
 
         this.updateWidgetStates ();
+    }
+
+
+    private static void addIcon (final JButton button, final ImageIcon icon)
+    {
+        button.setIcon (icon);
+        button.setHorizontalAlignment (SwingConstants.LEFT);
+        button.setIconTextGap (10);
     }
 
 
@@ -426,9 +445,10 @@ public class MainFrame extends JFrame
     }
 
 
-    private static void setButtonBackground (final JButton button, final Color background)
+    private ImageIcon loadIcon (final String iconName)
     {
-        button.setBackground (background);
-        button.setOpaque (true);
+        final Class<? extends MainFrame> clazz = this.getClass ();
+        final Toolkit toolkit = Toolkit.getDefaultToolkit ();
+        return new ImageIcon (toolkit.getImage (clazz.getResource ("/images/ui/" + iconName + ".png")).getScaledInstance (20, 20, Image.SCALE_SMOOTH));
     }
 }
