@@ -592,6 +592,14 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
 
     /** {@inheritDoc} */
     @Override
+    public void parameterSettings (final int controllerIndex)
+    {
+        this.instanceManager.parameterSettings (controllerIndex);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void sendRefreshCommand ()
     {
         this.processNoArg (Processor.REFRESH);

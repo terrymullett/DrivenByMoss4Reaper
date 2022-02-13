@@ -5,6 +5,9 @@
 package de.mossgrabers.reaper.framework.device;
 
 import de.mossgrabers.reaper.framework.IniFiles;
+import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMap;
+import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMapPage;
+import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMapPageParameter;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 
 import com.nikhaldimann.inieditor.IniEditor;
@@ -67,14 +70,15 @@ public class DeviceManager
         JS_CATEGORY_MAP.put ("waveshapers", "Modulation");
     }
 
-    private final List<Device>           devices            = new ArrayList<> ();
-    private final List<Device>           instruments        = new ArrayList<> ();
-    private final List<Device>           effects            = new ArrayList<> ();
-    private final List<String>           categories         = new ArrayList<> ();
-    private final List<String>           vendors            = new ArrayList<> ();
-    private final List<DeviceCollection> collections        = new ArrayList<> ();
-    private final List<DeviceFileType>   availableFileTypes = new ArrayList<> ();
-    private final List<DeviceLocation>   availableLocations = new ArrayList<> ();
+    private final List<Device>              devices            = new ArrayList<> ();
+    private final List<Device>              instruments        = new ArrayList<> ();
+    private final List<Device>              effects            = new ArrayList<> ();
+    private final List<String>              categories         = new ArrayList<> ();
+    private final List<String>              vendors            = new ArrayList<> ();
+    private final List<DeviceCollection>    collections        = new ArrayList<> ();
+    private final List<DeviceFileType>      availableFileTypes = new ArrayList<> ();
+    private final List<DeviceLocation>      availableLocations = new ArrayList<> ();
+    private final Map<String, ParameterMap> parameterMaps      = new HashMap<> ();
 
 
     /**
@@ -316,6 +320,10 @@ public class DeviceManager
             if (iniFiles.isFxFoldersPresent ())
                 this.parseCollectionFilters (iniFiles.getIniFxFolders ());
 
+            // Load device maps
+            if (iniFiles.isParamMapsPresent ())
+                this.parseParameterMaps (iniFiles.getIniParamMaps ());
+
             this.devices.sort ( (d1, d2) -> d1.getDisplayName ().compareToIgnoreCase (d2.getDisplayName ()));
 
             this.devices.forEach (device -> {
@@ -414,6 +422,17 @@ public class DeviceManager
 
 
     /**
+     * Get the parameter mappings map. Will be modified outside of class, which is intentional.
+     *
+     * @return The map
+     */
+    public Map<String, ParameterMap> getParameterMaps ()
+    {
+        return this.parameterMaps;
+    }
+
+
+    /**
      * Parses the VST 64 devices file.
      *
      * @param architecture The processor architecture for which the device is compiled
@@ -499,7 +518,7 @@ public class DeviceManager
     /**
      * Parses the collection filter file.
      *
-     * @param iniFile The ini file from which to parse
+     * @param iniFile The INI file from which to parse
      */
     private void parseCollectionFilters (final IniEditor iniFile)
     {
@@ -525,6 +544,47 @@ public class DeviceManager
                     }
                 }
             }
+        }
+    }
+
+
+    /**
+     * Parses the parameter maps configuration file.
+     *
+     * @param iniFile The INI file from which to parse
+     */
+    private void parseParameterMaps (final IniEditor iniFile)
+    {
+        for (final String name: iniFile.sectionNames ())
+        {
+            final Map<String, String> sectionMap = iniFile.getSectionMap (name);
+            final ParameterMap parameterMap = new ParameterMap (name);
+            final List<ParameterMapPage> pages = parameterMap.getPages ();
+
+            int i = 0;
+            String pageName;
+            while ((pageName = sectionMap.get ("page" + i)) != null)
+            {
+                final ParameterMapPage page = new ParameterMapPage (pageName);
+
+                final String params = sectionMap.get ("params" + i);
+                if (params == null)
+                    break;
+
+                final String [] parts = params.split (",");
+                if (parts.length != 16)
+                    break;
+
+                final List<ParameterMapPageParameter> parameters = page.getParameters ();
+                for (int p = 0; p < 16; p += 2)
+                    parameters.get (p / 2).assign (Integer.parseInt (parts[p]), parts[p + 1]);
+
+                pages.add (page);
+
+                i++;
+            }
+
+            this.parameterMaps.put (name, parameterMap);
         }
     }
 

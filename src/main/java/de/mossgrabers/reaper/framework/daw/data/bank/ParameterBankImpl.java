@@ -4,11 +4,20 @@
 
 package de.mossgrabers.reaper.framework.daw.data.bank;
 
+import de.mossgrabers.framework.daw.data.IDevice;
 import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.daw.data.bank.IParameterBank;
 import de.mossgrabers.framework.daw.data.empty.EmptyParameter;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.parameter.ParameterImpl;
+import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMap;
+import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMapPage;
+import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMapPageParameter;
+import de.mossgrabers.reaper.framework.daw.data.parameter.map.RenamedParameter;
+import de.mossgrabers.reaper.framework.device.DeviceManager;
+
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -18,15 +27,53 @@ import de.mossgrabers.reaper.framework.daw.data.parameter.ParameterImpl;
  */
 public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IParameter> implements IParameterBank
 {
+    private final IDevice       device;
+    private final IParameter [] mappedParameterCache;
+    private int                 mappedParameterCount;
+
+
     /**
      * Constructor.
      *
      * @param dataSetup Some configuration variables
      * @param numParams The number of parameters in the page of the bank
+     * @param device The device for looking up the device parameter mapping
      */
-    public ParameterBankImpl (final DataSetupEx dataSetup, final int numParams)
+    public ParameterBankImpl (final DataSetupEx dataSetup, final int numParams, final IDevice device)
     {
         super (dataSetup, numParams, EmptyParameter.INSTANCE);
+
+        this.device = device;
+        this.device.addNameObserver (name -> this.updateParameterCache ());
+
+        this.mappedParameterCache = new IParameter [this.pageSize];
+        this.clearParameterCache ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public int getItemCount ()
+    {
+        return this.mappedParameterCount < 0 ? this.itemCount : this.mappedParameterCount;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected void setBankOffset (final int bankOffset)
+    {
+        super.setBankOffset (bankOffset);
+
+        this.updateParameterCache ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public IParameter getItem (final int index)
+    {
+        return this.mappedParameterCount < 0 ? super.getItem (index) : this.mappedParameterCache[index];
     }
 
 
@@ -98,10 +145,54 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
     @Override
     public void scrollTo (final int position, final boolean adjustPage)
     {
-        if (position < 0 || position >= this.getItemCount ())
+        if (position >= 0 && position < this.getItemCount ())
+            this.setBankOffset (adjustPage ? position / this.pageSize * this.pageSize : position);
+    }
+
+
+    private void updateParameterCache ()
+    {
+        // Is there a parameter map?
+        final String deviceName = this.device.getName ();
+        final ParameterMap parameterMap = DeviceManager.get ().getParameterMaps ().get (deviceName.toLowerCase ());
+        if (parameterMap == null)
+        {
+            this.clearParameterCache ();
             return;
-        final int pageSize = this.getPageSize ();
-        this.bankOffset = Math.min (Math.max (0, adjustPage ? position / pageSize * pageSize : position), this.getItemCount () - 1);
+        }
+
+        // Get the selected mapping page, if any
+        final List<ParameterMapPage> pages = parameterMap.getPages ();
+        int page = this.bankOffset / this.pageSize;
+        final int numPages = pages.size ();
+        if (page >= numPages)
+        {
+            this.setBankOffset (0);
+            return;
+        }
+
+        this.mappedParameterCount = numPages * this.pageSize;
+
+        // Cache all parameters on the selected page
+        final List<ParameterMapPageParameter> parameters = pages.get (page).getParameters ();
+        for (int i = 0; i < 8; i++)
+        {
+            final ParameterMapPageParameter parameterMapPageParameter = parameters.get (i);
+            final int destIndex = parameterMapPageParameter.getIndex ();
+            this.mappedParameterCache[i] = destIndex < 0 ? EmptyParameter.INSTANCE : new RenamedParameter (this.getUnpagedItem (destIndex), parameterMapPageParameter.getName ());
+        }
+
+        for (int i = 8; i < this.pageSize; i++)
+            this.mappedParameterCache[i] = EmptyParameter.INSTANCE;
+
+        this.firePageObserver ();
+    }
+
+
+    private void clearParameterCache ()
+    {
+        this.mappedParameterCount = -1;
+        Arrays.fill (this.mappedParameterCache, EmptyParameter.INSTANCE);
         this.firePageObserver ();
     }
 }

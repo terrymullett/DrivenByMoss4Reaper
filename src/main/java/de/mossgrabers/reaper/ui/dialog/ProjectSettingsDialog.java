@@ -10,6 +10,7 @@ import de.mossgrabers.reaper.controller.IControllerInstance;
 import de.mossgrabers.reaper.framework.configuration.DocumentSettingsUI;
 import de.mossgrabers.reaper.framework.configuration.IfxSetting;
 import de.mossgrabers.reaper.ui.widget.BoxPanel;
+import de.mossgrabers.reaper.ui.widget.Functions;
 import de.mossgrabers.reaper.ui.widget.TitledSeparator;
 import de.mossgrabers.reaper.ui.widget.TwoColsPanel;
 
@@ -81,7 +82,7 @@ public class ProjectSettingsDialog extends BasicDialog
         // Close button
         final BoxPanel buttons = new BoxPanel (BoxLayout.X_AXIS, true);
         buttons.createSpace (BoxPanel.GLUE);
-        this.setButtons (null, buttons.createButton ("Close", null, BoxPanel.NONE));
+        this.setButtons (null, buttons.createButton (Functions.getIcon ("Confirm"), "Close", null, BoxPanel.NONE));
         contentPane.add (buttons, BorderLayout.SOUTH);
 
         this.addComponentListener (new ComponentAdapter ()

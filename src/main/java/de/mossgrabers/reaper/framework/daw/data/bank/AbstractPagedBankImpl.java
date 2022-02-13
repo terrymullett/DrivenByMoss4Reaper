@@ -203,16 +203,4 @@ public abstract class AbstractPagedBankImpl<S extends T, T extends IItem> extend
         this.bankOffset = Math.max (0, Math.min (bankOffset, this.getItemCount () - 1));
         this.firePageObserver ();
     }
-
-
-    /**
-     * Check if the given position is on the currently selected page.
-     *
-     * @param position The position of the item
-     * @return True if on selected page
-     */
-    protected boolean isOnSelectedPage (final int position)
-    {
-        return position >= this.bankOffset && position < this.bankOffset + this.pageSize;
-    }
 }

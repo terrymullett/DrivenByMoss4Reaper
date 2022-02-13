@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper.controller;
 
 import de.mossgrabers.framework.controller.IControllerDefinition;
+import de.mossgrabers.framework.controller.IControllerSetup;
 import de.mossgrabers.reaper.framework.configuration.DocumentSettingsUI;
 import de.mossgrabers.reaper.framework.configuration.GlobalSettingsUI;
 
@@ -22,6 +23,14 @@ public interface IControllerInstance
      * @return The definition
      */
     IControllerDefinition getDefinition ();
+
+
+    /**
+     * Get the controller setup.
+     *
+     * @return The setup
+     */
+    IControllerSetup<?, ?> getControllerSetup ();
 
 
     /**

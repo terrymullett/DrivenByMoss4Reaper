@@ -31,12 +31,14 @@ public class IniFiles
     private static final String AU_PLUGINS_ARM64        = "reaper-auplugins_arm64.ini";
     private static final String FX_TAGS                 = "reaper-fxtags.ini";
     private static final String FX_FOLDERS              = "reaper-fxfolders.ini";
+    private static final String PARAM_MAPS              = "DrivenByMoss4Reaper-ParameterMaps.ini";
 
     private final IniEditor     iniReaperMain           = new IniEditor ();
     private final IniEditor     iniVstPlugins64         = new IniEditor ();
     private final IniEditor     iniVstPluginsARM64      = new IniEditor ();
     private final IniEditor     iniFxTags               = new IniEditor ();
     private final IniEditor     iniFxFolders            = new IniEditor ();
+    private final IniEditor     iniDeviceMaps           = new IniEditor ();
     private String              iniAuPlugins64Content;
     private String              iniAuPluginsARM64Content;
 
@@ -44,10 +46,12 @@ public class IniFiles
 
     private boolean             isVstPresent;
     private boolean             isVstARMPresent;
-    private boolean             isAuPresent             = false;
-    private boolean             isAuARMPresent          = false;
+    private boolean             isAuPresent;
+    private boolean             isAuARMPresent;
     private boolean             isFxTagsPresent;
     private boolean             isFxFoldersPresent;
+    private boolean             isParamMapsPresent;
+    private String              paramMapsFilename;
 
 
     /**
@@ -57,8 +61,10 @@ public class IniFiles
     {
         this.iniReaperMain.setOptionFormatString (OPTION_FORMAT_NO_SPACES);
         this.iniVstPlugins64.setOptionFormatString (OPTION_FORMAT_NO_SPACES);
+        this.iniVstPluginsARM64.setOptionFormatString (OPTION_FORMAT_NO_SPACES);
         this.iniFxTags.setOptionFormatString (OPTION_FORMAT_NO_SPACES);
         this.iniFxFolders.setOptionFormatString (OPTION_FORMAT_NO_SPACES);
+        this.iniDeviceMaps.setOptionFormatString (OPTION_FORMAT_NO_SPACES);
     }
 
 
@@ -133,6 +139,8 @@ public class IniFiles
 
         this.isFxTagsPresent = loadINIFile (iniPath + File.separator + FX_TAGS, this.iniFxTags, logModel);
         this.isFxFoldersPresent = loadINIFile (iniPath + File.separator + FX_FOLDERS, this.iniFxFolders, logModel);
+        this.paramMapsFilename = iniPath + File.separator + PARAM_MAPS;
+        this.isParamMapsPresent = loadINIFile (this.paramMapsFilename, this.iniDeviceMaps, logModel);
     }
 
 
@@ -203,6 +211,28 @@ public class IniFiles
 
 
     /**
+     * Get the parameter maps configuration file.
+     *
+     * @return The file
+     */
+    public IniEditor getIniParamMaps ()
+    {
+        return this.iniDeviceMaps;
+    }
+
+
+    /**
+     * Store the parameter maps configuration file.
+     *
+     * @throws IOException Could not store the file
+     */
+    public void storeIniParamMaps () throws IOException
+    {
+        this.iniDeviceMaps.save (this.paramMapsFilename);
+    }
+
+
+    /**
      * Is the VST plugins configuration file present?
      *
      * @return True if successfully loaded
@@ -265,6 +295,17 @@ public class IniFiles
     public boolean isFxFoldersPresent ()
     {
         return this.isFxFoldersPresent;
+    }
+
+
+    /**
+     * Is the parameter maps configuration file present?
+     *
+     * @return True if successfully loaded
+     */
+    public boolean isParamMapsPresent ()
+    {
+        return this.isParamMapsPresent;
     }
 
 

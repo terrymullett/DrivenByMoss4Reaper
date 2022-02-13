@@ -4,18 +4,24 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.ListModel;
+import javax.swing.text.Position;
 
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 
@@ -26,8 +32,13 @@ import java.util.ResourceBundle;
  */
 public final class Functions
 {
-    private static ResourceBundle messages;
-    private static Dimension      openSaveDlgDim;
+    private static final String                         ICON_PATH  = "/images/ui/";
+    private static final String                         ICON_TYPE  = ".png";
+    private static final int                            ICON_SCALE = 20;
+
+    private static ResourceBundle                       messages;
+    private static Dimension                            openSaveDlgDim;
+    private static Map<Integer, Map<String, ImageIcon>> icons      = new HashMap<> ();
 
 
     /**
@@ -42,29 +53,6 @@ public final class Functions
 
 
     /**
-     * Get the size of the open and save dialog used for the getFileFromUser functions.
-     *
-     * @return The size of the open and save dialog used for the getFileFromUser functions
-     */
-    static Dimension getOpenSaveDlgDim ()
-    {
-        return openSaveDlgDim;
-    }
-
-
-    /**
-     * Set the size of the open and save dialog used for the getFileFromUser functions.
-     *
-     * @param openSaveDlgDim The size of the open and save dialog used for the getFileFromUser
-     *            functions.
-     */
-    static void setOpenSaveDlgDim (final Dimension openSaveDlgDim)
-    {
-        Functions.openSaveDlgDim = openSaveDlgDim;
-    }
-
-
-    /**
      * Initialize the Singleton object.
      *
      * @param messages A resource bundle which contains message texts
@@ -74,7 +62,59 @@ public final class Functions
     public static void init (final ResourceBundle messages, final Dimension openSaveDlgDim)
     {
         Functions.messages = messages;
+
         setOpenSaveDlgDim (openSaveDlgDim);
+    }
+
+
+    /**
+     * Get an icon. Icons are cached and only loaded once.
+     *
+     * @param name The name of the icon
+     * @return The icon
+     */
+    public static ImageIcon getIcon (final String name)
+    {
+        return getIcon (name, ICON_SCALE);
+    }
+
+
+    /**
+     * Get an icon. Icons are cached and only loaded once.
+     *
+     * @param name The name of the icon
+     * @param size The size of the icon (same width and height) to scale it to
+     * @return The icon
+     */
+    public static ImageIcon getIcon (final String name, final int size)
+    {
+        final Map<String, ImageIcon> map = icons.computeIfAbsent (Integer.valueOf (size), iconSize -> new HashMap<> ());
+        return map.computeIfAbsent (name, iconName -> {
+            final String resource = ICON_PATH + iconName + ICON_TYPE;
+            final Toolkit toolkit = Toolkit.getDefaultToolkit ();
+            final Image loadImage = toolkit.getImage (Functions.class.getResource (resource));
+            final Image scaledImage = loadImage.getScaledInstance (size, size, Image.SCALE_SMOOTH);
+            return new ImageIcon (scaledImage);
+        });
+    }
+
+
+    /**
+     * Get an icon from a jar file.
+     *
+     * @param iconName The name (and path) of the icon
+     * @return The retrieved icon
+     */
+    public static ImageIcon iconFor (final String iconName)
+    {
+        if (iconName == null)
+            return null;
+
+        URL resource = ClassLoader.getSystemResource (iconName);
+        if (resource == null) // Works with JNLP / WebStart
+            resource = Thread.currentThread ().getContextClassLoader ().getResource (iconName);
+
+        return resource != null ? new ImageIcon (resource) : null;
     }
 
 
@@ -340,25 +380,6 @@ public final class Functions
 
 
     /**
-     * Get an icon from a jar file.
-     *
-     * @param iconName The name (and path) of the icon
-     * @return The retrieved icon
-     */
-    public static ImageIcon iconFor (final String iconName)
-    {
-        if (iconName == null)
-            return null;
-
-        URL resource = ClassLoader.getSystemResource (iconName);
-        if (resource == null) // Works with JNLP / WebStart
-            resource = Thread.currentThread ().getContextClassLoader ().getResource (iconName);
-
-        return resource != null ? new ImageIcon (resource) : null;
-    }
-
-
-    /**
      * Sets the fan's height to the idol's size.
      *
      * @param idol Use its height for the fan
@@ -561,6 +582,65 @@ public final class Functions
                 return element;
         }
         return frames.length > 0 ? frames[0] : null;
+    }
+
+
+    /**
+     * Searches the index of the next match in the list. Wraps at the end of the list or at the
+     * first if searched backwards.
+     *
+     * @param <T> The type of the list content
+     * @param listbox The list box in which to search
+     * @param subtext The text to look for
+     * @param startIndex Where to start (starts at the next index)
+     * @param bias The direction to search
+     * @return The index of the next match or -1 if none is found
+     */
+    public static <T> int getNextMatch (final JList<T> listbox, final String subtext, final int startIndex, final Position.Bias bias)
+    {
+        final ListModel<T> model = listbox.getModel ();
+        final int max = model.getSize ();
+        if (subtext == null || startIndex < 0 || startIndex >= max)
+            throw new IllegalArgumentException ();
+
+        final String subTextUpper = subtext.toUpperCase ();
+
+        // Start search from the next element after the selected element
+        final int increment = bias == Position.Bias.Forward ? 1 : -1;
+        int index = startIndex;
+        while ((index = (index + increment + max) % max) != startIndex)
+        {
+            final T element = model.getElementAt (index);
+            if (element == null)
+                continue;
+            final String string = element.toString ();
+            if (string != null && string.toUpperCase ().contains (subTextUpper))
+                return index;
+        }
+        return -1;
+    }
+
+
+    /**
+     * Get the size of the open and save dialog used for the getFileFromUser functions.
+     *
+     * @return The size of the open and save dialog used for the getFileFromUser functions
+     */
+    static Dimension getOpenSaveDlgDim ()
+    {
+        return openSaveDlgDim;
+    }
+
+
+    /**
+     * Set the size of the open and save dialog used for the getFileFromUser functions.
+     *
+     * @param openSaveDlgDim The size of the open and save dialog used for the getFileFromUser
+     *            functions.
+     */
+    static void setOpenSaveDlgDim (final Dimension openSaveDlgDim)
+    {
+        Functions.openSaveDlgDim = openSaveDlgDim;
     }
 
 

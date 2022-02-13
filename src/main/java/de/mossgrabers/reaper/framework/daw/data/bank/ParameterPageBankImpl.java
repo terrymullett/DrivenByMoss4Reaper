@@ -4,11 +4,16 @@
 
 package de.mossgrabers.reaper.framework.daw.data.bank;
 
+import de.mossgrabers.framework.daw.data.IDevice;
 import de.mossgrabers.framework.daw.data.bank.AbstractBank;
 import de.mossgrabers.framework.daw.data.bank.IParameterBank;
 import de.mossgrabers.framework.daw.data.bank.IParameterPageBank;
 import de.mossgrabers.framework.observer.IItemSelectionObserver;
+import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMap;
+import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMapPage;
+import de.mossgrabers.reaper.framework.device.DeviceManager;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +27,10 @@ import java.util.Optional;
 public class ParameterPageBankImpl extends AbstractBank<String> implements IParameterPageBank
 {
     private final IParameterBank parameterBank;
+    private final IDevice        device;
+
+    private final List<String>   cachedPageNames = new ArrayList<> ();
+    private int                  cachedPageCount;
 
 
     /**
@@ -29,12 +38,17 @@ public class ParameterPageBankImpl extends AbstractBank<String> implements IPara
      *
      * @param numParameterPages The number of parameter pages in the page of the bank
      * @param parameterBank The parameter bank
+     * @param device The device for looking up the device parameter mapping
      */
-    public ParameterPageBankImpl (final int numParameterPages, final IParameterBank parameterBank)
+    public ParameterPageBankImpl (final int numParameterPages, final IParameterBank parameterBank, final IDevice device)
     {
         super (null, numParameterPages);
 
         this.parameterBank = parameterBank;
+        this.device = device;
+
+        this.device.addNameObserver (name -> this.updatePageCache ());
+        this.clearPageCache ();
     }
 
 
@@ -50,6 +64,9 @@ public class ParameterPageBankImpl extends AbstractBank<String> implements IPara
     @Override
     public int getItemCount ()
     {
+        if (this.cachedPageCount >= 0)
+            return this.cachedPageCount;
+
         final int itemCount = this.parameterBank.getItemCount ();
         final int ps = this.parameterBank.getPageSize ();
         return itemCount / ps + (itemCount % ps > 0 ? 1 : 0);
@@ -136,7 +153,7 @@ public class ParameterPageBankImpl extends AbstractBank<String> implements IPara
     public String getItem (final int index)
     {
         final int pos = this.getScrollPosition () + index;
-        return pos < this.getItemCount () ? "Page " + (pos + 1) : "";
+        return pos < this.getItemCount () ? this.cachedPageNames.get (pos) : "";
     }
 
 
@@ -221,7 +238,7 @@ public class ParameterPageBankImpl extends AbstractBank<String> implements IPara
     public void selectPreviousPage ()
     {
         this.parameterBank.selectPreviousPage ();
-        ((ParameterBankImpl) this.parameterBank).firePageObserver ();
+        this.updatePageCache ();
     }
 
 
@@ -230,7 +247,7 @@ public class ParameterPageBankImpl extends AbstractBank<String> implements IPara
     public void selectNextPage ()
     {
         this.parameterBank.selectNextPage ();
-        ((ParameterBankImpl) this.parameterBank).firePageObserver ();
+        this.updatePageCache ();
     }
 
 
@@ -247,5 +264,40 @@ public class ParameterPageBankImpl extends AbstractBank<String> implements IPara
     public int getPositionOfLastItem ()
     {
         return Math.min (this.getScrollPosition () + this.pageSize, this.getItemCount ()) - 1;
+    }
+
+
+    private void updatePageCache ()
+    {
+        this.clearPageCache ();
+
+        final String deviceName = this.device.getName ();
+        final ParameterMap parameterMap = DeviceManager.get ().getParameterMaps ().get (deviceName.toLowerCase ());
+        if (parameterMap == null)
+        {
+            // Since there is no real page bank, cache the generated page names, too
+            final int itemCount = this.parameterBank.getItemCount ();
+            final int ps = this.parameterBank.getPageSize ();
+            this.cachedPageCount = itemCount / ps + (itemCount % ps > 0 ? 1 : 0);
+            for (int i = 0; i < this.cachedPageCount; i++)
+                this.cachedPageNames.add ("Page " + (i + 1));
+        }
+        else
+        {
+            // Cache all page names, pagination is happening in the respective methods
+            final List<ParameterMapPage> pages = parameterMap.getPages ();
+            this.cachedPageCount = pages.size ();
+            for (final ParameterMapPage page: pages)
+                this.cachedPageNames.add (page.getName ());
+        }
+
+        ((ParameterBankImpl) this.parameterBank).firePageObserver ();
+    }
+
+
+    private void clearPageCache ()
+    {
+        this.cachedPageCount = -1;
+        this.cachedPageNames.clear ();
     }
 }

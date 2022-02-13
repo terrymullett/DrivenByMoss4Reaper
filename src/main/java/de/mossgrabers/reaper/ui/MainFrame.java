@@ -13,6 +13,7 @@ import de.mossgrabers.reaper.ui.dialog.DebugDialog;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.widget.CheckboxListItem;
 import de.mossgrabers.reaper.ui.widget.CheckboxListRenderer;
+import de.mossgrabers.reaper.ui.widget.Functions;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -58,8 +59,8 @@ public class MainFrame extends JFrame
 
     private final transient AppCallback              callback;
     private final JTextArea                          loggingTextArea  = new JTextArea ();
-    private JButton                                  removeButton;
-    private JButton                                  configButton;
+    private final JButton                            removeButton;
+    private final JButton                            configButton;
     private final DefaultListModel<CheckboxListItem> listModel        = new DefaultListModel<> ();
     private final JList<CheckboxListItem>            controllerList   = new JList<> (this.listModel);
 
@@ -97,55 +98,66 @@ public class MainFrame extends JFrame
 
         // Center pane with device configuration and logging
 
-        final ImageIcon configureIcon = loadIcon ("Configure");
+        // Configure button
+        final ImageIcon configureIcon = Functions.getIcon ("Configure");
         this.configButton = new JButton ("Configuration");
         addIcon (this.configButton, configureIcon);
         this.configButton.addActionListener (event -> this.editController ());
         this.configButton.setToolTipText ("Open the configuration dialog of the selected controller.");
 
-        final ImageIcon addIcon = loadIcon ("Add");
+        // Add and Detect button
+        final ImageIcon addIcon = Functions.getIcon ("Add");
         final JButton addButton = new JButton ("Add");
         addIcon (addButton, addIcon);
         addButton.setToolTipText ("Not all controllers can be detected automatically. Use the Add button and select the controller to add from the appearing menu.");
-
         this.configureAddButton (addButton, instanceManager.getDefinitions ());
-
         final JButton detectButton = new JButton ("Detect");
         addIcon (detectButton, addIcon);
         detectButton.setToolTipText ("Automatically adds connected controllers.");
         detectButton.addActionListener (event -> this.detectControllers ());
 
-        final ImageIcon removeIcon = loadIcon ("Remove");
+        // Remove button
+        final ImageIcon removeIcon = Functions.getIcon ("Remove");
         this.removeButton = new JButton ("Remove");
         addIcon (this.removeButton, removeIcon);
         this.removeButton.addActionListener (event -> this.removeController ());
         this.removeButton.setToolTipText ("Removes the controller which is selected in the list.");
 
+        // Project button
         final JButton projectButton = new JButton ("Project");
         addIcon (projectButton, configureIcon);
-        projectButton.setToolTipText ("Open the dialog with controller settings which are stored individually with each Reaper project, e.g. Scale settings.");
+        projectButton.setToolTipText ("Configure the controller settings which are stored individually with each Reaper project, e.g. Scale settings.");
         projectButton.addActionListener (event -> this.projectSettings ());
 
-        final ImageIcon enableIcon = loadIcon ("OnOff");
+        // Parameter button
+        final JButton parameterButton = new JButton ("Parameters");
+        addIcon (parameterButton, configureIcon);
+        parameterButton.setToolTipText ("Arrange the parameters of the currently selected device into pages.");
+        parameterButton.addActionListener (event -> this.parameterMapping ());
+
+        // Disable/Enable controller button
+        final ImageIcon enableIcon = Functions.getIcon ("OnOff");
         final JButton enableButton = new JButton ("Dis-/enable");
         addIcon (enableButton, enableIcon);
         enableButton.setToolTipText ("Disable a controller to save performance if you do not use it (or it is not connected).");
         enableButton.addActionListener (event -> this.toggleEnableController ());
 
-        final ImageIcon debugIcon = loadIcon ("Debug");
+        // Debug button
+        final ImageIcon debugIcon = Functions.getIcon ("Debug");
         final JButton debugButton = new JButton ("Debug");
         addIcon (debugButton, debugIcon);
         this.configureDebugButton (debugButton, disableChunkReading);
 
+        // Button panel
         final JPanel deviceButtonContainer = new JPanel ();
         deviceButtonContainer.setBorder (new EmptyBorder (0, GAP, 0, 0));
-        deviceButtonContainer.setLayout (new GridLayout (7, 1, 0, GAP));
-
+        deviceButtonContainer.setLayout (new GridLayout (8, 1, 0, GAP));
         deviceButtonContainer.add (detectButton);
         deviceButtonContainer.add (addButton);
         deviceButtonContainer.add (this.removeButton);
         deviceButtonContainer.add (this.configButton);
         deviceButtonContainer.add (projectButton);
+        deviceButtonContainer.add (parameterButton);
         deviceButtonContainer.add (enableButton);
         deviceButtonContainer.add (debugButton);
 
@@ -182,14 +194,6 @@ public class MainFrame extends JFrame
             this.listModel.addElement (new CheckboxListItem (instance));
 
         this.updateWidgetStates ();
-    }
-
-
-    private static void addIcon (final JButton button, final ImageIcon icon)
-    {
-        button.setIcon (icon);
-        button.setHorizontalAlignment (SwingConstants.LEFT);
-        button.setIconTextGap (10);
     }
 
 
@@ -242,6 +246,14 @@ public class MainFrame extends JFrame
     public void projectSettings ()
     {
         this.callback.projectSettings ();
+    }
+
+
+    private void parameterMapping ()
+    {
+        final int selectedIndex = this.controllerList.getSelectionModel ().getLeadSelectionIndex ();
+        if (selectedIndex >= 0)
+            this.callback.parameterSettings (selectedIndex);
     }
 
 
@@ -445,10 +457,10 @@ public class MainFrame extends JFrame
     }
 
 
-    private ImageIcon loadIcon (final String iconName)
+    private static void addIcon (final JButton button, final ImageIcon icon)
     {
-        final Class<? extends MainFrame> clazz = this.getClass ();
-        final Toolkit toolkit = Toolkit.getDefaultToolkit ();
-        return new ImageIcon (toolkit.getImage (clazz.getResource ("/images/ui/" + iconName + ".png")).getScaledInstance (20, 20, Image.SCALE_SMOOTH));
+        button.setIcon (icon);
+        button.setHorizontalAlignment (SwingConstants.LEFT);
+        button.setIconTextGap (10);
     }
 }

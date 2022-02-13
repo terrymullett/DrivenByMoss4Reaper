@@ -66,6 +66,15 @@ public interface AppCallback
 
 
     /**
+     * Edit the parameter mappings for the currently selected device, if any.
+     *
+     * @param controllerIndex The index of the controller from which to get the currently selected
+     *            device
+     */
+    void parameterSettings (int controllerIndex);
+
+
+    /**
      * Request a full update of the data model.
      */
     void sendRefreshCommand ();

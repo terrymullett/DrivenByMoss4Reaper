@@ -297,12 +297,16 @@ public class TrackBankImpl extends AbstractTrackBankImpl
     }
 
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Check if the given position is on the currently selected page.
+     *
+     * @param position The position of the item
+     * @return True if on selected page
+     */
     protected boolean isOnSelectedPage (final int position)
     {
         if (this.hasFlatTrackList)
-            return super.isOnSelectedPage (position);
+            return position >= this.bankOffset && position < this.bankOffset + this.pageSize;
 
         // If groups are part of the active page, the numbering is not equally increasing, each item
         // needs to be checked individually

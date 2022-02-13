@@ -14,6 +14,7 @@ import de.mossgrabers.reaper.ui.widget.JListX;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -127,7 +128,9 @@ public class BrowserDialog extends BasicDialog
         // Cancel and OK buttons
         final BoxPanel buttons = new BoxPanel (BoxLayout.X_AXIS, true);
         buttons.createSpace (BoxPanel.GLUE);
-        this.setButtons (buttons.createButton ("OK", null, BoxPanel.NORMAL), buttons.createButton ("Cancel", null, BoxPanel.NONE));
+        final JButton cancelButton = buttons.createButton (Functions.getIcon ("Remove"), "Cancel", null, BoxPanel.NORMAL);
+        final JButton okButton = buttons.createButton (Functions.getIcon ("Confirm"), "OK", null, BoxPanel.NONE);
+        this.setButtons (okButton, cancelButton);
         Functions.asWidthAs (this.cancel, this.ok);
 
         contentPane.add (buttons, BorderLayout.SOUTH);

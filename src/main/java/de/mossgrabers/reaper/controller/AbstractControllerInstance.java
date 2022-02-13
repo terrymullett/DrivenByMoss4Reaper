@@ -59,6 +59,7 @@ public abstract class AbstractControllerInstance<S extends IControlSurface<C>, C
     protected final DocumentSettingsUI    documentSettingsUI;
     protected ReaperSetupFactory          setupFactory;
     protected IControllerSetup<?, ?>      controllerSetup;
+
     protected PropertiesEx                controllerConfiguration = new PropertiesEx ();
 
     protected MessageParser               oscParser;
@@ -95,6 +96,14 @@ public abstract class AbstractControllerInstance<S extends IControlSurface<C>, C
     public IControllerDefinition getDefinition ()
     {
         return this.controllerDefinition;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public IControllerSetup<?, ?> getControllerSetup ()
+    {
+        return this.controllerSetup;
     }
 
 

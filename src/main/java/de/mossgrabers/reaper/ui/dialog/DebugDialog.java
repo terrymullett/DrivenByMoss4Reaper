@@ -7,6 +7,7 @@ package de.mossgrabers.reaper.ui.dialog;
 import de.mossgrabers.reaper.AppCallback;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.ui.widget.BoxPanel;
+import de.mossgrabers.reaper.ui.widget.Functions;
 import de.mossgrabers.reaper.ui.widget.TwoColsPanel;
 
 import javax.swing.BoxLayout;
@@ -116,7 +117,7 @@ public class DebugDialog extends BasicDialog
         // Close button
         final BoxPanel buttons = new BoxPanel (BoxLayout.X_AXIS, true);
         buttons.createSpace (BoxPanel.GLUE);
-        this.setButtons (null, buttons.createButton ("Close", null, BoxPanel.NONE));
+        this.setButtons (null, buttons.createButton (Functions.getIcon ("Confirm"), "Close", null, BoxPanel.NONE));
         contentPane.add (buttons, BorderLayout.SOUTH);
 
         return contentPane;

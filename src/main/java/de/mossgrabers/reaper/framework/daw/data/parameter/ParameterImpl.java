@@ -228,4 +228,12 @@ public class ParameterImpl extends ItemImpl implements IParameter
     {
         return Processor.DEVICE;
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString ()
+    {
+        return this.getPosition () + ": " + this.getName ();
+    }
 }

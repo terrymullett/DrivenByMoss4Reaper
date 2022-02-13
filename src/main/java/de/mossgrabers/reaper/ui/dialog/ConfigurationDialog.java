@@ -11,6 +11,7 @@ import de.mossgrabers.reaper.framework.midi.Midi;
 import de.mossgrabers.reaper.framework.midi.MissingMidiDevice;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.widget.BoxPanel;
+import de.mossgrabers.reaper.ui.widget.Functions;
 import de.mossgrabers.reaper.ui.widget.JComboBoxX;
 import de.mossgrabers.reaper.ui.widget.TitledSeparator;
 import de.mossgrabers.reaper.ui.widget.TwoColsPanel;
@@ -144,7 +145,7 @@ public class ConfigurationDialog extends BasicDialog
         // Close button
         final BoxPanel buttons = new BoxPanel (BoxLayout.X_AXIS, true);
         buttons.createSpace (BoxPanel.GLUE);
-        this.setButtons (null, buttons.createButton ("Close", null, BoxPanel.NONE));
+        this.setButtons (null, buttons.createButton (Functions.getIcon ("Confirm"), "Close", null, BoxPanel.NONE));
         contentPane.add (buttons, BorderLayout.SOUTH);
 
         return contentPane;

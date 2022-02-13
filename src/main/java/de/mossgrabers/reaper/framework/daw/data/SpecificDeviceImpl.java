@@ -25,7 +25,6 @@ import de.mossgrabers.reaper.framework.daw.data.bank.ParameterPageBankImpl;
  */
 public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
 {
-    private String                      guid;
     private boolean                     isEnabled = false;
     private boolean                     isWindowOpen;
     private boolean                     isExpanded;
@@ -55,8 +54,8 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
 
         if (checkedNumParams > 0)
         {
-            this.parameterBank = new ParameterBankImpl (dataSetup, checkedNumParams);
-            this.parameterPageBank = new ParameterPageBankImpl (checkedNumParams, this.parameterBank);
+            this.parameterBank = new ParameterBankImpl (dataSetup, checkedNumParams, this);
+            this.parameterPageBank = new ParameterPageBankImpl (checkedNumParams, this.parameterBank, this);
         }
         else
         {
@@ -96,28 +95,6 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
     public boolean isEnabled ()
     {
         return this.isEnabled;
-    }
-
-
-    /**
-     * Set the GUID.
-     *
-     * @param guid The GUID to set
-     */
-    public void setGUID (final String guid)
-    {
-        this.guid = guid == null ? "" : guid.trim ();
-    }
-
-
-    /**
-     * Get the GUID.
-     *
-     * @return The GUID
-     */
-    public String getGUID ()
-    {
-        return this.guid;
     }
 
 

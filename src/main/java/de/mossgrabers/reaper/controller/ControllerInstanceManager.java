@@ -5,6 +5,8 @@
 package de.mossgrabers.reaper.controller;
 
 import de.mossgrabers.framework.controller.IControllerDefinition;
+import de.mossgrabers.framework.controller.IControllerSetup;
+import de.mossgrabers.framework.daw.data.ICursorDevice;
 import de.mossgrabers.reaper.communication.MessageSender;
 import de.mossgrabers.reaper.controller.ableton.push.Push1ControllerInstance;
 import de.mossgrabers.reaper.controller.ableton.push.Push2ControllerInstance;
@@ -49,13 +51,23 @@ import de.mossgrabers.reaper.controller.utilities.autocolor.AutoColorInstance;
 import de.mossgrabers.reaper.controller.utilities.midimonitor.MidiMonitorInstance;
 import de.mossgrabers.reaper.framework.IniFiles;
 import de.mossgrabers.reaper.framework.configuration.GlobalSettingsUI;
+import de.mossgrabers.reaper.framework.daw.data.CursorDeviceImpl;
+import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMap;
+import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMapPage;
+import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMapPageParameter;
+import de.mossgrabers.reaper.framework.device.DeviceManager;
 import de.mossgrabers.reaper.ui.WindowManager;
+import de.mossgrabers.reaper.ui.dialog.ParameterMappingDialog;
 import de.mossgrabers.reaper.ui.dialog.ProjectSettingsDialog;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.PropertiesEx;
+import de.mossgrabers.reaper.ui.widget.Functions;
+
+import com.nikhaldimann.inieditor.IniEditor;
 
 import javax.sound.midi.MidiDevice;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -122,43 +134,6 @@ public class ControllerInstanceManager
 
         for (final Class<?> clazz: DEF_TO_CLASS.values ())
             NAME_TO_CLASS.put (clazz.getName (), clazz);
-
-        // Backwards compatibility before v12
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.autocolor.AutoColorInstance", AutoColorInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.apc.APC40mkIControllerInstance", APC40mkIControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.apc.APC40mkIIControllerInstance", APC40mkIIControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.apcmini.APCminiControllerInstance", APCminiControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.beatstep.BeatstepControllerInstance", BeatstepControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.fire.FireControllerInstance", FireControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.hui.HUI1ControllerInstance", HUI1ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.hui.HUI2ControllerInstance", HUI2ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.hui.HUI3ControllerInstance", HUI3ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.kontrol.mki.KontrolMkIS25ControllerInstance", KontrolMkIS25ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.kontrol.mki.KontrolMkIS49ControllerInstance", KontrolMkIS49ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.kontrol.mki.KontrolMkIS61ControllerInstance", KontrolMkIS61ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.kontrol.mki.KontrolMkIS88ControllerInstance", KontrolMkIS88ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.kontrol.mkii.KontrolProtocolV1ControllerInstance", KontrolProtocolV1ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.kontrol.mkii.KontrolProtocolV2ControllerInstance", KontrolProtocolV2ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.launchkey.LaunchkeyMiniMk3ControllerInstance", LaunchkeyMiniMk3ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.launchkey.LaunchkeyMk3ControllerInstance", LaunchkeyMk3ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.launchpad.LaunchpadMkIIControllerInstance", LaunchpadMkIIControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.launchpad.LaunchpadProControllerInstance", LaunchpadProControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.launchpad.LaunchpadXControllerInstance", LaunchpadXControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.launchpad.LaunchpadMiniMkIIIControllerInstance", LaunchpadMiniMkIIIControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.launchpad.LaunchpadProMk3ControllerInstance", LaunchpadProMk3ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.maschine.MaschineMikroMk3ControllerInstance", MaschineMikroMk3ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.maschine.MaschineMk3ControllerInstance", MaschineMk3ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.midimonitor.MidiMonitorInstance", MidiMonitorInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.mcu.MCU1ControllerInstance", MCU1ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.mcu.MCU2ControllerInstance", MCU2ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.mcu.MCU3ControllerInstance", MCU3ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.mcu.MCU4ControllerInstance", MCU4ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.osc.OSCControllerInstance", OSCControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.push.Push1ControllerInstance", Push1ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.push.Push2ControllerInstance", Push2ControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.sl.SLMkIControllerInstance", SLMkIControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.sl.SLMkIIControllerInstance", SLMkIIControllerInstance.class);
-        NAME_TO_CLASS.put ("de.mossgrabers.reaper.controller.slmkiii.SLMkIIIControllerInstance", SLMkIIIControllerInstance.class);
     }
 
     private static final Class<?> []        CONSTRUCTOR_TYPES =
@@ -306,6 +281,108 @@ public class ControllerInstanceManager
 
 
     /**
+     * Edit the parameter mapping of the currently selected device of a controller instance.
+     *
+     * @param index The index of the controller from which to get the currently selected device
+     */
+    public void parameterSettings (final int index)
+    {
+        final IControllerInstance controllerInstance = this.instances.get (index);
+        if (controllerInstance == null)
+            return;
+
+        final IControllerSetup<?, ?> controllerSetup = controllerInstance.getControllerSetup ();
+        if (controllerSetup == null)
+        {
+            Functions.message ("The controller '" + controllerInstance.getDefinition ().toString () + "' is currently not running.");
+            return;
+        }
+
+        final ICursorDevice cursorDevice = controllerSetup.getModel ().getCursorDevice ();
+        if (!cursorDevice.doesExist ())
+        {
+            Functions.message ("Please select the device to edit on the controller: " + controllerInstance.getDefinition ().toString ());
+            return;
+        }
+
+        final Map<String, ParameterMap> parameterMaps = DeviceManager.get ().getParameterMaps ();
+        // Sections in INI files are always lower case!
+        final String name = cursorDevice.getName ().toLowerCase ();
+        final ParameterMap pm = parameterMaps.computeIfAbsent (name, n -> new ParameterMap (cursorDevice));
+        final ParameterMappingDialog dialog = new ParameterMappingDialog (this.windowManager.getMainFrame (), cursorDevice, pm);
+        dialog.showDialog ();
+        if (dialog.isConfirmed ())
+            this.storeDeviceParameterMapping (pm);
+    }
+
+
+    private void storeDeviceParameterMapping (final ParameterMap parameterMap)
+    {
+        final IniEditor iniParamMaps = this.iniFiles.getIniParamMaps ();
+
+        // Remove if already present
+        final String name = parameterMap.getDeviceName ();
+        iniParamMaps.removeSection (name);
+
+        final List<ParameterMapPage> pages = parameterMap.getPages ();
+        // If there are no pages do not write anything to revert back to the default mapping
+        if (!pages.isEmpty ())
+        {
+            iniParamMaps.addSection (name);
+
+            for (int i = 0; i < pages.size (); i++)
+            {
+                final ParameterMapPage page = pages.get (i);
+
+                final StringBuilder sb = new StringBuilder ();
+                for (final ParameterMapPageParameter parameter: page.getParameters ())
+                {
+                    if (!sb.isEmpty ())
+                        sb.append (',');
+                    sb.append (parameter.getIndex ()).append (',');
+                    sb.append (parameter.getName ());
+                }
+                iniParamMaps.set (name, "page" + i, page.getName ());
+                iniParamMaps.set (name, "params" + i, sb.toString ());
+            }
+        }
+
+        try
+        {
+            this.iniFiles.storeIniParamMaps ();
+        }
+        catch (IOException ex)
+        {
+            this.logModel.error ("Could not store device mappings file.", ex);
+        }
+
+        this.refreshDeviceMappings ();
+    }
+
+
+    /**
+     * Apply new device parameter mappings to all cursor devices.
+     */
+    private void refreshDeviceMappings ()
+    {
+        for (final IControllerInstance instance: this.instances)
+        {
+            final IControllerSetup<?, ?> controllerSetup = instance.getControllerSetup ();
+            if (controllerSetup == null)
+                continue;
+            final ICursorDevice cursorDevice = controllerSetup.getModel ().getCursorDevice ();
+            if (cursorDevice.doesExist () && cursorDevice instanceof CursorDeviceImpl deviceImpl)
+            {
+                final String deviceName = cursorDevice.getName ();
+                // Force cache update
+                deviceImpl.setInternalName ("");
+                deviceImpl.setInternalName (deviceName);
+            }
+        }
+    }
+
+
+    /**
      * Instantiate (add) a controller instance.
      *
      * @param definition The controller definition
@@ -420,7 +497,7 @@ public class ControllerInstanceManager
         }
         catch (final InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | InvocationTargetException ex)
         {
-            this.logModel.error ("Could not instantiate controller  class: " + clazz.getName () + ".", ex);
+            this.logModel.error ("Could not instantiate controller class: " + clazz.getName () + ".", ex);
             return null;
         }
     }

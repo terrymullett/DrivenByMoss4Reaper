@@ -138,24 +138,17 @@ public abstract class BasicDialog extends JDialog
         if (this.frame != null)
             this.frame.setCursor (Cursor.getPredefinedCursor (Cursor.WAIT_CURSOR));
 
-        try
-        {
-            this.setEnabled (true);
+        this.setEnabled (true);
 
-            this.setContentPane (this.init ());
+        this.setContentPane (this.init ());
 
-            this.getRootPane ().registerKeyboardAction (event -> this.cancel (), KeyStroke.getKeyStroke (KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        this.getRootPane ().registerKeyboardAction (event -> this.cancel (), KeyStroke.getKeyStroke (KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-            this.set ();
+        this.set ();
 
-            this.pack ();
-            if (this.frame != null)
-                this.setLocationRelativeTo (this.frame);
-        }
-        catch (final Exception ex)
-        {
-            ex.printStackTrace ();
-        }
+        this.pack ();
+        if (this.frame != null)
+            this.setLocationRelativeTo (this.frame);
 
         // Make sure the window is up to date with the current L&F
         SwingUtilities.updateComponentTreeUI (this);
