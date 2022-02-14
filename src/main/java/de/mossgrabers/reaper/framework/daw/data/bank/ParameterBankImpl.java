@@ -44,7 +44,7 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
         super (dataSetup, numParams, EmptyParameter.INSTANCE);
 
         this.device = device;
-        this.device.addNameObserver (name -> this.updateParameterCache ());
+        this.device.addNameObserver (name -> this.refreshParameterCache ());
 
         this.mappedParameterCache = new IParameter [this.pageSize];
         this.clearParameterCache ();
@@ -59,13 +59,23 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
     }
 
 
+    /**
+     * Get the number of parameters of the device (without potential reduced mapping).
+     *
+     * @return The number of parameters
+     */
+    public int getUnpagedItemCount ()
+    {
+        return this.itemCount;
+    }
+
+
     /** {@inheritDoc} */
     @Override
     protected void setBankOffset (final int bankOffset)
     {
-        super.setBankOffset (bankOffset);
-
-        this.updateParameterCache ();
+        this.bankOffset = Math.max (0, Math.min (bankOffset, this.getItemCount () - 1));
+        this.refreshParameterCache ();
     }
 
 
@@ -150,6 +160,16 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
     }
 
 
+    /**
+     * Updates the parameter mapping.
+     */
+    public void refreshParameterCache ()
+    {
+        this.updateParameterCache ();
+        this.firePageObserver ();
+    }
+
+
     private void updateParameterCache ()
     {
         // Is there a parameter map?
@@ -163,11 +183,11 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
 
         // Get the selected mapping page, if any
         final List<ParameterMapPage> pages = parameterMap.getPages ();
-        int page = this.bankOffset / this.pageSize;
+        final int page = this.bankOffset / this.pageSize;
         final int numPages = pages.size ();
         if (page >= numPages)
         {
-            this.setBankOffset (0);
+            this.bankOffset = 0;
             return;
         }
 
@@ -184,8 +204,6 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
 
         for (int i = 8; i < this.pageSize; i++)
             this.mappedParameterCache[i] = EmptyParameter.INSTANCE;
-
-        this.firePageObserver ();
     }
 
 
@@ -193,6 +211,5 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
     {
         this.mappedParameterCount = -1;
         Arrays.fill (this.mappedParameterCache, EmptyParameter.INSTANCE);
-        this.firePageObserver ();
     }
 }

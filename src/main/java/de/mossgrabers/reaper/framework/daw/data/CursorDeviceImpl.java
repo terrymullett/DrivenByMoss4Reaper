@@ -10,6 +10,8 @@ import de.mossgrabers.framework.daw.data.bank.IDeviceBank;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.bank.DeviceBankImpl;
+import de.mossgrabers.reaper.framework.daw.data.bank.ParameterBankImpl;
+import de.mossgrabers.reaper.framework.daw.data.bank.ParameterPageBankImpl;
 
 
 /**
@@ -173,5 +175,15 @@ public class CursorDeviceImpl extends SpecificDeviceImpl implements ICursorDevic
     public void selectSlotChain (final String slotChainName)
     {
         // Not supported
+    }
+
+
+    /**
+     * Refresh the parameter mapping.
+     */
+    public void refreshParameterMapping ()
+    {
+        ((ParameterBankImpl) this.getParameterBank ()).refreshParameterCache ();
+        ((ParameterPageBankImpl) this.getParameterPageBank ()).updatePageCache ();
     }
 }

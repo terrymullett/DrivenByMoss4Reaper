@@ -267,7 +267,10 @@ public class ParameterPageBankImpl extends AbstractBank<String> implements IPara
     }
 
 
-    private void updatePageCache ()
+    /**
+     * Updates the page cache.
+     */
+    public void updatePageCache ()
     {
         this.clearPageCache ();
 

@@ -312,7 +312,11 @@ public class ControllerInstanceManager
         final ParameterMappingDialog dialog = new ParameterMappingDialog (this.windowManager.getMainFrame (), cursorDevice, pm);
         dialog.showDialog ();
         if (dialog.isConfirmed ())
+        {
+            if (pm.getPages ().isEmpty ())
+                parameterMaps.remove (name);
             this.storeDeviceParameterMapping (pm);
+        }
     }
 
 
@@ -351,7 +355,7 @@ public class ControllerInstanceManager
         {
             this.iniFiles.storeIniParamMaps ();
         }
-        catch (IOException ex)
+        catch (final IOException ex)
         {
             this.logModel.error ("Could not store device mappings file.", ex);
         }
@@ -371,13 +375,8 @@ public class ControllerInstanceManager
             if (controllerSetup == null)
                 continue;
             final ICursorDevice cursorDevice = controllerSetup.getModel ().getCursorDevice ();
-            if (cursorDevice.doesExist () && cursorDevice instanceof CursorDeviceImpl deviceImpl)
-            {
-                final String deviceName = cursorDevice.getName ();
-                // Force cache update
-                deviceImpl.setInternalName ("");
-                deviceImpl.setInternalName (deviceName);
-            }
+            if (cursorDevice.doesExist () && cursorDevice instanceof final CursorDeviceImpl deviceImpl)
+                deviceImpl.refreshParameterMapping ();
         }
     }
 

@@ -442,7 +442,7 @@ public class ParameterMappingDialog extends BasicDialog
 
     private static List<ParameterImpl> getParameters (final ParameterBankImpl parameterBank)
     {
-        final int count = parameterBank.getItemCount ();
+        final int count = parameterBank.getUnpagedItemCount ();
         final List<ParameterImpl> params = new ArrayList<> (count);
         for (int i = 0; i < count; i++)
             params.add (parameterBank.getUnpagedItem (i));
