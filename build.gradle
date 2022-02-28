@@ -10,7 +10,7 @@ plugins {
 sourceCompatibility = 17
 targetCompatibility = 17
 
-version = '15.5.0'
+version = '15.6.0'
 
 jar {
     manifest {
@@ -58,6 +58,7 @@ installDist {
                 include(name: 'purejavahidapi-*-javadoc.jar')
                 include(name: 'purejavahidapi-*-sources.jar')
                 include(name: 'libusb4java-*.jar')
+                include(name: 'slf4j-log4j*.jar')
                 include(name: 'log4j-*.jar')
             }
         }

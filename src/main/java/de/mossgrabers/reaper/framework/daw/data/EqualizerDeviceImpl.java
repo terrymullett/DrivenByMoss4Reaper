@@ -4,15 +4,12 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
+import de.mossgrabers.framework.daw.data.EqualizerBandType;
 import de.mossgrabers.framework.daw.data.IEqualizerDevice;
 import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
-import de.mossgrabers.reaper.framework.daw.data.parameter.QFactorInvertedParameter;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import de.mossgrabers.reaper.framework.daw.data.parameter.EqBandTypeParameterImpl;
 
 
 /**
@@ -24,41 +21,9 @@ import java.util.Map;
  */
 public class EqualizerDeviceImpl extends SpecificDeviceImpl implements IEqualizerDevice
 {
-    private static final String              BANDOFF             = "off";
+    private static final int                 NUMBER_OF_BANDS      = 8;
 
-    private static final Map<String, String> EQ_TYPE_INDICES     = new HashMap<> ();
-    private static final Map<String, String> EQ_TYPE_INDICES_INV = new HashMap<> ();
-
-    static
-    {
-        EQ_TYPE_INDICES.put (BANDOFF, "-1");
-        EQ_TYPE_INDICES.put ("lowcut", "4");
-        EQ_TYPE_INDICES.put ("lowshelf", "0");
-        EQ_TYPE_INDICES.put ("bell", "8");
-        EQ_TYPE_INDICES.put ("highcut", "3");
-        EQ_TYPE_INDICES.put ("highshelf", "1");
-        EQ_TYPE_INDICES.put ("notch", "6");
-
-        EQ_TYPE_INDICES_INV.put ("-1", BANDOFF);
-        EQ_TYPE_INDICES_INV.put ("4", "lowcut");
-        EQ_TYPE_INDICES_INV.put ("0", "lowshelf");
-        EQ_TYPE_INDICES_INV.put ("8", "bell");
-        // Band (alt)
-        EQ_TYPE_INDICES_INV.put ("9", "bell");
-        // Band (alt2)
-        EQ_TYPE_INDICES_INV.put ("2", "bell");
-        EQ_TYPE_INDICES_INV.put ("3", "highcut");
-        EQ_TYPE_INDICES_INV.put ("1", "highshelf");
-        EQ_TYPE_INDICES_INV.put ("6", "notch");
-        // 5 == Allpass, which is not supported
-        EQ_TYPE_INDICES_INV.put ("5", "bell");
-        // 7 == Bandpass, which is not supported
-        EQ_TYPE_INDICES_INV.put ("7", "bell");
-    }
-
-    private static final int NUMBER_OF_BANDS = 8;
-
-    private final String []  bandTypes       = new String [8];
+    private final EqBandTypeParameterImpl [] eqBandTypeParameters = new EqBandTypeParameterImpl [8];
 
 
     /**
@@ -68,9 +33,10 @@ public class EqualizerDeviceImpl extends SpecificDeviceImpl implements IEqualize
      */
     public EqualizerDeviceImpl (final DataSetupEx dataSetup)
     {
-        super (dataSetup, 0, 3 * NUMBER_OF_BANDS + 2, 0, 0, 0);
+        super (dataSetup, Processor.EQ, 0, 3 * NUMBER_OF_BANDS + 2, 0, 0, 0);
 
-        Arrays.fill (this.bandTypes, BANDOFF);
+        for (int i = 0; i < this.eqBandTypeParameters.length; i++)
+            this.eqBandTypeParameters[i] = new EqBandTypeParameterImpl (dataSetup, i);
     }
 
 
@@ -84,32 +50,37 @@ public class EqualizerDeviceImpl extends SpecificDeviceImpl implements IEqualize
 
     /** {@inheritDoc} */
     @Override
-    public String getType (final int index)
+    public EqualizerBandType getTypeID (final int index)
     {
-        return this.doesExist () ? this.bandTypes[index] : BANDOFF;
+        return this.doesExist () ? this.eqBandTypeParameters[index].getTypeInternal () : EqualizerBandType.OFF;
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void setType (final int index, final String type)
+    public void setType (final int index, final EqualizerBandType type)
     {
-        final String typeIndex = EQ_TYPE_INDICES.get (type);
-        if (typeIndex != null)
-            this.sender.processStringArg (Processor.DEVICE, "eq-band/" + index, typeIndex);
+        this.eqBandTypeParameters[index].setType (type);
     }
 
 
     /**
      * Set the band type.
      *
-     * @param index The index, 0-7
-     * @param typeIndex The indexed type as a string
+     * @param index The index [0-7]
+     * @param typeIndex The indexed type [-1,9]
      */
-    public void setTypeInternal (final int index, final String typeIndex)
+    public void setTypeInternal (final int index, final int typeIndex)
     {
-        final String type = EQ_TYPE_INDICES_INV.get (typeIndex);
-        this.bandTypes[index] = type == null ? BANDOFF : type;
+        this.eqBandTypeParameters[index].setTypeInternal (Integer.valueOf (typeIndex));
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public IParameter getType (final int index)
+    {
+        return this.eqBandTypeParameters[index];
     }
 
 
@@ -133,6 +104,14 @@ public class EqualizerDeviceImpl extends SpecificDeviceImpl implements IEqualize
     @Override
     public IParameter getQ (final int index)
     {
-        return new QFactorInvertedParameter (this.getParameterBank ().getItem (3 * index + 2), this.valueChanger.getUpperBound ());
+        return this.getParameterBank ().getItem (3 * index + 2);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    protected Processor getProcessor ()
+    {
+        return Processor.EQ;
     }
 }

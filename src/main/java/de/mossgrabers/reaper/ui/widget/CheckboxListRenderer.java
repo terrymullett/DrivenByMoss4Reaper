@@ -4,6 +4,7 @@
 
 package de.mossgrabers.reaper.ui.widget;
 
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
@@ -16,17 +17,45 @@ import java.awt.Component;
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class CheckboxListRenderer extends JCheckBox implements ListCellRenderer<CheckboxListItem>
+public class CheckboxListRenderer extends JCheckBox implements ListCellRenderer<ControllerCheckboxListItem>
 {
     private static final long serialVersionUID = -6249149996532470179L;
+
+    private final ImageIcon   iconOff;
+    private final ImageIcon   iconEnabled;
+    private final ImageIcon   iconRunning;
+
+
+    /**
+     * Constructor.
+     */
+    public CheckboxListRenderer ()
+    {
+        this.iconOff = Functions.getIcon ("ControllerOff", 16);
+        this.iconEnabled = Functions.getIcon ("ControllerEnabled", 16);
+        this.iconRunning = Functions.getIcon ("ControllerRunning", 16);
+
+        this.setIconTextGap (10);
+    }
 
 
     /** {@inheritDoc} */
     @Override
-    public Component getListCellRendererComponent (final JList<? extends CheckboxListItem> list, final CheckboxListItem value, final int index, final boolean isSelected, final boolean cellHasFocus)
+    public Component getListCellRendererComponent (final JList<? extends ControllerCheckboxListItem> list, final ControllerCheckboxListItem value, final int index, final boolean isSelected, final boolean cellHasFocus)
     {
         this.setEnabled (list.isEnabled ());
-        this.setSelected (value.isSelected ());
+
+        if (value.isSelected ())
+        {
+            this.setIcon (value.isRunning () ? this.iconRunning : this.iconEnabled);
+            this.setToolTipText (value.isRunning () ? "Controller is running" : "Controller is enabled but not connected");
+        }
+        else
+        {
+            this.setIcon (this.iconOff);
+            this.setToolTipText ("Controller is off");
+        }
+
         this.setFont (list.getFont ());
         if (isSelected)
         {

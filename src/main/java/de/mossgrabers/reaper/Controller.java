@@ -77,6 +77,16 @@ public class Controller
 
 
     /**
+     * Displays the parameter mapping window.
+     */
+    public static void displayParameterWindow ()
+    {
+        if (app != null)
+            app.showParameterWindow ();
+    }
+
+
+    /**
      * Set the default initial settings for the document/project.
      */
     public static void setDefaultDocumentSettings ()

@@ -8,13 +8,13 @@ import de.mossgrabers.reaper.controller.IControllerInstance;
 
 
 /**
- * A check-box item to be used in a list box.
+ * A check-box item containing a controller to be used in a list box.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  *
  * @param item The item to encapsulate
  */
-public record CheckboxListItem (IControllerInstance item)
+public record ControllerCheckboxListItem (IControllerInstance item)
 {
     /**
      * Get the selection state of the check-box.
@@ -24,6 +24,17 @@ public record CheckboxListItem (IControllerInstance item)
     public boolean isSelected ()
     {
         return this.item.isEnabled ();
+    }
+
+
+    /**
+     * Get the running state of the check-box.
+     *
+     * @return True if selected
+     */
+    public boolean isRunning ()
+    {
+        return this.item.isRunning ();
     }
 
 

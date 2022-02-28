@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper.framework.daw.data.parameter.map;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -66,6 +67,18 @@ public class ParameterMapPage
     public List<ParameterMapPageParameter> getParameters ()
     {
         return this.parameters;
+    }
+
+
+    /**
+     * Swap the positions of the two parameters.
+     *
+     * @param sourceIndex The first parameter
+     * @param destinationIndex The second parameter
+     */
+    public void swapParameters (final int sourceIndex, final int destinationIndex)
+    {
+        Collections.swap (this.parameters, sourceIndex, destinationIndex);
     }
 
 

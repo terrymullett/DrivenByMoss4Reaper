@@ -18,12 +18,14 @@ import de.mossgrabers.reaper.framework.daw.data.ItemImpl;
  */
 public class ParameterImpl extends ItemImpl implements IParameter
 {
-    private String    valueStr          = "";
-    private boolean   isBeingTouched;
+    private String          valueStr          = "";
+    private boolean         isBeingTouched;
 
-    protected double  value;
-    protected double  lastReceivedValue = -1;
-    private final int defaultValue;
+    protected double        value;
+    protected double        lastReceivedValue = -1;
+
+    private final int       defaultValue;
+    private final Processor processor;
 
 
     /**
@@ -35,8 +37,23 @@ public class ParameterImpl extends ItemImpl implements IParameter
      */
     public ParameterImpl (final DataSetupEx dataSetup, final int index, final double defaultValue)
     {
+        this (dataSetup, Processor.DEVICE, index, defaultValue);
+    }
+
+
+    /**
+     * Constructor.
+     *
+     * @param dataSetup Some configuration variables
+     * @param processor The processor to use for sending parameter updates
+     * @param index The index of the parameter
+     * @param defaultValue The default value for resetting parameters [0..1]
+     */
+    public ParameterImpl (final DataSetupEx dataSetup, final Processor processor, final int index, final double defaultValue)
+    {
         super (dataSetup, index);
 
+        this.processor = processor;
         this.defaultValue = this.valueChanger.fromNormalizedValue (defaultValue);
     }
 
@@ -133,7 +150,7 @@ public class ParameterImpl extends ItemImpl implements IParameter
     @Override
     public void setValueImmediatly (final int value)
     {
-        // Always immediatly with Reaper
+        // Always immediately with Reaper
         this.setValue (value);
     }
 
@@ -226,7 +243,7 @@ public class ParameterImpl extends ItemImpl implements IParameter
     @Override
     protected Processor getProcessor ()
     {
-        return Processor.DEVICE;
+        return this.processor;
     }
 
 

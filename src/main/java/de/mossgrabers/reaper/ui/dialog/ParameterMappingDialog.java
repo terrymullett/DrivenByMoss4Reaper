@@ -220,6 +220,24 @@ public class ParameterMappingDialog extends BasicDialog
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    protected boolean onOk ()
+    {
+        final List<ParameterMapPage> pages = this.parameterMap.getPages ();
+        pages.clear ();
+
+        final DefaultListModel<ParameterMapPage> model = this.pagesListBox.getModel ();
+        for (int i = 0; i < model.getSize (); i++)
+            pages.add (model.get (i));
+
+        return super.onOk ();
+    }
+
+
+    /**
+     * A different parameter page was selected.
+     */
     private void handlePageListChanges ()
     {
         final int selectedIndex = this.pagesListBox.getSelectedIndex ();
@@ -234,41 +252,43 @@ public class ParameterMappingDialog extends BasicDialog
     }
 
 
+    /**
+     * Update the content of the parameter list box.
+     */
     private void fillParameterBox ()
     {
         final DefaultListModel<ParameterMapPageParameter> model = this.pageParametersListBox.getModel ();
-
         final int selectedPage = this.pagesListBox.getSelectedIndex ();
         model.clear ();
-        if (selectedPage >= 0)
-        {
-            final int selectedIndex = this.pageParametersListBox.getSelectedIndex ();
-            model.addAll (this.pagesListBox.getModel ().get (selectedPage).getParameters ());
-            this.pageParametersListBox.setSelectedIndex (selectedIndex < 0 ? 0 : selectedIndex);
-        }
+        if (selectedPage < 0)
+            return;
+        final int selectedIndex = this.pageParametersListBox.getSelectedIndex ();
+        model.addAll (this.pagesListBox.getModel ().get (selectedPage).getParameters ());
+        this.pageParametersListBox.setSelectedIndex (selectedIndex < 0 ? 0 : selectedIndex);
     }
 
 
+    /**
+     * Update the related button states depending on the content of the selected parameter page.
+     */
     private void updateParameterListButtons ()
     {
         final int selectedIndex = this.pageParametersListBox.getSelectedIndex ();
         final boolean hasSelection = selectedIndex >= 0;
-
-        boolean isAssigned = false;
-        if (hasSelection)
-        {
-            final ParameterMapPageParameter parameterMapPageParameter = this.pageParametersListBox.getModel ().get (selectedIndex);
-            isAssigned = parameterMapPageParameter.isAssigned ();
-        }
+        final DefaultListModel<ParameterMapPageParameter> model = this.pageParametersListBox.getModel ();
+        boolean isAssigned = hasSelection && model.get (selectedIndex).isAssigned ();
 
         this.assignParamButton.setEnabled (hasSelection);
         this.clearParamButton.setEnabled (hasSelection && isAssigned);
         this.editParamButton.setEnabled (hasSelection && isAssigned);
         this.moveParamUpButton.setEnabled (hasSelection && selectedIndex > 0);
-        this.moveParamDownButton.setEnabled (hasSelection && selectedIndex < this.pageParametersListBox.getModel ().getSize () - 1);
+        this.moveParamDownButton.setEnabled (hasSelection && selectedIndex < model.getSize () - 1);
     }
 
 
+    /**
+     * Add a new parameter page.
+     */
     private void addParamPage ()
     {
         final DefaultListModel<ParameterMapPage> model = this.pagesListBox.getModel ();
@@ -278,6 +298,9 @@ public class ParameterMappingDialog extends BasicDialog
     }
 
 
+    /**
+     * Remove a parameter page.
+     */
     private void removeParamPage ()
     {
         int selectedIndex = this.pagesListBox.getSelectedIndex ();
@@ -292,6 +315,9 @@ public class ParameterMappingDialog extends BasicDialog
     }
 
 
+    /**
+     * Edit the name of a parameter page.
+     */
     private void editParamPage ()
     {
         final ParameterMapPage page = this.pagesListBox.getSelectedValue ();
@@ -305,34 +331,48 @@ public class ParameterMappingDialog extends BasicDialog
     }
 
 
+    /**
+     * Move the selected parameter page down in the list.
+     */
     private void moveParamPageDown ()
     {
         final int selectedIndex = this.pagesListBox.getSelectedIndex ();
-        final DefaultListModel<ParameterMapPage> model = this.pagesListBox.getModel ();
-        if (selectedIndex < 0 || selectedIndex >= model.getSize () - 1)
-            return;
-        final ParameterMapPage page1 = model.get (selectedIndex);
-        final ParameterMapPage page2 = model.get (selectedIndex + 1);
-        model.set (selectedIndex, page2);
-        model.set (selectedIndex + 1, page1);
-        this.pagesListBox.setSelectedIndex (selectedIndex + 1);
+        if (selectedIndex >= 0 && selectedIndex < this.pagesListBox.getModel ().getSize () - 1)
+            swapParamPage (selectedIndex, selectedIndex + 1);
     }
 
 
+    /**
+     * Move the selected parameter page up in the list.
+     */
     private void moveParamPageUp ()
     {
         final int selectedIndex = this.pagesListBox.getSelectedIndex ();
-        final DefaultListModel<ParameterMapPage> model = this.pagesListBox.getModel ();
-        if (selectedIndex < 1)
-            return;
-        final ParameterMapPage page1 = model.get (selectedIndex);
-        final ParameterMapPage page2 = model.get (selectedIndex - 1);
-        model.set (selectedIndex, page2);
-        model.set (selectedIndex - 1, page1);
-        this.pagesListBox.setSelectedIndex (selectedIndex - 1);
+        if (selectedIndex > 0)
+            swapParamPage (selectedIndex, selectedIndex - 1);
     }
 
 
+    /**
+     * Swap two parameter pages.
+     *
+     * @param selectedIndex The first parameter page
+     * @param destinationIndex The second page, which will be selected after the method executed
+     */
+    private void swapParamPage (final int selectedIndex, final int destinationIndex)
+    {
+        final DefaultListModel<ParameterMapPage> model = this.pagesListBox.getModel ();
+        final ParameterMapPage page1 = model.get (selectedIndex);
+        final ParameterMapPage page2 = model.get (destinationIndex);
+        model.set (selectedIndex, page2);
+        model.set (destinationIndex, page1);
+        this.pagesListBox.setSelectedIndex (destinationIndex);
+    }
+
+
+    /**
+     * Assign a parameter to the selected parameter slot on the selected page.
+     */
     private void assignParam ()
     {
         final ParameterImpl selectedParameter = this.parametersListBox.getSelectedValue ();
@@ -341,11 +381,13 @@ public class ParameterMappingDialog extends BasicDialog
             return;
         selectedValue.assign (selectedParameter.getPosition (), selectedParameter.getName ());
         this.pageParametersListBox.repaint ();
-
         this.updateParameterListButtons ();
     }
 
 
+    /**
+     * Clear the selected parameter slot on the selected page.
+     */
     private void clearParam ()
     {
         final ParameterMapPageParameter selectedValue = this.pageParametersListBox.getSelectedValue ();
@@ -353,11 +395,13 @@ public class ParameterMappingDialog extends BasicDialog
             return;
         selectedValue.assign (-1, "");
         this.pageParametersListBox.repaint ();
-
         this.updateParameterListButtons ();
     }
 
 
+    /**
+     * Edit the name of the selected parameter slot on the selected page.
+     */
     private void editParam ()
     {
         final ParameterMapPageParameter selectedParam = this.pageParametersListBox.getSelectedValue ();
@@ -371,34 +415,57 @@ public class ParameterMappingDialog extends BasicDialog
     }
 
 
+    /**
+     * Move the selected parameter down in the list.
+     */
     private void moveParamDown ()
     {
         final int selectedIndex = this.pageParametersListBox.getSelectedIndex ();
-        final DefaultListModel<ParameterMapPageParameter> model = this.pageParametersListBox.getModel ();
-        if (selectedIndex < 0 || selectedIndex >= model.getSize () - 1)
-            return;
-        final ParameterMapPageParameter param1 = model.get (selectedIndex);
-        final ParameterMapPageParameter param2 = model.get (selectedIndex + 1);
-        model.set (selectedIndex, param2);
-        model.set (selectedIndex + 1, param1);
-        this.pageParametersListBox.setSelectedIndex (selectedIndex + 1);
+        if (selectedIndex >= 0 && selectedIndex < this.pageParametersListBox.getModel ().getSize () - 1)
+            swapParam (selectedIndex, selectedIndex + 1);
     }
 
 
+    /**
+     * Move the selected parameter up in the list.
+     */
     private void moveParamUp ()
     {
         final int selectedIndex = this.pageParametersListBox.getSelectedIndex ();
-        final DefaultListModel<ParameterMapPageParameter> model = this.pageParametersListBox.getModel ();
-        if (selectedIndex < 1)
-            return;
-        final ParameterMapPageParameter page1 = model.get (selectedIndex);
-        final ParameterMapPageParameter page2 = model.get (selectedIndex - 1);
-        model.set (selectedIndex, page2);
-        model.set (selectedIndex - 1, page1);
-        this.pageParametersListBox.setSelectedIndex (selectedIndex - 1);
+        if (selectedIndex > 0)
+            swapParam (selectedIndex, selectedIndex - 1);
     }
 
 
+    /**
+     * Swap two parameter slots.
+     *
+     * @param selectedIndex The first parameter slot
+     * @param destinationIndex The second slot, which will be selected after the method executed
+     */
+    protected void swapParam (final int selectedIndex, final int destinationIndex)
+    {
+        final int selectedPage = this.pagesListBox.getSelectedIndex ();
+        if (selectedPage < 0)
+            return;
+
+        // Swap it in the page
+        final ParameterMapPage parameterMapPage = this.pagesListBox.getModel ().get (selectedPage);
+        parameterMapPage.swapParameters (selectedIndex, destinationIndex);
+
+        // Swap it in the UI
+        final DefaultListModel<ParameterMapPageParameter> model = this.pageParametersListBox.getModel ();
+        final ParameterMapPageParameter param1 = model.get (selectedIndex);
+        final ParameterMapPageParameter param2 = model.get (destinationIndex);
+        model.set (selectedIndex, param2);
+        model.set (destinationIndex, param1);
+        this.pageParametersListBox.setSelectedIndex (destinationIndex);
+    }
+
+
+    /**
+     * Clear the text in the search field.
+     */
     private void clearSearchField ()
     {
         this.searchField.setText ("");
@@ -406,6 +473,12 @@ public class ParameterMappingDialog extends BasicDialog
     }
 
 
+    /**
+     * Searches the next parameter in the parameter list starting from the current selection which
+     * matches the search text.
+     *
+     * @param direction The search direction
+     */
     private void searchParam (final Position.Bias direction)
     {
         if (this.parametersListBox.getModel ().getSize () == 0)
@@ -425,21 +498,12 @@ public class ParameterMappingDialog extends BasicDialog
     }
 
 
-    /** {@inheritDoc} */
-    @Override
-    protected boolean onOk ()
-    {
-        final List<ParameterMapPage> pages = this.parameterMap.getPages ();
-        pages.clear ();
-
-        final DefaultListModel<ParameterMapPage> model = this.pagesListBox.getModel ();
-        for (int i = 0; i < model.getSize (); i++)
-            pages.add (model.get (i));
-
-        return super.onOk ();
-    }
-
-
+    /**
+     * Get all parameters from the currently selected device.
+     *
+     * @param parameterBank The containing all parameters of the device
+     * @return The parameters
+     */
     private static List<ParameterImpl> getParameters (final ParameterBankImpl parameterBank)
     {
         final int count = parameterBank.getUnpagedItemCount ();

@@ -783,6 +783,30 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
     }
 
 
+    /**
+     * Shows the application stage and ensures that it is brought to the front of all stages. After
+     * that the parameter mapping window is displayed.
+     */
+    public void showParameterWindow ()
+    {
+        SafeRunLater.execute (this.logModel, () -> {
+            try
+            {
+                final MainFrame win = this.getMainFrame ();
+                win.setVisible (true);
+                win.toFront ();
+                win.parameterMapping ();
+            }
+            catch (final RuntimeException ex)
+            {
+                final StringWriter sw = new StringWriter ();
+                ex.printStackTrace (new PrintWriter (sw));
+                this.logModel.info (sw.toString ());
+            }
+        });
+    }
+
+
     /** {@inheritDoc} */
     @Override
     public MainFrame getMainFrame ()

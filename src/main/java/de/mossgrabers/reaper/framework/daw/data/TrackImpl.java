@@ -519,7 +519,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
     @Override
     public void addEqualizerDevice ()
     {
-        this.sender.processNoArg (Processor.DEVICE, "eq-add");
+        this.sender.processNoArg (Processor.EQ, "add");
     }
 
 

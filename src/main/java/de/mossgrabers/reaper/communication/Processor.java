@@ -21,6 +21,8 @@ public enum Processor
     MASTER,
     /** The device. */
     DEVICE,
+    /** The EQ device. */
+    EQ,
     /** The browser. */
     BROWSER,
     /** The marker. */

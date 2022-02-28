@@ -46,6 +46,23 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
      */
     public SpecificDeviceImpl (final DataSetupEx dataSetup, final int numSends, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
     {
+        this (dataSetup, Processor.DEVICE, numSends, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
+    }
+
+
+    /**
+     * Constructor.
+     *
+     * @param dataSetup Some configuration variables
+     * @param processor The processor to use for sending parameter updates
+     * @param numSends The number of sends
+     * @param numParams The number of parameters
+     * @param numDevicesInBank The number of devices
+     * @param numDeviceLayers The number of layers
+     * @param numDrumPadLayers The number of drum pad layers
+     */
+    public SpecificDeviceImpl (final DataSetupEx dataSetup, final Processor processor, final int numSends, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
+    {
         super (dataSetup, -1);
 
         final int checkedNumParams = numParams >= 0 ? numParams : 8;
@@ -54,7 +71,7 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
 
         if (checkedNumParams > 0)
         {
-            this.parameterBank = new ParameterBankImpl (dataSetup, checkedNumParams, this);
+            this.parameterBank = new ParameterBankImpl (dataSetup, processor, checkedNumParams, this);
             this.parameterPageBank = new ParameterPageBankImpl (checkedNumParams, this.parameterBank, this);
         }
         else

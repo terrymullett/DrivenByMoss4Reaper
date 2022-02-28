@@ -8,6 +8,7 @@ import de.mossgrabers.framework.daw.data.IDevice;
 import de.mossgrabers.framework.daw.data.IParameter;
 import de.mossgrabers.framework.daw.data.bank.IParameterBank;
 import de.mossgrabers.framework.daw.data.empty.EmptyParameter;
+import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.parameter.ParameterImpl;
 import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMap;
@@ -27,6 +28,7 @@ import java.util.List;
  */
 public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IParameter> implements IParameterBank
 {
+    private final Processor     processor;
     private final IDevice       device;
     private final IParameter [] mappedParameterCache;
     private int                 mappedParameterCount;
@@ -41,8 +43,23 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
      */
     public ParameterBankImpl (final DataSetupEx dataSetup, final int numParams, final IDevice device)
     {
+        this (dataSetup, Processor.DEVICE, numParams, device);
+    }
+
+
+    /**
+     * Constructor.
+     *
+     * @param dataSetup Some configuration variables
+     * @param processor The processor to use for sending parameter updates
+     * @param numParams The number of parameters in the page of the bank
+     * @param device The device for looking up the device parameter mapping
+     */
+    public ParameterBankImpl (final DataSetupEx dataSetup, final Processor processor, final int numParams, final IDevice device)
+    {
         super (dataSetup, numParams, EmptyParameter.INSTANCE);
 
+        this.processor = processor;
         this.device = device;
         this.device.addNameObserver (name -> this.refreshParameterCache ());
 
@@ -91,7 +108,7 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
     @Override
     protected ParameterImpl createItem (final int position)
     {
-        return new ParameterImpl (this.dataSetup, position % this.pageSize, 0);
+        return new ParameterImpl (this.dataSetup, this.processor, position % this.pageSize, 0);
     }
 
 

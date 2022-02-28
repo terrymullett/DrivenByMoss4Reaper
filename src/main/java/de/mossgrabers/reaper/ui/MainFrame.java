@@ -11,8 +11,8 @@ import de.mossgrabers.reaper.controller.IControllerInstance;
 import de.mossgrabers.reaper.ui.dialog.BrowserDialog;
 import de.mossgrabers.reaper.ui.dialog.DebugDialog;
 import de.mossgrabers.reaper.ui.utils.LogModel;
-import de.mossgrabers.reaper.ui.widget.CheckboxListItem;
 import de.mossgrabers.reaper.ui.widget.CheckboxListRenderer;
+import de.mossgrabers.reaper.ui.widget.ControllerCheckboxListItem;
 import de.mossgrabers.reaper.ui.widget.Functions;
 
 import javax.swing.DefaultListModel;
@@ -54,18 +54,18 @@ import java.util.TreeMap;
  */
 public class MainFrame extends JFrame
 {
-    private static final long                        serialVersionUID = 4251131641194938848L;
-    private static final int                         GAP              = 14;
+    private static final long                                  serialVersionUID = 4251131641194938848L;
+    private static final int                                   GAP              = 14;
 
-    private final transient AppCallback              callback;
-    private final JTextArea                          loggingTextArea  = new JTextArea ();
-    private final JButton                            removeButton;
-    private final JButton                            configButton;
-    private final DefaultListModel<CheckboxListItem> listModel        = new DefaultListModel<> ();
-    private final JList<CheckboxListItem>            controllerList   = new JList<> (this.listModel);
+    private final transient AppCallback                        callback;
+    private final JTextArea                                    loggingTextArea  = new JTextArea ();
+    private final JButton                                      removeButton;
+    private final JButton                                      configButton;
+    private final DefaultListModel<ControllerCheckboxListItem> listModel        = new DefaultListModel<> ();
+    private final JList<ControllerCheckboxListItem>            controllerList   = new JList<> (this.listModel);
 
-    private final DebugDialog                        debugDialog;
-    private final BrowserDialog                      browserDialog;
+    private final DebugDialog                                  debugDialog;
+    private final BrowserDialog                                browserDialog;
 
 
     /**
@@ -191,7 +191,7 @@ public class MainFrame extends JFrame
         this.configureFrame (this);
 
         for (final IControllerInstance instance: instanceManager.getInstances ())
-            this.listModel.addElement (new CheckboxListItem (instance));
+            this.listModel.addElement (new ControllerCheckboxListItem (instance));
 
         this.updateWidgetStates ();
     }
@@ -207,7 +207,7 @@ public class MainFrame extends JFrame
             return;
 
         for (final IControllerInstance controllerInstance: detectedControllers)
-            this.listModel.addElement (new CheckboxListItem (controllerInstance));
+            this.listModel.addElement (new ControllerCheckboxListItem (controllerInstance));
 
         this.controllerList.setSelectedValue (detectedControllers.get (0), true);
         this.updateWidgetStates ();
@@ -249,7 +249,10 @@ public class MainFrame extends JFrame
     }
 
 
-    private void parameterMapping ()
+    /**
+     * Open the parameter mapping dialog.
+     */
+    public void parameterMapping ()
     {
         final int selectedIndex = this.controllerList.getSelectionModel ().getLeadSelectionIndex ();
         if (selectedIndex >= 0)
@@ -276,7 +279,7 @@ public class MainFrame extends JFrame
         final int selectedIndex = this.controllerList.getSelectionModel ().getLeadSelectionIndex ();
         if (selectedIndex < 0)
             return;
-        final CheckboxListItem item = this.listModel.getElementAt (selectedIndex);
+        final ControllerCheckboxListItem item = this.listModel.getElementAt (selectedIndex);
         item.setSelected (!item.isSelected ());
         this.callback.toggleEnableController (selectedIndex);
         // Force a redraw
@@ -401,7 +404,7 @@ public class MainFrame extends JFrame
         final int selectedIndex = this.controllerList.getSelectionModel ().getLeadSelectionIndex ();
         if (selectedIndex < 0)
             return;
-        final CheckboxListItem checkboxListItem = this.listModel.get (selectedIndex);
+        final ControllerCheckboxListItem checkboxListItem = this.listModel.get (selectedIndex);
         if (checkboxListItem == null)
             return;
         final IControllerInstance controllerInstance = checkboxListItem.item ();
@@ -415,7 +418,7 @@ public class MainFrame extends JFrame
         final int selectedIndex = this.controllerList.getSelectionModel ().getLeadSelectionIndex ();
         if (selectedIndex < 0)
             return;
-        final CheckboxListItem checkboxListItem = this.listModel.get (selectedIndex);
+        final ControllerCheckboxListItem checkboxListItem = this.listModel.get (selectedIndex);
         if (checkboxListItem == null)
             return;
         final IControllerInstance controllerInstance = checkboxListItem.item ();
@@ -429,7 +432,7 @@ public class MainFrame extends JFrame
         final IControllerInstance controllerInstance = this.callback.addController (definition);
         if (controllerInstance == null)
             return;
-        final CheckboxListItem inst = new CheckboxListItem (controllerInstance);
+        final ControllerCheckboxListItem inst = new ControllerCheckboxListItem (controllerInstance);
         this.listModel.addElement (inst);
         this.controllerList.setSelectedValue (inst, true);
         this.updateWidgetStates ();

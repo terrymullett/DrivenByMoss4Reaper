@@ -675,7 +675,7 @@ public class MessageParser
                     try
                     {
                         final int position = Integer.parseInt (bandIndex);
-                        edi.setTypeInternal (position, value);
+                        edi.setTypeInternal (position, Integer.parseInt (value));
                     }
                     catch (final NumberFormatException ex)
                     {
