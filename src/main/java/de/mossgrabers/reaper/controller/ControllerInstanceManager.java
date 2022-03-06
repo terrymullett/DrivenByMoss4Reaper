@@ -16,6 +16,7 @@ import de.mossgrabers.reaper.controller.akai.apc.APC40mkIIControllerInstance;
 import de.mossgrabers.reaper.controller.akai.apcmini.APCminiControllerInstance;
 import de.mossgrabers.reaper.controller.akai.fire.FireControllerInstance;
 import de.mossgrabers.reaper.controller.arturia.beatstep.BeatstepControllerInstance;
+import de.mossgrabers.reaper.controller.gamepad.GamepadControllerInstance;
 import de.mossgrabers.reaper.controller.generic.GenericFlexiControllerInstance;
 import de.mossgrabers.reaper.controller.mackie.hui.HUI1ControllerInstance;
 import de.mossgrabers.reaper.controller.mackie.hui.HUI2ControllerInstance;
@@ -96,6 +97,7 @@ public class ControllerInstanceManager
         DEF_TO_CLASS.put (APCminiControllerInstance.CONTROLLER_DEFINITION, APCminiControllerInstance.class);
         DEF_TO_CLASS.put (BeatstepControllerInstance.CONTROLLER_DEFINITION, BeatstepControllerInstance.class);
         DEF_TO_CLASS.put (FireControllerInstance.CONTROLLER_DEFINITION, FireControllerInstance.class);
+        DEF_TO_CLASS.put (GamepadControllerInstance.CONTROLLER_DEFINITION, GamepadControllerInstance.class);
         DEF_TO_CLASS.put (GenericFlexiControllerInstance.CONTROLLER_DEFINITION, GenericFlexiControllerInstance.class);
         DEF_TO_CLASS.put (HUI1ControllerInstance.CONTROLLER_DEFINITION, HUI1ControllerInstance.class);
         DEF_TO_CLASS.put (HUI2ControllerInstance.CONTROLLER_DEFINITION, HUI2ControllerInstance.class);

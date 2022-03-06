@@ -829,6 +829,38 @@ public class CursorTrackImpl implements ICursorTrack
 
     /** {@inheritDoc} */
     @Override
+    public boolean canSelectPrevious ()
+    {
+        return this.model.getTrackBank ().canScrollBackwards ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean canSelectNext ()
+    {
+        return this.model.getTrackBank ().canScrollForwards ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void selectPrevious ()
+    {
+        this.model.getTrackBank ().selectPreviousItem ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void selectNext ()
+    {
+        this.model.getTrackBank ().selectNextItem ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public boolean isPinned ()
     {
         return this.isPinned;
@@ -861,6 +893,17 @@ public class CursorTrackImpl implements ICursorTrack
 
         this.isPinned = isPinned;
         this.sendPositionedItemOSC ("pin", this.pinnedTrack == null ? -1 : this.pinnedTrack.getPosition ());
+    }
+
+
+    /**
+     * Get the pinned track.
+     *
+     * @return The pinned track or null if there is no pinned track
+     */
+    public ITrack getPinnedTrack ()
+    {
+        return this.pinnedTrack;
     }
 
 
@@ -938,16 +981,5 @@ public class CursorTrackImpl implements ICursorTrack
         final ITrack selectedTrack = this.getSelectedTrack ();
         if (selectedTrack != null)
             ((ChannelImpl) selectedTrack).sendPositionedItemOSC (command, value);
-    }
-
-
-    /**
-     * Get the pinned track.
-     *
-     * @return The pinned track or null if there is no pinned track
-     */
-    public ITrack getPinnedTrack ()
-    {
-        return this.pinnedTrack;
     }
 }

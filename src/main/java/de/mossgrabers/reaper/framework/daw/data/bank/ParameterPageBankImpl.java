@@ -153,7 +153,7 @@ public class ParameterPageBankImpl extends AbstractBank<String> implements IPara
     public String getItem (final int index)
     {
         final int pos = this.getScrollPosition () + index;
-        return pos < this.getItemCount () ? this.cachedPageNames.get (pos) : "";
+        return pos < this.cachedPageNames.size () ? this.cachedPageNames.get (pos) : "";
     }
 
 

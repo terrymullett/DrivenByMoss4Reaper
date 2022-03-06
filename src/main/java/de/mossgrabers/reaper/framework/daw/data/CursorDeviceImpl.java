@@ -73,7 +73,7 @@ public class CursorDeviceImpl extends SpecificDeviceImpl implements ICursorDevic
 
     /** {@inheritDoc} */
     @Override
-    public boolean canSelectPreviousFX ()
+    public boolean canSelectPrevious ()
     {
         return this.getPosition () > 0;
     }
@@ -81,7 +81,7 @@ public class CursorDeviceImpl extends SpecificDeviceImpl implements ICursorDevic
 
     /** {@inheritDoc} */
     @Override
-    public boolean canSelectNextFX ()
+    public boolean canSelectNext ()
     {
         return this.getPosition () < this.deviceCount - 1;
     }
@@ -116,7 +116,7 @@ public class CursorDeviceImpl extends SpecificDeviceImpl implements ICursorDevic
     @Override
     public void selectPrevious ()
     {
-        if (!this.canSelectPreviousFX ())
+        if (!this.canSelectPrevious ())
             return;
 
         // To support displaying the newly selected device quickly
@@ -131,7 +131,7 @@ public class CursorDeviceImpl extends SpecificDeviceImpl implements ICursorDevic
     @Override
     public void selectNext ()
     {
-        if (!this.canSelectNextFX ())
+        if (!this.canSelectNext ())
             return;
 
         // To support displaying the newly selected device quickly
