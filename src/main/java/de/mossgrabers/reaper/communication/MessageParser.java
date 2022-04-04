@@ -32,8 +32,8 @@ import de.mossgrabers.reaper.framework.daw.Note;
 import de.mossgrabers.reaper.framework.daw.ProjectImpl;
 import de.mossgrabers.reaper.framework.daw.TransportImpl;
 import de.mossgrabers.reaper.framework.daw.data.CursorDeviceImpl;
+import de.mossgrabers.reaper.framework.daw.data.DeviceImpl;
 import de.mossgrabers.reaper.framework.daw.data.EqualizerDeviceImpl;
-import de.mossgrabers.reaper.framework.daw.data.ItemImpl;
 import de.mossgrabers.reaper.framework.daw.data.MarkerImpl;
 import de.mossgrabers.reaper.framework.daw.data.MasterTrackImpl;
 import de.mossgrabers.reaper.framework.daw.data.SceneImpl;
@@ -752,14 +752,22 @@ public class MessageParser
             final IDeviceBank deviceBank = device.getDeviceBank ();
             if (siblingNo < deviceBank.getPageSize ())
             {
-                final ItemImpl sibling = (ItemImpl) deviceBank.getItem (siblingNo);
-                if (TAG_NAME.equals (parts.poll ()))
+                final DeviceImpl sibling = (DeviceImpl) deviceBank.getItem (siblingNo);
+                switch (parts.poll ())
                 {
-                    sibling.setInternalName (value);
-                    sibling.setExists (value != null && !value.isEmpty ());
+                    case TAG_NAME:
+                        sibling.setInternalName (value);
+                        sibling.setExists (value != null && !value.isEmpty ());
+                        break;
+
+                    case "bypass":
+                        sibling.setEnabled (Integer.parseInt (value) == 0);
+                        break;
+
+                    default:
+                        this.host.error ("Unhandled device sibling parameter: " + command);
+                        break;
                 }
-                else
-                    this.host.error ("Unhandled device sibling parameter: " + command);
             }
         }
         catch (final NumberFormatException ex)

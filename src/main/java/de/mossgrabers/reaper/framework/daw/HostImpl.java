@@ -33,7 +33,9 @@ import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -46,6 +48,16 @@ import java.util.concurrent.TimeUnit;
  */
 public class HostImpl implements IHost
 {
+    private static final Set<Capability> CAPABILITIES = new HashSet<> ();
+    static
+    {
+        CAPABILITIES.add (Capability.NOTE_REPEAT_LENGTH);
+        CAPABILITIES.add (Capability.NOTE_REPEAT_USE_PRESSURE_TO_VELOCITY);
+        CAPABILITIES.add (Capability.NOTE_REPEAT_MODE);
+        CAPABILITIES.add (Capability.NOTE_EDIT_MUTE);
+        CAPABILITIES.add (Capability.HAS_PINNING);
+    }
+
     private final WindowManager                    windowManager;
     private final LogModel                         logModel;
     private final ScheduledExecutorService         executor       = Executors.newScheduledThreadPool (10);
@@ -104,35 +116,7 @@ public class HostImpl implements IHost
     @Override
     public boolean supports (final Capability capability)
     {
-        switch (capability)
-        {
-            case NOTE_REPEAT_LENGTH, NOTE_REPEAT_USE_PRESSURE_TO_VELOCITY, NOTE_REPEAT_MODE:
-                return true;
-
-            case NOTE_REPEAT_SWING, NOTE_REPEAT_OCTAVES, NOTE_REPEAT_IS_FREE_RUNNING:
-                return false;
-
-            case NOTE_EDIT_MUTE:
-                return true;
-
-            case NOTE_EDIT_RELEASE_VELOCITY, NOTE_EDIT_CHANCE, NOTE_EDIT_EXPRESSIONS, NOTE_EDIT_OCCURRENCE, NOTE_EDIT_RECCURRENCE, NOTE_EDIT_REPEAT, NOTE_EDIT_VELOCITY_SPREAD:
-                return false;
-
-            case QUANTIZE_INPUT_NOTE_LENGTH, QUANTIZE_AMOUNT:
-                return false;
-
-            case CUE_VOLUME:
-                return false;
-
-            case HAS_CROSSFADER, HAS_DRUM_DEVICE, HAS_EFFECT_BANK, HAS_SLOT_CHAINS:
-                return false;
-
-            case HAS_PINNING:
-                return true;
-
-            default:
-                return false;
-        }
+        return CAPABILITIES.contains (capability);
     }
 
 

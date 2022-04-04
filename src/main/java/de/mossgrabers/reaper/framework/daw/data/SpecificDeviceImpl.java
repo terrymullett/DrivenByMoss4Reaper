@@ -25,7 +25,6 @@ import de.mossgrabers.reaper.framework.daw.data.bank.ParameterPageBankImpl;
  */
 public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
 {
-    private boolean                     isEnabled = false;
     private boolean                     isWindowOpen;
     private boolean                     isExpanded;
     private final ParameterPageBankImpl parameterPageBank;
@@ -104,14 +103,6 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
             return "";
         final String name = this.parameterBank.getUnpagedItem (0).getName ();
         return name == null ? "" : name;
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean isEnabled ()
-    {
-        return this.isEnabled;
     }
 
 
@@ -222,14 +213,6 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
 
     /** {@inheritDoc} */
     @Override
-    public void toggleEnabledState ()
-    {
-        this.sender.processBooleanArg (Processor.DEVICE, "bypass", this.isEnabled);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     public void toggleWindowOpen ()
     {
         this.sender.processBooleanArg (Processor.DEVICE, "window", !this.isWindowOpen);
@@ -250,17 +233,6 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
     public void toggleParameterPageSectionVisible ()
     {
         // Not supported
-    }
-
-
-    /**
-     * Set if the device is enabled.
-     *
-     * @param isEnabled The enabled state
-     */
-    public void setEnabled (final boolean isEnabled)
-    {
-        this.isEnabled = isEnabled;
     }
 
 

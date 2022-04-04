@@ -194,6 +194,31 @@ public class NoteRepeatImpl implements INoteRepeat
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    public void toggleLatchActive ()
+    {
+        // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isLatchActive ()
+    {
+        // Not supported
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setLatchActive (boolean active)
+    {
+        // Not supported
+    }
+
+
     /**
      * Set the period for note repeat.
      *

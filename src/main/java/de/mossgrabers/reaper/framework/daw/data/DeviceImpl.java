@@ -16,6 +16,9 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
  */
 public class DeviceImpl extends ItemImpl implements IDevice
 {
+    private boolean isEnabled = false;
+
+
     /**
      * Constructor.
      *
@@ -25,6 +28,33 @@ public class DeviceImpl extends ItemImpl implements IDevice
     public DeviceImpl (final DataSetupEx dataSetup, final int index)
     {
         super (dataSetup, index);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEnabled ()
+    {
+        return this.isEnabled;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void toggleEnabledState ()
+    {
+        this.sendOSC (this.getIndex () + 1 + "/bypass", this.isEnabled);
+    }
+
+
+    /**
+     * Set if the device is enabled.
+     *
+     * @param isEnabled The enabled state
+     */
+    public void setEnabled (final boolean isEnabled)
+    {
+        this.isEnabled = isEnabled;
     }
 
 
