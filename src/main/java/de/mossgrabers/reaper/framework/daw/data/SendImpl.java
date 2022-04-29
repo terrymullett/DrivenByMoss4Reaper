@@ -4,6 +4,7 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
+import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.data.IChannel;
 import de.mossgrabers.framework.daw.data.ISend;
 import de.mossgrabers.reaper.communication.Processor;
@@ -21,6 +22,7 @@ public class SendImpl extends ParameterImpl implements ISend
     private static final Object UPDATE_LOCK = new Object ();
 
     private final IChannel      channel;
+    private ColorEx             color;
 
 
     /**
@@ -69,5 +71,24 @@ public class SendImpl extends ParameterImpl implements ISend
     {
         final StringBuilder command = new StringBuilder ().append (this.channel.getPosition ()).append ("/send/").append (this.getPosition ()).append ("/volume");
         this.sender.processDoubleArg (Processor.TRACK, command.toString (), this.value);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public ColorEx getColor ()
+    {
+        return this.color;
+    }
+
+
+    /**
+     * Set the color.
+     *
+     * @param color The color
+     */
+    public void setColorState (final double [] color)
+    {
+        this.color = new ColorEx (color);
     }
 }

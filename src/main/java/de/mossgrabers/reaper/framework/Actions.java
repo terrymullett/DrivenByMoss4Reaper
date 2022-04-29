@@ -86,6 +86,11 @@ public final class Actions
     /** Track: Go to previous track. */
     public static final int           GO_TO_PREV_TRACK                = 40286;
 
+    /** Markers: Go to next marker/project end. */
+    public static final int           GO_TO_NEXT_MARKER               = 40173;
+    /** Markers: Go to previous marker/project start. */
+    public static final int           GO_TO_PREV_MARKER               = 40172;
+
     /** View: Zoom out horizontal. */
     public static final int           ZOOM_OUT_HORIZ                  = 1011;
     /** View: Zoom in horizontal. */

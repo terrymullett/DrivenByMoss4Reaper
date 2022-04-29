@@ -617,6 +617,11 @@ public class MessageParser
                     sendImpl.setValueStr (value);
                 break;
 
+            case TAG_COLOR:
+                final Optional<double []> color = ((ModelImpl) this.model).parseColor (value);
+                sendImpl.setColorState (color.isPresent () ? color.get () : ColorEx.GRAY.toDoubleRGB ());
+                break;
+
             default:
                 this.host.error ("Unhandled Send command: " + command);
                 break;
