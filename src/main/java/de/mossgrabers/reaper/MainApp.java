@@ -160,9 +160,8 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
         MidiConnection.cleanupUnusedDevices ();
 
         this.logModel.info ("Shutting down USB...");
-        // Don't execute on Mac since it hangs in the function, the memory is cleaned up on exit
-        // anyway
-        if (!OperatingSystem.isMacOS ())
+        // Seems to only work on Windows. Mac and Linux hang and crash...
+        if (OperatingSystem.get () == OperatingSystem.WINDOWS)
             LibUsb.exit (null);
     }
 
