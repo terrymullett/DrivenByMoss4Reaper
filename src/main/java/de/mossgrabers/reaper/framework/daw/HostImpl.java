@@ -209,6 +209,7 @@ public class HostImpl implements IHost
     {
         for (final IUsbDevice usbDevice: this.usbDevices)
             usbDevice.release ();
+        this.usbDevices.clear ();
     }
 
 
