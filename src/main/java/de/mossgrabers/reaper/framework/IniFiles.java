@@ -53,7 +53,6 @@ public class IniFiles
     private boolean             isParamMapsPresent;
     private String              paramMapsFilename;
 
-
     /**
      * Constructor.
      */
@@ -100,8 +99,7 @@ public class IniFiles
 
         this.isVstPresent = loadINIFile (iniPath + File.separator + VST_PLUGINS_64, this.iniVstPlugins64, logModel);
 
-        final OperatingSystem os = OperatingSystem.get ();
-        if (os == OperatingSystem.MAC || os == OperatingSystem.MAC_ARM)
+        if (OperatingSystem.isMacOS ())
         {
             final File iniAuPlugins64 = new File (iniPath + File.separator + AU_PLUGINS_64);
             if (iniAuPlugins64.exists ())
@@ -117,7 +115,7 @@ public class IniFiles
                 }
             }
 
-            if (os == OperatingSystem.MAC_ARM)
+            if (OperatingSystem.get () == OperatingSystem.MAC_ARM)
             {
                 this.isVstARMPresent = loadINIFile (iniPath + File.separator + VST_PLUGINS_ARM64, this.iniVstPluginsARM64, logModel);
 

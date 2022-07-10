@@ -74,7 +74,6 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
     private final String                    iniPath;
     private final IniFiles                  iniFiles                     = new IniFiles ();
 
-
     /**
      * Constructor.
      *
@@ -163,7 +162,7 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
         this.logModel.info ("Shutting down USB...");
         // Don't execute on Mac since it hangs in the function, the memory is cleaned up on exit
         // anyway
-        if (OperatingSystem.get () != OperatingSystem.MAC)
+        if (!OperatingSystem.isMacOS ())
             LibUsb.exit (null);
     }
 

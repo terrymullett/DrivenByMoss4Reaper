@@ -27,7 +27,6 @@ public class HidDeviceImpl implements IHidDevice
     private HidDevice hidDevice;
     private boolean   isOpen;
 
-
     /**
      * Constructor.
      *
@@ -77,7 +76,7 @@ public class HidDeviceImpl implements IHidDevice
         // data[0], therefore add it
         byte [] d = data;
         int l = data.length;
-        if (OperatingSystem.get () == OperatingSystem.MAC)
+        if (OperatingSystem.isMacOS ())
         {
             l++;
             d = new byte [l];
@@ -112,7 +111,7 @@ public class HidDeviceImpl implements IHidDevice
             // data[0], therefore remove it
             byte [] d = data;
             int l = length;
-            if (OperatingSystem.get () == OperatingSystem.MAC)
+            if (OperatingSystem.isMacOS ())
             {
                 l--;
                 d = new byte [l];
