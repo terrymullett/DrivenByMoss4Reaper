@@ -164,4 +164,22 @@ public class DrumPadBankImpl extends AbstractPagedBankImpl<DrumPadImpl, ILayer> 
         for (int i = 0; i < this.itemCount; i++)
             this.getUnpagedItem (i).setSelected (i == position);
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean canEditSend (final int sendIndex)
+    {
+        // Not supported
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public String getEditSendName (final int sendIndex)
+    {
+        // Not supported
+        return "";
+    }
 }

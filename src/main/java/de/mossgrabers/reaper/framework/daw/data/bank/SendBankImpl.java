@@ -45,4 +45,15 @@ public class SendBankImpl extends AbstractPagedBankImpl<SendImpl, ISend> impleme
         send.setPosition (position);
         return send;
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void scrollTo (final int position, final boolean adjustPage)
+    {
+        if (position < 0 || position >= this.getItemCount ())
+            return;
+        final int pageSize = this.getPageSize ();
+        this.setBankOffset (adjustPage ? position / pageSize * pageSize : position);
+    }
 }

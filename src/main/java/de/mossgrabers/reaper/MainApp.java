@@ -630,8 +630,6 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
      */
     public void updateModel (final String data)
     {
-        this.logModel.info (data);
-
         if (data == null || data.isEmpty ())
             return;
 

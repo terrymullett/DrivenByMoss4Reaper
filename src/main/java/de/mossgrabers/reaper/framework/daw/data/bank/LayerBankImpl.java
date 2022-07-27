@@ -66,4 +66,22 @@ public class LayerBankImpl extends AbstractBankImpl<ILayer> implements ILayerBan
     {
         // Not supported
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean canEditSend (final int sendIndex)
+    {
+        // Not supported
+        return false;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public String getEditSendName (final int sendIndex)
+    {
+        // Not supported
+        return "";
+    }
 }
