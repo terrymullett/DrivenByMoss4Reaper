@@ -48,7 +48,7 @@ public abstract class BaseImpl implements IObserverManagement
 
 
     /**
-     * Check if automation recording is enable and currently recording.
+     * Check if automation recording is enabled and currently recording.
      *
      * @return True if automation recording is enable and currently recording
      */

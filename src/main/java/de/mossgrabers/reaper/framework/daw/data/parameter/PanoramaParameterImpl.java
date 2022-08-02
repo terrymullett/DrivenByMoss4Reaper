@@ -9,13 +9,13 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
 /**
- * Encapsulates the data of a track parameter (volume or panorama).
+ * Encapsulates the data of a tracks' panorama parameter.
  *
  * @author J&uuml;rgen Mo&szlig;graber
  */
-public class TrackParameterImpl extends ParameterImpl
+public class PanoramaParameterImpl extends ParameterImpl
 {
-    private final String paramName;
+    private static final Object PANORAMA_UPDATE_LOCK = new Object ();
 
 
     /**
@@ -23,15 +23,23 @@ public class TrackParameterImpl extends ParameterImpl
      *
      * @param dataSetup Some configuration variables
      * @param index The index of the send
-     * @param paramName The name of the parameter
      * @param defaultValue The default value for resetting parameters [0..1]
      */
-    public TrackParameterImpl (final DataSetupEx dataSetup, final int index, final String paramName, final double defaultValue)
+    public PanoramaParameterImpl (final DataSetupEx dataSetup, final int index, final double defaultValue)
     {
         super (dataSetup, index, defaultValue);
 
-        this.paramName = paramName;
-        this.setInternalName ("volume".equals (this.paramName) ? "Volume" : "Pan");
+        this.setInternalName ("Pan");
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void touchValue (final boolean isBeingTouched)
+    {
+        this.sender.processIntArg (Processor.TRACK, this.createCommand ("pan/touch"), isBeingTouched ? 1 : 0);
+
+        super.touchValue (isBeingTouched);
     }
 
 
@@ -39,7 +47,12 @@ public class TrackParameterImpl extends ParameterImpl
     @Override
     protected void sendValue ()
     {
-        this.sender.processDoubleArg (Processor.TRACK, this.createCommand (this.paramName), this.value);
+        synchronized (PANORAMA_UPDATE_LOCK)
+        {
+            if (this.isAutomationRecActive ())
+                this.sender.delayUpdates (Processor.TRACK);
+            this.sender.processDoubleArg (Processor.TRACK, this.createCommand ("pan"), this.value);
+        }
     }
 
 

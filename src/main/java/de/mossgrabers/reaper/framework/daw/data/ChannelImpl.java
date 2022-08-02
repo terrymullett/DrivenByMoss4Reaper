@@ -15,8 +15,9 @@ import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.bank.SendBankImpl;
+import de.mossgrabers.reaper.framework.daw.data.parameter.PanoramaParameterImpl;
 import de.mossgrabers.reaper.framework.daw.data.parameter.ParameterImpl;
-import de.mossgrabers.reaper.framework.daw.data.parameter.TrackParameterImpl;
+import de.mossgrabers.reaper.framework.daw.data.parameter.VolumeParameterImpl;
 import de.mossgrabers.reaper.framework.device.Device;
 
 import java.util.HashSet;
@@ -30,10 +31,10 @@ import java.util.Set;
  */
 public class ChannelImpl extends ItemImpl implements IChannel
 {
-    private static final Object                UPDATE_LOCK    = new Object ();
-    private static final ColorEx               GRAY           = new ColorEx (0.2, 0.2, 0.2);
+    private static final Object                MUTE_UPDATE_LOCK = new Object ();
+    private static final ColorEx               GRAY             = new ColorEx (0.2, 0.2, 0.2);
 
-    private final Set<IValueObserver<ColorEx>> colorObservers = new HashSet<> ();
+    private final Set<IValueObserver<ColorEx>> colorObservers   = new HashSet<> ();
 
     private ChannelType                        type;
     private double                             vu;
@@ -45,7 +46,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
 
     private boolean                            isMute;
     private boolean                            isSolo;
-    private boolean                            isActivated    = true;
+    private boolean                            isActivated      = true;
     private ColorEx                            color;
 
     private final ParameterImpl                volumeParameter;
@@ -62,7 +63,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
      */
     public ChannelImpl (final DataSetupEx dataSetup, final int index, final int numSends)
     {
-        this (dataSetup, index, numSends, new TrackParameterImpl (dataSetup, index, "volume", 0.716), new TrackParameterImpl (dataSetup, index, "pan", 0.5));
+        this (dataSetup, index, numSends, new VolumeParameterImpl (dataSetup, index, 0.716), new PanoramaParameterImpl (dataSetup, index, 0.5));
     }
 
 
@@ -167,12 +168,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void setVolume (final int value)
     {
-        synchronized (UPDATE_LOCK)
-        {
-            if (this.isAutomationRecActive ())
-                this.sender.delayUpdates (Processor.TRACK);
-            this.volumeParameter.setValue (value);
-        }
+        this.volumeParameter.setValue (value);
     }
 
 
@@ -187,19 +183,6 @@ public class ChannelImpl extends ItemImpl implements IChannel
     /** {@inheritDoc} */
     @Override
     public void touchVolume (final boolean isBeingTouched)
-    {
-        this.sendPositionedItemOSC ("volume/touch", isBeingTouched);
-        this.handleVolumeTouch (isBeingTouched);
-    }
-
-
-    /**
-     * Prevent updating of the value from the DAW when the user edits the value, otherwise the value
-     * "jumps" due to round trip delays.
-     *
-     * @param isBeingTouched True if touched
-     */
-    protected void handleVolumeTouch (final boolean isBeingTouched)
     {
         this.volumeParameter.touchValue (isBeingTouched);
     }
@@ -266,13 +249,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void setPan (final int value)
     {
-        synchronized (UPDATE_LOCK)
-        {
-            if (this.isAutomationRecActive ())
-                this.sender.delayUpdates (Processor.TRACK);
-
-            this.panParameter.setValue (value);
-        }
+        this.panParameter.setValue (value);
     }
 
 
@@ -287,19 +264,6 @@ public class ChannelImpl extends ItemImpl implements IChannel
     /** {@inheritDoc} */
     @Override
     public void touchPan (final boolean isBeingTouched)
-    {
-        this.sendPositionedItemOSC ("pan/touch", isBeingTouched);
-        this.handlePanTouch (isBeingTouched);
-    }
-
-
-    /**
-     * Prevent updating of the value from the DAW when the user edits the value, otherwise the value
-     * "jumps" due to round trip delays.
-     *
-     * @param isBeingTouched True if touched
-     */
-    protected void handlePanTouch (final boolean isBeingTouched)
     {
         this.panParameter.touchValue (isBeingTouched);
     }
@@ -447,7 +411,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void setMute (final boolean value)
     {
-        synchronized (UPDATE_LOCK)
+        synchronized (MUTE_UPDATE_LOCK)
         {
             if (this.isAutomationRecActive ())
                 this.sender.delayUpdates (Processor.TRACK);

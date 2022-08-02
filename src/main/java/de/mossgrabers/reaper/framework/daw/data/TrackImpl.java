@@ -29,25 +29,7 @@ import java.util.Map;
  */
 public class TrackImpl extends ChannelImpl implements ITrack
 {
-    /** Record monitoring is off. */
-    public static final int                              MONITOR_OFF      = 0;
-    /** Record monitoring is on. */
-    public static final int                              MONITOR_ON       = 1;
-    /** Record monitoring is automatic. */
-    public static final int                              MONITOR_AUTO     = 2;
-
-    /** Automation write is trim. */
-    public static final String                           AUTOMATION_TRIM  = "trim";
-    /** Automation write is read. */
-    public static final String                           AUTOMATION_READ  = "read";
-    /** Automation write is touch. */
-    public static final String                           AUTOMATION_TOUCH = "touch";
-    /** Automation write is latch. */
-    public static final String                           AUTOMATION_LATCH = "latch";
-    /** Automation write is write. */
-    public static final String                           AUTOMATION_WRITE = "write";
-
-    private static final Map<RecordQuantization, Double> QUANT_MAP        = new EnumMap<> (RecordQuantization.class);
+    private static final Map<RecordQuantization, Double> QUANT_MAP = new EnumMap<> (RecordQuantization.class);
     static
     {
         QUANT_MAP.put (RecordQuantization.RES_OFF, Double.valueOf (0));

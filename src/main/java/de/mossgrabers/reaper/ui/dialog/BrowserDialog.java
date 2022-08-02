@@ -217,6 +217,9 @@ public class BrowserDialog extends BasicDialog
     {
         synchronized (this.browserLock)
         {
+            if (this.browser == null)
+                return;
+
             this.updateFilterSelections ();
 
             final DefaultListModel<String> model = this.resultListBox.getModel ();
@@ -245,6 +248,9 @@ public class BrowserDialog extends BasicDialog
     {
         synchronized (this.browserLock)
         {
+            if (this.browser == null)
+                return;
+
             this.setTitle ("Browser - " + this.browser.getSelectedContentType ());
 
             final int filterColumnCount = this.browser.getFilterColumnCount ();
@@ -280,6 +286,9 @@ public class BrowserDialog extends BasicDialog
     {
         synchronized (this.browserLock)
         {
+            if (this.browser == null)
+                return;
+
             final int filterColumnCount = this.browser.getFilterColumnCount ();
 
             for (int i = 0; i < MAX_FILTER_COLUMNS; i++)
@@ -319,6 +328,9 @@ public class BrowserDialog extends BasicDialog
 
         synchronized (this.browserLock)
         {
+            if (this.browser == null)
+                return;
+
             final int selectedIndex = this.filterListBox.get (filterIndex).getSelectedIndex ();
             if (selectedIndex >= 0)
                 this.browser.setSelectedFilterItemIndex (filterIndex, selectedIndex);
@@ -338,6 +350,9 @@ public class BrowserDialog extends BasicDialog
 
         synchronized (this.browserLock)
         {
+            if (this.browser == null)
+                return;
+
             final int selectedIndex = this.resultListBox.getSelectedIndex ();
             if (selectedIndex >= 0)
                 this.browser.setSelectedResult (selectedIndex);
