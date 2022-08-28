@@ -629,7 +629,18 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
     @Override
     public void setTrigger (final int channel, final int cc, final int state)
     {
-        // Overwrite to support trigger LEDs
+        this.setTrigger (null, channel, cc, state);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setTrigger (final BindType bindType, final int channel, final int cc, final int value)
+    {
+        if (bindType == BindType.NOTE)
+            this.output.sendNoteEx (channel, cc, value);
+        else
+            this.output.sendCCEx (channel, cc, value);
     }
 
 
@@ -661,6 +672,9 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
             if (light != null)
                 light.turnOff ();
         });
+
+        this.continuous.forEach ( (id, control) -> control.turnOff ());
+
         this.surfaceFactory.flush ();
     }
 
@@ -691,6 +705,9 @@ public abstract class AbstractControlSurface<C extends Configuration> implements
             if (light != null)
                 light.forceFlush ();
         });
+
+        // Refresh all knob/fader LEDs
+        this.continuous.forEach ( (id, control) -> control.forceFlush ());
 
         // Flush additional lights which are not assigned to a button
         this.lights.forEach ( (outputID, light) -> light.forceFlush ());

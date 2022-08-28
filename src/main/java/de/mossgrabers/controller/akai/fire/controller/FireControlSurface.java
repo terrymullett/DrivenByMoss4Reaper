@@ -106,14 +106,6 @@ public class FireControlSurface extends AbstractControlSurface<FireConfiguration
 
     /** {@inheritDoc} */
     @Override
-    public void setTrigger (final int channel, final int cc, final int value)
-    {
-        this.output.sendCCEx (channel, cc, value);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
     protected void flushHardware ()
     {
         super.flushHardware ();

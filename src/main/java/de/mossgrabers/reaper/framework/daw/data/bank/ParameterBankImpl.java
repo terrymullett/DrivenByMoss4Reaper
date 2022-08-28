@@ -11,6 +11,7 @@ import de.mossgrabers.framework.daw.data.empty.EmptyParameter;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.parameter.ParameterImpl;
+import de.mossgrabers.reaper.framework.daw.data.parameter.ParameterProxy;
 import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMap;
 import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMapPage;
 import de.mossgrabers.reaper.framework.daw.data.parameter.map.ParameterMapPageParameter;
@@ -112,6 +113,18 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
     /** {@inheritDoc} */
     @Override
     public IParameter getItem (final int index)
+    {
+        return new ParameterProxy (this, index);
+    }
+
+
+    /**
+     * Get the pure parameter.
+     *
+     * @param index The index of the parameter
+     * @return The parameter
+     */
+    public IParameter getParameter (final int index)
     {
         return this.mappedParameterCount < 0 ? super.getItem (index) : this.mappedParameterCache[index];
     }

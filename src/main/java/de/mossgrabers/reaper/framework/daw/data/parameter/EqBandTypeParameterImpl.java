@@ -110,9 +110,19 @@ public class EqBandTypeParameterImpl extends AbstractParameterImpl
 
     /** {@inheritDoc} */
     @Override
+    public void setNormalizedValue (final double value)
+    {
+        final EqualizerBandType [] types = EqualizerBandType.values ();
+        final int typeIndex = (int) Math.round (value * (types.length - 1));
+        this.setType (types[typeIndex]);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void setValue (final IValueChanger valueChanger, final int value)
     {
-        // Not used
+        this.setNormalizedValue (valueChanger.toNormalizedValue (value));
     }
 
 
@@ -120,8 +130,7 @@ public class EqBandTypeParameterImpl extends AbstractParameterImpl
     @Override
     public int getValue ()
     {
-        // Not used
-        return 0;
+        return (int) Math.round (this.bandType.ordinal () * (127.0 / (EqualizerBandType.values ().length - 1)));
     }
 
 

@@ -847,6 +847,16 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
     /** {@inheritDoc} */
     @Override
+    public void moveStepY (final int channel, final int step, final int row, final int newRow)
+    {
+        this.clearStep (channel, step, row);
+        // TODO fix step
+        // this.setStep (channel, step, newRow, 127, ?);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void clearRow (final int channel, final int row)
     {
         this.sendOSC (PATH_NOTE + row + "/clear/" + channel);
@@ -871,12 +881,12 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
     /** {@inheritDoc} */
     @Override
-    public int getLowerRowWithData ()
+    public int getLowestRowWithData ()
     {
         int min = 128;
         for (int channel = 0; channel < 16; channel++)
         {
-            final int lower = this.getLowerRowWithData (channel);
+            final int lower = this.getLowestRowWithData (channel);
             if (lower >= 0 && lower < min)
                 min = lower;
         }
@@ -886,12 +896,12 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
     /** {@inheritDoc} */
     @Override
-    public int getUpperRowWithData ()
+    public int getHighestRowWithData ()
     {
         int max = -1;
         for (int channel = 0; channel < 16; channel++)
         {
-            final int upper = this.getUpperRowWithData (channel);
+            final int upper = this.getHighestRowWithData (channel);
             if (upper >= 0 && upper > max)
                 max = upper;
         }
@@ -901,7 +911,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
     /** {@inheritDoc} */
     @Override
-    public int getLowerRowWithData (final int channel)
+    public int getLowestRowWithData (final int channel)
     {
         for (int row = 0; row < this.numRows; row++)
             if (this.hasRowData (channel, row))
@@ -912,11 +922,27 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
     /** {@inheritDoc} */
     @Override
-    public int getUpperRowWithData (final int channel)
+    public int getHighestRowWithData (final int channel)
     {
         for (int row = this.numRows - 1; row >= 0; row--)
             if (this.hasRowData (channel, row))
                 return row;
+        return -1;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public int getHighestRow (final int channel, final int step)
+    {
+        synchronized (this.notes)
+        {
+            for (int row = this.numRows - 1; row >= 0; row--)
+            {
+                if (this.data[step] != null && this.data[step][row] != null && this.data[step][row].getState () != StepState.OFF)
+                    return row;
+            }
+        }
         return -1;
     }
 
