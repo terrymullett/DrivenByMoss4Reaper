@@ -487,8 +487,8 @@ public class TrackBankImpl extends AbstractTrackBankImpl
 
 
     /**
-     * Create a flat list of all tracks incl. the master track if enabled. Filter deactivated tracks
-     * if enabled.
+     * Create a flat list of all tracks including the master track if enabled. Filter deactivated
+     * tracks if enabled.
      */
     private void calcFlatTrack ()
     {

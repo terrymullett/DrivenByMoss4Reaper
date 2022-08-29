@@ -438,10 +438,10 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
         stepInfo.setMuted (isMuted);
         if (this.editSteps.isEmpty ())
-            return;
-
-        final double velocity = stepInfo.getVelocity ();
-        this.updateStep (channel, step, row, (int) (velocity * 127), stepInfo.getDuration (), isMuted);
+        {
+            final double velocity = stepInfo.getVelocity ();
+            this.updateStep (channel, step, row, (int) (velocity * 127), stepInfo.getDuration (), isMuted);
+        }
     }
 
 
@@ -470,10 +470,10 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
         stepInfo.setDuration (duration);
         if (this.editSteps.isEmpty ())
-            return;
-
-        final double velocity = stepInfo.getVelocity ();
-        this.updateStep (channel, step, row, (int) (velocity * 127), duration, stepInfo.isMuted ());
+        {
+            final double velocity = stepInfo.getVelocity ();
+            this.updateStep (channel, step, row, (int) (velocity * 127), duration, stepInfo.isMuted ());
+        }
     }
 
 
@@ -503,10 +503,10 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
         stepInfo.setVelocity (velocity);
         if (this.editSteps.isEmpty ())
-            return;
-
-        final double duration = stepInfo.getDuration ();
-        this.updateStep (channel, step, row, midiVelocity, duration, stepInfo.isMuted ());
+        {
+            final double duration = stepInfo.getDuration ();
+            this.updateStep (channel, step, row, midiVelocity, duration, stepInfo.isMuted ());
+        }
     }
 
 
@@ -849,9 +849,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public void moveStepY (final int channel, final int step, final int row, final int newRow)
     {
-        this.clearStep (channel, step, row);
-        // TODO fix step
-        // this.setStep (channel, step, newRow, 127, ?);
+        this.sendOSC (PATH_NOTE + row + "/moveY/" + channel + "/" + newRow, (step + this.editPage * this.numSteps) * this.stepLength);
     }
 
 
