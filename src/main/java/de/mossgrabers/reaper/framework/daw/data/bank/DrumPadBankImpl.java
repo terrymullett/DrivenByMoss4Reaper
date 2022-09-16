@@ -91,7 +91,7 @@ public class DrumPadBankImpl extends AbstractPagedBankImpl<DrumPadImpl, ILayer> 
         if (sel.isEmpty ())
             return DAWColor.COLOR_OFF.name ();
         final ColorEx color = sel.get ().getColor ();
-        return DAWColor.getColorIndex (color);
+        return DAWColor.getColorID (color);
     }
 
 

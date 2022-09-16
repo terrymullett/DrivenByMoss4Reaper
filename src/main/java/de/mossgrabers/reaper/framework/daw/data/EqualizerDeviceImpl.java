@@ -79,7 +79,7 @@ public class EqualizerDeviceImpl extends SpecificDeviceImpl implements IEqualize
 
     /** {@inheritDoc} */
     @Override
-    public IParameter getType (final int index)
+    public IParameter getTypeParameter (final int index)
     {
         return this.eqBandTypeParameters[index];
     }
@@ -87,7 +87,7 @@ public class EqualizerDeviceImpl extends SpecificDeviceImpl implements IEqualize
 
     /** {@inheritDoc} */
     @Override
-    public IParameter getFrequency (final int index)
+    public IParameter getFrequencyParameter (final int index)
     {
         return this.getParameterBank ().getItem (3 * index);
     }
@@ -95,7 +95,7 @@ public class EqualizerDeviceImpl extends SpecificDeviceImpl implements IEqualize
 
     /** {@inheritDoc} */
     @Override
-    public IParameter getGain (final int index)
+    public IParameter getGainParameter (final int index)
     {
         return this.getParameterBank ().getItem (3 * index + 1);
     }
@@ -103,7 +103,7 @@ public class EqualizerDeviceImpl extends SpecificDeviceImpl implements IEqualize
 
     /** {@inheritDoc} */
     @Override
-    public IParameter getQ (final int index)
+    public IParameter getQParameter (final int index)
     {
         return this.getParameterBank ().getItem (3 * index + 2);
     }
