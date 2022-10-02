@@ -15,6 +15,7 @@ import de.mossgrabers.framework.osc.IOpenSoundControlCallback;
 import de.mossgrabers.framework.osc.IOpenSoundControlClient;
 import de.mossgrabers.framework.osc.IOpenSoundControlMessage;
 import de.mossgrabers.framework.osc.IOpenSoundControlServer;
+import de.mossgrabers.framework.parameter.NoteAttribute;
 import de.mossgrabers.framework.usb.IUsbDevice;
 import de.mossgrabers.framework.usb.UsbException;
 import de.mossgrabers.framework.usb.UsbMatcher;
@@ -33,6 +34,7 @@ import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,13 +50,13 @@ import java.util.concurrent.TimeUnit;
  */
 public class HostImpl implements IHost
 {
-    private static final Set<Capability> CAPABILITIES = new HashSet<> ();
+    private static final Set<Capability>    CAPABILITIES    = new HashSet<> ();
+    private static final Set<NoteAttribute> NOTE_ATTRIBUTES = EnumSet.of (NoteAttribute.PITCH, NoteAttribute.DURATION, NoteAttribute.MUTE, NoteAttribute.VELOCITY);
     static
     {
         CAPABILITIES.add (Capability.NOTE_REPEAT_LENGTH);
         CAPABILITIES.add (Capability.NOTE_REPEAT_USE_PRESSURE_TO_VELOCITY);
         CAPABILITIES.add (Capability.NOTE_REPEAT_MODE);
-        CAPABILITIES.add (Capability.NOTE_EDIT_MUTE);
         CAPABILITIES.add (Capability.HAS_PINNING);
     }
 
@@ -117,6 +119,14 @@ public class HostImpl implements IHost
     public boolean supports (final Capability capability)
     {
         return CAPABILITIES.contains (capability);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean supports (final NoteAttribute noteAttribute)
+    {
+        return NOTE_ATTRIBUTES.contains (noteAttribute);
     }
 
 
