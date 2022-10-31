@@ -8,6 +8,8 @@ import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.daw.IApplication;
 import de.mossgrabers.framework.daw.data.IDeviceMetadata;
 import de.mossgrabers.framework.daw.resource.ChannelType;
+import de.mossgrabers.framework.parameter.IParameter;
+import de.mossgrabers.framework.parameter.ZoomParameter;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.reaper.framework.device.Device;
@@ -26,11 +28,13 @@ import java.util.List;
  */
 public class ApplicationImpl extends BaseImpl implements IApplication
 {
-    private String  panelLayout  = IApplication.PANEL_LAYOUT_ARRANGE;
-    private boolean engineActive = true;
-    private int     windowLayout = 0;
-    private boolean canUndoState = true;
-    private boolean canRedoState = true;
+    private String              panelLayout  = IApplication.PANEL_LAYOUT_ARRANGE;
+    private boolean             engineActive = true;
+    private int                 windowLayout = 0;
+    private boolean             canUndoState = true;
+    private boolean             canRedoState = true;
+    private final ZoomParameter horizontalZoomParameter;
+    private final ZoomParameter verticalZoomParameter;
 
 
     /**
@@ -41,6 +45,9 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     public ApplicationImpl (final DataSetupEx dataSetup)
     {
         super (dataSetup);
+
+        this.horizontalZoomParameter = new ZoomParameter (this.valueChanger, this, true);
+        this.verticalZoomParameter = new ZoomParameter (this.valueChanger, this, true);
     }
 
 
@@ -407,6 +414,14 @@ public class ApplicationImpl extends BaseImpl implements IApplication
 
     /** {@inheritDoc} */
     @Override
+    public IParameter getZoomParameter ()
+    {
+        return this.horizontalZoomParameter;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void decTrackHeight ()
     {
         this.sender.invokeAction (Actions.ZOOM_OUT_VERT);
@@ -418,6 +433,14 @@ public class ApplicationImpl extends BaseImpl implements IApplication
     public void incTrackHeight ()
     {
         this.sender.invokeAction (Actions.ZOOM_IN_VERT);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public IParameter getTrackHeightParameter ()
+    {
+        return this.verticalZoomParameter;
     }
 
 
