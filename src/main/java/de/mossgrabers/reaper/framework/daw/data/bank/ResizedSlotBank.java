@@ -27,7 +27,7 @@ public class ResizedSlotBank implements ISlotBank
 
     /**
      * Constructor.
-     * 
+     *
      * @param cursorTrack The cursor track
      * @param differentPageSize The new page size
      */
@@ -64,7 +64,7 @@ public class ResizedSlotBank implements ISlotBank
 
     /** {@inheritDoc} */
     @Override
-    public ISlot getItem (int index)
+    public ISlot getItem (final int index)
     {
         return this.getResizedBank ().getItem (index);
     }
@@ -88,7 +88,7 @@ public class ResizedSlotBank implements ISlotBank
 
     /** {@inheritDoc} */
     @Override
-    public void addSelectionObserver (IItemSelectionObserver observer)
+    public void addSelectionObserver (final IItemSelectionObserver observer)
     {
         this.getResizedBank ().addSelectionObserver (observer);
     }
@@ -96,7 +96,7 @@ public class ResizedSlotBank implements ISlotBank
 
     /** {@inheritDoc} */
     @Override
-    public void removeSelectionObserver (IItemSelectionObserver observer)
+    public void removeSelectionObserver (final IItemSelectionObserver observer)
     {
         this.getResizedBank ().removeSelectionObserver (observer);
     }
@@ -104,7 +104,7 @@ public class ResizedSlotBank implements ISlotBank
 
     /** {@inheritDoc} */
     @Override
-    public void addPageObserver (IBankPageObserver observer)
+    public void addPageObserver (final IBankPageObserver observer)
     {
         this.getResizedBank ().addPageObserver (observer);
 
@@ -113,7 +113,7 @@ public class ResizedSlotBank implements ISlotBank
 
     /** {@inheritDoc} */
     @Override
-    public void removePageObserver (IBankPageObserver observer)
+    public void removePageObserver (final IBankPageObserver observer)
     {
         this.getResizedBank ().removePageObserver (observer);
     }
@@ -171,7 +171,7 @@ public class ResizedSlotBank implements ISlotBank
 
     /** {@inheritDoc} */
     @Override
-    public void scrollTo (int position)
+    public void scrollTo (final int position)
     {
         this.getResizedBank ().scrollTo (position);
 
@@ -180,7 +180,7 @@ public class ResizedSlotBank implements ISlotBank
 
     /** {@inheritDoc} */
     @Override
-    public void scrollTo (int position, boolean adjustPage)
+    public void scrollTo (final int position, final boolean adjustPage)
     {
         this.getResizedBank ().scrollTo (position, adjustPage);
     }
@@ -204,7 +204,7 @@ public class ResizedSlotBank implements ISlotBank
 
     /** {@inheritDoc} */
     @Override
-    public void selectItemAtPosition (int position)
+    public void selectItemAtPosition (final int position)
     {
         this.getResizedBank ().selectItemAtPosition (position);
 
@@ -249,7 +249,7 @@ public class ResizedSlotBank implements ISlotBank
 
     /** {@inheritDoc} */
     @Override
-    public void setSkipDisabledItems (boolean shouldSkip)
+    public void setSkipDisabledItems (final boolean shouldSkip)
     {
         this.getResizedBank ().setSkipDisabledItems (shouldSkip);
     }
@@ -257,7 +257,7 @@ public class ResizedSlotBank implements ISlotBank
 
     /** {@inheritDoc} */
     @Override
-    public void enableObservers (boolean enable)
+    public void enableObservers (final boolean enable)
     {
         this.getResizedBank ().enableObservers (enable);
 
@@ -266,7 +266,7 @@ public class ResizedSlotBank implements ISlotBank
 
     /** {@inheritDoc} */
     @Override
-    public Optional<ISlot> getEmptySlot (int startFrom)
+    public Optional<ISlot> getEmptySlot (final int startFrom)
     {
         return this.getResizedBank ().getEmptySlot (startFrom);
     }

@@ -87,10 +87,18 @@ public class CursorTrackImpl implements ICursorTrack
 
     /** {@inheritDoc} */
     @Override
+    public void setGroupExpanded (final boolean isExpanded)
+    {
+        this.isGroupExpanded = isExpanded;
+        this.sendPositionedItemOSC ("isGroupExpanded", this.isGroupExpanded);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void toggleGroupExpanded ()
     {
-        this.isGroupExpanded = !this.isGroupExpanded;
-        this.sendPositionedItemOSC ("isGroupExpanded", this.isGroupExpanded);
+        this.setGroupExpanded (!this.isGroupExpanded);
     }
 
 

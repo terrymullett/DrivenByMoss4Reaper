@@ -20,7 +20,7 @@ public class ParameterProxy implements IParameter
 
     /**
      * Constructor.
-     * 
+     *
      * @param bank The parameter bank
      * @param index The index of the parameter in the bank to proxy
      */
@@ -65,7 +65,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void setSelected (boolean isSelected)
+    public void setSelected (final boolean isSelected)
     {
         this.getParam ().setSelected (isSelected);
     }
@@ -89,7 +89,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public String getName (int limit)
+    public String getName (final int limit)
     {
         return this.getParam ().getName (limit);
     }
@@ -97,7 +97,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void addNameObserver (IValueObserver<String> observer)
+    public void addNameObserver (final IValueObserver<String> observer)
     {
         this.getParam ().addNameObserver (observer);
     }
@@ -105,7 +105,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void setName (String name)
+    public void setName (final String name)
     {
         this.getParam ().setName (name);
     }
@@ -113,7 +113,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void enableObservers (boolean enable)
+    public void enableObservers (final boolean enable)
     {
         this.getParam ().enableObservers (enable);
     }
@@ -121,7 +121,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void inc (double increment)
+    public void inc (final double increment)
     {
         this.getParam ().inc (increment);
     }
@@ -137,7 +137,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public String getDisplayedValue (int limit)
+    public String getDisplayedValue (final int limit)
     {
         return this.getParam ().getDisplayedValue (limit);
     }
@@ -153,7 +153,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void setValue (int value)
+    public void setValue (final int value)
     {
         this.getParam ().setValue (value);
     }
@@ -161,7 +161,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void setValue (IValueChanger valueChanger, int value)
+    public void setValue (final IValueChanger valueChanger, final int value)
     {
         this.getParam ().setValue (valueChanger, value);
     }
@@ -169,7 +169,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void setNormalizedValue (double value)
+    public void setNormalizedValue (final double value)
     {
         this.getParam ().setNormalizedValue (value);
     }
@@ -177,7 +177,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void setValueImmediatly (int value)
+    public void setValueImmediatly (final int value)
     {
         this.getParam ().setValueImmediatly (value);
     }
@@ -185,7 +185,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void changeValue (int value)
+    public void changeValue (final int value)
     {
         this.getParam ().changeValue (value);
     }
@@ -193,7 +193,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void changeValue (IValueChanger valueChanger, int value)
+    public void changeValue (final IValueChanger valueChanger, final int value)
     {
         this.getParam ().changeValue (valueChanger, value);
     }
@@ -209,7 +209,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void touchValue (boolean isBeingTouched)
+    public void touchValue (final boolean isBeingTouched)
     {
         this.getParam ().touchValue (isBeingTouched);
     }
@@ -225,7 +225,7 @@ public class ParameterProxy implements IParameter
 
     /** {@inheritDoc} */
     @Override
-    public void setIndication (boolean enable)
+    public void setIndication (final boolean enable)
     {
         this.getParam ().setIndication (enable);
     }

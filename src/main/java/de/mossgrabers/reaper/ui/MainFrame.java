@@ -61,7 +61,7 @@ public class MainFrame extends JFrame
     private final JTextArea                              loggingTextArea  = new JTextArea ();
     private final JButton                                removeButton;
     private final JButton                                configButton;
-    private DefaultListModel<ControllerCheckboxListItem> listModel        = new DefaultListModel<> ();
+    private final DefaultListModel<ControllerCheckboxListItem> listModel        = new DefaultListModel<> ();
     private final JList<ControllerCheckboxListItem>      controllerList   = new JList<> (this.listModel);
 
     private final DebugDialog                            debugDialog;

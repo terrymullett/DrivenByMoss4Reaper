@@ -210,9 +210,9 @@ jdk/internal/access/JavaLangAccess
 java/lang/System$2
 jdk/internal/util/SystemProps
 jdk/internal/util/SystemProps$Raw
-jdk/internal/misc/VM
 java/lang/StringConcatHelper
 java/lang/VersionProps
+jdk/internal/misc/VM
 java/util/Arrays
 java/lang/CharacterData
 java/lang/CharacterDataLatin1
@@ -1278,7 +1278,6 @@ sun/util/calendar/ZoneInfoFile
 sun/util/calendar/ZoneInfoFile$1
 java/io/DataInputStream
 sun/util/calendar/ZoneInfoFile$ZoneOffsetTransitionRule
-sun/util/calendar/ZoneInfoFile$Checksum
 sun/util/spi/CalendarProvider
 @lambda-proxy sun/util/locale/provider/JRELocaleProviderAdapter run (Lsun/util/locale/provider/JRELocaleProviderAdapter;)Ljava/security/PrivilegedAction; ()Ljava/lang/Object; REF_invokeVirtual sun/util/locale/provider/JRELocaleProviderAdapter lambda$getCalendarProvider$11 ()Lsun/util/spi/CalendarProvider; ()Lsun/util/spi/CalendarProvider;
 sun/util/locale/provider/CalendarProviderImpl
