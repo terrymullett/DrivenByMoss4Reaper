@@ -25,15 +25,17 @@ public class IniFiles
     private static final String OPTION_FORMAT_NO_SPACES = "%s%s%s";
     private static final String REAPER_MAIN             = "REAPER.ini";
     private static final String REAPER_MAIN2            = "reaper.ini";
-    private static final String VST_PLUGINS_64          = "reaper-vstplugins64.ini";
-    private static final String VST_PLUGINS_ARM64       = "reaper-vstplugins_arm64.ini";
     private static final String AU_PLUGINS_64           = "reaper-auplugins64.ini";
     private static final String AU_PLUGINS_ARM64        = "reaper-auplugins_arm64.ini";
+    private static final String CLAP_PLUGINS_WIN64      = "reaper-clap-win64.ini";
+    private static final String VST_PLUGINS_64          = "reaper-vstplugins64.ini";
+    private static final String VST_PLUGINS_ARM64       = "reaper-vstplugins_arm64.ini";
     private static final String FX_TAGS                 = "reaper-fxtags.ini";
     private static final String FX_FOLDERS              = "reaper-fxfolders.ini";
     private static final String PARAM_MAPS              = "DrivenByMoss4Reaper-ParameterMaps.ini";
 
     private final IniEditor     iniReaperMain           = new IniEditor ();
+    private final IniEditor     iniClapPlugins64        = new IniEditor (true);
     private final IniEditor     iniVstPlugins64         = new IniEditor ();
     private final IniEditor     iniVstPluginsARM64      = new IniEditor ();
     private final IniEditor     iniFxTags               = new IniEditor ();
@@ -44,10 +46,11 @@ public class IniFiles
 
     private String              iniPath;
 
-    private boolean             isVstPresent;
-    private boolean             isVstARMPresent;
     private boolean             isAuPresent;
     private boolean             isAuARMPresent;
+    private boolean             isClapPresent;
+    private boolean             isVstPresent;
+    private boolean             isVstARMPresent;
     private boolean             isFxTagsPresent;
     private boolean             isFxFoldersPresent;
     private boolean             isParamMapsPresent;
@@ -98,6 +101,7 @@ public class IniFiles
             }, this.iniReaperMain, logModel);
         }
 
+        this.isClapPresent = loadINIFile (iniPath + File.separator + CLAP_PLUGINS_WIN64, this.iniClapPlugins64, logModel);
         this.isVstPresent = loadINIFile (iniPath + File.separator + VST_PLUGINS_64, this.iniVstPlugins64, logModel);
 
         if (OperatingSystem.isMacOS ())
@@ -144,28 +148,6 @@ public class IniFiles
 
 
     /**
-     * Get the VST plugins configuration file.
-     *
-     * @return The file
-     */
-    public IniEditor getIniVstPlugins64 ()
-    {
-        return this.iniVstPlugins64;
-    }
-
-
-    /**
-     * Get the VST ARM plugins configuration file.
-     *
-     * @return The file
-     */
-    public IniEditor getIniVstPluginsARM64 ()
-    {
-        return this.iniVstPluginsARM64;
-    }
-
-
-    /**
      * Get the content of the AU plugins configuration file.
      *
      * @return The file content
@@ -184,6 +166,39 @@ public class IniFiles
     public String getIniAuPluginsARM64 ()
     {
         return this.iniAuPluginsARM64Content;
+    }
+
+
+    /**
+     * Get the CLAP plugins configuration file.
+     *
+     * @return The file
+     */
+    public IniEditor getIniClapPlugins64 ()
+    {
+        return this.iniClapPlugins64;
+    }
+
+
+    /**
+     * Get the VST plugins configuration file.
+     *
+     * @return The file
+     */
+    public IniEditor getIniVstPlugins64 ()
+    {
+        return this.iniVstPlugins64;
+    }
+
+
+    /**
+     * Get the VST ARM plugins configuration file.
+     *
+     * @return The file
+     */
+    public IniEditor getIniVstPluginsARM64 ()
+    {
+        return this.iniVstPluginsARM64;
     }
 
 
@@ -232,28 +247,6 @@ public class IniFiles
 
 
     /**
-     * Is the VST plugins configuration file present?
-     *
-     * @return True if successfully loaded
-     */
-    public boolean isVstPresent ()
-    {
-        return this.isVstPresent;
-    }
-
-
-    /**
-     * Is the VST ARM plugins configuration file present?
-     *
-     * @return True if successfully loaded
-     */
-    public boolean isVstARMPresent ()
-    {
-        return this.isVstARMPresent;
-    }
-
-
-    /**
      * Is the AU plugins configuration file present?
      *
      * @return True if successfully loaded
@@ -272,6 +265,39 @@ public class IniFiles
     public boolean isAuARMPresent ()
     {
         return this.isAuARMPresent;
+    }
+
+
+    /**
+     * Is the CLAP plugins configuration file present?
+     *
+     * @return True if successfully loaded
+     */
+    public boolean isClapPresent ()
+    {
+        return this.isClapPresent;
+    }
+
+
+    /**
+     * Is the VST plugins configuration file present?
+     *
+     * @return True if successfully loaded
+     */
+    public boolean isVstPresent ()
+    {
+        return this.isVstPresent;
+    }
+
+
+    /**
+     * Is the VST ARM plugins configuration file present?
+     *
+     * @return True if successfully loaded
+     */
+    public boolean isVstARMPresent ()
+    {
+        return this.isVstARMPresent;
     }
 
 

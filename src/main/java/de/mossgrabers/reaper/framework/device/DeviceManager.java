@@ -45,6 +45,7 @@ public class DeviceManager
     private static final Pattern             PATTERN_COMPANY                = Pattern.compile ("(.*?)\\s*\\((.*?)\\)");
     private static final Pattern             PATTERN_AU_COMPANY_DEVICE_NAME = Pattern.compile ("(.+?):\\s*(.+)");
     private static final Pattern             PATTERN_JSFX                   = Pattern.compile ("NAME\\s?((\")?.+?(\")?)\\s?\"(.+?)\"");
+    private static final Pattern             PATTERN_CLAP                   = Pattern.compile ("(.*?)\\|(.*?)\\s*\\((.*?)\\)");
     private static final String              IS_INSTRUMENT_TAG              = "<inst>";
     private static final Map<String, String> JS_CATEGORY_MAP                = new HashMap<> ();
 
@@ -280,28 +281,42 @@ public class DeviceManager
         {
             this.clearCache ();
 
-            // Load all 64 bit devices
+            // Load all VST devices
             if (iniFiles.isVstPresent ())
                 this.parseVstDevicesFile (Device.Architecture.X64, iniFiles.getIniVstPlugins64 ());
             if (iniFiles.isVstARMPresent ())
                 this.parseVstDevicesFile (Device.Architecture.ARM, iniFiles.getIniVstPluginsARM64 ());
-            if (iniFiles.isAuPresent ())
-                this.parseAuDevicesFile (Device.Architecture.X64, iniFiles.getIniAuPlugins64 ());
-            if (iniFiles.isAuARMPresent ())
-                this.parseAuDevicesFile (Device.Architecture.ARM, iniFiles.getIniAuPluginsARM64 ());
-
-            if (iniFiles.isAuPresent () || iniFiles.isAuARMPresent ())
-            {
-                this.availableFileTypes.addAll (List.of (DeviceFileType.AU, DeviceFileType.AUI));
-                this.availableLocations.add (DeviceLocation.AU);
-            }
-            this.availableFileTypes.add (DeviceFileType.JS);
-            this.availableLocations.add (DeviceLocation.JS);
             if (iniFiles.isVstPresent () || iniFiles.isVstARMPresent ())
             {
                 this.availableFileTypes.addAll (List.of (DeviceFileType.VST, DeviceFileType.VSTI, DeviceFileType.VST3, DeviceFileType.VST3I));
                 this.availableLocations.add (DeviceLocation.VST);
             }
+
+            // Load all CLAP devices
+            if (iniFiles.isClapPresent ())
+                this.parseClapDevicesFile (Device.Architecture.X64, iniFiles.getIniClapPlugins64 ());
+            if (iniFiles.isClapPresent ())
+            {
+                this.availableFileTypes.addAll (List.of (DeviceFileType.CLAP, DeviceFileType.CLAPI));
+                this.availableLocations.add (DeviceLocation.CLAP);
+            }
+
+            // Load all AU devices
+            final boolean isAuPresent = iniFiles.isAuPresent ();
+            final boolean isAuARMPresent = iniFiles.isAuARMPresent ();
+            if (isAuPresent)
+                this.parseAuDevicesFile (Device.Architecture.X64, iniFiles.getIniAuPlugins64 ());
+            if (isAuARMPresent)
+                this.parseAuDevicesFile (Device.Architecture.ARM, iniFiles.getIniAuPluginsARM64 ());
+            if (isAuPresent || isAuARMPresent)
+            {
+                this.availableFileTypes.addAll (List.of (DeviceFileType.AU, DeviceFileType.AUI));
+                this.availableLocations.add (DeviceLocation.AU);
+            }
+
+            // Load all JS devices
+            this.availableFileTypes.add (DeviceFileType.JS);
+            this.availableLocations.add (DeviceLocation.JS);
 
             final Set<String> categoriesSet = new TreeSet<> ();
             final Set<String> vendorsSet = new TreeSet<> ();
@@ -433,24 +448,6 @@ public class DeviceManager
 
 
     /**
-     * Parses the VST 64 devices file.
-     *
-     * @param architecture The processor architecture for which the device is compiled
-     * @param iniFile The INI file from which to parse
-     */
-    private void parseVstDevicesFile (final Device.Architecture architecture, final IniEditor iniFile)
-    {
-        final Map<String, String> section = iniFile.getSectionMap ("vstcache");
-        for (final Entry<String, String> entry: section.entrySet ())
-        {
-            final Device device = parseVstDevice (architecture, entry.getKey (), entry.getValue ());
-            if (device != null)
-                this.devices.add (device);
-        }
-    }
-
-
-    /**
      * Parses the AU 64 devices file content.
      *
      * @param architecture The processor architecture for which the device is compiled
@@ -472,6 +469,42 @@ public class DeviceManager
                 this.devices.add (device);
 
         });
+    }
+
+
+    /**
+     * Parses the CLAP 64 devices file.
+     *
+     * @param architecture The processor architecture for which the device is compiled
+     * @param iniFile The INI file from which to parse
+     */
+    private void parseClapDevicesFile (final Device.Architecture architecture, final IniEditor iniFile)
+    {
+        for (final String fileName: iniFile.sectionNames ())
+        {
+            final Map<String, String> sectionMap = iniFile.getSectionMap (fileName);
+            final Device device = parseClapDevice (architecture, fileName, sectionMap);
+            if (device != null)
+                this.devices.add (device);
+        }
+    }
+
+
+    /**
+     * Parses the VST 64 devices file.
+     *
+     * @param architecture The processor architecture for which the device is compiled
+     * @param iniFile The INI file from which to parse
+     */
+    private void parseVstDevicesFile (final Device.Architecture architecture, final IniEditor iniFile)
+    {
+        final Map<String, String> section = iniFile.getSectionMap ("vstcache");
+        for (final Entry<String, String> entry: section.entrySet ())
+        {
+            final Device device = parseVstDevice (architecture, entry.getKey (), entry.getValue ());
+            if (device != null)
+                this.devices.add (device);
+        }
     }
 
 
@@ -613,6 +646,78 @@ public class DeviceManager
 
 
     /**
+     * Parse the information of a AU device.
+     *
+     * @param architecture The processor architecture for which the device is compiled
+     * @param module The module name
+     * @param isInstrument The encoded instrument tag (&lt;!inst&gt; or &lt;!inst&gt;)
+     * @return The created device or null if the information cannot be parsed
+     */
+    private static Device parseAuDevice (final Device.Architecture architecture, final String module, final String isInstrument)
+    {
+        final Matcher matcher = PATTERN_AU_COMPANY_DEVICE_NAME.matcher (module);
+        if (!matcher.matches ())
+            return null;
+
+        final String company = matcher.group (1);
+        final String deviceName = matcher.group (2);
+
+        final DeviceFileType dt = IS_INSTRUMENT_TAG.equals (isInstrument) ? DeviceFileType.AUI : DeviceFileType.AU;
+        final Device device = new Device (module, deviceName, module, dt, architecture);
+        device.setVendor (company);
+        return device;
+    }
+
+
+    /**
+     * Parse the information of a AU device.
+     *
+     * @param architecture The processor architecture for which the device is compiled
+     * @param fileName The filename of the CLAP plugin
+     * @param sectionMap The INI section which contains the info about a CLAP plugin
+     * @return The created device or null if the information cannot be parsed
+     */
+    private static Device parseClapDevice (final Device.Architecture architecture, final String fileName, final Map<String, String> sectionMap)
+    {
+        if (sectionMap.size () != 2)
+            return null;
+
+        String uuid = null;
+        String module = null;
+        String deviceType = null;
+        String deviceName = null;
+        String company = null;
+
+        for (final Entry<String, String> entry: sectionMap.entrySet ())
+        {
+            final String key = entry.getKey ();
+
+            if ("_".equals (key))
+                uuid = entry.getValue ();
+            else
+            {
+                module = key;
+                final Matcher clapMatcher = PATTERN_CLAP.matcher (entry.getValue ());
+                if (!clapMatcher.matches ())
+                    return null;
+
+                deviceType = clapMatcher.group (1);
+                deviceName = clapMatcher.group (2);
+                company = clapMatcher.group (3);
+            }
+        }
+
+        if (uuid == null || module == null || deviceType == null || deviceName == null || company == null)
+            return null;
+
+        final DeviceFileType dt = "0".equals (deviceType) ? DeviceFileType.CLAP : DeviceFileType.CLAPI;
+        final Device device = new Device (module, deviceName, module, dt, architecture);
+        device.setVendor (company);
+        return device;
+    }
+
+
+    /**
      * Parse the information of a VST device.
      *
      * @param architecture The processor architecture for which the device is compiled
@@ -644,30 +749,6 @@ public class DeviceManager
             dt = module.endsWith ("vst3") ? DeviceFileType.VST3 : DeviceFileType.VST;
 
         return new Device (creationName, name, module, dt, architecture);
-    }
-
-
-    /**
-     * Parse the information of a AU device.
-     *
-     * @param architecture The processor architecture for which the device is compiled
-     * @param module The module name
-     * @param isInstrument The encoded instrument tag (&lt;!inst&gt; or &lt;!inst&gt;)
-     * @return The created device or null if the information cannot be parsed
-     */
-    private static Device parseAuDevice (final Device.Architecture architecture, final String module, final String isInstrument)
-    {
-        final Matcher matcher = PATTERN_AU_COMPANY_DEVICE_NAME.matcher (module);
-        if (!matcher.matches ())
-            return null;
-
-        final String company = matcher.group (1);
-        final String deviceName = matcher.group (2);
-
-        final DeviceFileType dt = IS_INSTRUMENT_TAG.equals (isInstrument) ? DeviceFileType.AUI : DeviceFileType.AU;
-        final Device device = new Device (module, deviceName, module, dt, architecture);
-        device.setVendor (company);
-        return device;
     }
 
 

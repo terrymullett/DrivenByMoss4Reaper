@@ -154,6 +154,9 @@ public class Device implements IDeviceMetadata
         if (this.fileType == DeviceFileType.AU || this.fileType == DeviceFileType.AUI)
             return DeviceLocation.AU;
 
+        if (this.fileType == DeviceFileType.CLAP || this.fileType == DeviceFileType.CLAPI)
+            return DeviceLocation.CLAP;
+
         return DeviceLocation.VST;
     }
 

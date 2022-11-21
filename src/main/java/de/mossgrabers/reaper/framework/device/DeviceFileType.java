@@ -19,6 +19,10 @@ public enum DeviceFileType
     VST("VST"),
     /** A VST 3 effect. */
     VST3("VST3"),
+    /** CLAP effects. */
+    CLAP("CLAP"),
+    /** AU instruments. */
+    CLAPI("CLAPi"),
     /** AU effects. */
     AU("AU"),
     /** AU instruments. */

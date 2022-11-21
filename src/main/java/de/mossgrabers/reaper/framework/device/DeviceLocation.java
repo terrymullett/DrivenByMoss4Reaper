@@ -11,12 +11,14 @@ package de.mossgrabers.reaper.framework.device;
  */
 public enum DeviceLocation
 {
+    /** AU devices. */
+    AU("AU"),
+    /** AU devices. */
+    CLAP("CLAP"),
     /** Jesusonic effects. */
     JS("JS"),
     /** VST devices. */
-    VST("VST"),
-    /** AU devices. */
-    AU("AU");
+    VST("VST");
 
 
     private String name;
