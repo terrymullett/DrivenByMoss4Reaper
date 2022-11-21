@@ -81,7 +81,6 @@ public class DeviceManager
     private final List<DeviceLocation>      availableLocations = new ArrayList<> ();
     private final Map<String, ParameterMap> parameterMaps      = new HashMap<> ();
 
-
     /**
      * Private due to singleton.
      */
@@ -293,9 +292,13 @@ public class DeviceManager
             }
 
             // Load all CLAP devices
-            if (iniFiles.isClapPresent ())
+            final boolean isClapPresent = iniFiles.isClapPresent ();
+            final boolean isClapARMPresent = iniFiles.isClapARMPresent ();
+            if (isClapPresent)
                 this.parseClapDevicesFile (Device.Architecture.X64, iniFiles.getIniClapPlugins64 ());
-            if (iniFiles.isClapPresent ())
+            if (isClapARMPresent)
+                this.parseClapDevicesFile (Device.Architecture.ARM, iniFiles.getIniClapPluginsARM64 ());
+            if (isClapPresent || isClapARMPresent)
             {
                 this.availableFileTypes.addAll (List.of (DeviceFileType.CLAP, DeviceFileType.CLAPI));
                 this.availableLocations.add (DeviceLocation.CLAP);

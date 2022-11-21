@@ -1,5 +1,5 @@
-// Written by Jürgen Moßgraber - mossgrabers.de
 // (c) 2017-2022
+// Written by Jürgen Moßgraber - mossgrabers.de
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
 package de.mossgrabers.reaper.framework;
@@ -28,6 +28,8 @@ public class IniFiles
     private static final String AU_PLUGINS_64           = "reaper-auplugins64.ini";
     private static final String AU_PLUGINS_ARM64        = "reaper-auplugins_arm64.ini";
     private static final String CLAP_PLUGINS_WIN64      = "reaper-clap-win64.ini";
+    private static final String CLAP_PLUGINS_MAC_ARM64  = "reaper-clap-macos-aarch64.ini";
+    private static final String CLAP_PLUGINS_MAC_64     = "reaper-clap-macos-x86_64.ini";
     private static final String VST_PLUGINS_64          = "reaper-vstplugins64.ini";
     private static final String VST_PLUGINS_ARM64       = "reaper-vstplugins_arm64.ini";
     private static final String FX_TAGS                 = "reaper-fxtags.ini";
@@ -36,6 +38,7 @@ public class IniFiles
 
     private final IniEditor     iniReaperMain           = new IniEditor ();
     private final IniEditor     iniClapPlugins64        = new IniEditor (true);
+    private final IniEditor     iniClapPluginsARM64     = new IniEditor (true);
     private final IniEditor     iniVstPlugins64         = new IniEditor ();
     private final IniEditor     iniVstPluginsARM64      = new IniEditor ();
     private final IniEditor     iniFxTags               = new IniEditor ();
@@ -49,13 +52,13 @@ public class IniFiles
     private boolean             isAuPresent;
     private boolean             isAuARMPresent;
     private boolean             isClapPresent;
+    private boolean             isClapARMPresent;
     private boolean             isVstPresent;
     private boolean             isVstARMPresent;
     private boolean             isFxTagsPresent;
     private boolean             isFxFoldersPresent;
     private boolean             isParamMapsPresent;
     private String              paramMapsFilename;
-
 
     /**
      * Constructor.
@@ -101,43 +104,58 @@ public class IniFiles
             }, this.iniReaperMain, logModel);
         }
 
-        this.isClapPresent = loadINIFile (iniPath + File.separator + CLAP_PLUGINS_WIN64, this.iniClapPlugins64, logModel);
         this.isVstPresent = loadINIFile (iniPath + File.separator + VST_PLUGINS_64, this.iniVstPlugins64, logModel);
 
-        if (OperatingSystem.isMacOS ())
+        final OperatingSystem os = OperatingSystem.get ();
+        switch (os)
         {
-            final File iniAuPlugins64 = new File (iniPath + File.separator + AU_PLUGINS_64);
-            if (iniAuPlugins64.exists ())
-            {
-                try
-                {
-                    this.iniAuPlugins64Content = Files.readString (iniAuPlugins64.toPath (), Charset.defaultCharset ());
-                    this.isAuPresent = true;
-                }
-                catch (final IOException ex)
-                {
-                    logModel.error ("Could not load AU configuration file.", ex);
-                }
-            }
+            case WINDOWS:
+                this.isClapPresent = loadINIFile (iniPath + File.separator + CLAP_PLUGINS_WIN64, this.iniClapPlugins64, logModel);
+                break;
 
-            if (OperatingSystem.get () == OperatingSystem.MAC_ARM)
-            {
-                this.isVstARMPresent = loadINIFile (iniPath + File.separator + VST_PLUGINS_ARM64, this.iniVstPluginsARM64, logModel);
+            case LINUX:
+                break;
 
-                final File iniAuPluginsARM64 = new File (iniPath + File.separator + AU_PLUGINS_ARM64);
-                if (iniAuPluginsARM64.exists ())
+            case MAC, MAC_ARM:
+                this.isClapPresent = loadINIFile (iniPath + File.separator + CLAP_PLUGINS_MAC_64, this.iniClapPlugins64, logModel);
+
+                final File iniAuPlugins64 = new File (iniPath + File.separator + AU_PLUGINS_64);
+                if (iniAuPlugins64.exists ())
                 {
                     try
                     {
-                        this.iniAuPluginsARM64Content = Files.readString (iniAuPluginsARM64.toPath (), Charset.defaultCharset ());
-                        this.isAuARMPresent = true;
+                        this.iniAuPlugins64Content = Files.readString (iniAuPlugins64.toPath (), Charset.defaultCharset ());
+                        this.isAuPresent = true;
                     }
                     catch (final IOException ex)
                     {
                         logModel.error ("Could not load AU configuration file.", ex);
                     }
                 }
-            }
+
+                if (os == OperatingSystem.MAC_ARM)
+                {
+                    this.isVstARMPresent = loadINIFile (iniPath + File.separator + VST_PLUGINS_ARM64, this.iniVstPluginsARM64, logModel);
+                    this.isClapARMPresent = loadINIFile (iniPath + File.separator + CLAP_PLUGINS_MAC_ARM64, this.iniClapPluginsARM64, logModel);
+
+                    final File iniAuPluginsARM64 = new File (iniPath + File.separator + AU_PLUGINS_ARM64);
+                    if (iniAuPluginsARM64.exists ())
+                    {
+                        try
+                        {
+                            this.iniAuPluginsARM64Content = Files.readString (iniAuPluginsARM64.toPath (), Charset.defaultCharset ());
+                            this.isAuARMPresent = true;
+                        }
+                        catch (final IOException ex)
+                        {
+                            logModel.error ("Could not load AU configuration file.", ex);
+                        }
+                    }
+                }
+                break;
+
+            default:
+                break;
         }
 
         this.isFxTagsPresent = loadINIFile (iniPath + File.separator + FX_TAGS, this.iniFxTags, logModel);
@@ -177,6 +195,17 @@ public class IniFiles
     public IniEditor getIniClapPlugins64 ()
     {
         return this.iniClapPlugins64;
+    }
+
+
+    /**
+     * Get the CLAP ARM plugins configuration file.
+     *
+     * @return The file
+     */
+    public IniEditor getIniClapPluginsARM64 ()
+    {
+        return this.iniClapPluginsARM64;
     }
 
 
@@ -276,6 +305,17 @@ public class IniFiles
     public boolean isClapPresent ()
     {
         return this.isClapPresent;
+    }
+
+
+    /**
+     * Is the CLAP ARM plugins configuration file present?
+     *
+     * @return True if successfully loaded
+     */
+    public boolean isClapARMPresent ()
+    {
+        return this.isClapARMPresent;
     }
 
 
