@@ -28,6 +28,7 @@ public class IniFiles
     private static final String AU_PLUGINS_64           = "reaper-auplugins64.ini";
     private static final String AU_PLUGINS_ARM64        = "reaper-auplugins_arm64.ini";
     private static final String CLAP_PLUGINS_WIN64      = "reaper-clap-win64.ini";
+    private static final String CLAP_PLUGINS_LINUX64    = "reaper-clap-linux-x86_64.ini";
     private static final String CLAP_PLUGINS_MAC_ARM64  = "reaper-clap-macos-aarch64.ini";
     private static final String CLAP_PLUGINS_MAC_64     = "reaper-clap-macos-x86_64.ini";
     private static final String VST_PLUGINS_64          = "reaper-vstplugins64.ini";
@@ -114,6 +115,7 @@ public class IniFiles
                 break;
 
             case LINUX:
+                this.isClapPresent = loadINIFile (iniPath + File.separator + CLAP_PLUGINS_LINUX64, this.iniClapPlugins64, logModel);
                 break;
 
             case MAC, MAC_ARM:
