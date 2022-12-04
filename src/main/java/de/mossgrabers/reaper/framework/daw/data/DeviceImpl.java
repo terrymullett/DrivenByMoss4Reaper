@@ -8,6 +8,9 @@ import de.mossgrabers.framework.daw.data.IDevice;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 /**
  * Encapsulates the data of a device.
@@ -16,7 +19,9 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
  */
 public class DeviceImpl extends ItemImpl implements IDevice
 {
-    private boolean isEnabled = false;
+    private static final Pattern PATTERN_DEVICE_NAME = Pattern.compile ("(.+:)?\\s*(.+?)\\s*(\\(.+\\))?");
+
+    private boolean              isEnabled           = false;
 
 
     /**
@@ -62,7 +67,7 @@ public class DeviceImpl extends ItemImpl implements IDevice
     @Override
     public void setName (final String name)
     {
-        super.setName (removeTypeAndManufacturer (name));
+        super.setInternalName (removeTypeAndManufacturer (name));
     }
 
 
@@ -94,24 +99,13 @@ public class DeviceImpl extends ItemImpl implements IDevice
     {
         if (name == null)
             return "";
-        if (name.startsWith ("VSTi: "))
-            return removeManufacturer (name.substring (6));
-        if (name.startsWith ("VST: "))
-            return removeManufacturer (name.substring (5));
-        if (name.startsWith ("VST3i: "))
-            return removeManufacturer (name.substring (7));
-        if (name.startsWith ("VST3: "))
-            return removeManufacturer (name.substring (6));
-        if (name.startsWith ("JS: "))
-            return removeManufacturer (name.substring (4));
-        return name;
-    }
 
+        final Matcher matcher = PATTERN_DEVICE_NAME.matcher (name);
+        if (!matcher.matches ())
+            return name;
 
-    private static String removeManufacturer (final String name)
-    {
-        final int index = name.indexOf ('(');
-        return index > 1 ? name.substring (0, index).trim () : name;
+        // Group 1 is type, Group 3 is company
+        return matcher.group (2);
     }
 
 

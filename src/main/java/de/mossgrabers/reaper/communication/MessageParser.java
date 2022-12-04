@@ -655,7 +655,7 @@ public class MessageParser
                 break;
 
             case TAG_NAME:
-                device.setInternalName (value);
+                device.setName (value);
                 break;
 
             case "window":
@@ -763,7 +763,7 @@ public class MessageParser
                 switch (parts.poll ())
                 {
                     case TAG_NAME:
-                        sibling.setInternalName (value);
+                        sibling.setName (value);
                         sibling.setExists (value != null && !value.isEmpty ());
                         break;
 
