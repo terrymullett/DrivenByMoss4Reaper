@@ -855,4 +855,20 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
         for (int i = 0; i < visibilities.length; i++)
             this.mainConfiguration.putBoolean (key + i, visibilities[i]);
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean getPopupWindowNotification ()
+    {
+        return this.mainConfiguration.getBoolean ("ENABLE_POPUP_WINDOW_NOTIFICATION", true);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setPopupWindowNotification (final boolean enabled)
+    {
+        this.mainConfiguration.putBoolean ("ENABLE_POPUP_WINDOW_NOTIFICATION", enabled);
+    }
 }

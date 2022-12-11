@@ -61,7 +61,8 @@ public class DeviceManager
         TYPE_CODES.put (Integer.valueOf (1), DeviceFileType.VST3);
         TYPE_CODES.put (Integer.valueOf (2), DeviceFileType.VST2);
         TYPE_CODES.put (Integer.valueOf (3), DeviceFileType.AU);
-        TYPE_CODES.put (Integer.valueOf (4), DeviceFileType.LV2);
+        // Not used since Reaper does not store this in a file!
+        // TYPE_CODES.put (Integer.valueOf (4), DeviceFileType.LV2);
         TYPE_CODES.put (Integer.valueOf (5), DeviceFileType.CLAP);
 
         JS_CATEGORY_MAP.put ("analysis", "Analysis");

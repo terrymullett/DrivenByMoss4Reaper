@@ -407,8 +407,8 @@ public class ParameterMappingDialog extends BasicDialog
         final ParameterMapPageParameter selectedParam = this.pageParametersListBox.getSelectedValue ();
         if (selectedParam == null)
             return;
-        final String result = JOptionPane.showInputDialog ("Parameter Name:", selectedParam.getName ());
-        if (result == null || result.isBlank ())
+        String result = JOptionPane.showInputDialog ("Parameter Name:", selectedParam.getName ());
+        if (result == null)
             return;
         selectedParam.setName (result);
         this.pageParametersListBox.updateUI ();

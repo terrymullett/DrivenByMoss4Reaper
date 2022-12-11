@@ -118,4 +118,20 @@ public interface AppCallback
      * @param visibilities The visibility configuration
      */
     void setBrowserColumnsVisibility (BrowserContentType browserContentType, boolean [] visibilities);
+
+
+    /**
+     * Get the disabled / enabled state the popup window for notifications.
+     *
+     * @return True if enabled
+     */
+    boolean getPopupWindowNotification ();
+
+
+    /**
+     * Disable / enable the popup window for notifications.
+     *
+     * @param enabled True to enable
+     */
+    void setPopupWindowNotification (final boolean enabled);
 }

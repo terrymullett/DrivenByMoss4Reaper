@@ -18,6 +18,7 @@ import de.mossgrabers.reaper.ui.widget.Functions;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -90,7 +91,7 @@ public class MainFrame extends JFrame
         this.setTitle ();
 
         this.debugDialog = new DebugDialog (this, callback);
-        this.browserDialog = new BrowserDialog (this, this.callback);
+        this.browserDialog = new BrowserDialog (this, this.getCallback ());
 
         // Top pane
 
@@ -200,7 +201,7 @@ public class MainFrame extends JFrame
      */
     private void detectControllers ()
     {
-        final List<IControllerInstance> detectedControllers = this.callback.detectControllers ();
+        final List<IControllerInstance> detectedControllers = this.getCallback ().detectControllers ();
         if (detectedControllers.isEmpty ())
             return;
 
@@ -221,7 +222,7 @@ public class MainFrame extends JFrame
         final int selectedIndex = this.controllerList.getSelectionModel ().getLeadSelectionIndex ();
         if (selectedIndex >= 0)
         {
-            this.callback.editController (selectedIndex);
+            this.getCallback ().editController (selectedIndex);
             this.forceRedraw (selectedIndex);
         }
     }
@@ -267,7 +268,7 @@ public class MainFrame extends JFrame
         if (selectedIndex < 0)
             return;
         this.listModel.remove (selectedIndex);
-        this.callback.removeController (selectedIndex);
+        this.getCallback ().removeController (selectedIndex);
         this.updateWidgetStates ();
     }
 
@@ -277,7 +278,7 @@ public class MainFrame extends JFrame
      */
     public void projectSettings ()
     {
-        this.callback.projectSettings ();
+        this.getCallback ().projectSettings ();
     }
 
 
@@ -288,7 +289,7 @@ public class MainFrame extends JFrame
     {
         final int selectedIndex = this.controllerList.getSelectionModel ().getLeadSelectionIndex ();
         if (selectedIndex >= 0)
-            this.callback.parameterSettings (selectedIndex);
+            this.getCallback ().parameterSettings (selectedIndex);
     }
 
 
@@ -313,7 +314,7 @@ public class MainFrame extends JFrame
             return;
         final ControllerCheckboxListItem item = this.listModel.getElementAt (selectedIndex);
         item.setSelected (!item.isSelected ());
-        this.callback.toggleEnableController (selectedIndex);
+        this.getCallback ().toggleEnableController (selectedIndex);
         this.forceRedraw (selectedIndex);
     }
 
@@ -362,7 +363,7 @@ public class MainFrame extends JFrame
         copy.addActionListener (e -> t.copy ());
         popup.add (copy);
         final JMenuItem clear = new JMenuItem ("Clear");
-        clear.addActionListener (e -> this.callback.clearLogMessage ());
+        clear.addActionListener (e -> this.getCallback ().clearLogMessage ());
         popup.add (clear);
 
         popup.addSeparator ();
@@ -405,12 +406,17 @@ public class MainFrame extends JFrame
     {
         final JPopupMenu popup = new JPopupMenu ();
 
+        final JCheckBoxMenuItem popupNotificationsItem = new JCheckBoxMenuItem ("Display popup notifications");
+        popupNotificationsItem.addActionListener (event -> this.getCallback ().setPopupWindowNotification (popupNotificationsItem.isSelected ()));
+        popup.add (popupNotificationsItem);
+        popupNotificationsItem.setSelected (this.getCallback ().getPopupWindowNotification ());
+
         final JMenuItem refreshMIDIPortsItem = new JMenuItem ("Refresh MIDI Ports");
-        refreshMIDIPortsItem.addActionListener (event -> this.callback.sendMIDIPortRefreshCommand ());
+        refreshMIDIPortsItem.addActionListener (event -> this.getCallback ().sendMIDIPortRefreshCommand ());
         popup.add (refreshMIDIPortsItem);
 
         final JMenuItem refreshItem = new JMenuItem ("Data Refresh");
-        refreshItem.addActionListener (event -> this.callback.sendRefreshCommand ());
+        refreshItem.addActionListener (event -> this.getCallback ().sendRefreshCommand ());
         popup.add (refreshItem);
 
         final JMenuItem dataItem = new JMenuItem ("Data Updates");
@@ -459,7 +465,7 @@ public class MainFrame extends JFrame
 
     private void addController (final IControllerDefinition definition)
     {
-        final IControllerInstance controllerInstance = this.callback.addController (definition);
+        final IControllerInstance controllerInstance = this.getCallback ().addController (definition);
         if (controllerInstance == null)
             return;
         final ControllerCheckboxListItem inst = new ControllerCheckboxListItem (controllerInstance);
@@ -495,5 +501,16 @@ public class MainFrame extends JFrame
         button.setIcon (icon);
         button.setHorizontalAlignment (SwingConstants.LEFT);
         button.setIconTextGap (10);
+    }
+
+
+    /**
+     * Get the callback.
+     *
+     * @return The callback
+     */
+    public AppCallback getCallback ()
+    {
+        return this.callback;
     }
 }

@@ -84,7 +84,7 @@ public class HostImpl implements IHost
         this.windowManager = windowManager;
         this.controllerInstance = controllerInstance;
 
-        this.notificationWindow = new NotificationWindow (logModel);
+        this.notificationWindow = new NotificationWindow (logModel, windowManager.getMainFrame ().getCallback ());
     }
 
 

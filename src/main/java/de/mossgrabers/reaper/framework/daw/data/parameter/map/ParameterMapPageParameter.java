@@ -98,6 +98,9 @@ public class ParameterMapPageParameter
     @Override
     public String toString ()
     {
-        return this.index < 0 ? "Not assigned" : this.name + " (#" + this.index + ")";
+        if (this.index < 0)
+            return "Not assigned";
+        final String n = this.name == null || this.name.isBlank () ? "[Keep Name]" : this.name;
+        return n + " (#" + this.index + ")";
     }
 }

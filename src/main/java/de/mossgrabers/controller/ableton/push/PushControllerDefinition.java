@@ -34,7 +34,6 @@ public class PushControllerDefinition extends DefaultControllerDefinition
 
     private final boolean      isMkII;
 
-
     /**
      * Constructor.
      *

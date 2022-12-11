@@ -1,5 +1,6 @@
 package de.mossgrabers.reaper.framework.daw;
 
+import de.mossgrabers.reaper.AppCallback;
 import de.mossgrabers.reaper.ui.utils.LogModel;
 import de.mossgrabers.reaper.ui.utils.SafeRunLater;
 
@@ -29,6 +30,7 @@ public class NotificationWindow
     private final AtomicInteger            counter    = new AtomicInteger ();
     private final ScheduledExecutorService executor   = Executors.newSingleThreadScheduledExecutor ();
 
+    private final AppCallback              callback;
     private final JFrame                   popupStage = new JFrame ();
     private final JLabel                   label      = new JLabel ("");
 
@@ -37,9 +39,12 @@ public class NotificationWindow
      * Constructor. Starts the count down timer.
      *
      * @param logModel Where to log to
+     * @param callback The callback
      */
-    public NotificationWindow (final LogModel logModel)
+    public NotificationWindow (final LogModel logModel, final AppCallback callback)
     {
+        this.callback = callback;
+
         this.popupStage.setTitle ("Notification");
         this.popupStage.setAlwaysOnTop (true);
         this.popupStage.setUndecorated (true);
@@ -85,7 +90,7 @@ public class NotificationWindow
      */
     public void displayMessage (final String message)
     {
-        if (this.executor.isShutdown ())
+        if (this.executor.isShutdown () || !this.callback.getPopupWindowNotification ())
             return;
 
         this.counter.set (TIMEOUT);

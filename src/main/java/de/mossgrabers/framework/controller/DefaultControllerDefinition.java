@@ -29,7 +29,6 @@ public abstract class DefaultControllerDefinition implements IControllerDefiniti
     private final int    numMidiInPorts;
     private final int    numMidiOutPorts;
 
-
     /**
      * Constructor.
      *
@@ -185,7 +184,7 @@ public abstract class DefaultControllerDefinition implements IControllerDefiniti
      */
     protected List<Pair<String [], String []>> createLinuxDeviceDiscoveryPairs (final String inputName, final String outputName)
     {
-        return this.createLinuxDeviceDiscoveryPairs (inputName, outputName, 0);
+        return createLinuxDeviceDiscoveryPairs (inputName, outputName, 0);
     }
 
 
