@@ -636,6 +636,9 @@ public class BrowserImpl extends AbstractBrowser
      */
     public void setPresetsFile (final String filename)
     {
+        if (filename == null)
+            return;
+
         synchronized (this.parsePresetFileLock)
         {
             PresetFileCacheItem presetFileCacheItem;
