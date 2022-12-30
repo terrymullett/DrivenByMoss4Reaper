@@ -69,7 +69,7 @@ public class HwFaderImpl extends AbstractHwAbsoluteControl implements IHwFader
 
         gc.fillRectangle (left, top, width, height, ColorEx.BLACK);
 
-        final double factor = this.midiType == null || this.midiType == BindType.CC ? 127.0 : 16383.0;
+        final double factor = this.type == null || this.type == BindType.CC ? 127.0 : 16383.0;
 
         if (this.isVertical)
         {
@@ -135,7 +135,7 @@ public class HwFaderImpl extends AbstractHwAbsoluteControl implements IHwFader
                     value = (scaleX - bounds.x ()) / bounds.width ();
                 value = Math.max (0, Math.min (1, value));
 
-                if (this.midiInput == null)
+                if (this.inputImpl == null)
                 {
                     if (this.command != null)
                     {
@@ -152,17 +152,17 @@ public class HwFaderImpl extends AbstractHwAbsoluteControl implements IHwFader
                     return;
                 }
 
-                if (this.midiType == BindType.CC)
+                if (this.type == BindType.CC)
                 {
                     this.currentValue = (int) Math.max (0, Math.round (value * 127.0));
-                    this.midiInput.handleMidiMessage (new ShortMessage (0xB0, this.midiChannel, this.midiControl, this.currentValue));
+                    this.inputImpl.handleMidiMessage (new ShortMessage (0xB0, this.channel, this.control, this.currentValue));
                 }
-                else if (this.midiType == BindType.PITCHBEND)
+                else if (this.type == BindType.PITCHBEND)
                 {
                     this.currentValue = (int) Math.max (0, Math.round (value * 16383.0));
                     final int data1 = (int) Math.min (127, Math.round (this.currentValue % 128.0));
                     final int data2 = (int) Math.min (127, Math.round (this.currentValue / 128.0));
-                    this.midiInput.handleMidiMessage (new ShortMessage (0xE0, this.midiChannel, data1, data2));
+                    this.inputImpl.handleMidiMessage (new ShortMessage (0xE0, this.channel, data1, data2));
                 }
             }
         }

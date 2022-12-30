@@ -22,10 +22,8 @@ public abstract class AbstractHwAbsoluteControl extends AbstractHwContinuousCont
 {
     protected final HwControlLayout layout;
 
-    protected MidiInputImpl         midiInput;
-    protected BindType              midiType;
-    protected int                   midiChannel;
-    protected int                   midiControl;
+    protected MidiInputImpl         inputImpl;
+    protected int                   control;
     // Alternative binding to the command
     protected IParameter            parameter;
 
@@ -68,12 +66,30 @@ public abstract class AbstractHwAbsoluteControl extends AbstractHwContinuousCont
     @Override
     public void bind (final IMidiInput input, final BindType type, final int channel, final int control)
     {
-        this.midiInput = (MidiInputImpl) input;
-        this.midiType = type;
-        this.midiChannel = channel;
-        this.midiControl = control;
+        this.inputImpl = (MidiInputImpl) input;
+        this.type = type;
+        this.channel = channel;
+        this.control = control;
 
         input.bind (this, type, channel, control);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void unbind ()
+    {
+        if (this.input != null)
+            this.input.unbind (this);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void rebind ()
+    {
+        if (this.input != null)
+            this.input.bind (this, this.type, this.channel, this.control);
     }
 
 

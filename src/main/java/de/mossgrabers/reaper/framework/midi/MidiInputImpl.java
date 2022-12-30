@@ -7,7 +7,6 @@ package de.mossgrabers.reaper.framework.midi;
 import de.mossgrabers.framework.controller.hardware.BindException;
 import de.mossgrabers.framework.controller.hardware.BindType;
 import de.mossgrabers.framework.controller.hardware.IHwAbsoluteControl;
-import de.mossgrabers.framework.controller.hardware.IHwAbsoluteKnob;
 import de.mossgrabers.framework.controller.hardware.IHwButton;
 import de.mossgrabers.framework.controller.hardware.IHwContinuousControl;
 import de.mossgrabers.framework.controller.hardware.IHwFader;
@@ -194,6 +193,14 @@ public class MidiInputImpl implements IMidiInput
 
     /** {@inheritDoc} */
     @Override
+    public void unbind (final IHwRelativeKnob relativeKnob)
+    {
+        this.unbindContinuous (relativeKnob);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void bind (final IHwFader fader, final BindType type, final int channel, final int control)
     {
         this.bindContinuous (fader, type, channel, control);
@@ -202,17 +209,17 @@ public class MidiInputImpl implements IMidiInput
 
     /** {@inheritDoc} */
     @Override
-    public void bind (final IHwAbsoluteKnob knob, final BindType type, final int channel, final int control)
+    public void bind (final IHwAbsoluteControl absoluteControl, final BindType type, final int channel, final int control)
     {
-        this.bindContinuous (knob, type, channel, control);
+        this.bindContinuous (absoluteControl, type, channel, control);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void bind (final IHwAbsoluteControl absoluteControl, final BindType type, final int channel, final int control)
+    public void unbind (final IHwAbsoluteControl absoluteControl)
     {
-        this.bindContinuous (absoluteControl, type, channel, control);
+        this.unbindContinuous (absoluteControl);
     }
 
 
@@ -229,6 +236,23 @@ public class MidiInputImpl implements IMidiInput
             default:
                 throw new BindException (type);
         }
+    }
+
+
+    private void unbindContinuous (final IHwContinuousControl control)
+    {
+        for (final Map<Integer, IHwContinuousControl> m: this.ccContinuousMatchers.values ())
+        {
+            final Collection<IHwContinuousControl> values = m.values ();
+            if (values.contains (control))
+            {
+                values.remove (control);
+                return;
+            }
+        }
+        final Collection<IHwContinuousControl> values = this.pitchbendContinuousMatchers.values ();
+        if (values.contains (control))
+            values.remove (control);
     }
 
 
@@ -357,8 +381,7 @@ public class MidiInputImpl implements IMidiInput
             case 0xB0:
                 return this.handleControlsCC (channel, data1, data2);
 
-            case 0x80:
-            case 0x90:
+            case 0x80, 0x90:
                 return this.handleControlsNote (channel, data1, data2, code == 0x80 || data2 == 0);
 
             case 0xE0:
@@ -480,8 +503,8 @@ public class MidiInputImpl implements IMidiInput
             return;
 
         // F0 is not included in getData()
-        final StringBuilder dataString = new StringBuilder ("F0");
-        for (final byte data: sysexMessage.getData ())
+        final StringBuilder dataString = new StringBuilder ();
+        for (final byte data: sysexMessage.getMessage ())
             dataString.append (String.format ("%02x", Integer.valueOf (data & 0xFF)));
         this.sysexCallback.handleMidi (dataString.toString ().toUpperCase (Locale.US));
     }

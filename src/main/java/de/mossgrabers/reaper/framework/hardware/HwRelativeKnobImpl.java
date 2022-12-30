@@ -52,10 +52,8 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     private final HwControlLayout  layout;
     private final RelativeEncoding encoding;
 
-    private MidiInputImpl          midiInput;
-    private BindType               midiType;
-    private int                    midiChannel;
-    private int                    midiControl;
+    private MidiInputImpl          inputImpl;
+    private int                    control;
     // Alternative binding to the command
     private IParameter             parameter;
 
@@ -97,6 +95,14 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
 
     /** {@inheritDoc} */
     @Override
+    public void bind (final IParameter parameter)
+    {
+        this.parameter = parameter;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public boolean isBound ()
     {
         return this.parameter != null || super.isBound ();
@@ -107,10 +113,10 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     @Override
     public void bind (final IMidiInput input, final BindType type, final int channel, final int control)
     {
-        this.midiInput = (MidiInputImpl) input;
-        this.midiType = type;
-        this.midiChannel = channel;
-        this.midiControl = control;
+        this.inputImpl = (MidiInputImpl) input;
+        this.type = type;
+        this.channel = channel;
+        this.control = control;
 
         input.bind (this, type, channel, control, this.encoding);
     }
@@ -118,9 +124,19 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
 
     /** {@inheritDoc} */
     @Override
-    public void bind (final IParameter parameter)
+    public void unbind ()
     {
-        this.parameter = parameter;
+        if (this.input != null)
+            this.input.unbind (this);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void rebind ()
+    {
+        if (this.input != null)
+            this.input.bind (this, this.type, this.channel, this.control, this.encoding);
     }
 
 
@@ -194,48 +210,53 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
         final double scaleX = x / scale;
         final double scaleY = y / scale;
 
-        if (mouseEvent == MouseEvent.MOUSE_PRESSED && bounds.contains (scaleX, scaleY))
+        switch (mouseEvent)
         {
-            this.isPressed = true;
-            this.pressedX = scaleX;
-            this.pressedY = scaleY;
-            return;
-        }
-
-        if (!this.isPressed)
-            return;
-
-        if (mouseEvent == MouseEvent.MOUSE_RELEASED)
-        {
-            this.isPressed = false;
-            return;
-        }
-
-        try
-        {
-            if (mouseEvent == MouseEvent.MOUSE_DRAGGED)
-            {
-                final int speed = (int) Math.min (3, Math.max (-3, Math.round (this.pressedX - scaleX + (this.pressedY - scaleY))));
-                if (speed == 0)
-                    return;
-                this.pressedX = scaleX;
-                this.pressedY = scaleY;
-
-                final int value = VALUE_CHANGERS.get (this.encoding).encode (speed);
-
-                if (this.midiInput == null)
+            case MouseEvent.MOUSE_PRESSED:
+                if (bounds.contains (scaleX, scaleY))
                 {
-                    this.command.execute (value);
-                    return;
+                    this.isPressed = true;
+                    this.pressedX = scaleX;
+                    this.pressedY = scaleY;
                 }
+                break;
 
-                if (this.midiType == BindType.CC)
-                    this.midiInput.handleMidiMessage (new ShortMessage (0xB0, this.midiChannel, this.midiControl, value));
-            }
-        }
-        catch (final InvalidMidiDataException ex)
-        {
-            this.host.error ("Invalid MIDI message.", ex);
+            case MouseEvent.MOUSE_RELEASED:
+                this.isPressed = false;
+                break;
+
+            case MouseEvent.MOUSE_DRAGGED:
+                try
+                {
+                    if (!this.isPressed)
+                        return;
+
+                    final int speed = (int) Math.min (3, Math.max (-3, Math.round (this.pressedX - scaleX + (this.pressedY - scaleY))));
+                    if (speed == 0)
+                        return;
+                    this.pressedX = scaleX;
+                    this.pressedY = scaleY;
+
+                    final int value = VALUE_CHANGERS.get (this.encoding).encode (speed);
+
+                    if (this.inputImpl == null)
+                    {
+                        this.command.execute (value);
+                        return;
+                    }
+
+                    if (this.type == BindType.CC)
+                        this.inputImpl.handleMidiMessage (new ShortMessage (0xB0, this.channel, this.control, value));
+                }
+                catch (final InvalidMidiDataException ex)
+                {
+                    this.host.error ("Invalid MIDI message.", ex);
+                }
+                break;
+
+            default:
+                // Not used
+                break;
         }
     }
 

@@ -83,7 +83,7 @@ public class HwAbsoluteKnobImpl extends AbstractHwAbsoluteControl implements IHw
     @Override
     public void mouse (final int mouseEvent, final double x, final double y, final double scale)
     {
-        if (this.midiInput == null)
+        if (this.inputImpl == null)
             return;
 
         try
@@ -118,10 +118,10 @@ public class HwAbsoluteKnobImpl extends AbstractHwAbsoluteControl implements IHw
                 this.pressedX = scaleX;
                 this.pressedY = scaleY;
 
-                if (this.midiType == BindType.CC)
+                if (this.type == BindType.CC)
                 {
                     this.currentValue = (int) Math.max (0, Math.min (127, this.currentValue + offset));
-                    this.midiInput.handleMidiMessage (new ShortMessage (0xB0, this.midiChannel, this.midiControl, this.currentValue));
+                    this.inputImpl.handleMidiMessage (new ShortMessage (0xB0, this.channel, this.control, this.currentValue));
                 }
             }
         }

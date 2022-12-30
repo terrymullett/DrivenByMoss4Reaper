@@ -31,11 +31,9 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
 {
     private final HwControlLayout layout;
 
-    private MidiInputImpl         midiInput;
-    private BindType              midiType;
-    private int                   midiChannel;
-    private int                   midiControl;
-    private int                   midiValue;
+    private MidiInputImpl         inputImpl;
+    private int                   control;
+    private int                   value;
 
     private double                currentY = -1;
 
@@ -67,13 +65,7 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
     @Override
     public void bind (final IMidiInput input, final BindType type, final int channel, final int control)
     {
-        this.midiInput = (MidiInputImpl) input;
-        this.midiType = type;
-        this.midiChannel = channel;
-        this.midiControl = control;
-        this.midiValue = -1;
-
-        input.bind (this, type, channel, control);
+        this.bind (input, type, channel, control, -1);
     }
 
 
@@ -81,21 +73,39 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
     @Override
     public void bind (final IMidiInput input, final BindType type, final int channel, final int control, final int value)
     {
-        this.midiInput = (MidiInputImpl) input;
-        this.midiType = type;
-        this.midiChannel = channel;
-        this.midiControl = control;
-        this.midiValue = value;
+        this.inputImpl = (MidiInputImpl) input;
+        this.type = type;
+        this.channel = channel;
+        this.control = control;
+        this.value = value;
 
-        input.bind (this, type, channel, control, value);
+        if (value < 0)
+            input.bind (this, type, channel, control);
+        else
+            input.bind (this, type, channel, control, value);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void unbind (final IMidiInput input)
+    public void unbind ()
     {
-        input.unbind (this);
+        if (this.input != null)
+            this.input.unbind (this);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void rebind ()
+    {
+        if (this.input == null)
+            return;
+
+        if (this.value < 0)
+            this.input.bind (this, this.type, this.channel, this.control);
+        else
+            this.input.bind (this, this.type, this.channel, this.control, this.value);
     }
 
 
@@ -157,7 +167,7 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
             return;
 
         // If MIDI is not attached simply execute the command
-        if (this.midiInput == null)
+        if (this.inputImpl == null)
         {
             if (this.command == null)
                 return;
@@ -172,40 +182,61 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
         // Send MIDI event to indirectly trigger the command
         try
         {
-            if (mouseEvent == MouseEvent.MOUSE_RELEASED)
+            switch (mouseEvent)
             {
-                if (this.isPressed () && this.midiValue < 0)
-                {
-                    final int type = this.midiType == BindType.CC ? 0xB0 : 0x80;
-                    this.midiInput.handleMidiMessage (new ShortMessage (type, this.midiChannel, this.midiControl, 0));
-                }
-                return;
-            }
+                case MouseEvent.MOUSE_RELEASED:
+                    this.handleMouseUp ();
+                    break;
 
-            if (mouseEvent == MouseEvent.MOUSE_PRESSED)
-            {
-                final double value = 1 - Math.abs (scaleY - bounds.y ()) / bounds.height ();
-                final int type = this.midiType == BindType.CC ? 0xB0 : 0x90;
-                int v;
-                if (this.midiValue < 0)
-                    v = (int) Math.max (0, Math.round (value * 127.0));
-                else
-                    v = this.midiValue;
-                this.midiInput.handleMidiMessage (new ShortMessage (type, this.midiChannel, this.midiControl, v));
-                return;
-            }
+                case MouseEvent.MOUSE_PRESSED:
+                    this.handleMouseDown (scaleY, bounds);
+                    break;
 
-            if (mouseEvent == MouseEvent.MOUSE_DRAGGED && this.midiType == BindType.NOTE && this.isPressed ())
-            {
-                if (this.currentY < 0)
-                    this.currentY = bounds.y ();
-                final double value = 1 - Math.abs (scaleY - this.currentY) / bounds.height ();
-                this.midiInput.handleMidiMessage (new ShortMessage (0xA0, this.midiChannel, this.midiControl, (int) Math.max (0, Math.round (value * 127.0))));
+                case MouseEvent.MOUSE_DRAGGED:
+                    if (this.type == BindType.NOTE && this.isPressed ())
+                        this.handleMouseDragged (scaleY, bounds);
+                    break;
+
+                default:
+                    // Not used
+                    break;
             }
         }
         catch (final InvalidMidiDataException ex)
         {
             this.host.error ("Invalid MIDI message.", ex);
         }
+    }
+
+
+    protected void handleMouseDragged (final double scaleY, final Bounds bounds) throws InvalidMidiDataException
+    {
+        if (this.currentY < 0)
+            this.currentY = bounds.y ();
+        final double v = 1 - Math.abs (scaleY - this.currentY) / bounds.height ();
+        this.inputImpl.handleMidiMessage (new ShortMessage (0xA0, this.channel, this.control, (int) Math.max (0, Math.round (v * 127.0))));
+    }
+
+
+    protected void handleMouseUp () throws InvalidMidiDataException
+    {
+        if (this.isPressed () && this.value < 0)
+        {
+            final int type = this.type == BindType.CC ? 0xB0 : 0x80;
+            this.inputImpl.handleMidiMessage (new ShortMessage (type, this.channel, this.control, 0));
+        }
+    }
+
+
+    protected void handleMouseDown (final double scaleY, final Bounds bounds) throws InvalidMidiDataException
+    {
+        final double v = 1 - Math.abs (scaleY - bounds.y ()) / bounds.height ();
+        final int type = this.type == BindType.CC ? 0xB0 : 0x90;
+        int midiValue;
+        if (this.value < 0)
+            midiValue = (int) Math.max (0, Math.round (v * 127.0));
+        else
+            midiValue = this.value;
+        this.inputImpl.handleMidiMessage (new ShortMessage (type, this.channel, this.control, midiValue));
     }
 }
