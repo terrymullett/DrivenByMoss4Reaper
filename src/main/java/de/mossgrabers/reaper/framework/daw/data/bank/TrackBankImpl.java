@@ -1,5 +1,5 @@
 // Written by Jürgen Moßgraber - mossgrabers.de
-// (c) 2017-2022
+// (c) 2017-2023
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
 package de.mossgrabers.reaper.framework.daw.data.bank;
@@ -135,6 +135,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
                 final List<TreeNode<TrackImpl>> children = node.getChildren ();
                 if (!children.isEmpty ())
                     children.get (0).getData ().select ();
+                this.firePageObserver ();
                 break;
             }
         }
@@ -153,6 +154,7 @@ public class TrackBankImpl extends AbstractTrackBankImpl
         this.currentFolder = parent == null ? this.rootTrack : parent;
         if (previousFolder != null)
             previousFolder.select ();
+        this.firePageObserver ();
     }
 
 
