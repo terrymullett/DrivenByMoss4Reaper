@@ -47,4 +47,15 @@ public class DeviceBankImpl extends AbstractBankImpl<IDevice> implements IDevice
     {
         this.sender.processNoArg (Processor.DEVICE, "page/+");
     }
+
+
+    /**
+     * Sets the number of items.
+     *
+     * @param itemCount The number of items
+     */
+    public void setItemCount (final int itemCount)
+    {
+        this.itemCount = itemCount;
+    }
 }

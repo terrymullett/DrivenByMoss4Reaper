@@ -673,7 +673,7 @@ public class MessageParser
 
             case "sibling":
                 if (device instanceof final CursorDeviceImpl cdi)
-                    this.parseSibling (cdi, command, parts, value);
+                    this.parseSibling (cdi, parts, value);
                 break;
 
             case TAG_PARAM:
@@ -755,7 +755,7 @@ public class MessageParser
     }
 
 
-    private void parseSibling (final CursorDeviceImpl device, final String command, final Queue<String> parts, final String value)
+    private void parseSibling (final CursorDeviceImpl device, final Queue<String> parts, final String value)
     {
         final String siblingCmd = parts.poll ();
         try
@@ -765,7 +765,8 @@ public class MessageParser
             if (siblingNo < deviceBank.getPageSize ())
             {
                 final DeviceImpl sibling = (DeviceImpl) deviceBank.getItem (siblingNo);
-                switch (parts.poll ())
+                final String subCmd = parts.poll ();
+                switch (subCmd)
                 {
                     case TAG_NAME:
                         sibling.setName (value);
@@ -776,19 +777,23 @@ public class MessageParser
                         sibling.setEnabled (Integer.parseInt (value) == 0);
                         break;
 
+                    case "position":
+                        sibling.setPosition (Integer.parseInt (value));
+                        break;
+
                     case "selected":
                         sibling.setSelected (Integer.parseInt (value) > 0);
                         break;
 
                     default:
-                        this.host.error ("Unhandled device sibling parameter: " + command);
+                        this.host.error ("Unhandled device indexed sibling parameter: " + subCmd);
                         break;
                 }
             }
         }
         catch (final NumberFormatException ex)
         {
-            this.host.error ("Unhandled Device Sibling parameter: " + siblingCmd);
+            this.host.error ("Unhandled device sibling parameter: " + siblingCmd);
         }
     }
 

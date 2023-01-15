@@ -68,6 +68,7 @@ public class CursorDeviceImpl extends SpecificDeviceImpl implements ICursorDevic
     public void setDeviceCount (final int deviceCount)
     {
         this.deviceCount = deviceCount;
+        ((DeviceBankImpl) this.getDeviceBank ()).setItemCount (deviceCount);
     }
 
 
