@@ -458,7 +458,7 @@ public class IniFiles
                 return true;
             }
 
-            this.logModel.info (file.getName () + " not present, skipped loading.");
+            this.logModel.info (file.getName () + " not present (this is not an error!).");
             return false;
         }
         catch (final IOException ex)
