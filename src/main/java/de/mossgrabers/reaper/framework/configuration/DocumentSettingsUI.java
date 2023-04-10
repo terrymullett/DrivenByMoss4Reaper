@@ -17,7 +17,7 @@ import java.io.StringWriter;
  * The Reaper implementation to create user interface widgets for document (project) specific
  * settings.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class DocumentSettingsUI extends AbstractSettingsUI
 {

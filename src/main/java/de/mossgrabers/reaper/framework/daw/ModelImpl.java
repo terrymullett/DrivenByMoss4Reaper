@@ -43,7 +43,7 @@ import java.util.Optional;
 /**
  * The model which contains all data and access to the DAW.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ModelImpl extends AbstractModel
 {

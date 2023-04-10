@@ -11,7 +11,7 @@ import de.mossgrabers.framework.graphics.IGraphicsContext;
 /**
  * Additional methods necessary for implementing the hardware controls for Reaper.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public interface IReaperHwControl extends IHwControl
 {

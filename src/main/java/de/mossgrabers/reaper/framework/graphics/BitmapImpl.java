@@ -29,7 +29,7 @@ import java.nio.ByteBuffer;
 /**
  * Implementation of a bitmap.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class BitmapImpl implements IBitmap
 {

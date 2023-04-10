@@ -13,7 +13,7 @@ import de.mossgrabers.reaper.framework.configuration.GlobalSettingsUI;
 /**
  * Interface to an controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public interface IControllerInstance
 {

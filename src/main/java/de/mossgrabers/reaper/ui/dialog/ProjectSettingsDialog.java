@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Dialog for editing all settings of a controller configuration.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ProjectSettingsDialog extends BasicDialog
 {

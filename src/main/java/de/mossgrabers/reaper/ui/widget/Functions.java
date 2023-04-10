@@ -28,7 +28,7 @@ import java.util.ResourceBundle;
 /**
  * Provides some useful static functions.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public final class Functions
 {

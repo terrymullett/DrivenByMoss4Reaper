@@ -7,7 +7,7 @@ package de.mossgrabers.reaper.ui;
 /**
  * Interface to get access to the lazy instantiated main frame window.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public interface WindowManager
 {

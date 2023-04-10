@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * Novation Remote SL mkI controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class SLMkIControllerInstance extends AbstractControllerInstance<SLControlSurface, SLConfiguration>
 {

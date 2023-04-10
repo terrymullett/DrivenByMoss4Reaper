@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * The cursor track.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class CursorTrackImpl implements ICursorTrack
 {
@@ -950,14 +950,6 @@ public class CursorTrackImpl implements ICursorTrack
         final ITrack selectedTrack = this.getPinnedOrSelectedTrack ();
         if (selectedTrack != null)
             ((ChannelImpl) selectedTrack).addDevice (metadata);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void launchLastClipImmediately ()
-    {
-        // Not supported
     }
 
 

@@ -17,7 +17,7 @@ import java.util.Collection;
  *
  * @param <E> the type of the elements of this list
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class JListX<E> extends JList<E>
 {

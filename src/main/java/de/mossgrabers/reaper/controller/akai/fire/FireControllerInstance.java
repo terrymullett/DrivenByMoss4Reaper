@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * Akai Fire controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class FireControllerInstance extends AbstractControllerInstance<FireControlSurface, FireConfiguration>
 {

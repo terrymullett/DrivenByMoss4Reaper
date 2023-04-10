@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * A tree and its nodes.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  *
  * @param <T> The type of the trees content
  */

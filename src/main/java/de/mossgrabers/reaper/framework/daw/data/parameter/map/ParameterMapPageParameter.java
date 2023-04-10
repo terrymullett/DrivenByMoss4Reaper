@@ -7,7 +7,7 @@ package de.mossgrabers.reaper.framework.daw.data.parameter.map;
 /**
  * A parameter page in a device parameter mapping.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ParameterMapPageParameter
 {

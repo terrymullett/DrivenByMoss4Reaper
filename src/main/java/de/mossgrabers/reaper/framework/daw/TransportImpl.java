@@ -26,7 +26,7 @@ import java.util.Optional;
 /**
  * Encapsulates the Transport instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class TransportImpl extends BaseImpl implements ITransport
 {

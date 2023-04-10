@@ -16,7 +16,7 @@ import de.mossgrabers.reaper.framework.daw.data.LayerImpl;
  * Encapsulates the data of a layer bank. Reaper has no layer concept, therefore this is an always
  * empty bank.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class LayerBankImpl extends AbstractBankImpl<ILayer> implements ILayerBank
 {

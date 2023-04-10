@@ -10,7 +10,7 @@ import de.mossgrabers.framework.daw.clip.DefaultStepInfo;
 /**
  * Implementation for the data about a note in a sequencer step.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class StepInfoImpl extends DefaultStepInfo
 {

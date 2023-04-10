@@ -20,7 +20,7 @@ import java.awt.event.ComponentEvent;
 /**
  * JPanel with two columns. The left column contains the labels and the right column the controls.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class TwoColsPanel extends BoxPanel
 {

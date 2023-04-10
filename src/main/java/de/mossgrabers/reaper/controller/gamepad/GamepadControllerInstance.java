@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * The Gamepad controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class GamepadControllerInstance extends AbstractControllerInstance<GamepadControlSurface, GamepadConfiguration>
 {

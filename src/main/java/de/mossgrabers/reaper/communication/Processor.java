@@ -7,7 +7,7 @@ package de.mossgrabers.reaper.communication;
 /**
  * The available message processors.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public enum Processor
 {

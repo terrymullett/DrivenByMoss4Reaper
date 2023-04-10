@@ -21,7 +21,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * Maschine Mk3 controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MaschineMk3ControllerInstance extends AbstractControllerInstance<MaschineControlSurface, MaschineConfiguration>
 {

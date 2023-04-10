@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Can display a notification window for a certain amount of time.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class NotificationWindow
 {

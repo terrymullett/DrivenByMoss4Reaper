@@ -59,7 +59,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 /**
  * Parser for messages sent from Reaper.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MessageParser
 {
@@ -613,6 +613,10 @@ public class MessageParser
         final SendImpl sendImpl = (SendImpl) send;
         switch (command)
         {
+            case TAG_ACTIVE:
+                sendImpl.setInternalEnabled (value != null && Integer.parseInt (value) > 0);
+                break;
+
             case TAG_NAME:
                 sendImpl.setInternalName (value);
                 sendImpl.setExists (value != null && !value.isEmpty ());

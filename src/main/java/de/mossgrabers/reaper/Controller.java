@@ -7,7 +7,7 @@ package de.mossgrabers.reaper;
 /**
  * Interface to be used from C++ code to control the application.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class Controller
 {

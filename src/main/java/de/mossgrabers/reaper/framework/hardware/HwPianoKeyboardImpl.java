@@ -15,7 +15,7 @@ import java.awt.event.MouseEvent;
 /**
  * Implementation of a proxy to a fader on a hardware controller.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class HwPianoKeyboardImpl implements IHwPianoKeyboard, IReaperHwControl
 {

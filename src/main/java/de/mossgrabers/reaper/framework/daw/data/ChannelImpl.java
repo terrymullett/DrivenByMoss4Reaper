@@ -27,7 +27,7 @@ import java.util.Set;
 /**
  * The data of a channel.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ChannelImpl extends ItemImpl implements IChannel
 {

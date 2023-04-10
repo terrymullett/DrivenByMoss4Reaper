@@ -13,7 +13,7 @@ import de.mossgrabers.framework.utils.StringUtils;
 /**
  * A renamed parameter. Delegates everything to the wrapped parameter, except a changed name.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class RenamedParameter implements IParameter
 {

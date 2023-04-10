@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Implementation of an OSC server connection.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class OpenSoundControlServerImpl implements IOpenSoundControlServer
 {

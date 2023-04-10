@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * Arturia Beatstep controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class BeatstepControllerInstance extends AbstractControllerInstance<BeatstepControlSurface, BeatstepConfiguration>
 {

@@ -13,7 +13,7 @@ import java.awt.Robot;
 /**
  * Robot wrapper for safe instantiation.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class RobotUtil
 {

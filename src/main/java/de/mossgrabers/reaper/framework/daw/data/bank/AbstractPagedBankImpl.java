@@ -17,7 +17,7 @@ import java.util.Optional;
  * @param <S> The internal specific item type of the bank item
  * @param <T> The specific item type of the bank item
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public abstract class AbstractPagedBankImpl<S extends T, T extends IItem> extends AbstractBankImpl<T>
 {

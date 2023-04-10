@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * Komplete Kontrol S49 controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class KontrolMkIS49ControllerInstance extends AbstractControllerInstance<Kontrol1ControlSurface, Kontrol1Configuration>
 {

@@ -7,7 +7,7 @@ package de.mossgrabers.reaper.framework.device;
 /**
  * All available device types.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public enum DeviceType
 {

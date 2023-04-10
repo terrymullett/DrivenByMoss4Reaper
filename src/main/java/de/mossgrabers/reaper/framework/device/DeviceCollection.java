@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * A filter folder with either specifically assigned plugins or a search query.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class DeviceCollection
 {

@@ -7,7 +7,7 @@ package de.mossgrabers.reaper.framework.device.column;
 /**
  * Callback interface for selection changes of a filter.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public interface FilterListener
 {

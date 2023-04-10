@@ -14,7 +14,7 @@ import java.util.Set;
 /**
  * Implementation of a metadata description of a device.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class DeviceMetadataImpl implements IDeviceMetadata
 {

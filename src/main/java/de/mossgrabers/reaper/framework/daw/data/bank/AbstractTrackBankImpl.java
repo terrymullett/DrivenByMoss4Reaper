@@ -26,7 +26,7 @@ import java.util.Optional;
 /**
  * An abstract track bank.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public abstract class AbstractTrackBankImpl extends AbstractPagedBankImpl<TrackImpl, ITrack> implements ITrackBank
 {

@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 /**
  * The data of a layer.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class LayerImpl extends ChannelImpl implements IDrumPad
 {

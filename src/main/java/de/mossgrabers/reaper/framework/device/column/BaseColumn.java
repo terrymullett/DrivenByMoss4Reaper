@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * Base class for a filter column in the browser.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public abstract class BaseColumn extends ItemImpl implements IBrowserColumn
 {

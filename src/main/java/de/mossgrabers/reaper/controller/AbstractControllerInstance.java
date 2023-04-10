@@ -44,7 +44,7 @@ import java.util.List;
  * @param <C> The type of the configuration
  * @param <S> The type of the control surface
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public abstract class AbstractControllerInstance<S extends IControlSurface<C>, C extends Configuration> implements IControllerInstance, TestCallback
 {

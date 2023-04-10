@@ -10,7 +10,7 @@ import de.mossgrabers.reaper.framework.daw.data.bank.ParameterBankImpl;
  * Allows to store specific parameters from a parameter bank (e.g. for parameter binding) but can
  * internally be replaced.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ParameterProxy implements IParameter
 {

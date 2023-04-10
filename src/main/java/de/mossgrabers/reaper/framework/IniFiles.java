@@ -18,7 +18,7 @@ import java.nio.file.Files;
 /**
  * Manages access to the different Reaper INI files.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class IniFiles
 {

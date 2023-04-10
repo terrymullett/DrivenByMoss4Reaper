@@ -19,7 +19,7 @@ import java.text.NumberFormat;
 /**
  * Reaper implementation of a integer setting.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class IntegerSettingImpl extends BaseValueSetting<JFormattedTextField, Integer> implements IIntegerSetting
 {

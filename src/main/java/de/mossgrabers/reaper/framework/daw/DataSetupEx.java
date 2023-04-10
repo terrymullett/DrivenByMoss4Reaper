@@ -15,7 +15,7 @@ import de.mossgrabers.reaper.framework.daw.data.CursorTrackImpl;
 /**
  * Configuration parameters for DAW objects.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class DataSetupEx extends DataSetup
 {

@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * The data of a track.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class TrackImpl extends ChannelImpl implements ITrack
 {
@@ -522,14 +522,6 @@ public class TrackImpl extends ChannelImpl implements ITrack
     public void recordClip ()
     {
         this.sendPositionedItemOSC ("recordClip");
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void launchLastClipImmediately ()
-    {
-        // Not supported
     }
 
 

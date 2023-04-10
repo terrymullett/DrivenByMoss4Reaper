@@ -25,7 +25,7 @@ import java.awt.event.MouseEvent;
 /**
  * Implementation of a proxy to a button on a hardware controller.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
 {

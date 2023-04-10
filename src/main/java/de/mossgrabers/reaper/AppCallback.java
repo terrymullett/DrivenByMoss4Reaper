@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Interface for callback from the user interface.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public interface AppCallback
 {

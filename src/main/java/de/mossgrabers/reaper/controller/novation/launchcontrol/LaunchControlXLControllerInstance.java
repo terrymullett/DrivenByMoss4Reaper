@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * LaunchControl XL controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class LaunchControlXLControllerInstance extends AbstractControllerInstance<LaunchControlXLControlSurface, LaunchControlXLConfiguration>
 {

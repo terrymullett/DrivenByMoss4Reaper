@@ -18,7 +18,7 @@ import java.awt.event.KeyEvent;
 /**
  * Reaper implementation of a string setting.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class StringSettingImpl extends BaseValueSetting<JTextField, String> implements IStringSetting
 {

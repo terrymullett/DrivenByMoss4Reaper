@@ -48,7 +48,7 @@ import java.util.List;
 /**
  * A window to access the browser.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class BrowserDialog extends BasicDialog
 {

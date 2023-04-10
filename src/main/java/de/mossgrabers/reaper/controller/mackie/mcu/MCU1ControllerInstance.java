@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * MCU without extender controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MCU1ControllerInstance extends AbstractControllerInstance<MCUControlSurface, MCUConfiguration>
 {

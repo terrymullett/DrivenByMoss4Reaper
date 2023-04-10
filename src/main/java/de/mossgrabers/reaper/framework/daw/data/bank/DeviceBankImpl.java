@@ -14,7 +14,7 @@ import de.mossgrabers.reaper.framework.daw.data.DeviceImpl;
 /**
  * Encapsulates the data of a device bank.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class DeviceBankImpl extends AbstractBankImpl<IDevice> implements IDeviceBank
 {

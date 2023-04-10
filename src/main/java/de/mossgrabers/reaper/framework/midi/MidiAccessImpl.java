@@ -17,7 +17,7 @@ import javax.sound.midi.MidiDevice;
 /**
  * Reaper implementation to access MIDI input and outputs.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MidiAccessImpl implements IMidiAccess
 {

@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * The Reaper implementation to create user interface widgets for settings.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public abstract class AbstractSettingsUI implements ISettingsUI
 {

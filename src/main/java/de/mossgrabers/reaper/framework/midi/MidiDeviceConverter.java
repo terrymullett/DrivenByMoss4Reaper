@@ -14,7 +14,7 @@ import java.awt.Component;
 /**
  * Converter for MidiDevice objects to a string representation. Use with ListView or ComboBox.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MidiDeviceConverter extends DefaultListCellRenderer
 {

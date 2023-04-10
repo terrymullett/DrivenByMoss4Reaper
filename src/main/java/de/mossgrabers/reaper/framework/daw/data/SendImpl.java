@@ -15,7 +15,7 @@ import de.mossgrabers.reaper.framework.daw.data.parameter.ParameterImpl;
 /**
  * Encapsulates the data of a send.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class SendImpl extends ParameterImpl implements ISend
 {
@@ -23,6 +23,7 @@ public class SendImpl extends ParameterImpl implements ISend
 
     private final IChannel      channel;
     private ColorEx             color;
+    private boolean             isEnabled   = false;
 
 
     /**
@@ -38,6 +39,23 @@ public class SendImpl extends ParameterImpl implements ISend
         super (dataSetup, index, defaultValue);
 
         this.channel = channel;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isEnabled ()
+    {
+        return this.isEnabled;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void toggleEnabled ()
+    {
+        final StringBuilder command = new StringBuilder ().append (this.channel.getPosition ()).append ("/send/").append (this.getPosition ()).append ("/active");
+        this.sender.processDoubleArg (Processor.TRACK, command.toString (), this.value);
     }
 
 
@@ -90,5 +108,16 @@ public class SendImpl extends ParameterImpl implements ISend
     public void setColorState (final double [] color)
     {
         this.color = new ColorEx (color);
+    }
+
+
+    /**
+     * Set the enabled state.
+     *
+     * @param isEnabled True to enable
+     */
+    public void setInternalEnabled (final boolean isEnabled)
+    {
+        this.isEnabled = isEnabled;
     }
 }

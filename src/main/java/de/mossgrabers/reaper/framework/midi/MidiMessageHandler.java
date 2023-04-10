@@ -10,7 +10,7 @@ import javax.sound.midi.MidiMessage;
 /**
  * Callback interface for receiving MIDI messages.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public interface MidiMessageHandler
 {

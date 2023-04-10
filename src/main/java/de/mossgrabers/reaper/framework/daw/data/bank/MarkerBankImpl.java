@@ -16,7 +16,7 @@ import de.mossgrabers.reaper.framework.daw.data.MarkerImpl;
 /**
  * A marker bank.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MarkerBankImpl extends AbstractPagedBankImpl<MarkerImpl, IMarker> implements IMarkerBank
 {

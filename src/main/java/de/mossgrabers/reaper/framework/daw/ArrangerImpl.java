@@ -12,7 +12,7 @@ import de.mossgrabers.reaper.framework.Actions;
 /**
  * Encapsulates the Arranger instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ArrangerImpl extends BaseImpl implements IArranger
 {

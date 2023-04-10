@@ -20,7 +20,7 @@ import java.util.Optional;
 /**
  * Encapsulates the data of a drumpad bank.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class DrumPadBankImpl extends AbstractPagedBankImpl<DrumPadImpl, ILayer> implements IDrumPadBank
 {

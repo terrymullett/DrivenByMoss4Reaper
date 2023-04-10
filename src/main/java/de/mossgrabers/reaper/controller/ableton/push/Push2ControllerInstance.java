@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * Push 2 controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class Push2ControllerInstance extends AbstractControllerInstance<PushControlSurface, PushConfiguration>
 {

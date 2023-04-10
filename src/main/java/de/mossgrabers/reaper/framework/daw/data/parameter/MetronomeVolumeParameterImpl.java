@@ -13,7 +13,7 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 /**
  * Encapsulates the metronome volume.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MetronomeVolumeParameterImpl extends AbstractParameterImpl
 {

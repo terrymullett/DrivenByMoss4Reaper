@@ -15,7 +15,7 @@ import de.mossgrabers.reaper.framework.graphics.GraphicsContextImpl;
 /**
  * Implementation of a proxy to a graphics display on a hardware controller.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class HwGraphicsDisplayImpl extends AbstractHwControl implements IHwGraphicsDisplay, IReaperHwControl
 {

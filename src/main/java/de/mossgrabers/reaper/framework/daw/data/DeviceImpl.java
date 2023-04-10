@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 /**
  * Encapsulates the data of a device.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class DeviceImpl extends ItemImpl implements IDevice
 {

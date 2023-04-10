@@ -15,7 +15,7 @@ import de.mossgrabers.reaper.framework.daw.data.SendImpl;
 /**
  * Encapsulates the data of a send bank.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class SendBankImpl extends AbstractPagedBankImpl<SendImpl, ISend> implements ISendBank
 {

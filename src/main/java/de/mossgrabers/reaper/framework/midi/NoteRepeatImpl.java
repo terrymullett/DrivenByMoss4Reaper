@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Implementation for a note repeat.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class NoteRepeatImpl implements INoteRepeat
 {

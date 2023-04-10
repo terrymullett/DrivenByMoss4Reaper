@@ -11,7 +11,7 @@ import javax.swing.text.Document;
 /**
  * Adds some helper functions.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class JTextFieldX extends JTextField
 {

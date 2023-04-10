@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * Launchpad mkII controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class LaunchpadMkIIControllerInstance extends AbstractControllerInstance<LaunchpadControlSurface, LaunchpadConfiguration>
 {

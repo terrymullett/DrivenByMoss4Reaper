@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * The mapping of the parameters of a device to pages of 8 parameters.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ParameterMap
 {

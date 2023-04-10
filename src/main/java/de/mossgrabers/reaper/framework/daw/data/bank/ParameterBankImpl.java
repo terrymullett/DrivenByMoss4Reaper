@@ -27,7 +27,7 @@ import java.util.Map;
 /**
  * Encapsulates the data of a parameter bank.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IParameter> implements IParameterBank
 {

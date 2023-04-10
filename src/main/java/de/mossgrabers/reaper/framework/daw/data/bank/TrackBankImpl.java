@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * A track bank of all instrument and audio tracks.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class TrackBankImpl extends AbstractTrackBankImpl
 {

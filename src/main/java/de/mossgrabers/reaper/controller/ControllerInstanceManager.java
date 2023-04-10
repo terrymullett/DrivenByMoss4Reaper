@@ -86,7 +86,7 @@ import java.util.Set;
 /**
  * Manager for all controller instances and definitions.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ControllerInstanceManager
 {

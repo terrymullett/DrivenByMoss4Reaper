@@ -7,7 +7,7 @@ package de.mossgrabers.reaper.communication;
 /**
  * Interface to communicate with the C++ DLL.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public interface MessageSender
 {

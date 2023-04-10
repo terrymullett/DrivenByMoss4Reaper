@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * Launchkey Mini Mk3 controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class LaunchkeyMiniMk3ControllerInstance extends AbstractControllerInstance<LaunchkeyMiniMk3ControlSurface, LaunchkeyMiniMk3Configuration>
 {

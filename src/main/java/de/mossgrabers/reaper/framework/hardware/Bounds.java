@@ -7,7 +7,7 @@ package de.mossgrabers.reaper.framework.hardware;
 /**
  * A bounding box with x/y position and a width and height.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  *
  * @param x The x position
  * @param y The y position

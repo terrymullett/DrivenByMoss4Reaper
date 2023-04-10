@@ -15,7 +15,7 @@ import java.io.IOException;
 /**
  * The main configuration file.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MainConfiguration extends PropertiesEx
 {

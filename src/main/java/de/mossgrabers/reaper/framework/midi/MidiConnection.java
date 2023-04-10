@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Handles a MIDI connection to a MIDI device which has an input and output.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MidiConnection
 {

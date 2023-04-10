@@ -22,7 +22,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * Komplete Kontrol NIHIA protocol version 2 controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class KontrolProtocolV2ControllerInstance extends AbstractControllerInstance<KontrolProtocolControlSurface, KontrolProtocolConfiguration>
 {

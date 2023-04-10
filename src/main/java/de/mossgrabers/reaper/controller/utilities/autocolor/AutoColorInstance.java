@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * The Auto Color instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class AutoColorInstance extends AbstractControllerInstance<IControlSurface<AutoColorConfiguration>, AutoColorConfiguration>
 {

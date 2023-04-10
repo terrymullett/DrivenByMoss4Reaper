@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Implementation of a note.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class Note
 {

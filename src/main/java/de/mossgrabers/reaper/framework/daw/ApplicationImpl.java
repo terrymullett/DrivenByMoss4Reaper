@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Proxy to the Application object.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ApplicationImpl extends BaseImpl implements IApplication
 {

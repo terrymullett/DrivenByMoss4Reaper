@@ -24,7 +24,7 @@ import java.awt.Window;
 /**
  * Dialog for configuring some debug settings.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class DebugDialog extends BasicDialog
 {

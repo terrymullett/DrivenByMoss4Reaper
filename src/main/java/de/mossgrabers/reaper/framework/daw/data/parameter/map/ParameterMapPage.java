@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * A parameter page in a device parameter mapping.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ParameterMapPage
 {

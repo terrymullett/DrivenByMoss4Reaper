@@ -11,7 +11,7 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 /**
  * Proxy to the Drum device.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class DrumDeviceImpl extends SpecificDeviceImpl implements IDrumDevice
 {

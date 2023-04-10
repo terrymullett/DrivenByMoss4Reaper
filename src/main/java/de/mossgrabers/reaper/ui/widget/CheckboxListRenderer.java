@@ -15,7 +15,7 @@ import java.awt.Component;
 /**
  * Renders a check-box item in a list box.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class CheckboxListRenderer extends JCheckBox implements ListCellRenderer<ControllerCheckboxListItem>
 {

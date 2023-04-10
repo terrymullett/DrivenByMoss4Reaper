@@ -11,7 +11,7 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 /**
  * Encapsulates the data of the master tracks' volume parameter.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MasterVolumeParameterImpl extends ParameterImpl
 {

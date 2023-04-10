@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * HUI with 2 extenders.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class HUI3ControllerInstance extends AbstractControllerInstance<HUIControlSurface, HUIConfiguration>
 {

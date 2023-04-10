@@ -18,7 +18,7 @@ import java.util.Optional;
 /**
  * Encapsulates the data of a slot bank.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class SlotBankImpl extends AbstractPagedBankImpl<SlotImpl, ISlot> implements ISlotBank
 {

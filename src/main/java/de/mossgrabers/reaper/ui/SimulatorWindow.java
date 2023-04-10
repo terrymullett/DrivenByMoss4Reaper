@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * The device UI simulator window.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class SimulatorWindow extends JFrame
 {

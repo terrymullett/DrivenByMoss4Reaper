@@ -15,7 +15,7 @@ import javax.swing.JCheckBox;
 /**
  * Reaper implementation of a integer setting.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class BooleanSettingImpl extends BaseValueSetting<JCheckBox, Boolean> implements IBooleanSetting
 {

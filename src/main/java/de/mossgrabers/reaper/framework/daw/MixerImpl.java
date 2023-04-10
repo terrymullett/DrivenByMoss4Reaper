@@ -12,7 +12,7 @@ import de.mossgrabers.reaper.framework.Actions;
 /**
  * Implementation of the Mixer object.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MixerImpl extends BaseImpl implements IMixer
 {

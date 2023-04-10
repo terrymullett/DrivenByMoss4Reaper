@@ -16,7 +16,7 @@ import java.text.DecimalFormat;
 /**
  * Encapsulates the tempo.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class TempoParameterImpl extends AbstractParameterImpl
 {

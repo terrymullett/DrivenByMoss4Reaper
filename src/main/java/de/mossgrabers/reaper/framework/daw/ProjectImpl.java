@@ -17,7 +17,7 @@ import de.mossgrabers.reaper.framework.daw.data.bank.TrackBankImpl;
 /**
  * Encapsulates the Project instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ProjectImpl extends BaseImpl implements IProject
 {

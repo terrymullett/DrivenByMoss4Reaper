@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * A filter column for device vendors.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class DeviceCreatorFilterColumn extends BaseColumn
 {

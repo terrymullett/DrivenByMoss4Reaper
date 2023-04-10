@@ -21,7 +21,7 @@ import de.mossgrabers.reaper.framework.daw.data.bank.ParameterPageBankImpl;
 /**
  * Proxy to the Reaper Cursor device.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
 {

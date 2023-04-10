@@ -12,7 +12,7 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 /**
  * A track bank of all effect tracks. Not used in Reaper.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class EffectTrackBankImpl extends AbstractTrackBankImpl
 {

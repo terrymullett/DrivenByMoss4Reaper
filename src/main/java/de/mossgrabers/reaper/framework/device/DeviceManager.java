@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 /**
  * Manages the information about all available devices.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class DeviceManager
 {
@@ -267,13 +267,13 @@ public class DeviceManager
 
         if (collection != null)
             results = collection.filter (results);
-        return filterPreferredFileTypes (results);
+        return this.filterPreferredFileTypes (results);
     }
 
 
     /**
      * Filter by preferred types.
-     * 
+     *
      * @param results The devices to filter
      * @return The filtered list
      */

@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * Dialog for editing the parameter mappings of the currently selected device.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ParameterMappingDialog extends BasicDialog
 {
@@ -407,7 +407,7 @@ public class ParameterMappingDialog extends BasicDialog
         final ParameterMapPageParameter selectedParam = this.pageParametersListBox.getSelectedValue ();
         if (selectedParam == null)
             return;
-        String result = JOptionPane.showInputDialog ("Parameter Name:", selectedParam.getName ());
+        final String result = JOptionPane.showInputDialog ("Parameter Name:", selectedParam.getName ());
         if (result == null)
             return;
         selectedParam.setName (result);

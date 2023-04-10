@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * APC40 mkII controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class APC40mkIIControllerInstance extends AbstractControllerInstance<APCControlSurface, APCConfiguration>
 {

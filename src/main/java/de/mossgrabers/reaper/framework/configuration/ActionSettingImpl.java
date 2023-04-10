@@ -21,7 +21,7 @@ import java.awt.event.KeyEvent;
 /**
  * Reaper implementation of an action setting.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ActionSettingImpl extends BaseValueSetting<ActionPanel, String> implements IActionSetting
 {

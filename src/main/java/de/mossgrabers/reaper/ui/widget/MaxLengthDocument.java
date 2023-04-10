@@ -12,7 +12,7 @@ import javax.swing.text.PlainDocument;
 /**
  * Limits the number of characters in the document to a maximum length.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MaxLengthDocument extends PlainDocument
 {

@@ -50,7 +50,7 @@ import java.util.TreeMap;
 /**
  * The user interface of the extension.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MainFrame extends JFrame
 {

@@ -13,7 +13,7 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 /**
  * Encapsulates the data of a scene.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class SceneImpl extends ItemImpl implements IScene
 {
@@ -60,9 +60,11 @@ public class SceneImpl extends ItemImpl implements IScene
 
     /** {@inheritDoc} */
     @Override
-    public void launch ()
+    public void launch (final boolean isPressed, final boolean isAlternative)
     {
-        this.sendPositionedItemOSC ("launch");
+        // No alternative launch available
+        if (isPressed)
+            this.sendPositionedItemOSC ("launch");
     }
 
 

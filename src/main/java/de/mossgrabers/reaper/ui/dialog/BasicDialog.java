@@ -31,7 +31,7 @@ import java.awt.event.WindowEvent;
  * key.</li>
  * </ul>
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public abstract class BasicDialog extends JDialog
 {

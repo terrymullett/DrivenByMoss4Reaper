@@ -22,7 +22,7 @@ import java.util.Set;
  * @param <C> The type of the widget to edit the setting, e.g. a text field
  * @param <T> The type of the settings value
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public abstract class BaseSetting<C extends JComponent, T> implements IfxSetting
 {

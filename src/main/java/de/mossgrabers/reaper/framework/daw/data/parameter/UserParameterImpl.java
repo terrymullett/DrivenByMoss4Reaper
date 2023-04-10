@@ -13,7 +13,7 @@ import de.mossgrabers.reaper.framework.daw.data.CursorTrackImpl;
 /**
  * Encapsulates the data of a user parameter.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class UserParameterImpl extends ParameterImpl
 {

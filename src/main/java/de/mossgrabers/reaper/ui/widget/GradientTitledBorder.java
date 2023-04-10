@@ -21,7 +21,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * A titled border which draws a background with a gradient color effect.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class GradientTitledBorder extends TitledBorder
 {

@@ -16,7 +16,7 @@ import de.mossgrabers.reaper.framework.midi.MidiInputImpl;
 /**
  * Implementation of a proxy to an absolute knob on a hardware controller.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public abstract class AbstractHwAbsoluteControl extends AbstractHwContinuousControl implements IHwAbsoluteControl, IReaperHwControl
 {

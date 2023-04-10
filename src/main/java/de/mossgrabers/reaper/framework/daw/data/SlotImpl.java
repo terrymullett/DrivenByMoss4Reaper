@@ -13,7 +13,7 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 /**
  * Encapsulates the data of a slot.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class SlotImpl extends ItemImpl implements ISlot
 {
@@ -123,26 +123,11 @@ public class SlotImpl extends ItemImpl implements ISlot
 
     /** {@inheritDoc} */
     @Override
-    public void launch ()
+    public void launch (final boolean isPressed, final boolean isAlternative)
     {
-        if (this.getIndex () >= 0)
+        // There is no alternative launch
+        if (isPressed && this.getIndex () >= 0)
             this.sendTrackClipOSC ("launch");
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public void launchImmediately ()
-    {
-        this.launch ();
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public boolean testAndClearLaunchedImmediately ()
-    {
-        return false;
     }
 
 

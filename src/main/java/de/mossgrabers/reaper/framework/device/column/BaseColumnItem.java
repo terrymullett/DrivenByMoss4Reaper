@@ -13,7 +13,7 @@ import de.mossgrabers.reaper.framework.daw.data.ItemImpl;
 /**
  * Base class for an item in a filter column.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public abstract class BaseColumnItem extends ItemImpl implements IBrowserColumnItem
 {

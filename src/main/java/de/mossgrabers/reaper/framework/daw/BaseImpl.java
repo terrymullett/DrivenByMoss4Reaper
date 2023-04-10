@@ -15,7 +15,7 @@ import de.mossgrabers.reaper.communication.Processor;
 /**
  * Base class for all Reaper proxies.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public abstract class BaseImpl implements IObserverManagement
 {

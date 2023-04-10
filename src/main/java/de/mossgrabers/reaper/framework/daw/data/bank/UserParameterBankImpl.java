@@ -16,7 +16,7 @@ import de.mossgrabers.reaper.framework.daw.data.parameter.UserParameterImpl;
 /**
  * Encapsulates the data of a user parameter bank.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class UserParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IParameter> implements IParameterBank
 {

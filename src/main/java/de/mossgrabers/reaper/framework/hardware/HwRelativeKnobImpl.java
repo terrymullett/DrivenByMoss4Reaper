@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * Implementation of a proxy to a relative knob on a hardware controller.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements IHwRelativeKnob, IReaperHwControl
 {

@@ -14,7 +14,7 @@ import javax.swing.JLabel;
 /**
  * Interface to editing a setting with a Java FX control widget.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public interface IfxSetting extends ISetting
 {

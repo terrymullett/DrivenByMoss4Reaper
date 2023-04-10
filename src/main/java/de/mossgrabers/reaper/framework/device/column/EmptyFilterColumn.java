@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * An empty filter column (actually no filter at all).
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class EmptyFilterColumn extends BaseColumn
 {

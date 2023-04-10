@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * Yaeltex Turn controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class YaeltexTurnControllerInstance extends AbstractControllerInstance<YaeltexTurnControlSurface, YaeltexTurnConfiguration>
 {

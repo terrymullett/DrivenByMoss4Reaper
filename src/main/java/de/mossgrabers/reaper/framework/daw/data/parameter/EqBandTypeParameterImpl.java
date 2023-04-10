@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Encapsulates the equalizer band type.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class EqBandTypeParameterImpl extends AbstractParameterImpl
 {

@@ -52,7 +52,7 @@ import java.util.Map;
  * Provides access to the presets of a Reaper FX. Since this is only a flat list, no filter columns
  * are supported.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class BrowserImpl extends AbstractBrowser
 {

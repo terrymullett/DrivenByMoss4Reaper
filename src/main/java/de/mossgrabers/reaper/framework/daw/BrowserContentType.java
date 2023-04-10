@@ -7,7 +7,7 @@ package de.mossgrabers.reaper.framework.daw;
 /**
  * What to browse for.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public enum BrowserContentType
 {

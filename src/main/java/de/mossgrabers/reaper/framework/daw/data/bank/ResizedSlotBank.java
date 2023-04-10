@@ -15,7 +15,7 @@ import java.util.Optional;
 /**
  * Provides access to the slot bank of the cursor track but with a different page size.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ResizedSlotBank implements ISlotBank
 {

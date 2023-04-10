@@ -10,7 +10,7 @@ import de.mossgrabers.reaper.controller.IControllerInstance;
 /**
  * A check-box item containing a controller to be used in a list box.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  *
  * @param item The item to encapsulate
  */

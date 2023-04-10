@@ -15,7 +15,7 @@ import javax.swing.JButton;
 /**
  * Reaper implementation of a string setting.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class SignalSettingImpl extends BaseSetting<JButton, Void> implements ISignalSetting
 {

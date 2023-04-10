@@ -17,7 +17,7 @@ import de.mossgrabers.reaper.framework.daw.data.parameter.EqBandTypeParameterImp
  * q-factor for each active band (3 * N), followed by bypass and wet parameters (2). The type is
  * encoded in the parameter names
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class EqualizerDeviceImpl extends SpecificDeviceImpl implements IEqualizerDevice
 {

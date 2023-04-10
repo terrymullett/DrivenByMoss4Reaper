@@ -19,7 +19,7 @@ import java.awt.Color;
 /**
  * Reaper implementation of a ColorEx setting.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ColorSettingImpl extends BaseValueSetting<ColoredButton, ColorEx> implements IColorSetting
 {

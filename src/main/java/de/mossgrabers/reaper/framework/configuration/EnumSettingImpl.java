@@ -16,7 +16,7 @@ import javax.swing.JComboBox;
 /**
  * Reaper implementation of an enumeration setting.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class EnumSettingImpl extends BaseValueSetting<JComboBox<String>, String> implements IEnumSetting
 {

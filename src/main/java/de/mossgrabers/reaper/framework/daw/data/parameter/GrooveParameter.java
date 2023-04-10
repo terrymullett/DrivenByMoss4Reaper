@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * Implementation of a Groove parameter.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class GrooveParameter extends ParameterImpl
 {

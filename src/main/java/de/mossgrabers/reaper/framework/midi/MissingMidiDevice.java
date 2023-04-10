@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * A dummy MIDI device for missing or not selected MIDI devices.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MissingMidiDevice implements MidiDevice
 {

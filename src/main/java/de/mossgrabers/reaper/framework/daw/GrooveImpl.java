@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * Implementation of the Groove object.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class GrooveImpl extends BaseImpl implements IGroove
 {

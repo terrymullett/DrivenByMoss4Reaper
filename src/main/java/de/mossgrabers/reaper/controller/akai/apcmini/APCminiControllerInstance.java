@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * APCmini controller instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class APCminiControllerInstance extends AbstractControllerInstance<APCminiControlSurface, APCminiConfiguration>
 {

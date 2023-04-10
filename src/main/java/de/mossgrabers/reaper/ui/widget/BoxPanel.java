@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * Panel which makes life easier.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class BoxPanel extends JPanel
 {

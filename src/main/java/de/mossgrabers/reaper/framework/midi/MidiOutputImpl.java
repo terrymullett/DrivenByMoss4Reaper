@@ -10,7 +10,7 @@ import de.mossgrabers.framework.daw.midi.AbstractMidiOutput;
 /**
  * A MIDI output
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 class MidiOutputImpl extends AbstractMidiOutput
 {

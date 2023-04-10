@@ -55,7 +55,7 @@ import java.util.regex.Pattern;
 /**
  * Main window which provides the user interface.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class MainApp implements MessageSender, AppCallback, WindowManager
 {

@@ -27,7 +27,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * Implementation for the graphics context.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class GraphicsContextImpl implements IGraphicsContext
 {

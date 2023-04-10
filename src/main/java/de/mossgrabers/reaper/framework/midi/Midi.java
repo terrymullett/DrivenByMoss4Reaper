@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Helper functions for looking up MIDI devices.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class Midi
 {

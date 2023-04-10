@@ -20,7 +20,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
 /**
  * Open Sound Control (OSC) instance.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class OSCControllerInstance extends AbstractControllerInstance<IControlSurface<OSCConfiguration>, OSCConfiguration>
 {

@@ -17,7 +17,7 @@ import java.util.Collection;
  *
  * @param <E> the type of the elements of this combo box
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class JComboBoxX<E> extends JComboBox<E>
 {

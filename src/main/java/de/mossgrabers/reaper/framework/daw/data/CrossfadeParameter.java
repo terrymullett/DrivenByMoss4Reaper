@@ -11,7 +11,7 @@ import de.mossgrabers.framework.parameter.AbstractParameterImpl;
 /**
  * A parameter encapsulating the tracks crossfade setting.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class CrossfadeParameter extends AbstractParameterImpl
 {

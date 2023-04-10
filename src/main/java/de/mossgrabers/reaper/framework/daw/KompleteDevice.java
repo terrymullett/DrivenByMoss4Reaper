@@ -15,7 +15,7 @@ import de.mossgrabers.framework.observer.IValueObserver;
 /**
  * Komplete Kontrol device.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class KompleteDevice implements ISpecificDevice
 {

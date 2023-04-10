@@ -15,7 +15,7 @@ import de.mossgrabers.reaper.framework.daw.data.SceneImpl;
 /**
  * Encapsulates the data of a scene bank.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class SceneBankImpl extends AbstractPagedBankImpl<SceneImpl, IScene> implements ISceneBank
 {

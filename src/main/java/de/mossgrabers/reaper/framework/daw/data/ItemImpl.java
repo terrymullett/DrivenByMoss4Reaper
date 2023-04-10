@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * Base implementation for an item.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public abstract class ItemImpl extends BaseImpl implements IItem
 {

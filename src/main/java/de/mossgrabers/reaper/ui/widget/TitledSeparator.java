@@ -19,7 +19,7 @@ import java.awt.geom.Rectangle2D;
 /**
  * A titled separator. This is a text followed by a horizontal separator line.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class TitledSeparator extends JPanel
 {

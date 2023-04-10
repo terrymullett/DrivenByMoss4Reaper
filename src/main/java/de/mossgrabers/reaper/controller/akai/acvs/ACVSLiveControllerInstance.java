@@ -21,7 +21,7 @@ import de.mossgrabers.reaper.ui.utils.LogModel;
  * Controller instance for Akai devices supporting the ACVS protocol. Currently, the MPC Live I, II,
  * One, X and Force.
  *
- * @author J&uuml;rgen Mo&szlig;graber
+ * @author Jürgen Moßgraber
  */
 public class ACVSLiveControllerInstance extends AbstractControllerInstance<ACVSControlSurface, ACVSConfiguration>
 {
