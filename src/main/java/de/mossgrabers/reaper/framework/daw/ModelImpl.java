@@ -68,10 +68,12 @@ public class ModelImpl extends AbstractModel
 
         this.dataSetup = dataSetup;
 
+        final int numParams = modelSetup.getNumParams ();
+
         this.application = new ApplicationImpl (dataSetup);
         this.arranger = new ArrangerImpl (dataSetup);
         this.mixer = new MixerImpl (dataSetup);
-        this.project = new ProjectImpl (dataSetup, this, configuration);
+        this.project = new ProjectImpl (dataSetup, this, configuration, numParams);
         this.transport = new TransportImpl (dataSetup, this);
         this.groove = new GrooveImpl (dataSetup);
         this.markerBank = new MarkerBankImpl (dataSetup, modelSetup.getNumMarkers ());
@@ -88,7 +90,6 @@ public class ModelImpl extends AbstractModel
         // Create devices
 
         final int numDevicesInBank = modelSetup.getNumDevicesInBank ();
-        final int numParams = modelSetup.getNumParams ();
         final int numDeviceLayers = modelSetup.getNumDeviceLayers ();
         final int numDrumPadLayers = modelSetup.getNumDrumPadLayers ();
 

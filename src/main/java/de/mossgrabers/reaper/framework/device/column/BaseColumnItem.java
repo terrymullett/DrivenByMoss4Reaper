@@ -17,9 +17,7 @@ import de.mossgrabers.reaper.framework.daw.data.ItemImpl;
  */
 public abstract class BaseColumnItem extends ItemImpl implements IBrowserColumnItem
 {
-    protected int    position = -1;
-    protected String name     = "";
-    protected int    hits     = 0;
+    protected int hits = 0;
 
 
     /**

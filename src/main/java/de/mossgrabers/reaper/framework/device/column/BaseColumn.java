@@ -29,7 +29,6 @@ public abstract class BaseColumn extends ItemImpl implements IBrowserColumn
 
     private final Set<FilterListener>     listeners   = new HashSet<> (1);
 
-    private final String                  name;
     final int                             numItemsPerPage;
 
     int                                   selectedRow = 0;

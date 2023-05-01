@@ -93,4 +93,36 @@ public class TempoParameterImpl extends AbstractParameterImpl implements IParame
     {
         return this.tempo;
     }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setValueStr (final String valueStr)
+    {
+        // Not used
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setInternalName (final String value)
+    {
+        // Not used
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setPosition (final int paramNo)
+    {
+        // Not used
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setExists (final boolean exists)
+    {
+        // Not used
+    }
 }

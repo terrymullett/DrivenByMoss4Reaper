@@ -8,14 +8,12 @@ import de.mossgrabers.framework.daw.data.ISpecificDevice;
 import de.mossgrabers.framework.daw.data.bank.IDrumPadBank;
 import de.mossgrabers.framework.daw.data.bank.ILayerBank;
 import de.mossgrabers.framework.daw.data.bank.IParameterBank;
-import de.mossgrabers.framework.daw.data.bank.IParameterPageBank;
 import de.mossgrabers.framework.observer.IValueObserver;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.bank.DrumPadBankImpl;
 import de.mossgrabers.reaper.framework.daw.data.bank.LayerBankImpl;
 import de.mossgrabers.reaper.framework.daw.data.bank.ParameterBankImpl;
-import de.mossgrabers.reaper.framework.daw.data.bank.ParameterPageBankImpl;
 
 
 /**
@@ -25,12 +23,11 @@ import de.mossgrabers.reaper.framework.daw.data.bank.ParameterPageBankImpl;
  */
 public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
 {
-    private boolean                     isWindowOpen;
-    private boolean                     isExpanded;
-    private final ParameterPageBankImpl parameterPageBank;
-    private final ParameterBankImpl     parameterBank;
-    private final ILayerBank            layerBank;
-    private final IDrumPadBank          drumPadBank;
+    private boolean                 isWindowOpen;
+    private boolean                 isExpanded;
+    private final ParameterBankImpl parameterBank;
+    private final ILayerBank        layerBank;
+    private final IDrumPadBank      drumPadBank;
 
 
     /**
@@ -69,15 +66,9 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
         final int checkedNumDrumPadLayers = numDrumPadLayers >= 0 ? numDrumPadLayers : 16;
 
         if (checkedNumParams > 0)
-        {
             this.parameterBank = new ParameterBankImpl (dataSetup, processor, checkedNumParams, this);
-            this.parameterPageBank = new ParameterPageBankImpl (checkedNumParams, this.parameterBank, this);
-        }
         else
-        {
             this.parameterBank = null;
-            this.parameterPageBank = null;
-        }
 
         // Always empty
         this.layerBank = new LayerBankImpl (dataSetup, checkedNumDeviceLayers);
@@ -267,14 +258,6 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
     {
         if (this.parameterBank != null)
             this.parameterBank.setItemCount (count);
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public IParameterPageBank getParameterPageBank ()
-    {
-        return this.parameterPageBank;
     }
 
 

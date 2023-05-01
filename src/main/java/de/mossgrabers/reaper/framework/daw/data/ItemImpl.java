@@ -22,9 +22,9 @@ import java.util.Set;
 public abstract class ItemImpl extends BaseImpl implements IItem
 {
     protected int                             index;
-    private int                               position;
-    private boolean                           exists        = false;
-    private String                            name          = "";
+    protected int                             position;
+    protected boolean                         exists        = false;
+    protected String                          name          = "";
     private boolean                           selected;
     private final Set<IValueObserver<String>> nameObservers = new HashSet<> ();
 

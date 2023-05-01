@@ -29,4 +29,36 @@ public interface IParameterEx extends IParameter
      * @param value The value normalized to 0..1
      */
     void setInternalValue (double value);
+
+
+    /**
+     * Set the value as text.
+     *
+     * @param valueStr The text
+     */
+    void setValueStr (String valueStr);
+
+
+    /**
+     * Set the name of the parameter.
+     *
+     * @param name The name
+     */
+    void setInternalName (String name);
+
+
+    /**
+     * Set the position of the track, among all tracks.
+     *
+     * @param position The position
+     */
+    void setPosition (int position);
+
+
+    /**
+     * Set the exists state.
+     *
+     * @param exists True if exists
+     */
+    void setExists (boolean exists);
 }

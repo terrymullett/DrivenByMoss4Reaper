@@ -7,10 +7,12 @@ package de.mossgrabers.reaper.framework.daw;
 import de.mossgrabers.framework.configuration.Configuration;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.IProject;
+import de.mossgrabers.framework.daw.data.bank.IParameterBank;
 import de.mossgrabers.framework.daw.data.empty.EmptyParameter;
 import de.mossgrabers.framework.parameter.IParameter;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.Actions;
+import de.mossgrabers.reaper.framework.daw.data.bank.ParameterBankImpl;
 import de.mossgrabers.reaper.framework.daw.data.bank.TrackBankImpl;
 
 
@@ -25,6 +27,7 @@ public class ProjectImpl extends BaseImpl implements IProject
     private final Configuration configuration;
     private String              name = "None";
     private boolean             isDirtyFlag;
+    private ParameterBankImpl   parameterBank;
 
 
     /**
@@ -33,13 +36,19 @@ public class ProjectImpl extends BaseImpl implements IProject
      * @param dataSetup Some configuration variables
      * @param model The model
      * @param configuration The configuration
+     * @param numParams The number of parameters
      */
-    public ProjectImpl (final DataSetupEx dataSetup, final IModel model, final Configuration configuration)
+    public ProjectImpl (final DataSetupEx dataSetup, final IModel model, final Configuration configuration, final int numParams)
     {
         super (dataSetup);
 
         this.model = model;
         this.configuration = configuration;
+
+        if (numParams > 0)
+            this.parameterBank = new ParameterBankImpl (dataSetup, Processor.MASTER, numParams, null);
+        else
+            this.parameterBank = null;
     }
 
 
@@ -309,5 +318,13 @@ public class ProjectImpl extends BaseImpl implements IProject
     protected Processor getProcessor ()
     {
         return Processor.PROJECT;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public IParameterBank getParameterBank ()
+    {
+        return this.parameterBank;
     }
 }

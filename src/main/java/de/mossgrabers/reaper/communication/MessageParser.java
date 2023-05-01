@@ -45,6 +45,7 @@ import de.mossgrabers.reaper.framework.daw.data.bank.SendBankImpl;
 import de.mossgrabers.reaper.framework.daw.data.bank.TrackBankImpl;
 import de.mossgrabers.reaper.framework.daw.data.bank.UserParameterBankImpl;
 import de.mossgrabers.reaper.framework.daw.data.parameter.GrooveParameter;
+import de.mossgrabers.reaper.framework.daw.data.parameter.IParameterEx;
 import de.mossgrabers.reaper.framework.daw.data.parameter.MetronomeVolumeParameterImpl;
 import de.mossgrabers.reaper.framework.daw.data.parameter.ParameterImpl;
 import de.mossgrabers.reaper.framework.midi.NoteRepeatImpl;
@@ -198,10 +199,6 @@ public class MessageParser
             case "eq":
                 if (this.eqDevice != null)
                     this.parseDevice (this.eqDevice, value, parts);
-                break;
-
-            case "user":
-                this.parseUserParameter (value, parts);
                 break;
 
             case "clip":
@@ -387,6 +384,10 @@ public class MessageParser
         final String part = parts.poll ();
         switch (part)
         {
+            case "fx":
+                this.parseTrackFxParameter (value, parts);
+                break;
+
             case TAG_COUNT:
                 tb.setItemCount (Integer.parseInt (value));
                 tb.markDirty ();
@@ -412,19 +413,43 @@ public class MessageParser
     {
         final String type = parts.peek ();
 
-        if ("user".equals (type))
+        if ("fx".equals (type))
         {
-            // Drop user
+            // Drop 'fx'
             parts.poll ();
+
             final String cmd = parts.poll ();
             if (TAG_PARAM.equals (cmd))
             {
-                // Drop index
-                parts.poll ();
-                final IParameter crossfaderParam = masterTrack.getCrossfaderParameter ();
-                this.parseDeviceParamValue (0, crossfaderParam, parts, value);
-                return;
+                final ParameterBankImpl parameterBank = (ParameterBankImpl) this.model.getProject ().getParameterBank ();
+                final String paramCmd = parts.poll ();
+
+                try
+                {
+                    final int paramNo = Integer.parseInt (paramCmd);
+                    final IParameter param = parameterBank.getItem (paramNo);
+                    this.parseDeviceParamValue (paramNo, param, parts, value);
+
+                    // Clone values into fake crossfader as well
+                    if (paramNo == 0)
+                    {
+                        final IParameter crossfaderParam = masterTrack.getCrossfaderParameter ();
+                        if (crossfaderParam instanceof final ParameterImpl destParam && param instanceof final ParameterImpl sourceParam)
+                            sourceParam.copyValues (destParam);
+                    }
+                }
+                catch (final NumberFormatException ex)
+                {
+                    if (TAG_COUNT.equals (paramCmd))
+                    {
+                        parameterBank.setItemCount (Integer.parseInt (value));
+                        this.rebindKnobs ();
+                    }
+                    else
+                        this.host.error ("Unhandled Track FX Param parameter: " + cmd);
+                }
             }
+            return;
         }
 
         this.parseTrackValue (null, masterTrack, parts, value);
@@ -730,12 +755,12 @@ public class MessageParser
     }
 
 
-    private void parseUserParameter (final String value, final Queue<String> parts)
+    private void parseTrackFxParameter (final String value, final Queue<String> parts)
     {
         final String type = parts.poll ();
         if (!type.equals (TAG_PARAM))
         {
-            this.host.error ("Unhandled User parameter: " + type);
+            this.host.error ("Unhandled Track FX parameter: " + type);
             return;
         }
 
@@ -754,7 +779,7 @@ public class MessageParser
                 this.rebindKnobs ();
             }
             else
-                this.host.error ("Unhandled User Param parameter: " + cmd);
+                this.host.error ("Unhandled Track FX Param parameter: " + cmd);
         }
     }
 
@@ -805,7 +830,7 @@ public class MessageParser
     private void parseDeviceParamValue (final int paramNo, final IParameter param, final Queue<String> parts, final String value)
     {
         final String command = parts.poll ();
-        final ParameterImpl p = (ParameterImpl) param;
+        final IParameterEx p = (IParameterEx) param;
         switch (command)
         {
             case TAG_NAME:

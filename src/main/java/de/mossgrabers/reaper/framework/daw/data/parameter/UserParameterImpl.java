@@ -41,6 +41,6 @@ public class UserParameterImpl extends ParameterImpl
     {
         final ICursorTrack cursorTrack = this.model.getCursorTrack ();
         if (cursorTrack instanceof final CursorTrackImpl cti)
-            cti.sendPositionedItemOSC ("user/" + this.createCommand ("value"), this.value);
+            cti.sendPositionedItemOSC ("fx/" + this.createCommand ("value"), this.value);
     }
 }

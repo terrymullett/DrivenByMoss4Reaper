@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.daw.data.bank;
 
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.bank.IParameterBank;
+import de.mossgrabers.framework.daw.data.bank.IParameterPageBank;
 import de.mossgrabers.framework.daw.data.empty.EmptyParameter;
 import de.mossgrabers.framework.parameter.IParameter;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
@@ -109,5 +110,14 @@ public class UserParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, 
         final int pageSize = this.getPageSize ();
         this.bankOffset = Math.min (Math.max (0, adjustPage ? position / pageSize * pageSize : position), (this.getItemCount () - 1) / pageSize * pageSize);
         this.firePageObserver ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public IParameterPageBank getPageBank ()
+    {
+        // Not used
+        return null;
     }
 }

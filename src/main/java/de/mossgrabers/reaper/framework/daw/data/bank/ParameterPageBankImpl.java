@@ -38,7 +38,7 @@ public class ParameterPageBankImpl extends AbstractBank<String> implements IPara
      *
      * @param numParameterPages The number of parameter pages in the page of the bank
      * @param parameterBank The parameter bank
-     * @param device The device for looking up the device parameter mapping
+     * @param device The device for looking up the device parameter mapping, may be null
      */
     public ParameterPageBankImpl (final int numParameterPages, final IParameterBank parameterBank, final IDevice device)
     {
@@ -47,7 +47,8 @@ public class ParameterPageBankImpl extends AbstractBank<String> implements IPara
         this.parameterBank = parameterBank;
         this.device = device;
 
-        this.device.addNameObserver (name -> this.updatePageCache ());
+        if (this.device != null)
+            this.device.addNameObserver (name -> this.updatePageCache ());
         this.clearPageCache ();
     }
 
@@ -274,8 +275,14 @@ public class ParameterPageBankImpl extends AbstractBank<String> implements IPara
     {
         this.clearPageCache ();
 
-        final String deviceName = this.device.getName ();
-        final ParameterMap parameterMap = DeviceManager.get ().getParameterMaps ().get (deviceName.toLowerCase ());
+        ParameterMap parameterMap = null;
+
+        if (this.device != null)
+        {
+            final String deviceName = this.device.getName ();
+            parameterMap = DeviceManager.get ().getParameterMaps ().get (deviceName.toLowerCase ());
+        }
+
         if (parameterMap == null)
         {
             // Since there is no real page bank, cache the generated page names, too

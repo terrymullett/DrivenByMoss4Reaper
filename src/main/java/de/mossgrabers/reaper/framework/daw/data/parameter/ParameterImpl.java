@@ -204,11 +204,8 @@ public class ParameterImpl extends ItemImpl implements IParameterEx
     }
 
 
-    /**
-     * Set the value as text.
-     *
-     * @param valueStr The text
-     */
+    /** {@inheritDoc} */
+    @Override
     public void setValueStr (final String valueStr)
     {
         this.valueStr = valueStr == null ? "" : valueStr;
@@ -245,5 +242,20 @@ public class ParameterImpl extends ItemImpl implements IParameterEx
     public String toString ()
     {
         return this.getPosition () + ": " + this.getName ();
+    }
+
+
+    /**
+     * Helper function only to be used to replicate the data of the 1st master FX parameter into the
+     * fake crossfader parameter.
+     *
+     * @param destParam The parameter into which to write the values of this parameter
+     */
+    public void copyValues (final ParameterImpl destParam)
+    {
+        destParam.setInternalName (this.name);
+        destParam.setExists (this.exists);
+        destParam.setInternalValue (this.value);
+        destParam.setValueStr (this.valueStr);
     }
 }

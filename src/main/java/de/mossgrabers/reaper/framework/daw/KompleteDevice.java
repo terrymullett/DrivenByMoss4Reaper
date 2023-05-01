@@ -8,7 +8,6 @@ import de.mossgrabers.framework.daw.data.ISpecificDevice;
 import de.mossgrabers.framework.daw.data.bank.IDrumPadBank;
 import de.mossgrabers.framework.daw.data.bank.ILayerBank;
 import de.mossgrabers.framework.daw.data.bank.IParameterBank;
-import de.mossgrabers.framework.daw.data.bank.IParameterPageBank;
 import de.mossgrabers.framework.observer.IValueObserver;
 
 
@@ -271,14 +270,6 @@ public class KompleteDevice implements ISpecificDevice
     public boolean hasSlots ()
     {
         return this.instrumentDevice.hasSlots ();
-    }
-
-
-    /** {@inheritDoc} */
-    @Override
-    public IParameterPageBank getParameterPageBank ()
-    {
-        return this.instrumentDevice.getParameterPageBank ();
     }
 
 

@@ -6,6 +6,7 @@ package de.mossgrabers.reaper.framework.daw.data.bank;
 
 import de.mossgrabers.framework.daw.data.IDevice;
 import de.mossgrabers.framework.daw.data.bank.IParameterBank;
+import de.mossgrabers.framework.daw.data.bank.IParameterPageBank;
 import de.mossgrabers.framework.daw.data.empty.EmptyParameter;
 import de.mossgrabers.framework.parameter.IParameter;
 import de.mossgrabers.reaper.communication.Processor;
@@ -31,12 +32,13 @@ import java.util.Map;
  */
 public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IParameter> implements IParameterBank
 {
-    private final Map<String, Integer> selectedDevicePages = new HashMap<> ();
+    private final Map<String, Integer>  selectedDevicePages = new HashMap<> ();
 
-    private final Processor            processor;
-    private final IDevice              device;
-    private final IParameter []        mappedParameterCache;
-    private int                        mappedParameterCount;
+    private final Processor             processor;
+    private final IDevice               device;
+    private final IParameter []         mappedParameterCache;
+    private int                         mappedParameterCount;
+    private final ParameterPageBankImpl parameterPageBank;
 
 
     /**
@@ -64,14 +66,19 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
     {
         super (dataSetup, numParams, EmptyParameter.INSTANCE);
 
+        this.parameterPageBank = new ParameterPageBankImpl (numParams, this, device);
+
         this.processor = processor;
         this.device = device;
-        this.device.addNameObserver (name -> {
+        if (this.device != null)
+        {
+            this.device.addNameObserver (name -> {
 
-            // Restore the offset when switching between devices
-            this.setBankOffset (this.selectedDevicePages.getOrDefault (name.toLowerCase (), Integer.valueOf (0)).intValue ());
+                // Restore the offset when switching between devices
+                this.setBankOffset (this.selectedDevicePages.getOrDefault (name.toLowerCase (), Integer.valueOf (0)).intValue ());
 
-        });
+            });
+        }
 
         this.mappedParameterCache = new IParameter [this.pageSize];
         this.clearParameterCache ();
@@ -104,7 +111,8 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
         this.bankOffset = Math.max (0, Math.min (bankOffset, this.getItemCount () - 1));
 
         // Store the offset for switching between devices
-        this.selectedDevicePages.put (this.device.getName ().toLowerCase (), Integer.valueOf (this.bankOffset));
+        if (this.device != null)
+            this.selectedDevicePages.put (this.device.getName ().toLowerCase (), Integer.valueOf (this.bankOffset));
 
         this.refreshParameterCache ();
     }
@@ -203,12 +211,21 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    public IParameterPageBank getPageBank ()
+    {
+        return this.parameterPageBank;
+    }
+
+
     /**
      * Updates the parameter mapping.
      */
     public void refreshParameterCache ()
     {
         this.updateParameterCache ();
+        this.parameterPageBank.updatePageCache ();
         this.firePageObserver ();
     }
 
@@ -216,8 +233,13 @@ public class ParameterBankImpl extends AbstractPagedBankImpl<ParameterImpl, IPar
     private void updateParameterCache ()
     {
         // Is there a parameter map?
-        final String deviceName = this.device.getName ();
-        final ParameterMap parameterMap = DeviceManager.get ().getParameterMaps ().get (deviceName.toLowerCase ());
+        ParameterMap parameterMap = null;
+        if (this.device != null)
+        {
+            final String deviceName = this.device.getName ();
+            parameterMap = DeviceManager.get ().getParameterMaps ().get (deviceName.toLowerCase ());
+        }
+
         if (parameterMap == null)
         {
             this.clearParameterCache ();

@@ -11,7 +11,6 @@ import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.bank.DeviceBankImpl;
 import de.mossgrabers.reaper.framework.daw.data.bank.ParameterBankImpl;
-import de.mossgrabers.reaper.framework.daw.data.bank.ParameterPageBankImpl;
 
 
 /**
@@ -203,6 +202,5 @@ public class CursorDeviceImpl extends SpecificDeviceImpl implements ICursorDevic
     public void refreshParameterMapping ()
     {
         ((ParameterBankImpl) this.getParameterBank ()).refreshParameterCache ();
-        ((ParameterPageBankImpl) this.getParameterPageBank ()).updatePageCache ();
     }
 }

@@ -256,6 +256,42 @@ public class ParameterProxy implements IParameterEx
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    public void setValueStr (final String value)
+    {
+        if (this.getParam () instanceof IParameterEx paramEx)
+            paramEx.setValueStr (value);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setInternalName (final String name)
+    {
+        if (this.getParam () instanceof IParameterEx paramEx)
+            paramEx.setInternalName (name);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setPosition (final int position)
+    {
+        if (this.getParam () instanceof IParameterEx paramEx)
+            paramEx.setPosition (position);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void setExists (final boolean exists)
+    {
+        if (this.getParam () instanceof IParameterEx paramEx)
+            paramEx.setExists (exists);
+    }
+
+
     private IParameter getParam ()
     {
         return this.bank.getParameter (this.index);
