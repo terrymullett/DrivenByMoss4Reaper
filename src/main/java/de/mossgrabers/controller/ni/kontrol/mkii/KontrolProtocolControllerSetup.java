@@ -77,8 +77,8 @@ public class KontrolProtocolControllerSetup extends AbstractControllerSetup<Kont
 {
     private final int          version;
     private String             kompleteInstance   = "";
-    private final Object             navigateLock       = new Object ();
-    private final LatestTaskExecutor slotScrollExecutor = new LatestTaskExecutor ();
+    private Object             navigateLock       = new Object ();
+    private LatestTaskExecutor slotScrollExecutor = new LatestTaskExecutor ();
     private long               lastEdit;
 
 
@@ -538,7 +538,7 @@ public class KontrolProtocolControllerSetup extends AbstractControllerSetup<Kont
             this.lastEdit = System.currentTimeMillis ();
         }
 
-        this.slotScrollExecutor.execute ( () -> this.selectSlot (slotIndex));
+        this.slotScrollExecutor.execute ( () -> selectSlot (slotIndex));
     }
 
 
@@ -562,7 +562,7 @@ public class KontrolProtocolControllerSetup extends AbstractControllerSetup<Kont
             if (System.currentTimeMillis () - this.lastEdit > 200)
                 this.model.getCursorTrack ().getSlotBank ().getItem (slotIndex).select ();
             else
-                this.slotScrollExecutor.execute ( () -> this.selectSlot (slotIndex));
+                this.slotScrollExecutor.execute ( () -> selectSlot (slotIndex));
         }
     }
 
