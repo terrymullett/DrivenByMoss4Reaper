@@ -552,8 +552,14 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void changePosition (final boolean increase, final boolean slow)
     {
-        final double frac = slow ? TransportConstants.INC_FRACTION_TIME_SLOW : TransportConstants.INC_FRACTION_TIME;
+        final double frac = this.beatsToSeconds (slow ? TransportConstants.INC_FRACTION_TIME_SLOW : TransportConstants.INC_FRACTION_TIME);
         this.setPosition (increase ? this.position + frac : Math.max (this.position - frac, 0.0));
+    }
+
+
+    private double beatsToSeconds (final double beats)
+    {
+        return beats * 60.0 / this.getTempo ();
     }
 
 
@@ -630,7 +636,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void changeLoopStart (final boolean increase, final boolean slow)
     {
-        final double frac = slow ? TransportConstants.INC_FRACTION_TIME_SLOW : TransportConstants.INC_FRACTION_TIME;
+        final double frac = this.beatsToSeconds (slow ? TransportConstants.INC_FRACTION_TIME_SLOW : TransportConstants.INC_FRACTION_TIME);
         this.setLoopStart (increase ? this.loopStart + frac : Math.max (this.loopStart - frac, 0.0));
     }
 
@@ -724,7 +730,7 @@ public class TransportImpl extends BaseImpl implements ITransport
     @Override
     public void changeLoopLength (final boolean increase, final boolean slow)
     {
-        final double frac = slow ? TransportConstants.INC_FRACTION_TIME_SLOW : TransportConstants.INC_FRACTION_TIME;
+        final double frac = this.beatsToSeconds (slow ? TransportConstants.INC_FRACTION_TIME_SLOW : TransportConstants.INC_FRACTION_TIME);
         this.setLoopLength (increase ? this.loopLength + frac : Math.max (this.loopLength - frac, 0.0));
     }
 
