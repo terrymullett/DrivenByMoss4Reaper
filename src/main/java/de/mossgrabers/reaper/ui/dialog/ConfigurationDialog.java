@@ -33,6 +33,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -209,7 +210,7 @@ public class ConfigurationDialog extends BasicDialog
 
     private void fillAndSetMidiDevices ()
     {
-        final List<MidiDevice> inputDevices = Midi.getInputDevices ();
+        final Collection<MidiDevice> inputDevices = Midi.getInputDevices ();
         for (int i = 0; i < this.midiInputBoxes.size (); i++)
         {
             final List<MidiDevice> devices = new ArrayList<> (inputDevices);
@@ -221,7 +222,7 @@ public class ConfigurationDialog extends BasicDialog
             deviceBox.setSelectedItem (selectedDevice);
         }
 
-        final List<MidiDevice> outputDevices = Midi.getOutputDevices ();
+        final Collection<MidiDevice> outputDevices = Midi.getOutputDevices ();
         for (int i = 0; i < this.midiOutputBoxes.size (); i++)
         {
             final List<MidiDevice> devices = new ArrayList<> (outputDevices);

@@ -19,6 +19,7 @@ import de.mossgrabers.reaper.framework.ReaperSetupFactory;
 import de.mossgrabers.reaper.framework.configuration.DocumentSettingsUI;
 import de.mossgrabers.reaper.framework.configuration.GlobalSettingsUI;
 import de.mossgrabers.reaper.framework.daw.HostImpl;
+import de.mossgrabers.reaper.framework.midi.MidiAccessImpl;
 import de.mossgrabers.reaper.framework.midi.MissingMidiDevice;
 import de.mossgrabers.reaper.ui.SimulatorWindow;
 import de.mossgrabers.reaper.ui.WindowManager;
@@ -149,7 +150,8 @@ public abstract class AbstractControllerInstance<S extends IControlSurface<C>, C
             if (matcher != null)
                 this.host.addUSBDeviceInfo (matcher);
 
-            this.setupFactory = new ReaperSetupFactory (this.iniFiles, this.sender, this.host, this.logModel, this.globalSettingsUI.getSelectedMidiInputs (), this.globalSettingsUI.getSelectedMidiOutputs ());
+            final MidiAccessImpl midiAccess = new MidiAccessImpl (this.logModel, this.host, this.sender, this.globalSettingsUI.getSelectedMidiInputs (), this.globalSettingsUI.getSelectedMidiOutputs ());
+            this.setupFactory = new ReaperSetupFactory (this.iniFiles, this.sender, this.host, midiAccess);
             this.controllerSetup = this.createControllerSetup (this.setupFactory);
 
             SafeRunLater.execute (this.logModel, this::delayedStart);

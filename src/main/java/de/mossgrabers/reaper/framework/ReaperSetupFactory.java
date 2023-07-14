@@ -19,9 +19,6 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.ModelImpl;
 import de.mossgrabers.reaper.framework.midi.MidiAccessImpl;
 import de.mossgrabers.reaper.framework.midi.NoteRepeatImpl;
-import de.mossgrabers.reaper.ui.utils.LogModel;
-
-import javax.sound.midi.MidiDevice;
 
 import java.util.List;
 
@@ -45,16 +42,14 @@ public class ReaperSetupFactory implements ISetupFactory
      * @param iniFiles The INI configuration files
      * @param sender The OSC sender
      * @param host The DAW host
-     * @param logModel The logging model
-     * @param inputs The MIDI input devices
-     * @param outputs The MIDI output devices
+     * @param midiAccess Access to the selected MIDI ports
      */
-    public ReaperSetupFactory (final IniFiles iniFiles, final MessageSender sender, final IHost host, final LogModel logModel, final MidiDevice [] inputs, final MidiDevice [] outputs)
+    public ReaperSetupFactory (final IniFiles iniFiles, final MessageSender sender, final IHost host, final MidiAccessImpl midiAccess)
     {
         this.iniFiles = iniFiles;
         this.sender = sender;
         this.host = host;
-        this.midiAccess = new MidiAccessImpl (logModel, this.host, this.sender, inputs, outputs);
+        this.midiAccess = midiAccess;
     }
 
 
@@ -90,5 +85,4 @@ public class ReaperSetupFactory implements ISetupFactory
     {
         return NoteRepeatImpl.ARP_MODES;
     }
-
 }

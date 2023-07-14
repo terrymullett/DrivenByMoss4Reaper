@@ -4,14 +4,17 @@
 
 package de.mossgrabers.reaper.framework.midi;
 
+import de.mossgrabers.framework.utils.OperatingSystem;
 import uk.co.xfactorylibrarians.coremidi4j.CoreMidiDeviceProvider;
 
 import javax.sound.midi.MidiDevice;
+import javax.sound.midi.MidiDevice.Info;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 /**
@@ -21,8 +24,8 @@ import java.util.List;
  */
 public class Midi
 {
-    private static final List<MidiDevice> INPUTS  = new ArrayList<> ();
-    private static final List<MidiDevice> OUTPUTS = new ArrayList<> ();
+    private static final Map<String, MidiDevice> INPUTS  = new TreeMap<> ();
+    private static final Map<String, MidiDevice> OUTPUTS = new TreeMap<> ();
 
 
     /**
@@ -44,20 +47,59 @@ public class Midi
         INPUTS.clear ();
         OUTPUTS.clear ();
 
+        final Map<String, Integer> outputNames = new TreeMap<> ();
+        final Map<String, Integer> inputNames = new TreeMap<> ();
+
         // Using the provider lookup instead of MidiSystem.getMidiDeviceInfo () ensures that the
         // broken devices on Mac are hidden. The function is transparent on other platforms.
+        final Info [] midiDeviceInfo = CoreMidiDeviceProvider.getMidiDeviceInfo ();
 
-        for (final MidiDevice.Info info: CoreMidiDeviceProvider.getMidiDeviceInfo ())
+        for (final MidiDevice.Info info: midiDeviceInfo)
         {
-            final MidiDevice device = MidiSystem.getMidiDevice (info);
-            if (device.getMaxReceivers () != 0)
-                OUTPUTS.add (device);
-            if (device.getMaxTransmitters () != 0)
-                INPUTS.add (device);
-        }
+            MidiDevice device = MidiSystem.getMidiDevice (info);
 
-        sortByName (INPUTS);
-        sortByName (OUTPUTS);
+            if (device.getMaxReceivers () != 0)
+            {
+                // Workaround for not unique names since there is no ID for MIDI devices available
+                // (note: this info is not available on Windows at all)
+                String name = info.getName ();
+                Integer count = outputNames.get (name);
+                if (count == null)
+                    count = Integer.valueOf (1);
+                else
+                {
+                    count = Integer.valueOf (count.intValue () + 1);
+                    name = name + String.format (" (%d)", count);
+                    device = new RenamedMidiDevice (name, device);
+                }
+                outputNames.put (name, count);
+
+                OUTPUTS.put (name, device);
+                if (OperatingSystem.isMacOS ())
+                    OUTPUTS.put ("CoreMIDI4J - " + name, device);
+            }
+
+            if (device.getMaxTransmitters () != 0)
+            {
+                // Workaround for not unique names since there is no ID for MIDI devices available
+                // (note: this info is not available on Windows at all)
+                String name = info.getName ();
+                Integer count = inputNames.get (name);
+                if (count == null)
+                    count = Integer.valueOf (1);
+                else
+                {
+                    count = Integer.valueOf (count.intValue () + 1);
+                    name = name + String.format (" (%d)", count);
+                    device = new RenamedMidiDevice (name, device);
+                }
+                inputNames.put (name, count);
+
+                INPUTS.put (name, device);
+                if (OperatingSystem.isMacOS ())
+                    INPUTS.put ("CoreMIDI4J - " + name, device);
+            }
+        }
     }
 
 
@@ -67,9 +109,9 @@ public class Midi
      *
      * @return All output devices
      */
-    public static List<MidiDevice> getOutputDevices ()
+    public static Collection<MidiDevice> getOutputDevices ()
     {
-        return OUTPUTS;
+        return OUTPUTS.values ();
     }
 
 
@@ -79,9 +121,9 @@ public class Midi
      *
      * @return All output devices
      */
-    public static List<MidiDevice> getInputDevices ()
+    public static Collection<MidiDevice> getInputDevices ()
     {
-        return INPUTS;
+        return INPUTS.values ();
     }
 
 
@@ -93,8 +135,7 @@ public class Midi
      */
     public static MidiDevice getOutputDevice (final String name)
     {
-        final MidiDevice device = getInternalOutputDevice (name);
-        return device == null ? getInternalOutputDevice ("CoreMIDI4J - " + name) : device;
+        return OUTPUTS.get (name);
     }
 
 
@@ -106,43 +147,6 @@ public class Midi
      */
     public static MidiDevice getInputDevice (final String name)
     {
-        final MidiDevice device = getInternalInputDevice (name);
-        return device == null ? getInternalInputDevice ("CoreMIDI4J - " + name) : device;
-    }
-
-
-    /**
-     * Get a specific output device.
-     *
-     * @param name The full name of the device to lookup
-     * @return The device or null if not found
-     */
-    private static MidiDevice getInternalOutputDevice (final String name)
-    {
-        for (final MidiDevice device: OUTPUTS)
-            if (device.getDeviceInfo ().getName ().equals (name))
-                return device;
-        return null;
-    }
-
-
-    /**
-     * Get a specific input device.
-     *
-     * @param name The full name of the device to lookup
-     * @return The device or null if not found
-     */
-    private static MidiDevice getInternalInputDevice (final String name)
-    {
-        for (final MidiDevice device: INPUTS)
-            if (device.getDeviceInfo ().getName ().equals (name))
-                return device;
-        return null;
-    }
-
-
-    private static void sortByName (final List<MidiDevice> devices)
-    {
-        devices.sort ( (o1, o2) -> o1.getDeviceInfo ().getName ().compareTo (o2.getDeviceInfo ().getName ()));
+        return INPUTS.get (name);
     }
 }
