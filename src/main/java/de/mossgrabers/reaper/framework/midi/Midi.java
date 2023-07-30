@@ -27,7 +27,6 @@ public class Midi
     private static final Map<String, MidiDevice> INPUTS  = new TreeMap<> ();
     private static final Map<String, MidiDevice> OUTPUTS = new TreeMap<> ();
 
-
     /**
      * Utility class.
      */
@@ -52,7 +51,15 @@ public class Midi
 
         // Using the provider lookup instead of MidiSystem.getMidiDeviceInfo () ensures that the
         // broken devices on Mac are hidden. The function is transparent on other platforms.
-        final Info [] midiDeviceInfo = CoreMidiDeviceProvider.getMidiDeviceInfo ();
+        Info [] midiDeviceInfo;
+        try
+        {
+            midiDeviceInfo = CoreMidiDeviceProvider.getMidiDeviceInfo ();
+        }
+        catch (final java.lang.NoClassDefFoundError error)
+        {
+            midiDeviceInfo = MidiSystem.getMidiDeviceInfo ();
+        }
 
         for (final MidiDevice.Info info: midiDeviceInfo)
         {
