@@ -542,6 +542,14 @@ public class TransportImpl extends BaseImpl implements ITransport
 
     /** {@inheritDoc} */
     @Override
+    public double getPosition ()
+    {
+        return this.position;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void setPositionToEnd ()
     {
         this.invokeAction (40043);
@@ -582,6 +590,22 @@ public class TransportImpl extends BaseImpl implements ITransport
     public void setLoopStartText (final String time)
     {
         this.loopStartStr = reformatTime (time);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public double getLoopStart ()
+    {
+        return this.loopStart;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public double getLoopEnd ()
+    {
+        return this.loopStart + this.loopLength;
     }
 
 
