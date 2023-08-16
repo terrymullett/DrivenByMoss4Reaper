@@ -772,6 +772,8 @@ public class MessageParser
 
         final String cmd = parts.poll ();
         final ParameterBankImpl parameterBank = (ParameterBankImpl) ((TrackImpl) selectedTrack.get ()).getParameterBank ();
+        if (parameterBank == null)
+            return;
         try
         {
             final int paramNo = Integer.parseInt (cmd);

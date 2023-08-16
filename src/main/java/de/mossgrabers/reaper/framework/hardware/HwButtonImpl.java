@@ -102,6 +102,8 @@ public class HwButtonImpl extends AbstractHwButton implements IReaperHwControl
         if (this.input == null)
             return;
 
+        this.unbind ();
+
         if (this.value < 0)
             this.input.bind (this, this.type, this.channel, this.control);
         else

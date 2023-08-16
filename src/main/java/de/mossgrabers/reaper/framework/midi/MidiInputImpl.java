@@ -139,6 +139,22 @@ public class MidiInputImpl implements IMidiInput
     @Override
     public void bind (final IHwButton button, final BindType type, final int channel, final int control, final int value)
     {
+        // Note: method directly called only for CC bindings!
+
+        if (channel == -1)
+        {
+            // Handle MPE channels 1-15
+            for (int chn = 1; chn < 16; chn++)
+                this.internalBind (button, type, chn, control, value);
+            return;
+        }
+
+        this.internalBind (button, type, channel, control, value);
+    }
+
+
+    private void internalBind (final IHwButton button, final BindType type, final int channel, final int control, final int value)
+    {
         final Map<Integer, Map<Integer, IHwButton>> controlMap;
         if (type == BindType.CC)
             controlMap = this.ccButtonMatchers.computeIfAbsent (Integer.valueOf (channel), key -> new HashMap<> ());

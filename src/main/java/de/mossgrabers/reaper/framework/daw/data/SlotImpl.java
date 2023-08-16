@@ -60,6 +60,7 @@ public class SlotImpl extends ItemImpl implements ISlot
     @Override
     public boolean isRecording ()
     {
+        // TODO play cursor is in range of clip & recording is active & playback is active
         return false;
     }
 
@@ -68,6 +69,7 @@ public class SlotImpl extends ItemImpl implements ISlot
     @Override
     public boolean isPlaying ()
     {
+        // TODO play cursor is in range of clip & playback is active
         return false;
     }
 
@@ -76,6 +78,7 @@ public class SlotImpl extends ItemImpl implements ISlot
     @Override
     public boolean isPlayingQueued ()
     {
+        // TODO play cursor is in range of clip but playback is not active
         return false;
     }
 
@@ -84,6 +87,7 @@ public class SlotImpl extends ItemImpl implements ISlot
     @Override
     public boolean isRecordingQueued ()
     {
+        // TODO play cursor is in range of clip & recording is active but playback is not active
         return false;
     }
 

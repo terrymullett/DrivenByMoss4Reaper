@@ -5,20 +5,25 @@
 package de.mossgrabers.controller.ableton.push.controller;
 
 import de.mossgrabers.controller.ableton.push.PushConfiguration;
+import de.mossgrabers.controller.ableton.push.PushVersion;
 import de.mossgrabers.framework.controller.AbstractControlSurface;
 import de.mossgrabers.framework.controller.color.ColorManager;
 import de.mossgrabers.framework.controller.grid.PadGridImpl;
 import de.mossgrabers.framework.daw.IHost;
+import de.mossgrabers.framework.daw.midi.AbstractMidiOutput;
 import de.mossgrabers.framework.daw.midi.DeviceInquiry;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.daw.midi.IMidiOutput;
+import de.mossgrabers.framework.daw.midi.INoteInput;
+import de.mossgrabers.framework.daw.midi.MidiConstants;
+import de.mossgrabers.framework.featuregroup.IExpressionView;
 import de.mossgrabers.framework.utils.StringUtils;
 
 import java.util.List;
 
 
 /**
- * The Push 1 and Push 2 control surface.
+ * The Push 1, 2 and 3 control surface.
  *
  * @author Jürgen Moßgraber
  */
@@ -480,9 +485,12 @@ public class PushControlSurface extends AbstractControlSurface<PushConfiguration
      */
     public PushControlSurface (final IHost host, final ColorManager colorManager, final PushConfiguration configuration, final IMidiOutput output, final IMidiInput input)
     {
-        super (host, configuration, colorManager, output, input, new PadGridImpl (colorManager, output), 200, 156);
+        super (host, configuration, colorManager, output, input, configuration.getPushVersion () == PushVersion.VERSION_3 ? new PushPadGrid (colorManager, output) : new PadGridImpl (colorManager, output), 200.0, 156.0);
 
         this.notifyViewChange = false;
+
+        if (this.padGrid instanceof PushPadGrid pushPadGrid)
+            pushPadGrid.setSurface (this);
 
         for (int i = 0; i < this.colorPalette.length; i++)
             this.colorPalette[i] = new PaletteEntry (PushColorManager.getPaletteColorRGB (i));
@@ -531,6 +539,25 @@ public class PushControlSurface extends AbstractControlSurface<PushConfiguration
         // Ignore active sensing, which seems to be sent from some Push devices
         if (status == 254)
             return;
+
+        if (this.configuration.getPushVersion () == PushVersion.VERSION_3)
+        {
+            final int code = status & 0xF0;
+            final int channel = status & 0xF;
+
+            // Ignore all MIDI notes off on startup
+            if (channel == 0 && code == MidiConstants.CMD_CC && data1 == 123)
+                return;
+
+            // Ignore MPE messages
+            if (channel > 0)
+            {
+                if (code == MidiConstants.CMD_CC && data1 == 74)
+                    return;
+                if (code == MidiConstants.CMD_PITCHBEND)
+                    return;
+            }
+        }
 
         super.handleMidi (status, data1, data2);
     }
@@ -1119,5 +1146,29 @@ public class PushControlSurface extends AbstractControlSurface<PushConfiguration
             }
 
         }, 1000);
+    }
+
+
+    /**
+     * Update MPE on/off state depending on selected view and MPE setting.
+     */
+    public void updateMPE ()
+    {
+        final boolean mpeEnabled = this.getViewManager ().getActive () instanceof IExpressionView && this.configuration.isMPEEnabled ();
+        final INoteInput input = this.input.getDefaultNoteInput ();
+        input.enableMPE (mpeEnabled);
+        this.enableMPE (mpeEnabled);
+        this.rebindGrid ();
+    }
+
+
+    /**
+     * Update the MPE pitchbend range.
+     */
+    public void updateMPEPitchbendRange ()
+    {
+        final int mpePitchBendRange = this.configuration.getMPEPitchBendRange ();
+        this.input.getDefaultNoteInput ().setMPEPitchBendSensitivity (mpePitchBendRange);
+        this.output.sendMPEPitchbendRange (AbstractMidiOutput.ZONE_1, mpePitchBendRange);
     }
 }
