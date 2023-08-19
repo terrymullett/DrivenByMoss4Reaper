@@ -5,6 +5,7 @@
 package de.mossgrabers.reaper.framework.midi;
 
 import de.mossgrabers.framework.daw.midi.AbstractMidiOutput;
+import de.mossgrabers.framework.utils.FrameworkException;
 
 
 /**
@@ -34,8 +35,15 @@ class MidiOutputImpl extends AbstractMidiOutput
     {
         final String [] parts = data.split (" ");
         final byte [] bytes = new byte [parts.length];
-        for (int i = 0; i < parts.length; i++)
-            bytes[i] = (byte) Integer.parseInt (parts[i], 16);
+        try
+        {
+            for (int i = 0; i < parts.length; i++)
+                bytes[i] = (byte) Integer.parseInt (parts[i], 16);
+        }
+        catch (final NumberFormatException ex)
+        {
+            throw new FrameworkException (String.format ("Broken Sysex string: '%s'", data), ex);
+        }
 
         this.sendSysex (bytes);
     }
