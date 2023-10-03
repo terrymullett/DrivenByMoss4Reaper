@@ -2,8 +2,9 @@
 // (c) 2017-2023
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
-package de.mossgrabers.framework;
+package de.mossgrabers.reaper.framework.daw;
 
+import de.mossgrabers.framework.daw.IClipLauncherNavigator;
 import de.mossgrabers.framework.daw.IModel;
 import de.mossgrabers.framework.daw.data.ICursorTrack;
 import de.mossgrabers.framework.daw.data.ISlot;
@@ -16,11 +17,11 @@ import java.util.Optional;
 
 
 /**
- * Abstract base mode for all track modes.
+ * Implementation for a clip launcher navigator.
  *
  * @author Jürgen Moßgraber
  */
-public class ClipLauncherNavigator
+public class ClipLauncherNavigatorImpl implements IClipLauncherNavigator
 {
     private final IModel             model;
     private final Object             navigateLock       = new Object ();
@@ -34,7 +35,7 @@ public class ClipLauncherNavigator
      *
      * @param model The model
      */
-    public ClipLauncherNavigator (final IModel model)
+    ClipLauncherNavigatorImpl (final IModel model)
     {
         this.model = model;
     }
@@ -49,11 +50,8 @@ public class ClipLauncherNavigator
     }
 
 
-    /**
-     * Navigate to the previous or next scene (if any).
-     *
-     * @param isLeft Select the previous scene if true
-     */
+    /** {@inheritDoc} */
+    @Override
     public void navigateScenes (final boolean isLeft)
     {
         final ISceneBank sceneBank = this.model.getSceneBank ();
@@ -66,11 +64,8 @@ public class ClipLauncherNavigator
     }
 
 
-    /**
-     * Navigate to the previous or next clip of the selected track (if any).
-     *
-     * @param isLeft Select the previous clip if true
-     */
+    /** {@inheritDoc} */
+    @Override
     public void navigateClips (final boolean isLeft)
     {
         final ITrack cursorTrack = this.model.getCursorTrack ();
@@ -84,12 +79,8 @@ public class ClipLauncherNavigator
     }
 
 
-    /**
-     * Navigate to the previous or next track (if any). Contains complex workaround to make sure
-     * that the same slot is selected a newly selected track as well.
-     *
-     * @param isLeft Select the previous track if true
-     */
+    /** {@inheritDoc} */
+    @Override
     public void navigateTracks (final boolean isLeft)
     {
         final ICursorTrack cursorTrack = this.model.getCursorTrack ();
@@ -127,12 +118,8 @@ public class ClipLauncherNavigator
     }
 
 
-    /**
-     * Select a track in the current track bank page. Contains complex workaround to make sure that
-     * the same slot is selected a newly selected track as well.
-     * 
-     * @param index The index of the track
-     */
+    /** {@inheritDoc} */
+    @Override
     public void selectTrack (final int index)
     {
         final ITrack track = this.model.getTrackBank ().getItem (index);

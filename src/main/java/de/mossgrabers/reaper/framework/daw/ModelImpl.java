@@ -87,6 +87,9 @@ public class ModelImpl extends AbstractModel
         dataSetup.setCursorTrack ((CursorTrackImpl) this.cursorTrack);
         dataSetup.setTransport (this.transport);
 
+        if (modelSetup.wantsClipLauncherNavigator ())
+            this.clipLauncherNavigator = new ClipLauncherNavigatorImpl (this);
+
         //////////////////////////////////////////////////////////////////////////////
         // Create devices
 
@@ -230,6 +233,15 @@ public class ModelImpl extends AbstractModel
     public boolean canConvertClip ()
     {
         return true;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void cleanup ()
+    {
+        if (this.clipLauncherNavigator != null)
+            ((ClipLauncherNavigatorImpl) this.clipLauncherNavigator).shutdown ();
     }
 
 

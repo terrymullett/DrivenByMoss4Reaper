@@ -846,8 +846,11 @@ public class TransportImpl extends BaseImpl implements ITransport
     }
 
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * Get the internal tempo parameter.
+     *
+     * @return The tempo parameter
+     */
     public TempoParameterImpl getTempoParameter ()
     {
         return this.tempoParameter;

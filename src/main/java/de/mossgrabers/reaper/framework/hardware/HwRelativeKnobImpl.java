@@ -9,12 +9,7 @@ import de.mossgrabers.framework.controller.color.ColorEx;
 import de.mossgrabers.framework.controller.hardware.AbstractHwContinuousControl;
 import de.mossgrabers.framework.controller.hardware.BindType;
 import de.mossgrabers.framework.controller.hardware.IHwRelativeKnob;
-import de.mossgrabers.framework.controller.valuechanger.IValueChanger;
-import de.mossgrabers.framework.controller.valuechanger.OffsetBinaryRelativeValueChanger;
 import de.mossgrabers.framework.controller.valuechanger.RelativeEncoding;
-import de.mossgrabers.framework.controller.valuechanger.SignedBit2RelativeValueChanger;
-import de.mossgrabers.framework.controller.valuechanger.SignedBitRelativeValueChanger;
-import de.mossgrabers.framework.controller.valuechanger.TwosComplementValueChanger;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.graphics.IGraphicsContext;
@@ -27,8 +22,6 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.ShortMessage;
 
 import java.awt.event.MouseEvent;
-import java.util.EnumMap;
-import java.util.Map;
 
 
 /**
@@ -38,17 +31,6 @@ import java.util.Map;
  */
 public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements IHwRelativeKnob, IReaperHwControl
 {
-    private static final Map<RelativeEncoding, IValueChanger> VALUE_CHANGERS        = new EnumMap<> (RelativeEncoding.class);
-    private static final TwosComplementValueChanger           DEFAULT_VALUE_CHANGER = new TwosComplementValueChanger (127, 1);
-
-    static
-    {
-        VALUE_CHANGERS.put (RelativeEncoding.TWOS_COMPLEMENT, DEFAULT_VALUE_CHANGER);
-        VALUE_CHANGERS.put (RelativeEncoding.OFFSET_BINARY, new OffsetBinaryRelativeValueChanger (127, 1));
-        VALUE_CHANGERS.put (RelativeEncoding.SIGNED_BIT, new SignedBitRelativeValueChanger (127, 1));
-        VALUE_CHANGERS.put (RelativeEncoding.SIGNED_BIT2, new SignedBit2RelativeValueChanger (127, 1));
-    }
-
     private final HwControlLayout  layout;
     private final RelativeEncoding encoding;
 
@@ -160,7 +142,7 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
 
         // Decode with the hardware encoding and re-encode with default encoding, which is used for
         // the direct binding
-        final int cv = DEFAULT_VALUE_CHANGER.encode (VALUE_CHANGERS.get (this.encoding).decode (intValue));
+        final int cv = RelativeValueChangers.getDefault ().encode (RelativeValueChangers.get (this.encoding).decode (intValue));
 
         if (this.parameter != null)
             this.parameter.changeValue (cv);
@@ -237,7 +219,7 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
                     this.pressedX = scaleX;
                     this.pressedY = scaleY;
 
-                    final int value = VALUE_CHANGERS.get (this.encoding).encode (speed);
+                    final int value = RelativeValueChangers.get (this.encoding).encode (speed);
 
                     if (this.inputImpl == null)
                     {
@@ -265,7 +247,7 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     @Override
     public void setSensitivity (final double sensitivity)
     {
-        VALUE_CHANGERS.forEach ( (enc, valueChanger) -> valueChanger.setSensitivity (sensitivity));
+        RelativeValueChangers.setSensitivity (sensitivity);
     }
 
 

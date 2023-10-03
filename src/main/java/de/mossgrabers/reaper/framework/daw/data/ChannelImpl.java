@@ -160,7 +160,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void changeVolume (final int control)
     {
-        this.setVolume (this.valueChanger.changeValue (control, this.getVolume ()));
+        this.volumeParameter.changeValue (control);
     }
 
 
@@ -241,7 +241,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
     @Override
     public void changePan (final int control)
     {
-        this.setPan (this.valueChanger.changeValue (control, this.getPan ()));
+        this.panParameter.changeValue (control);
     }
 
 

@@ -9,6 +9,7 @@ import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.ItemImpl;
+import de.mossgrabers.reaper.framework.hardware.RelativeValueChangers;
 
 
 /**
@@ -102,17 +103,25 @@ public class ParameterImpl extends ItemImpl implements IParameterEx
 
     /** {@inheritDoc} */
     @Override
-    public void changeValue (final int value)
+    public void changeValue (final int control)
     {
-        this.changeValue (this.valueChanger, value);
+        // Must always use the default encoder since this is called from the bind framework and
+        // already re-encoded!
+        this.changeValue (RelativeValueChangers.getDefault (), control);
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public void changeValue (final IValueChanger valueChanger, final int value)
+    public void changeValue (final IValueChanger valueChanger, final int control)
     {
-        this.setValue (valueChanger.changeValue (value, this.getValue ()));
+        // Stay in the normalized domain for better resolution!
+        double offset = valueChanger.calcKnobChange (control);
+        final boolean isNegative = offset < 0;
+        offset = valueChanger.toNormalizedValue (Math.abs (offset));
+        if (isNegative)
+            offset = -offset;
+        this.setNormalizedValue (Math.min (1, Math.max (0, this.getInternalValue () + offset)));
     }
 
 

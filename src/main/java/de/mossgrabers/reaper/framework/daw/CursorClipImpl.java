@@ -599,6 +599,15 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
     /** {@inheritDoc} */
     @Override
+    public double getStepTransposeRange ()
+    {
+        // Not used
+        return 96;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void updateStepGain (final NotePosition notePosition, final double gain)
     {
         // Not supported
