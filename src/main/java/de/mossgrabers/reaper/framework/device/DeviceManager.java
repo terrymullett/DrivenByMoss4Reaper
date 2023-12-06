@@ -766,12 +766,11 @@ public class DeviceManager
         if ("<SHELL>".equals (creationName))
             return null;
 
-        final Matcher companyMatcher = PATTERN_COMPANY.matcher (creationName);
-        if (!companyMatcher.matches ())
-            return null;
-
-        final String name = companyMatcher.group (1);
         final String type = matcher.group (2);
+
+        final Matcher companyMatcher = PATTERN_COMPANY.matcher (creationName);
+        final boolean hasCompany = companyMatcher.matches ();
+        final String name = hasCompany ? companyMatcher.group (1) : creationName;
 
         final DeviceType deviceType = "!!!VSTi".equals (type) ? DeviceType.INSTRUMENT : DeviceType.AUDIO_EFFECT;
         final DeviceFileType fileType = module.endsWith ("vst3") ? DeviceFileType.VST3 : DeviceFileType.VST2;
