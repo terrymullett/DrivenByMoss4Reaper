@@ -24,13 +24,23 @@ public class Controller
 
 
     /**
-     * Startup the application window and infrastructure.
+     * Startup the application window.
      *
      * @param iniPath Folder where the Reaper INI files are stored
      */
     public static void startup (final String iniPath)
     {
         app = new MainApp (iniPath);
+    }
+
+
+    /**
+     * Startup the infrastructure and controller instances.
+     */
+    public static void startInfrastructure ()
+    {
+        if (app != null)
+            app.startupInfrastructure ();
     }
 
 

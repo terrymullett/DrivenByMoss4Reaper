@@ -100,20 +100,6 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
 
         this.loadConfig ();
         this.loadINIFiles (this.iniPath);
-
-        this.animationTimer = new Timer (DEVICE_UPDATE_RATE, event -> {
-            try
-            {
-                this.flushToController ();
-            }
-            catch (final RuntimeException ex)
-            {
-                this.logModel.error ("Crash in flush timer.", ex);
-            }
-        });
-
-        this.initUSB ();
-        SafeRunLater.execute (this.logModel, this::startupInfrastructure);
     }
 
 
@@ -208,8 +194,20 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
     /**
      * Start scripting engine, open OSC and MIDI ports.
      */
-    private void startupInfrastructure ()
+    public void startupInfrastructure ()
     {
+        this.animationTimer = new Timer (DEVICE_UPDATE_RATE, event -> {
+            try
+            {
+                this.flushToController ();
+            }
+            catch (final RuntimeException ex)
+            {
+                this.logModel.error ("Crash in flush timer.", ex);
+            }
+        });
+
+        this.initUSB ();
         this.startFlushTimer ();
         this.updateMidiDevices ();
         this.instanceManager.load (this.mainConfiguration);
