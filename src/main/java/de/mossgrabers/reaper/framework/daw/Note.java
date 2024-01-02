@@ -19,6 +19,7 @@ public class Note
     private final boolean isMuted;
     private final double  start;
     private final double  end;
+    private final int     channel;
     private final int     pitch;
     private final int     velocity;
 
@@ -40,6 +41,7 @@ public class Note
         this.isMuted = isMuted;
         this.start = start;
         this.end = end;
+        this.channel = channel;
         this.pitch = pitch;
         this.velocity = velocity;
     }
@@ -64,6 +66,17 @@ public class Note
     public boolean isMuted ()
     {
         return this.isMuted;
+    }
+
+
+    /**
+     * Get the MIDI channel of the note.
+     *
+     * @return The channel
+     */
+    public int getChannel ()
+    {
+        return this.channel;
     }
 
 

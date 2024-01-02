@@ -25,7 +25,7 @@ public enum DeviceFileType
     JS("JS");
 
 
-    private String name;
+    private final String name;
 
 
     /**

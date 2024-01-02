@@ -19,7 +19,7 @@ public enum DeviceType
     MIDI_EFFECT("Midi Effect");
 
 
-    private String name;
+    private final String name;
 
 
     /**

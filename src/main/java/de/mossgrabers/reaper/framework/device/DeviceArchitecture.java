@@ -19,7 +19,7 @@ public enum DeviceArchitecture
     ARM("ARM");
 
 
-    private String name;
+    private final String name;
 
 
     /**

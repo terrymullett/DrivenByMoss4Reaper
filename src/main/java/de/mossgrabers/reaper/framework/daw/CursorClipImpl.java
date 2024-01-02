@@ -25,23 +25,23 @@ import java.util.List;
  */
 public class CursorClipImpl extends BaseImpl implements INoteClip
 {
-    private static final String       PATH_NOTE    = "note/";
-    private static final StepInfoImpl EMPTY_STEP   = new StepInfoImpl ();
+    private static final String         PATH_NOTE    = "note/";
+    private static final StepInfoImpl   EMPTY_STEP   = new StepInfoImpl ();
 
-    private boolean                   exists       = false;
-    private double                    clipStart    = -1;
-    private double                    clipEnd      = -1;
-    private boolean                   isLooped     = false;
-    private ColorEx                   color;
-    private double                    playPosition = -1;
-    private final int                 numSteps;
-    private final int                 numRows;
-    private double                    stepLength;
-    private final List<Note>          notes        = new ArrayList<> ();
-    private final StepInfoImpl [] []  data;
-    private int                       editPage     = 0;
-    private int                       maxPage      = 1;
-    private final List<NotePosition>  editSteps    = new ArrayList<> ();
+    private boolean                     exists       = false;
+    private double                      clipStart    = -1;
+    private double                      clipEnd      = -1;
+    private boolean                     isLooped     = false;
+    private ColorEx                     color;
+    private double                      playPosition = -1;
+    private final int                   numSteps;
+    private final int                   numRows;
+    private double                      stepLength;
+    private final List<Note>            notes        = new ArrayList<> ();
+    private final StepInfoImpl [] [] [] data;
+    private int                         editPage     = 0;
+    private int                         maxPage      = 1;
+    private final List<NotePosition>    editSteps    = new ArrayList<> ();
 
 
     /**
@@ -58,12 +58,16 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         this.numSteps = numSteps;
         this.numRows = numRows;
         this.stepLength = 1.0 / 4.0; // 16th
-        this.data = new StepInfoImpl [this.numSteps] [];
-        for (int step = 0; step < this.numSteps; step++)
+
+        this.data = new StepInfoImpl [16] [this.numSteps] [];
+        for (int channel = 0; channel < 16; channel++)
         {
-            this.data[step] = new StepInfoImpl [this.numRows];
-            for (int row = 0; row < this.numRows; row++)
-                this.data[step][row] = new StepInfoImpl ();
+            for (int step = 0; step < this.numSteps; step++)
+            {
+                this.data[channel][step] = new StepInfoImpl [this.numRows];
+                for (int row = 0; row < this.numRows; row++)
+                    this.data[channel][step][row] = new StepInfoImpl ();
+            }
         }
     }
 
@@ -376,14 +380,15 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     @Override
     public StepInfoImpl getStep (final NotePosition notePosition)
     {
+        final int channel = notePosition.getChannel ();
         final int step = notePosition.getStep ();
         final int row = notePosition.getNote ();
 
         synchronized (this.notes)
         {
-            if (step < 0 || row < 0 || step >= this.data.length || row >= this.data[step].length)
+            if (step < 0 || row < 0 || step >= this.data[channel].length || row >= this.data[channel][step].length)
                 return EMPTY_STEP;
-            return this.data[step][row];
+            return this.data[channel][step][row];
         }
     }
 
@@ -842,9 +847,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
      */
     private void sendClipData (final NotePosition notePosition)
     {
-        final int step = notePosition.getStep ();
-        final int row = notePosition.getNote ();
-        final IStepInfo stepInfo = this.data[step][row];
+        final IStepInfo stepInfo = this.data[notePosition.getChannel ()][notePosition.getStep ()][notePosition.getNote ()];
         final double velocity = stepInfo.getVelocity ();
         this.updateStep (notePosition, (int) (velocity * 127), stepInfo.getDuration (), stepInfo.isMuted ());
     }
@@ -896,7 +899,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         {
             for (int step = 0; step < this.numSteps; step++)
             {
-                if (this.data[step][row].getState () != StepState.OFF)
+                if (this.data[channel][step][row].getState () != StepState.OFF)
                     return true;
             }
             return false;
@@ -964,7 +967,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         {
             for (int row = this.numRows - 1; row >= 0; row--)
             {
-                if (this.data[step] != null && this.data[step][row] != null && this.data[step][row].getState () != StepState.OFF)
+                if (this.data[channel] != null && this.data[channel][step] != null && this.data[channel][step][row] != null && this.data[channel][step][row].getState () != StepState.OFF)
                     return row;
             }
         }
@@ -1127,13 +1130,16 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         synchronized (this.notes)
         {
             // Clear the data array
-            for (int row = 0; row < this.numRows; row++)
+            for (int channel = 0; channel < 16; channel++)
             {
-                for (int step = 0; step < this.numSteps; step++)
+                for (int row = 0; row < this.numRows; row++)
                 {
-                    final StepInfoImpl stepInfo = this.data[step][row];
-                    if (this.editSteps.isEmpty ())
-                        stepInfo.setState (StepState.OFF);
+                    for (int step = 0; step < this.numSteps; step++)
+                    {
+                        final StepInfoImpl stepInfo = this.data[channel][step][row];
+                        if (this.editSteps.isEmpty ())
+                            stepInfo.setState (StepState.OFF);
+                    }
                 }
             }
             this.notes.forEach (this::updateNote);
@@ -1155,7 +1161,8 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         if (relToPage < 0 || relToPage >= this.numSteps)
             return;
 
-        final StepInfoImpl stepInfo = this.data[relToPage][row];
+        final int channel = note.getChannel ();
+        final StepInfoImpl stepInfo = this.data[channel][relToPage][row];
         if (!this.editSteps.isEmpty ())
             return;
 
@@ -1169,9 +1176,10 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
         final int endStep = Math.min ((int) Math.floor (note.getEnd () / this.stepLength) - pageOffset, this.numSteps);
         for (int i = relToPage + 1; i < endStep; i++)
         {
-            this.data[i][row].setState (StepState.CONTINUE);
-            this.data[i][row].setSelected (note.isSelected ());
-            this.data[i][row].setMuted (note.isMuted ());
+            final StepInfoImpl stepInfoEx = this.data[channel][i][row];
+            stepInfoEx.setState (StepState.CONTINUE);
+            stepInfoEx.setSelected (note.isSelected ());
+            stepInfoEx.setMuted (note.isMuted ());
         }
     }
 
@@ -1206,5 +1214,55 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
     public void setPinned (final boolean isPinned)
     {
         // Not supported
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public NotePosition getNextNote (final NotePosition activeNotePosition, final boolean ignoreChannel)
+    {
+        final NotePosition pos = activeNotePosition == null ? new NotePosition (0, 0, 128) : activeNotePosition;
+        final int channel = pos.getChannel ();
+        final int channelStart = ignoreChannel ? 0 : channel;
+        final int channelEnd = ignoreChannel ? 16 : channel + 1;
+
+        for (int step = pos.getStep (); step < this.numSteps; step++)
+        {
+            final int startNote = step == pos.getStep () ? pos.getNote () - 1 : 127;
+            for (int row = startNote; row >= 0; row--)
+            {
+                for (int chn = channelStart; chn < channelEnd; chn++)
+                {
+                    if (this.data[chn] != null && this.data[chn][step] != null && this.data[chn][step][row] != null && this.data[chn][step][row].getState () == StepState.START)
+                        return new NotePosition (channel, step, row);
+                }
+            }
+        }
+        return null;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public NotePosition getPreviousNote (final NotePosition activeNotePosition, final boolean ignoreChannel)
+    {
+        final NotePosition pos = activeNotePosition == null ? new NotePosition (0, this.numSteps - 1, -1) : activeNotePosition;
+        final int channel = pos.getChannel ();
+        final int channelStart = ignoreChannel ? 0 : channel;
+        final int channelEnd = ignoreChannel ? 16 : channel + 1;
+
+        for (int step = pos.getStep (); step >= 0; step--)
+        {
+            final int startNote = step == pos.getStep () ? pos.getNote () + 1 : 0;
+            for (int row = startNote; row < 128; row++)
+            {
+                for (int chn = channelStart; chn < channelEnd; chn++)
+                {
+                    if (this.data[chn] != null && this.data[chn][step] != null && this.data[chn][step][row] != null && this.data[chn][step][row].getState () == StepState.START)
+                        return new NotePosition (channel, step, row);
+                }
+            }
+        }
+        return null;
     }
 }

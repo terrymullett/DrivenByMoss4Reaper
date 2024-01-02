@@ -27,6 +27,7 @@ public class Midi
     private static final Map<String, MidiDevice> INPUTS  = new TreeMap<> ();
     private static final Map<String, MidiDevice> OUTPUTS = new TreeMap<> ();
 
+
     /**
      * Utility class.
      */

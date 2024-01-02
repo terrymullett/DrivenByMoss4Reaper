@@ -11,11 +11,11 @@ import java.util.List;
 
 
 /**
- * Interface to a note editing mode.
+ * Interface to a note editor which manages several notes for editing.
  *
  * @author Jürgen Moßgraber
  */
-public interface INoteMode
+public interface INoteEditor
 {
     /**
      * Set a note for editing.
@@ -33,6 +33,25 @@ public interface INoteMode
      * @param notePosition The position of the note
      */
     void addNote (INoteClip clip, NotePosition notePosition);
+
+
+    /**
+     * Remove a note from editing.
+     *
+     * @param clip The clip to edit
+     * @param notePosition The position of the note
+     */
+    void removeNote (INoteClip clip, NotePosition notePosition);
+
+
+    /**
+     * Check if the note is currently edited.
+     *
+     * @param clip The clip to edit
+     * @param notePosition The position of the note
+     * @return True if edited
+     */
+    boolean isNoteEdited (INoteClip clip, NotePosition notePosition);
 
 
     /**
