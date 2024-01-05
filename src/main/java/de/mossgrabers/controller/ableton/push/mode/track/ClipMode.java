@@ -253,8 +253,6 @@ public class ClipMode extends AbstractTrackMode implements IPush3Encoder
     @Override
     public void encoderTurn (final int value)
     {
-        // TODO SHIFT + Turn: change note length
-
         // Set the next/previous note active
         final IClip clip = this.getMidiClip ();
         if (clip instanceof final INoteClip noteClip)
