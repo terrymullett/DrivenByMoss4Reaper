@@ -84,6 +84,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 
 /**
@@ -489,16 +490,24 @@ public class ControllerInstanceManager
      */
     public void load (final PropertiesEx properties)
     {
+        // Load registered controller classes and prevent duplicates
+        final Set<String> classNames = new TreeSet<> ();
         int counter = 0;
-        String className;
-        while ((className = properties.getString (CONTROLLER_INSTANCE_TAG + counter)) != null)
+        String clazz;
+        while ((clazz = properties.getString (CONTROLLER_INSTANCE_TAG + counter)) != null)
         {
-            final Class<?> clazz = NAME_TO_CLASS.get (className);
-            if (clazz == null)
+            classNames.add (clazz);
+            counter++;
+        }
+
+        // Instantiate all registered controllers
+        for (final String className: classNames)
+        {
+            final Class<?> controllerClass = NAME_TO_CLASS.get (className);
+            if (controllerClass == null)
                 this.logModel.info ("Unknown controller  class: " + className);
             else
-                this.instantiateController (clazz);
-            counter++;
+                this.instantiateController (controllerClass);
         }
     }
 

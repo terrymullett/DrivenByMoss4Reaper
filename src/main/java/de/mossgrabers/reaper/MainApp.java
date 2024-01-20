@@ -69,9 +69,10 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
     private MainFrame                       mainFrame;
 
     private final ControllerInstanceManager instanceManager;
-    private Timer                           animationTimer;
+    private Timer                           animationTimer     = null;
     private final String                    iniPath;
     private final IniFiles                  iniFiles           = new IniFiles ();
+    private final Object                    startupLock        = new Object ();
 
 
     /**
@@ -196,22 +197,29 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
      */
     public void startupInfrastructure ()
     {
-        this.animationTimer = new Timer (DEVICE_UPDATE_RATE, event -> {
-            try
-            {
-                this.flushToController ();
-            }
-            catch (final RuntimeException ex)
-            {
-                this.logModel.error ("Crash in flush timer.", ex);
-            }
-        });
+        synchronized (this.startupLock)
+        {
+            // Prevent double startup
+            if (this.animationTimer != null)
+                return;
 
-        this.initUSB ();
-        this.startFlushTimer ();
-        this.updateMidiDevices ();
-        this.instanceManager.load (this.mainConfiguration);
-        this.startControllers ();
+            this.animationTimer = new Timer (DEVICE_UPDATE_RATE, event -> {
+                try
+                {
+                    this.flushToController ();
+                }
+                catch (final RuntimeException ex)
+                {
+                    this.logModel.error ("Crash in flush timer.", ex);
+                }
+            });
+
+            this.initUSB ();
+            this.startFlushTimer ();
+            this.updateMidiDevices ();
+            this.instanceManager.load (this.mainConfiguration);
+            this.startControllers ();
+        }
     }
 
 
