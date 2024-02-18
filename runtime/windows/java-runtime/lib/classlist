@@ -909,6 +909,7 @@ jdk/internal/invoke/NativeEntryPoint
 jdk/internal/jimage/BasicImageReader
 jdk/internal/jimage/BasicImageReader$1
 jdk/internal/jimage/ImageHeader
+jdk/internal/jimage/ImageLocation
 jdk/internal/jimage/ImageReader
 jdk/internal/jimage/ImageReader$SharedImageReader
 jdk/internal/jimage/ImageReaderFactory
@@ -1159,6 +1160,7 @@ sun/util/calendar/Gregorian$Date
 sun/util/calendar/ZoneInfo
 sun/util/calendar/ZoneInfoFile
 sun/util/calendar/ZoneInfoFile$1
+sun/util/calendar/ZoneInfoFile$Checksum
 sun/util/calendar/ZoneInfoFile$ZoneOffsetTransitionRule
 sun/util/cldr/CLDRBaseLocaleDataMetaInfo
 sun/util/cldr/CLDRCalendarDataProviderImpl
