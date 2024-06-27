@@ -24,9 +24,9 @@ import java.util.TreeMap;
  */
 public class Midi
 {
-    private static final Map<String, MidiDevice> INPUTS  = new TreeMap<> ();
-    private static final Map<String, MidiDevice> OUTPUTS = new TreeMap<> ();
-
+    private static final String                  CORE_MIDI4J = "CoreMIDI4J - ";
+    private static final Map<String, MidiDevice> INPUTS      = new TreeMap<> ();
+    private static final Map<String, MidiDevice> OUTPUTS     = new TreeMap<> ();
 
     /**
      * Utility class.
@@ -47,9 +47,6 @@ public class Midi
         INPUTS.clear ();
         OUTPUTS.clear ();
 
-        final Map<String, Integer> outputNames = new TreeMap<> ();
-        final Map<String, Integer> inputNames = new TreeMap<> ();
-
         // Using the provider lookup instead of MidiSystem.getMidiDeviceInfo () ensures that the
         // broken devices on Mac are hidden. The function is transparent on other platforms.
         Info [] midiDeviceInfo;
@@ -62,51 +59,32 @@ public class Midi
             midiDeviceInfo = MidiSystem.getMidiDeviceInfo ();
         }
 
+        final Map<String, Integer> keyedNames = new TreeMap<> ();
         for (final MidiDevice.Info info: midiDeviceInfo)
         {
             MidiDevice device = MidiSystem.getMidiDevice (info);
 
-            if (device.getMaxReceivers () != 0)
-            {
-                // Workaround for not unique names since there is no ID for MIDI devices available
-                // (note: this info is not available on Windows at all)
-                String name = info.getName ();
-                Integer count = outputNames.get (name);
-                if (count == null)
-                    count = Integer.valueOf (1);
-                else
-                {
-                    count = Integer.valueOf (count.intValue () + 1);
-                    name = name + String.format (" (%d)", count);
-                    device = new RenamedMidiDevice (name, device);
-                }
-                outputNames.put (name, count);
+            final boolean isInput = device.getMaxTransmitters () != 0;
+            final boolean isOutput = device.getMaxReceivers () != 0;
+            if (!isInput && !isOutput)
+                continue;
 
+            // Workaround for not unique names since there is no ID for MIDI devices available
+            // (note: this info is not available on Windows at all)
+            String name = updateName (info.getName ());
+            final String key = (isInput ? "I" : "O") + name;
+            final Integer count = keyedNames.get (key);
+            final Integer newCount = Integer.valueOf (count == null ? 1 : count.intValue () + 1);
+            keyedNames.put (key, newCount);
+
+            if (count != null)
+                name = String.format ("%s (%d)", name, newCount);
+            device = new RenamedMidiDevice (name, device);
+
+            if (isOutput)
                 OUTPUTS.put (name, device);
-                if (OperatingSystem.isMacOS ())
-                    OUTPUTS.put ("CoreMIDI4J - " + name, device);
-            }
-
-            if (device.getMaxTransmitters () != 0)
-            {
-                // Workaround for not unique names since there is no ID for MIDI devices available
-                // (note: this info is not available on Windows at all)
-                String name = info.getName ();
-                Integer count = inputNames.get (name);
-                if (count == null)
-                    count = Integer.valueOf (1);
-                else
-                {
-                    count = Integer.valueOf (count.intValue () + 1);
-                    name = name + String.format (" (%d)", count);
-                    device = new RenamedMidiDevice (name, device);
-                }
-                inputNames.put (name, count);
-
+            else
                 INPUTS.put (name, device);
-                if (OperatingSystem.isMacOS ())
-                    INPUTS.put ("CoreMIDI4J - " + name, device);
-            }
         }
     }
 
@@ -156,5 +134,13 @@ public class Midi
     public static MidiDevice getInputDevice (final String name)
     {
         return INPUTS.get (name);
+    }
+
+
+    private static String updateName (final String name)
+    {
+        if (OperatingSystem.isMacOS () && name.startsWith (CORE_MIDI4J))
+            return name.substring (CORE_MIDI4J.length ());
+        return name;
     }
 }
