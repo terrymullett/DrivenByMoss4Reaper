@@ -54,6 +54,7 @@ import de.mossgrabers.reaper.controller.novation.sl.SLMkIControllerInstance;
 import de.mossgrabers.reaper.controller.novation.sl.SLMkIIControllerInstance;
 import de.mossgrabers.reaper.controller.novation.slmkiii.SLMkIIIControllerInstance;
 import de.mossgrabers.reaper.controller.osc.OSCControllerInstance;
+import de.mossgrabers.reaper.controller.oxi.OxiOneControllerInstance;
 import de.mossgrabers.reaper.controller.utilities.autocolor.AutoColorInstance;
 import de.mossgrabers.reaper.controller.utilities.midimonitor.MidiMonitorInstance;
 import de.mossgrabers.reaper.controller.yaeltex.turn.YaeltexTurnControllerInstance;
@@ -142,6 +143,7 @@ public class ControllerInstanceManager
         DEF_TO_CLASS.put (MCU4ControllerInstance.CONTROLLER_DEFINITION, MCU4ControllerInstance.class);
         DEF_TO_CLASS.put (ACVSLiveControllerInstance.CONTROLLER_DEFINITION, ACVSLiveControllerInstance.class);
         DEF_TO_CLASS.put (OSCControllerInstance.CONTROLLER_DEFINITION, OSCControllerInstance.class);
+        DEF_TO_CLASS.put (OxiOneControllerInstance.CONTROLLER_DEFINITION, OxiOneControllerInstance.class);
         DEF_TO_CLASS.put (Push1ControllerInstance.CONTROLLER_DEFINITION, Push1ControllerInstance.class);
         DEF_TO_CLASS.put (Push2ControllerInstance.CONTROLLER_DEFINITION, Push2ControllerInstance.class);
         DEF_TO_CLASS.put (Push3ControllerInstance.CONTROLLER_DEFINITION, Push3ControllerInstance.class);

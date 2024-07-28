@@ -14,6 +14,7 @@ import de.mossgrabers.framework.controller.valuechanger.RelativeValueChangers;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.graphics.IGraphicsContext;
+import de.mossgrabers.framework.observer.IValueObserver;
 import de.mossgrabers.framework.parameter.IParameter;
 import de.mossgrabers.reaper.framework.daw.data.parameter.IParameterEx;
 import de.mossgrabers.reaper.framework.graphics.GraphicsContextImpl;
@@ -23,6 +24,8 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.ShortMessage;
 
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -32,18 +35,19 @@ import java.awt.event.MouseEvent;
  */
 public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements IHwRelativeKnob, IReaperHwControl
 {
-    private final HwControlLayout  layout;
-    private final RelativeEncoding encoding;
+    private final HwControlLayout            layout;
+    private final RelativeEncoding           encoding;
 
-    private MidiInputImpl          inputImpl;
-    private int                    control;
+    private MidiInputImpl                    inputImpl;
+    private int                              control;
     // Alternative binding to the command
-    private IParameter             parameter;
+    private IParameter                       parameter;
 
-    private boolean                isPressed;
-    private double                 pressedX;
-    private double                 pressedY;
-    private boolean                shouldAdaptSensitivity = true;
+    private boolean                          isPressed;
+    private double                           pressedX;
+    private double                           pressedY;
+    private boolean                          shouldAdaptSensitivity = true;
+    private final List<IValueObserver<Void>> observers              = new ArrayList<> ();
 
 
     /**
@@ -73,6 +77,14 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
 
         this.layout = new HwControlLayout (id);
         this.encoding = encoding;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void addHasChangedObserver (final IValueObserver<Void> observer)
+    {
+        this.observers.add (observer);
     }
 
 
@@ -136,6 +148,8 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     @Override
     public void handleValue (final double value)
     {
+        this.notifyHasChangedObservers ();
+
         // value is scaled to [0..1] but still encoded, scale back to [0..127]
         // Note: there are no relative pitchbend values, therefore no check for that
         final int intValue = (int) Math.round (value * 127.0);
@@ -268,5 +282,12 @@ public class HwRelativeKnobImpl extends AbstractHwContinuousControl implements I
     public void setShouldAdaptSensitivity (final boolean shouldAdaptSensitivity)
     {
         this.shouldAdaptSensitivity = shouldAdaptSensitivity;
+    }
+
+
+    private void notifyHasChangedObservers ()
+    {
+        for (final IValueObserver<Void> observer: this.observers)
+            observer.update (null);
     }
 }
