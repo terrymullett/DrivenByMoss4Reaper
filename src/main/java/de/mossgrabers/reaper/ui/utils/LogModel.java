@@ -1,7 +1,12 @@
 package de.mossgrabers.reaper.ui.utils;
 
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
+import java.awt.Color;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -15,8 +20,11 @@ import java.io.StringWriter;
  */
 public class LogModel
 {
+    private Style               normalStyle;
+    private Style               errorStyle;
+
     private final Object        updateLock = new Object ();
-    private JTextArea           logMessage;
+    private JTextPane           textPane;
     private final StringBuilder buffer     = new StringBuilder ();
 
 
@@ -32,15 +40,21 @@ public class LogModel
     /**
      * Set the logging text area.
      *
-     * @param loggingTextArea Where to output the logging messages
+     * @param loggingTextPane Where to output the logging messages
      */
-    public void setTextArea (final JTextArea loggingTextArea)
+    public void setTextArea (final JTextPane loggingTextPane)
     {
         synchronized (this.updateLock)
         {
-            this.logMessage = loggingTextArea;
-            this.logMessage.append (this.buffer.toString ());
-            this.buffer.setLength (0);
+            this.textPane = loggingTextPane;
+
+            this.normalStyle = this.textPane.addStyle ("Normal Style", null);
+            StyleConstants.setForeground (this.normalStyle, Color.BLACK);
+            this.errorStyle = this.textPane.addStyle ("Error Style", null);
+            StyleConstants.setForeground (this.errorStyle, Color.RED);
+
+            if (this.buffer.length () > 0)
+                this.info ("");
         }
     }
 
@@ -49,15 +63,16 @@ public class LogModel
      * Adds a logging message.
      *
      * @param message The message to add
-     * @param ex The exception to log
+     * @param exception The exception to log
      */
-    public void error (final String message, final Throwable ex)
+    public void error (final String message, final Throwable exception)
     {
-        this.info (message);
+        this.log (message, true);
+        if (exception == null)
+            return;
         final StringWriter writer = new StringWriter ();
-        if (ex != null)
-            ex.printStackTrace (new PrintWriter (writer));
-        this.info (writer.toString ());
+        exception.printStackTrace (new PrintWriter (writer));
+        this.log (writer.toString (), true);
     }
 
 
@@ -68,18 +83,46 @@ public class LogModel
      */
     public void info (final String message)
     {
+        this.log (message, false);
+    }
+
+
+    /**
+     * Adds a logging message.
+     *
+     * @param message The message to add
+     * @param isError True if an error is logged
+     */
+    public void log (final String message, final boolean isError)
+    {
+        if (message.length () == 0)
+            return;
+
         SafeRunLater.execute (null, () -> {
+
             synchronized (this.updateLock)
             {
-                if (this.logMessage == null)
-                    this.buffer.append (message).append ("\n");
-                else
+                this.buffer.append (message).append ("\n");
+
+                if (this.textPane != null)
                 {
-                    this.logMessage.append (message);
-                    this.logMessage.append ("\n");
+                    try
+                    {
+                        final StyledDocument doc = this.textPane.getStyledDocument ();
+                        doc.insertString (doc.getLength (), this.buffer.toString (), isError ? this.errorStyle : this.normalStyle);
+                    }
+                    catch (final BadLocationException ex)
+                    {
+                        // Ignore since we cannot do anything meaningful with this
+                    }
+
+                    this.buffer.setLength (0);
+                    this.textPane.setCaretPosition (this.textPane.getDocument ().getLength ());
                 }
             }
+
         });
+
     }
 
 
@@ -90,10 +133,10 @@ public class LogModel
     {
         synchronized (this.updateLock)
         {
-            if (this.logMessage == null)
+            if (this.textPane == null)
                 this.buffer.setLength (0);
             else
-                this.logMessage.setText ("");
+                this.textPane.setText ("");
         }
     }
 }

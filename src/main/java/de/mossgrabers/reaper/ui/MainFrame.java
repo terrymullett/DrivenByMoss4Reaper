@@ -28,7 +28,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -39,6 +39,8 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -58,9 +60,10 @@ public class MainFrame extends JFrame
     private static final int                                   GAP              = 14;
 
     private final transient AppCallback                        callback;
-    private final JTextArea                                    loggingTextArea  = new JTextArea ();
+    private final JTextPane                                    loggingTextArea  = new JTextPane ();
     private final JButton                                      removeButton;
     private final JButton                                      configButton;
+    private final JButton                                      enableButton;
     private final DefaultListModel<ControllerCheckboxListItem> listModel        = new DefaultListModel<> ();
     private final JList<ControllerCheckboxListItem>            controllerList   = new JList<> (this.listModel);
 
@@ -136,10 +139,10 @@ public class MainFrame extends JFrame
 
         // Disable/Enable controller button
         final ImageIcon enableIcon = Functions.getIcon ("OnOff");
-        final JButton enableButton = new JButton ("Dis-/enable");
-        addIcon (enableButton, enableIcon);
-        enableButton.setToolTipText ("Disable a controller to save performance if you do not use it (or it is not connected).");
-        enableButton.addActionListener (event -> this.toggleEnableController ());
+        this.enableButton = new JButton ("Dis-/enable");
+        addIcon (this.enableButton, enableIcon);
+        this.enableButton.setToolTipText ("Disable a controller to save performance if you do not use it (or it is not connected).");
+        this.enableButton.addActionListener (event -> this.toggleEnableController ());
 
         // Debug button
         final ImageIcon debugIcon = Functions.getIcon ("Debug");
@@ -157,11 +160,26 @@ public class MainFrame extends JFrame
         deviceButtonContainer.add (this.configButton);
         deviceButtonContainer.add (projectButton);
         deviceButtonContainer.add (parameterButton);
-        deviceButtonContainer.add (enableButton);
+        deviceButtonContainer.add (this.enableButton);
         deviceButtonContainer.add (debugButton);
 
         this.controllerList.setMinimumSize (new Dimension (300, 200));
         this.controllerList.setCellRenderer (new CheckboxListRenderer ());
+        this.controllerList.addMouseListener (new MouseAdapter ()
+        {
+            @Override
+            public void mouseClicked (final MouseEvent e)
+            {
+                if (e.getClickCount () != 2)
+                    return;
+                final int index = MainFrame.this.controllerList.locationToIndex (e.getPoint ());
+                if (index < 0)
+                    return;
+                final ControllerCheckboxListItem item = MainFrame.this.listModel.getElementAt (index);
+                item.setSelected (true);
+                MainFrame.this.editController ();
+            }
+        });
         final JScrollPane controllerListPane = new JScrollPane (this.controllerList);
 
         final JPanel controllerConfigurationPane = new JPanel (new BorderLayout ());
@@ -355,7 +373,7 @@ public class MainFrame extends JFrame
     }
 
 
-    private void createDefaultMenuItems (final JTextArea t)
+    private void createDefaultMenuItems (final JTextPane t)
     {
         final JPopupMenu popup = new JPopupMenu ();
 
@@ -493,6 +511,7 @@ public class MainFrame extends JFrame
 
         this.configButton.setEnabled (hasSelection);
         this.removeButton.setEnabled (hasSelection);
+        this.enableButton.setEnabled (hasSelection);
     }
 
 

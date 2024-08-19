@@ -30,7 +30,7 @@ public class ParameterPageBankImpl extends AbstractBank<String> implements IPara
     private final IDevice        device;
 
     private final List<String>   cachedPageNames = new ArrayList<> ();
-    private int                  cachedPageCount;
+    private int                  cachedPageCount = -1;
 
 
     /**
