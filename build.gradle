@@ -6,10 +6,12 @@ plugins {
     id 'eclipse'
 }
 
-sourceCompatibility = 17
-targetCompatibility = 17
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
 
-version = '24.3.0'
+version = '24.4.0'
 
 jar {
     manifest {
@@ -24,15 +26,15 @@ jar {
         switch (OperatingSystem.get()) {
             case OperatingSystem.WINDOWS:
                 String destDir = 'C:\\Users\\' + System.properties['user.name'] + '\\AppData\\Roaming\\Reaper\\UserPlugins\\drivenbymoss-libs'
-                ant.copy (file: archivePath.getAbsolutePath(), todir: destDir)
+                ant.copy (file: archiveFile.get().getAsFile().getAbsolutePath(), todir: destDir)
                 break
             case OperatingSystem.MAC:
                 String destDir = '/Users/' + System.properties['user.name'] + '/Library/Application Support/REAPER/UserPlugins/drivenbymoss-libs'
-                ant.copy (file: archivePath.getAbsolutePath(), todir: destDir)
+                ant.copy (file: archiveFile.get().getAsFile().getAbsolutePath(), todir: destDir)
                 break
             case OperatingSystem.LINUX:
                 String destDir = '/home/' + System.properties['user.name'] + '/.config/REAPER/UserPlugins/drivenbymoss-libs'
-                ant.copy (file: archivePath.getAbsolutePath(), todir: destDir)
+                ant.copy (file: archiveFile.get().getAsFile().getAbsolutePath(), todir: destDir)
                 break
         }
     }
@@ -41,8 +43,10 @@ jar {
 distTar.enabled = false
 startScripts.enabled = false
 
-applicationDistribution.from('build/reports/dependency-license') {
-    into 'docs/license/dependency'
+application {
+    applicationDistribution.from('build/reports/dependency-license') {
+        into 'docs/license/dependency'
+    }
 }
 
 installDist {
