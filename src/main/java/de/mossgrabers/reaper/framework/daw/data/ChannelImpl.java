@@ -40,6 +40,8 @@ public class ChannelImpl extends ItemImpl implements IChannel
     private double                             vu;
     private double                             vuLeft;
     private double                             vuRight;
+    private double                             vuHoldDbLeft;
+    private double                             vuHoldDbRight;
     private int                                vuPeakLeft;
     private int                                vuPeakRight;
     private int                                vuPeakLastVolume;
@@ -412,6 +414,30 @@ public class ChannelImpl extends ItemImpl implements IChannel
 
     /** {@inheritDoc} */
     @Override
+    public boolean getVuClipState ()
+    {
+        return this.getVuLeftClipState () || this.getVuRightClipState ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean getVuLeftClipState ()
+    {
+        return this.vuHoldDbLeft > 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean getVuRightClipState ()
+    {
+        return this.vuHoldDbRight > 0;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public void setIsActivated (final boolean enable)
     {
         this.isActivated = enable;
@@ -567,6 +593,28 @@ public class ChannelImpl extends ItemImpl implements IChannel
     public void setVuRight (final double vuRight)
     {
         this.vuRight = vuRight;
+    }
+
+
+    /**
+     * Set the left VU hold value.
+     *
+     * @param vuHoldLeft The VU hold value
+     */
+    public void setVuHoldLeft (final double vuHoldLeft)
+    {
+        this.vuHoldDbLeft = vuHoldLeft;
+    }
+
+
+    /**
+     * Set the right VU hold value.
+     *
+     * @param vuHoldRight The VU hold value
+     */
+    public void setVuHoldRight (final double vuHoldRight)
+    {
+        this.vuHoldDbRight = vuHoldRight;
     }
 
 

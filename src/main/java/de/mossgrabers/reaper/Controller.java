@@ -35,6 +35,19 @@ public class Controller
 
 
     /**
+     * Add an available device.
+     *
+     * @param name The name of the device
+     * @param identifier The ID of the device (can be the DLL path)
+     */
+    public static void addDevice (final String name, final String identifier)
+    {
+        if (app != null)
+            app.addDevice (name, identifier);
+    }
+
+
+    /**
      * Startup the infrastructure and controller instances.
      */
     public static void startInfrastructure ()

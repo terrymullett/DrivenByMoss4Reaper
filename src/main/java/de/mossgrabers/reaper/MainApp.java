@@ -194,12 +194,26 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
 
 
     /**
+     * Add an available device.
+     *
+     * @param name The name of the device
+     * @param identifier The ID of the device (can be the DLL path)
+     */
+    public void addDevice (final String name, final String identifier)
+    {
+        DeviceManager.get ().addDeviceInfo (name, identifier);
+    }
+
+
+    /**
      * Start scripting engine, open OSC and MIDI ports.
      */
     public void startupInfrastructure ()
     {
         synchronized (this.startupLock)
         {
+            DeviceManager.get ().applyDeviceInfo (this.iniFiles, this.logModel);
+
             // Prevent double startup
             if (this.animationTimer != null)
                 return;
@@ -766,7 +780,6 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
     {
         this.logModel.info ("Loading device INI files from " + path + " ...");
         this.iniFiles.init (path, this.logModel);
-        DeviceManager.get ().parseINIFiles (this.iniFiles, this.logModel);
     }
 
 

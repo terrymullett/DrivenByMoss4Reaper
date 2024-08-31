@@ -23,7 +23,6 @@ public class DeviceMetadataImpl implements IDeviceMetadata
     private final DeviceFileType     fileType;
     private final DeviceArchitecture architecture;
     private DeviceType               deviceType;
-    private final String             creationName;
     private String                   vendor;
     private final Set<String>        categories = new HashSet<> (1);
 
@@ -31,16 +30,14 @@ public class DeviceMetadataImpl implements IDeviceMetadata
     /**
      * Constructor.
      *
-     * @param creationName The name which can trigger adding the device in Reaper
      * @param name The name of the device
-     * @param module The name of the library module
+     * @param module The name of the library module or creation ID
      * @param deviceType The type of the device
      * @param fileType The plugin type of the device
      * @param architecture The architecture
      */
-    public DeviceMetadataImpl (final String creationName, final String name, final String module, final DeviceType deviceType, final DeviceFileType fileType, final DeviceArchitecture architecture)
+    public DeviceMetadataImpl (final String name, final String module, final DeviceType deviceType, final DeviceFileType fileType, final DeviceArchitecture architecture)
     {
-        this.creationName = creationName;
         this.name = name;
         this.module = module;
         this.deviceType = deviceType;
@@ -83,7 +80,7 @@ public class DeviceMetadataImpl implements IDeviceMetadata
      */
     public String getCreationName ()
     {
-        return this.creationName;
+        return this.module;
     }
 
 

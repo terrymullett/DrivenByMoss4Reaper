@@ -20,7 +20,7 @@ public enum DeviceFileType
     /** AU devices. */
     AU("AU"),
     /** LV2 devices. */
-    // LV2("LV2"), -> not used since Reaper does not store this in a file!
+    LV2("LV2"),
     /** JS devices. */
     JS("JS");
 

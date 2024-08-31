@@ -4,12 +4,6 @@
 
 package de.mossgrabers.controller.mackie.mcu;
 
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.Set;
-
 import de.mossgrabers.controller.mackie.mcu.MCUConfiguration.MainDisplay;
 import de.mossgrabers.controller.mackie.mcu.MCUConfiguration.SecondDisplay;
 import de.mossgrabers.controller.mackie.mcu.MCUConfiguration.VUMeterStyle;
@@ -109,6 +103,12 @@ import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.view.ControlOnlyView;
 import de.mossgrabers.framework.view.Views;
 
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.Set;
+
 
 /**
  * Support for the Mackie MCU protocol.
@@ -161,13 +161,17 @@ public class MCUControllerSetup extends AbstractControllerSetup<MCUControlSurfac
         MODE_ACRONYMS.put (Modes.USER, "US");
     }
 
-    private static final Set<Modes> VALUE_MODES      = EnumSet.of (Modes.VOLUME, Modes.PAN, Modes.TRACK, Modes.SEND1, Modes.SEND2, Modes.SEND3, Modes.SEND4, Modes.SEND5, Modes.SEND6, Modes.SEND7, Modes.SEND8, Modes.DEVICE_PARAMS, Modes.EQ_DEVICE_PARAMS, Modes.INSTRUMENT_DEVICE_PARAMS, Modes.USER);
+    private static final Set<Modes> VALUE_MODES       = EnumSet.of (Modes.VOLUME, Modes.PAN, Modes.TRACK, Modes.SEND1, Modes.SEND2, Modes.SEND3, Modes.SEND4, Modes.SEND5, Modes.SEND6, Modes.SEND7, Modes.SEND8, Modes.DEVICE_PARAMS, Modes.EQ_DEVICE_PARAMS, Modes.INSTRUMENT_DEVICE_PARAMS, Modes.USER);
 
-    private final int []            vuValues         = new int [32];
-    private final int []            vuValuesRight    = new int [32];
-    private final int []            masterVuValues   = new int [2];
-    private final int []            faderValues      = new int [32];
-    private int                     masterFaderValue = -1;
+    private final int []            vuValues          = new int [32];
+    private final int []            vuValuesRight     = new int [32];
+    private final int []            masterVuValues    = new int [2];
+
+    private final boolean []        vuClipStates      = new boolean [32];
+    private final boolean []        vuClipStatesRight = new boolean [32];
+
+    private final int []            faderValues       = new int [32];
+    private int                     masterFaderValue  = -1;
     private final int               numMCUDevices;
 
 
@@ -857,34 +861,57 @@ public class MCUControllerSetup extends AbstractControllerSetup<MCUControlSurfac
 
                 if (vuMeterStyle == VUMeterStyle.ASPARION)
                 {
+                    // Stereo VU
+
                     final int vuLeft = track.getVuLeft ();
                     final int scaledVuLeft = this.scaleVU (vuLeft);
                     if (this.vuValues[channel] != scaledVuLeft || alwaysSendVuMeters)
                     {
                         this.vuValues[channel] = scaledVuLeft;
-                        this.sendVUValue (output, i, vuLeft, scaledVuLeft, false);
+                        sendVUValue (output, i, scaledVuLeft, false);
                     }
+                    final boolean isClippedLeft = track.getVuLeftClipState ();
+                    if (this.vuClipStates[channel] != isClippedLeft || alwaysSendVuMeters)
+                    {
+                        this.vuClipStates[channel] = isClippedLeft;
+                        this.sendVUClipState (output, i, isClippedLeft, false);
+                    }
+
                     final int vuRight = track.getVuRight ();
                     final int scaledVuRight = this.scaleVU (vuRight);
                     if (this.vuValuesRight[channel] != scaledVuRight || alwaysSendVuMeters)
                     {
                         this.vuValuesRight[channel] = scaledVuRight;
-                        this.sendVUValue (output, i, vuRight, scaledVuRight, true);
+                        sendVUValue (output, i, scaledVuRight, true);
+                    }
+                    final boolean isClippedRight = track.getVuRightClipState ();
+                    if (this.vuClipStatesRight[channel] != isClippedRight || alwaysSendVuMeters)
+                    {
+                        this.vuClipStatesRight[channel] = isClippedRight;
+                        this.sendVUClipState (output, i, isClippedRight, true);
                     }
                 }
                 else
                 {
+                    // Mono VU
+
                     final int vu = track.getVu ();
                     final int scaledVu = this.scaleVU (vu);
                     if (this.vuValues[channel] != scaledVu || alwaysSendVuMeters)
                     {
                         this.vuValues[channel] = scaledVu;
-                        this.sendVUValue (output, i, vu, scaledVu, false);
+                        sendVUValue (output, i, scaledVu, false);
+                    }
+                    final boolean isClipped = track.getVuClipState ();
+                    if (this.vuClipStates[channel] != isClipped || alwaysSendVuMeters)
+                    {
+                        this.vuClipStates[channel] = isClipped;
+                        this.sendVUClipState (output, i, isClipped, false);
                     }
                 }
             }
 
-            // Stereo VUs of master channel
+            // Stereo VUs of master channel, only available on iCON devices
             if (vuMeterStyle == VUMeterStyle.ICON && this.configuration.getDeviceType (index) == MCUDeviceType.MAIN)
             {
                 final IMasterTrack masterTrack = this.model.getMasterTrack ();
@@ -894,7 +921,7 @@ public class MCUControllerSetup extends AbstractControllerSetup<MCUControlSurfac
                 if (this.masterVuValues[0] != scaledVu)
                 {
                     this.masterVuValues[0] = scaledVu;
-                    this.sendVUValue (output, 0, vu, scaledVu, true);
+                    sendVUValue (output, 0, scaledVu, true);
                 }
 
                 vu = masterTrack.getVuRight ();
@@ -902,7 +929,7 @@ public class MCUControllerSetup extends AbstractControllerSetup<MCUControlSurfac
                 if (this.masterVuValues[1] != scaledVu)
                 {
                     this.masterVuValues[1] = scaledVu;
-                    this.sendVUValue (output, 1, vu, scaledVu, true);
+                    sendVUValue (output, 1, scaledVu, true);
                 }
             }
         }
@@ -915,16 +942,17 @@ public class MCUControllerSetup extends AbstractControllerSetup<MCUControlSurfac
     }
 
 
-    private void sendVUValue (final IMidiOutput output, final int track, final int vu, final int scaledVu, final boolean isMasterOrRightChannel)
+    private static void sendVUValue (final IMidiOutput output, final int track, final int scaledVu, final boolean isMasterOrRightChannel)
     {
         output.sendChannelAftertouch (isMasterOrRightChannel ? 1 : 0, 0x10 * track + scaledVu, 0);
+    }
 
-        // iCON devices do not support the clip state and Asparion ignores it!
-        if (this.configuration.getVuMeterStyle () == VUMeterStyle.MACKIE)
-        {
-            final boolean doesClip = vu > 16240;
-            output.sendChannelAftertouch (isMasterOrRightChannel ? 1 : 0, 0x10 * track + (doesClip ? 0x0E : 0x0F), 0);
-        }
+
+    private void sendVUClipState (final IMidiOutput output, final int track, final boolean vuClipState, final boolean isMasterOrRightChannel)
+    {
+        // iCON devices do not support the clip state
+        if (this.configuration.getVuMeterStyle () != VUMeterStyle.ICON)
+            output.sendChannelAftertouch (isMasterOrRightChannel ? 1 : 0, 0x10 * track + (vuClipState ? 0x0E : 0x0F), 0);
     }
 
 

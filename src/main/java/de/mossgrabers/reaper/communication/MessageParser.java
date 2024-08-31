@@ -554,6 +554,14 @@ public class MessageParser
                 track.setVuRight (Double.parseDouble (value));
                 break;
 
+            case "vuholdleft":
+                track.setVuHoldLeft (Double.parseDouble (value));
+                break;
+
+            case "vuholdright":
+                track.setVuHoldRight (Double.parseDouble (value));
+                break;
+
             case "mute":
                 track.setMuteState (Double.parseDouble (value) > 0);
                 break;

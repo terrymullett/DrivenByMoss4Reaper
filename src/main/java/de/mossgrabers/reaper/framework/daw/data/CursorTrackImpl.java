@@ -703,6 +703,33 @@ public class CursorTrackImpl implements ICursorTrack
 
     /** {@inheritDoc} */
     @Override
+    public boolean getVuClipState ()
+    {
+        final ITrack selectedTrack = this.getPinnedOrSelectedTrack ();
+        return selectedTrack != null && selectedTrack.getVuClipState ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean getVuLeftClipState ()
+    {
+        final ITrack selectedTrack = this.getPinnedOrSelectedTrack ();
+        return selectedTrack != null && selectedTrack.getVuLeftClipState ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean getVuRightClipState ()
+    {
+        final ITrack selectedTrack = this.getPinnedOrSelectedTrack ();
+        return selectedTrack != null && selectedTrack.getVuRightClipState ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public boolean hasDrumDevice ()
     {
         final ITrack selectedTrack = this.getPinnedOrSelectedTrack ();
