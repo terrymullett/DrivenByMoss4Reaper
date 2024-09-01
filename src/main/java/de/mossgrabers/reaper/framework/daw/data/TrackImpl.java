@@ -71,7 +71,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
         super (dataSetup, index, numSends);
 
         this.trackBank = trackBank;
-        this.slotBank = new SlotBankImpl (dataSetup, (SceneBankImpl) trackBank.getSceneBank (), index, numScenes);
+        this.slotBank = new SlotBankImpl (dataSetup, (SceneBankImpl) trackBank.getSceneBank (), this, numScenes);
         this.crossfadeParameter = new CrossfadeParameter (this.valueChanger, index);
         this.parameterBank = numParams > 0 ? new ParameterBankImpl (dataSetup, Processor.TRACK, numParams, null) : null;
     }
@@ -95,7 +95,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
         super (dataSetup, index, numSends, volumeParameter, panParameter);
 
         this.trackBank = trackBank;
-        this.slotBank = new SlotBankImpl (dataSetup, (SceneBankImpl) trackBank.getSceneBank (), index, numScenes);
+        this.slotBank = new SlotBankImpl (dataSetup, (SceneBankImpl) trackBank.getSceneBank (), this, numScenes);
         this.crossfadeParameter = new CrossfadeParameter (this.valueChanger, index);
         this.parameterBank = numParams > 0 ? new ParameterBankImpl (dataSetup, Processor.TRACK, numParams, null) : null;
     }

@@ -18,6 +18,8 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 public class SceneImpl extends ItemImpl implements IScene
 {
     private ColorEx color = new ColorEx (0.2, 0.2, 0.2);
+    private double  beginPosition;
+    private double  endPosition;
 
 
     /**
@@ -117,5 +119,49 @@ public class SceneImpl extends ItemImpl implements IScene
     protected Processor getProcessor ()
     {
         return Processor.SCENE;
+    }
+
+
+    /**
+     * Set the position where the scene starts in the timeline.
+     * 
+     * @param beginPosition The position
+     */
+    public void setBeginPosition (final double beginPosition)
+    {
+        this.beginPosition = beginPosition;
+    }
+
+
+    /**
+     * Set the position where the scene ends in the timeline.
+     * 
+     * @param endPosition The position
+     */
+    public void setEndPosition (final double endPosition)
+    {
+        this.endPosition = endPosition;
+    }
+
+
+    /**
+     * Get the position where the scene starts in the timeline.
+     * 
+     * @return The position
+     */
+    public double getBeginPosition ()
+    {
+        return this.beginPosition;
+    }
+
+
+    /**
+     * Get the position where the scene ends in the timeline.
+     * 
+     * @return The position
+     */
+    public double getEndPosition ()
+    {
+        return this.endPosition;
     }
 }

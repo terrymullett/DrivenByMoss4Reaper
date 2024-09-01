@@ -971,6 +971,10 @@ public class MessageParser
                 markerImpl.setColorState (color.isPresent () ? color.get () : ColorEx.GRAY.toDoubleRGB ());
                 break;
 
+            case "position", "endPosition":
+                // Only needed for scenes
+                break;
+
             default:
                 this.host.error ("Unhandled Marker Parameter: " + command);
                 break;
@@ -999,6 +1003,14 @@ public class MessageParser
             case TAG_COLOR:
                 final Optional<double []> color = ((ModelImpl) this.model).parseColor (value);
                 sceneImpl.setColorState (color.isPresent () ? new ColorEx (color.get ()) : ColorEx.GRAY);
+                break;
+
+            case "position":
+                sceneImpl.setBeginPosition (Double.parseDouble (value));
+                break;
+
+            case "endPosition":
+                sceneImpl.setEndPosition (Double.parseDouble (value));
                 break;
 
             default:

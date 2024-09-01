@@ -5,7 +5,11 @@
 package de.mossgrabers.reaper.framework.daw.data;
 
 import de.mossgrabers.framework.controller.color.ColorEx;
+import de.mossgrabers.framework.daw.ITransport;
+import de.mossgrabers.framework.daw.data.IScene;
 import de.mossgrabers.framework.daw.data.ISlot;
+import de.mossgrabers.framework.daw.data.ITrack;
+import de.mossgrabers.framework.daw.data.bank.ISceneBank;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
@@ -17,23 +21,26 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
  */
 public class SlotImpl extends ItemImpl implements ISlot
 {
-    private int     trackIndex;
-    private boolean hasContent;
-    private ColorEx color = new ColorEx (0.2, 0.2, 0.2);
+    private final ITrack track;
+    private boolean      hasContent;
+    private ColorEx      color = new ColorEx (0.2, 0.2, 0.2);
+    private ISceneBank   sceneBank;
 
 
     /**
      * Constructor.
      *
      * @param dataSetup Some configuration variables
-     * @param trackIndex The track index
+     * @param track The track
      * @param index The index of the slot
+     * @param sceneBank The scene bank
      */
-    public SlotImpl (final DataSetupEx dataSetup, final int trackIndex, final int index)
+    public SlotImpl (final DataSetupEx dataSetup, final ITrack track, final int index, final ISceneBank sceneBank)
     {
         super (dataSetup, index);
 
-        this.trackIndex = trackIndex;
+        this.track = track;
+        this.sceneBank = sceneBank;
     }
 
 
@@ -58,18 +65,30 @@ public class SlotImpl extends ItemImpl implements ISlot
 
     /** {@inheritDoc} */
     @Override
-    public boolean isRecording ()
+    public boolean isRecordingQueued ()
     {
-        // TODO play cursor is in range of clip & recording is active & playback is active
         return false;
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public boolean isPlaying ()
+    public boolean isRecording ()
     {
-        // TODO play cursor is in range of clip & playback is active
+        if (!this.doesExist ())
+            return false;
+
+        // Play cursor is in range of clip and recording as well as playback is active
+        final IScene scene = this.sceneBank.getItem (this.index);
+        if (scene.doesExist () && scene instanceof SceneImpl sceneImpl)
+        {
+            final ITransport transport = this.dataSetup.getTransport ();
+            if (transport.isRecording () && this.track.isRecArm ())
+            {
+                final double playPosition = transport.getPosition ();
+                return playPosition >= sceneImpl.getBeginPosition () && playPosition <= sceneImpl.getEndPosition ();
+            }
+        }
         return false;
     }
 
@@ -78,16 +97,28 @@ public class SlotImpl extends ItemImpl implements ISlot
     @Override
     public boolean isPlayingQueued ()
     {
-        // TODO play cursor is in range of clip but playback is not active
         return false;
     }
 
 
     /** {@inheritDoc} */
     @Override
-    public boolean isRecordingQueued ()
+    public boolean isPlaying ()
     {
-        // TODO play cursor is in range of clip & recording is active but playback is not active
+        if (!(this.doesExist () && this.hasContent ()))
+            return false;
+
+        // Play cursor is in range of clip (scene) and playback is active
+        final IScene scene = this.sceneBank.getItem (this.index);
+        if (scene.doesExist () && scene instanceof SceneImpl sceneImpl)
+        {
+            final ITransport transport = this.dataSetup.getTransport ();
+            if (transport.isPlaying ())
+            {
+                final double playPosition = transport.getPosition ();
+                return playPosition >= sceneImpl.getBeginPosition () && playPosition <= sceneImpl.getEndPosition ();
+            }
+        }
         return false;
     }
 
@@ -172,7 +203,7 @@ public class SlotImpl extends ItemImpl implements ISlot
 
     private void sendTrackClipOSC (final String command)
     {
-        this.sendOSC (this.trackIndex + "/clip/" + this.getPosition () + "/" + command);
+        this.sendOSC (this.track.getIndex () + "/clip/" + this.getPosition () + "/" + command);
     }
 
 
@@ -181,16 +212,5 @@ public class SlotImpl extends ItemImpl implements ISlot
     protected Processor getProcessor ()
     {
         return Processor.TRACK;
-    }
-
-
-    /**
-     * Update the track to which the slot belongs.
-     *
-     * @param trackIndex The index of the track
-     */
-    public void setTrack (final int trackIndex)
-    {
-        this.trackIndex = trackIndex;
     }
 }

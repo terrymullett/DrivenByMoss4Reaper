@@ -369,7 +369,6 @@ public class ModelImpl extends AbstractModel
             final int trackIndex = Integer.parseInt (clipParts[pos++]);
             final TrackImpl track = tb.getUnpagedItem (trackIndex);
             final SlotBankImpl slotBank = (SlotBankImpl) track.getSlotBank ();
-            slotBank.setTrack (trackIndex);
 
             final int numClips = Integer.parseInt (clipParts[pos++]);
             if (numClips > maxSlotCount)

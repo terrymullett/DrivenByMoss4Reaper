@@ -5,10 +5,12 @@
 package de.mossgrabers.reaper.framework.daw.data.bank;
 
 import de.mossgrabers.framework.daw.data.ISlot;
+import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.ISlotBank;
 import de.mossgrabers.framework.daw.data.empty.EmptySlot;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.SlotImpl;
+import de.mossgrabers.reaper.framework.daw.data.TrackImpl;
 
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +25,7 @@ import java.util.Optional;
 public class SlotBankImpl extends AbstractPagedBankImpl<SlotImpl, ISlot> implements ISlotBank
 {
     private final SceneBankImpl sceneBank;
-    private int                 trackIndex;
+    private final ITrack        track;
 
 
     /**
@@ -31,15 +33,15 @@ public class SlotBankImpl extends AbstractPagedBankImpl<SlotImpl, ISlot> impleme
      *
      * @param dataSetup Some configuration variables
      * @param sceneBank The scene bank for scrolling the clip pages on all tracks
-     * @param trackIndex The track index to which the slot bank belongs
+     * @param track The track to which the slot bank belongs
      * @param numSlots The number of slots in the page of the bank
      */
-    public SlotBankImpl (final DataSetupEx dataSetup, final SceneBankImpl sceneBank, final int trackIndex, final int numSlots)
+    public SlotBankImpl (final DataSetupEx dataSetup, final SceneBankImpl sceneBank, final TrackImpl track, final int numSlots)
     {
         super (dataSetup, numSlots, EmptySlot.INSTANCE);
 
         this.sceneBank = sceneBank;
-        this.trackIndex = trackIndex;
+        this.track = track;
     }
 
 
@@ -54,7 +56,7 @@ public class SlotBankImpl extends AbstractPagedBankImpl<SlotImpl, ISlot> impleme
         super (slotBankImpl.dataSetup, numSlots, EmptySlot.INSTANCE, slotBankImpl.items);
 
         this.sceneBank = slotBankImpl.sceneBank;
-        this.trackIndex = slotBankImpl.trackIndex;
+        this.track = slotBankImpl.track;
     }
 
 
@@ -62,7 +64,7 @@ public class SlotBankImpl extends AbstractPagedBankImpl<SlotImpl, ISlot> impleme
     @Override
     protected SlotImpl createItem (final int position)
     {
-        return new SlotImpl (this.dataSetup, this.trackIndex, this.pageSize == 0 ? 0 : position % this.pageSize);
+        return new SlotImpl (this.dataSetup, this.track, this.pageSize == 0 ? 0 : position % this.pageSize, this.sceneBank);
     }
 
 
@@ -97,7 +99,7 @@ public class SlotBankImpl extends AbstractPagedBankImpl<SlotImpl, ISlot> impleme
     @Override
     public Optional<ISlot> getEmptySlot (final int startFrom)
     {
-        return Optional.of (new SlotImpl (this.dataSetup, this.trackIndex, startFrom));
+        return Optional.of (new SlotImpl (this.dataSetup, this.track, startFrom, this.sceneBank));
     }
 
 
@@ -137,21 +139,5 @@ public class SlotBankImpl extends AbstractPagedBankImpl<SlotImpl, ISlot> impleme
             this.items.remove (this.items.size () - 1);
 
         this.itemCount = maxSlotCount;
-    }
-
-
-    /**
-     * Update the track to which the slot bank belongs.
-     *
-     * @param trackIndex The index of the track
-     */
-    public void setTrack (final int trackIndex)
-    {
-        this.trackIndex = trackIndex;
-        synchronized (this.items)
-        {
-            for (final ISlot slot: this.items)
-                ((SlotImpl) slot).setTrack (trackIndex);
-        }
     }
 }

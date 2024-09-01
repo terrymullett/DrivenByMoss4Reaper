@@ -158,7 +158,7 @@ public interface IHost
 
 
     /**
-     * Creates an offscreen bitmap that the extension can use to render into. The memory used by
+     * Creates an off-screen bitmap that the extension can use to render into. The memory used by
      * this bitmap is guaranteed to be freed once this extension exits.
      *
      * @param width The width of the bitmap
