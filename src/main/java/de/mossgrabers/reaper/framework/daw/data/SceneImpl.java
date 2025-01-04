@@ -1,5 +1,5 @@
 // Written by Jürgen Moßgraber - mossgrabers.de
-// (c) 2017-2024
+// (c) 2017-2025
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
 package de.mossgrabers.reaper.framework.daw.data;
@@ -124,7 +124,7 @@ public class SceneImpl extends ItemImpl implements IScene
 
     /**
      * Set the position where the scene starts in the timeline.
-     * 
+     *
      * @param beginPosition The position
      */
     public void setBeginPosition (final double beginPosition)
@@ -135,7 +135,7 @@ public class SceneImpl extends ItemImpl implements IScene
 
     /**
      * Set the position where the scene ends in the timeline.
-     * 
+     *
      * @param endPosition The position
      */
     public void setEndPosition (final double endPosition)
@@ -146,7 +146,7 @@ public class SceneImpl extends ItemImpl implements IScene
 
     /**
      * Get the position where the scene starts in the timeline.
-     * 
+     *
      * @return The position
      */
     public double getBeginPosition ()
@@ -157,7 +157,7 @@ public class SceneImpl extends ItemImpl implements IScene
 
     /**
      * Get the position where the scene ends in the timeline.
-     * 
+     *
      * @return The position
      */
     public double getEndPosition ()

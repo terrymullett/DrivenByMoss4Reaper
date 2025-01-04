@@ -1,5 +1,5 @@
 // Written by Jürgen Moßgraber - mossgrabers.de
-// (c) 2017-2024
+// (c) 2017-2025
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
 package de.mossgrabers.reaper.framework.device;
@@ -493,7 +493,7 @@ public class DeviceManager
     {
         for (final Map.Entry<String, List<String>> entry: KNOWN_PLUGIN_CATEGORIES_MAP.entrySet ())
         {
-            for (String value: entry.getValue ())
+            for (final String value: entry.getValue ())
             {
                 if (deviceName.contains (value))
                     return entry.getKey ();

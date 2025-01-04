@@ -1,5 +1,5 @@
 // Written by Jürgen Moßgraber - mossgrabers.de
-// (c) 2017-2024
+// (c) 2017-2025
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
 package de.mossgrabers.reaper;
@@ -36,8 +36,6 @@ import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -245,14 +243,7 @@ public class MainApp implements MessageSender, AppCallback, WindowManager
             // Delay the project settings quite a bit still everything is up...
             SwingUtilities.invokeLater ( () -> {
 
-                final Timer timer = new Timer (2000, new ActionListener ()
-                {
-                    @Override
-                    public void actionPerformed (final ActionEvent e)
-                    {
-                        processInstanceSettings ();
-                    }
-                });
+                final Timer timer = new Timer (2000, e -> MainApp.this.processInstanceSettings ());
                 timer.setRepeats (false);
                 timer.start ();
 

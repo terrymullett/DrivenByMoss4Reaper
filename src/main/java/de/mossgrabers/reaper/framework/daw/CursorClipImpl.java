@@ -1,5 +1,5 @@
 // Written by Jürgen Moßgraber - mossgrabers.de
-// (c) 2017-2024
+// (c) 2017-2025
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
 package de.mossgrabers.reaper.framework.daw;
@@ -893,6 +893,14 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
     /** {@inheritDoc} */
     @Override
+    public void clearColumn (final int channel, final int column)
+    {
+        this.sendOSC (PATH_NOTE + "0/clearPosition/" + channel, (column + this.editPage * this.numSteps) * this.stepLength);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
     public boolean hasRowData (final int channel, final int row)
     {
         synchronized (this.notes)
@@ -900,6 +908,22 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
             for (int step = 0; step < this.numSteps; step++)
             {
                 if (this.data[channel][step][row].getState () != StepState.OFF)
+                    return true;
+            }
+            return false;
+        }
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasColumnData (final int channel, final int column)
+    {
+        synchronized (this.notes)
+        {
+            for (int row = 0; row < 128; row++)
+            {
+                if (this.data[channel][column][row].getState () != StepState.OFF)
                     return true;
             }
             return false;

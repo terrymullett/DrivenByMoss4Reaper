@@ -1,5 +1,5 @@
 // Written by Jürgen Moßgraber - mossgrabers.de
-// (c) 2017-2024
+// (c) 2017-2025
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
 package de.mossgrabers.reaper.framework.daw.data;
@@ -21,11 +21,11 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
  */
 public class SlotImpl extends ItemImpl implements ISlot
 {
-    private final ITrack track;
-    private boolean      hasContent;
-    private boolean      isMuted;
-    private ColorEx      color = new ColorEx (0.2, 0.2, 0.2);
-    private ISceneBank   sceneBank;
+    private final ITrack     track;
+    private boolean          hasContent;
+    private boolean          isMuted;
+    private ColorEx          color = new ColorEx (0.2, 0.2, 0.2);
+    private final ISceneBank sceneBank;
 
 
     /**
@@ -100,7 +100,7 @@ public class SlotImpl extends ItemImpl implements ISlot
 
         // Play cursor is in range of clip and recording as well as playback is active
         final IScene scene = this.sceneBank.getItem (this.index);
-        if (scene.doesExist () && scene instanceof SceneImpl sceneImpl)
+        if (scene.doesExist () && scene instanceof final SceneImpl sceneImpl)
         {
             final ITransport transport = this.dataSetup.getTransport ();
             if (transport.isRecording () && this.track.isRecArm ())
@@ -130,7 +130,7 @@ public class SlotImpl extends ItemImpl implements ISlot
 
         // Play cursor is in range of clip (scene) and playback is active
         final IScene scene = this.sceneBank.getItem (this.index);
-        if (scene.doesExist () && scene instanceof SceneImpl sceneImpl)
+        if (scene.doesExist () && scene instanceof final SceneImpl sceneImpl)
         {
             final ITransport transport = this.dataSetup.getTransport ();
             if (transport.isPlaying ())
@@ -221,9 +221,24 @@ public class SlotImpl extends ItemImpl implements ISlot
     }
 
 
+    /** {@inheritDoc} */
+    @Override
+    public void insertFile (final String path)
+    {
+        if (this.getIndex () >= 0)
+            this.sendTrackClipOSC ("insertFile", path);
+    }
+
+
     private void sendTrackClipOSC (final String command)
     {
         this.sendOSC (this.track.getIndex () + "/clip/" + this.getPosition () + "/" + command);
+    }
+
+
+    private void sendTrackClipOSC (final String command, final String value)
+    {
+        this.sendOSC (this.track.getIndex () + "/clip/" + this.getPosition () + "/" + command, value);
     }
 
 
