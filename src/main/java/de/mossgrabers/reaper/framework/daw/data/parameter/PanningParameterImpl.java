@@ -9,11 +9,11 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
 /**
- * Encapsulates the data of a tracks' panorama parameter.
+ * Encapsulates the data of a tracks' panning parameter.
  *
  * @author Jürgen Moßgraber
  */
-public class PanoramaParameterImpl extends ParameterImpl
+public class PanningParameterImpl extends ParameterImpl
 {
     private static final Object PANORAMA_UPDATE_LOCK = new Object ();
 
@@ -25,7 +25,7 @@ public class PanoramaParameterImpl extends ParameterImpl
      * @param index The index of the send
      * @param defaultValue The default value for resetting parameters [0..1]
      */
-    public PanoramaParameterImpl (final DataSetupEx dataSetup, final int index, final double defaultValue)
+    public PanningParameterImpl (final DataSetupEx dataSetup, final int index, final double defaultValue)
     {
         super (dataSetup, index, defaultValue);
 

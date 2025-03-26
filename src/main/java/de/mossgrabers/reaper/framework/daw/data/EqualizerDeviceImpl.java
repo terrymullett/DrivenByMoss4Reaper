@@ -34,7 +34,7 @@ public class EqualizerDeviceImpl extends SpecificDeviceImpl implements IEqualize
      */
     public EqualizerDeviceImpl (final DataSetupEx dataSetup, final int numParams)
     {
-        super (dataSetup, Processor.EQ, 0, numParams, 0, 0, 0);
+        super (dataSetup, Processor.EQ, 0, numParams, 0, 0, 0, 0);
 
         for (int i = 0; i < this.eqBandTypeParameters.length; i++)
             this.eqBandTypeParameters[i] = new EqBandTypeParameterImpl (dataSetup, i);

@@ -88,7 +88,7 @@ public class TrackImpl extends ChannelImpl implements ITrack
      * @param numScenes The number of scenes of a bank
      * @param numParams The number of parameters
      * @param volumeParameter The volume parameter
-     * @param panParameter The panorama parameter
+     * @param panParameter The panning parameter
      */
     public TrackImpl (final DataSetupEx dataSetup, final AbstractTrackBankImpl trackBank, final int index, final int numTracks, final int numSends, final int numScenes, final int numParams, final ParameterImpl volumeParameter, final ParameterImpl panParameter)
     {

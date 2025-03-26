@@ -114,13 +114,15 @@ public class HwAbsoluteKnobImpl extends AbstractHwAbsoluteControl implements IHw
 
             if (mouseEvent == MouseEvent.MOUSE_DRAGGED)
             {
-                final double offset = Math.min (3, Math.max (-3, this.pressedX - scaleX + (this.pressedY - scaleY)));
+                final double offset = Math.clamp (this.pressedX - scaleX + (this.pressedY - scaleY), -3, 3);
                 this.pressedX = scaleX;
                 this.pressedY = scaleY;
 
                 if (this.type == BindType.CC)
                 {
-                    this.currentValue = (int) Math.max (0, Math.min (127, this.currentValue + offset));
+                    // TODO support hires
+
+                    this.currentValue = (int) Math.clamp (this.currentValue + offset, 0, 127);
                     this.inputImpl.handleMidiMessage (new ShortMessage (0xB0, this.channel, this.control, this.currentValue));
                 }
             }

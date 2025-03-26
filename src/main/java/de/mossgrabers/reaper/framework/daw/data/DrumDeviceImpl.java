@@ -27,6 +27,6 @@ public class DrumDeviceImpl extends SpecificDeviceImpl implements IDrumDevice
      */
     public DrumDeviceImpl (final DataSetupEx dataSetup, final int numSends, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
     {
-        super (dataSetup, numSends, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
+        super (dataSetup, numSends, numParams, 0, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
     }
 }

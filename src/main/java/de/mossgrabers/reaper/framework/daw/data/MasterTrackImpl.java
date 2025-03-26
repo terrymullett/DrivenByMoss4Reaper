@@ -10,7 +10,7 @@ import de.mossgrabers.framework.observer.IItemSelectionObserver;
 import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.bank.TrackBankImpl;
-import de.mossgrabers.reaper.framework.daw.data.parameter.MasterPanoramaParameterImpl;
+import de.mossgrabers.reaper.framework.daw.data.parameter.MasterPanningParameterImpl;
 import de.mossgrabers.reaper.framework.daw.data.parameter.MasterVolumeParameterImpl;
 import de.mossgrabers.reaper.framework.daw.data.parameter.ParameterImpl;
 import de.mossgrabers.reaper.framework.daw.data.parameter.UserParameterImpl;
@@ -40,7 +40,7 @@ public class MasterTrackImpl extends TrackImpl implements IMasterTrack
      */
     public MasterTrackImpl (final DataSetupEx dataSetup, final TrackBankImpl trackBank, final int numSends, final int numParams)
     {
-        super (dataSetup, trackBank, 0, 1, numSends, 0, numParams, new MasterVolumeParameterImpl (dataSetup, 0.716), new MasterPanoramaParameterImpl (dataSetup, 0.5));
+        super (dataSetup, trackBank, 0, 1, numSends, 0, numParams, new MasterVolumeParameterImpl (dataSetup, 0.716), new MasterPanningParameterImpl (dataSetup, 0.5));
 
         this.crossfaderParameter = new UserParameterImpl (dataSetup, 0, null)
         {

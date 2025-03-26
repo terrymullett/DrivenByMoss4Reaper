@@ -17,7 +17,6 @@ import javax.sound.midi.Transmitter;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -27,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class MidiConnection
 {
-    private static final Set<MidiDevice> USED_DEVICES   = new HashSet<> (1);
+    private static final Set<MidiDevice> USED_DEVICES = new HashSet<> (1);
 
     private MidiDevice                   midiInputDevice;
     private MidiDevice                   midiOutputDevice;
@@ -35,9 +34,7 @@ public class MidiConnection
     private Transmitter                  transmitter;
 
     private final LogModel               model;
-    private final Object                 sendLock       = new Object ();
-
-    private final AtomicInteger          maxSysexLength = new AtomicInteger (0);
+    private final Object                 sendLock     = new Object ();
 
 
     /**
@@ -142,21 +139,7 @@ public class MidiConnection
     {
         try
         {
-            byte [] d = data;
-            final int oldmax = this.maxSysexLength.get ();
-            if (oldmax > data.length)
-            {
-                // Workaround for bug in the JDK.If a longer Sysex message was sent before, sending
-                // a short one will result in CC messages sent containing the diff bytes. Therefore,
-                // store the maxmimum length of a message sent and add F7s to fill the space.
-
-                d = new byte [oldmax];
-                System.arraycopy (data, 0, d, 0, data.length);
-                for (int i = data.length; i < oldmax; i++)
-                    d[i] = (byte) 0xF7;
-            }
-            this.maxSysexLength.set (data.length);
-            this.send (new SysexMessage (d, d.length));
+            this.send (new SysexMessage (data, data.length));
         }
         catch (final InvalidMidiDataException ex)
         {

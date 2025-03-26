@@ -20,6 +20,7 @@ import de.mossgrabers.framework.daw.midi.MidiSysExCallback;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.utils.OperatingSystem;
 import de.mossgrabers.reaper.communication.MessageSender;
+import de.mossgrabers.reaper.framework.hardware.AbstractHwAbsoluteControl;
 
 import javax.sound.midi.MidiDevice;
 import javax.sound.midi.MidiMessage;
@@ -58,6 +59,8 @@ public class MidiInputImpl implements IMidiInput
     private final Map<Integer, IHwContinuousControl>                  pitchbendContinuousMatchers = new HashMap<> ();
     private final Map<Integer, Map<Integer, IHwContinuousControl>>    ccTouchMatchers             = new HashMap<> ();
     private final Map<Integer, Map<Integer, IHwContinuousControl>>    noteTouchMatchers           = new HashMap<> ();
+
+    private final int []                                              lastCCValues                = new int [32];
 
 
     /**
@@ -156,12 +159,12 @@ public class MidiInputImpl implements IMidiInput
     private void internalBind (final IHwButton button, final BindType type, final int channel, final int control, final int value)
     {
         final Map<Integer, Map<Integer, IHwButton>> controlMap;
-        if (type == BindType.CC)
-            controlMap = this.ccButtonMatchers.computeIfAbsent (Integer.valueOf (channel), key -> new HashMap<> ());
-        else if (type == BindType.NOTE)
-            controlMap = this.noteButtonMatchers.computeIfAbsent (Integer.valueOf (channel), key -> new HashMap<> ());
-        else
-            throw new BindException (type);
+        switch (type)
+        {
+            case BindType.CC -> controlMap = this.ccButtonMatchers.computeIfAbsent (Integer.valueOf (channel), key -> new HashMap<> ());
+            case BindType.NOTE -> controlMap = this.noteButtonMatchers.computeIfAbsent (Integer.valueOf (channel), key -> new HashMap<> ());
+            default -> throw new BindException (type);
+        }
 
         controlMap.computeIfAbsent (Integer.valueOf (control), key -> new HashMap<> ()).put (Integer.valueOf (value), button);
     }
@@ -228,6 +231,15 @@ public class MidiInputImpl implements IMidiInput
     public void bind (final IHwAbsoluteControl absoluteControl, final BindType type, final int channel, final int control)
     {
         this.bindContinuous (absoluteControl, type, channel, control);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void bindHiRes (final IHwAbsoluteControl absoluteControl, final int channel, final int control)
+    {
+        this.bindContinuous (absoluteControl, BindType.CC, channel, control);
+        this.bindContinuous (absoluteControl, BindType.CC, channel, control + 32);
     }
 
 
@@ -313,12 +325,12 @@ public class MidiInputImpl implements IMidiInput
     {
         try
         {
-            if (message instanceof final SysexMessage sysex)
-                this.handleSysexMessage (sysex);
-            else if (message instanceof final ShortMessage sm)
-                this.handleShortMessage (sm);
-            else
-                this.host.error ("Unknown MIDI class.");
+            switch (message)
+            {
+                case SysexMessage sysex -> this.handleSysexMessage (sysex);
+                case ShortMessage sm -> this.handleShortMessage (sm);
+                default -> this.host.error ("Unknown MIDI class.");
+            }
         }
         catch (final RuntimeException ex)
         {
@@ -491,6 +503,23 @@ public class MidiInputImpl implements IMidiInput
             final IHwContinuousControl ccContinuous = ccContinuousMap.get (Integer.valueOf (data1));
             if (ccContinuous != null && ccContinuous.isBound ())
             {
+                // High resolution command? See MIDI 1.0 Detailed Specification 4.2, page 11
+                if (ccContinuous instanceof AbstractHwAbsoluteControl ac && ac.isHiRes ())
+                {
+                    if (data1 < 32)
+                    {
+                        // Store the MSB
+                        this.lastCCValues[data1] = data2;
+                    }
+                    else if (data1 < 64)
+                    {
+                        // LSB arrived as well, handle the command
+                        final int value = this.lastCCValues[data1 - 32] * 128 + data2;
+                        ccContinuous.handleValue (value / 16383.0);
+                    }
+                    return true;
+                }
+
                 ccContinuous.handleValue (data2 / 127.0);
                 return true;
             }

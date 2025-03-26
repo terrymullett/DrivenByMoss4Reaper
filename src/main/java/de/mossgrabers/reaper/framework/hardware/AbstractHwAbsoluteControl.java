@@ -24,6 +24,8 @@ public abstract class AbstractHwAbsoluteControl extends AbstractHwContinuousCont
 
     protected MidiInputImpl         inputImpl;
     protected int                   control;
+    protected boolean               isHiRes;
+
     // Alternative binding to the command
     protected IParameter            parameter;
 
@@ -43,6 +45,17 @@ public abstract class AbstractHwAbsoluteControl extends AbstractHwContinuousCont
         super (host, label);
 
         this.layout = new HwControlLayout (id);
+    }
+
+
+    /**
+     * Returns true if this is bound to 14-bit hi-res values (2 CCs).
+     *
+     * @return True if it is hi-res
+     */
+    public boolean isHiRes ()
+    {
+        return this.isHiRes;
     }
 
 
@@ -66,12 +79,29 @@ public abstract class AbstractHwAbsoluteControl extends AbstractHwContinuousCont
     @Override
     public void bind (final IMidiInput input, final BindType type, final int channel, final int control)
     {
+        this.bind (input, type, channel, control, false);
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public void bindHiRes (final IMidiInput input, final int channel, final int control)
+    {
+        this.bind (input, BindType.CC, channel, control, true);
+    }
+
+
+    private void bind (final IMidiInput input, final BindType type, final int channel, final int control, final boolean isHiRes)
+    {
         this.inputImpl = (MidiInputImpl) input;
         this.type = type;
         this.channel = channel;
         this.control = control;
 
-        input.bind (this, type, channel, control);
+        if (isHiRes)
+            input.bindHiRes (this, channel, control);
+        else
+            input.bind (this, type, channel, control);
     }
 
 

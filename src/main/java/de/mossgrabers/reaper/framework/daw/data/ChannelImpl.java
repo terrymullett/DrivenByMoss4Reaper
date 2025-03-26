@@ -15,7 +15,7 @@ import de.mossgrabers.reaper.communication.Processor;
 import de.mossgrabers.reaper.framework.Actions;
 import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 import de.mossgrabers.reaper.framework.daw.data.bank.SendBankImpl;
-import de.mossgrabers.reaper.framework.daw.data.parameter.PanoramaParameterImpl;
+import de.mossgrabers.reaper.framework.daw.data.parameter.PanningParameterImpl;
 import de.mossgrabers.reaper.framework.daw.data.parameter.ParameterImpl;
 import de.mossgrabers.reaper.framework.daw.data.parameter.VolumeParameterImpl;
 import de.mossgrabers.reaper.framework.device.DeviceMetadataImpl;
@@ -67,7 +67,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
      */
     public ChannelImpl (final DataSetupEx dataSetup, final int index, final int numSends)
     {
-        this (dataSetup, index, numSends, new VolumeParameterImpl (dataSetup, index, 0.716), new PanoramaParameterImpl (dataSetup, index, 0.5));
+        this (dataSetup, index, numSends, new VolumeParameterImpl (dataSetup, index, 0.716), new PanningParameterImpl (dataSetup, index, 0.5));
     }
 
 
@@ -78,7 +78,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
      * @param index The index of the channel in the page
      * @param numSends The number of sends of a bank
      * @param volumeParameter The volume parameter
-     * @param panParameter The panorama parameter
+     * @param panParameter The panning parameter
      */
     public ChannelImpl (final DataSetupEx dataSetup, final int index, final int numSends, final ParameterImpl volumeParameter, final ParameterImpl panParameter)
     {
@@ -542,9 +542,9 @@ public class ChannelImpl extends ItemImpl implements IChannel
 
 
     /**
-     * Set the panorama.
+     * Set the panning.
      *
-     * @param pan The panorama normalized to 0..1
+     * @param pan The panning normalized to 0..1
      */
     public void setInternalPan (final double pan)
     {
@@ -553,7 +553,7 @@ public class ChannelImpl extends ItemImpl implements IChannel
 
 
     /**
-     * Set the panorama as text.
+     * Set the panning as text.
      *
      * @param panStr The text
      */

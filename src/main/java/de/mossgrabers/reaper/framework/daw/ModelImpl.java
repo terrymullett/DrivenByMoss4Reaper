@@ -68,6 +68,7 @@ public class ModelImpl extends AbstractModel
         this.dataSetup = dataSetup;
 
         final int numParams = modelSetup.getNumParams ();
+        final int numListParams = modelSetup.getNumListParams ();
         final int numTracks = modelSetup.getNumTracks ();
         final int numSends = modelSetup.getNumSends ();
         final int numScenes = modelSetup.getNumScenes ();
@@ -94,7 +95,7 @@ public class ModelImpl extends AbstractModel
         // Create devices
 
         // Cursor device
-        this.cursorDevice = new CursorDeviceImpl (dataSetup, numSends, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
+        this.cursorDevice = new CursorDeviceImpl (dataSetup, numSends, numParams, numListParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
 
         // Drum Machine
         final List<IDrumDevice> drumDevices = new ArrayList<> ();
@@ -121,7 +122,7 @@ public class ModelImpl extends AbstractModel
                 case FIRST_INSTRUMENT, NI_KOMPLETE:
                     if (firstInstrumentDevice == null)
                     {
-                        firstInstrumentDevice = new CursorDeviceImpl (dataSetup, numSends, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
+                        firstInstrumentDevice = new CursorDeviceImpl (dataSetup, numSends, numParams, 0, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
                         this.specificDevices.put (DeviceID.FIRST_INSTRUMENT, firstInstrumentDevice);
                     }
                     if (deviceID == DeviceID.NI_KOMPLETE)

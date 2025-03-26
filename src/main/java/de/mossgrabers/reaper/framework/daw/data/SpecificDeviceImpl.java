@@ -4,6 +4,7 @@
 
 package de.mossgrabers.reaper.framework.daw.data;
 
+import de.mossgrabers.framework.daw.data.IParameterList;
 import de.mossgrabers.framework.daw.data.ISpecificDevice;
 import de.mossgrabers.framework.daw.data.bank.IDrumPadBank;
 import de.mossgrabers.framework.daw.data.bank.ILayerBank;
@@ -28,6 +29,7 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
     private final ParameterBankImpl parameterBank;
     private final ILayerBank        layerBank;
     private final IDrumPadBank      drumPadBank;
+    private final IParameterList    parameterList;
 
 
     /**
@@ -36,13 +38,14 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
      * @param dataSetup Some configuration variables
      * @param numSends The number of sends
      * @param numParams The number of parameters
+     * @param numListParams The number of parameters to make available in a list
      * @param numDevicesInBank The number of devices
      * @param numDeviceLayers The number of layers
      * @param numDrumPadLayers The number of drum pad layers
      */
-    public SpecificDeviceImpl (final DataSetupEx dataSetup, final int numSends, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
+    public SpecificDeviceImpl (final DataSetupEx dataSetup, final int numSends, final int numParams, final int numListParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
     {
-        this (dataSetup, Processor.DEVICE, numSends, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
+        this (dataSetup, Processor.DEVICE, numSends, numParams, numListParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
     }
 
 
@@ -53,11 +56,12 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
      * @param processor The processor to use for sending parameter updates
      * @param numSends The number of sends
      * @param numParams The number of parameters
+     * @param numListParams The number of parameters to make available in a list
      * @param numDevicesInBank The number of devices
      * @param numDeviceLayers The number of layers
      * @param numDrumPadLayers The number of drum pad layers
      */
-    public SpecificDeviceImpl (final DataSetupEx dataSetup, final Processor processor, final int numSends, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
+    public SpecificDeviceImpl (final DataSetupEx dataSetup, final Processor processor, final int numSends, final int numParams, final int numListParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
     {
         super (dataSetup, -1);
 
@@ -69,6 +73,9 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
             this.parameterBank = new ParameterBankImpl (dataSetup, processor, checkedNumParams, this);
         else
             this.parameterBank = null;
+
+        // TODO
+        this.parameterList = new ParameterListImpl (numListParams / 8, host, valueChanger);
 
         // Always empty
         this.layerBank = new LayerBankImpl (dataSetup, checkedNumDeviceLayers);
@@ -278,6 +285,14 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
     public IParameterBank getParameterBank ()
     {
         return this.parameterBank;
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public IParameterList getParameterList ()
+    {
+        return this.parameterList;
     }
 
 

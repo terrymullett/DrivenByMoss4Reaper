@@ -9,11 +9,11 @@ import de.mossgrabers.reaper.framework.daw.DataSetupEx;
 
 
 /**
- * Encapsulates the data of the master tracks' panorama parameter.
+ * Encapsulates the data of the master tracks' panning parameter.
  *
  * @author Jürgen Moßgraber
  */
-public class MasterPanoramaParameterImpl extends ParameterImpl
+public class MasterPanningParameterImpl extends ParameterImpl
 {
     private static final Object MASTER_PANORAMA_UPDATE_LOCK = new Object ();
 
@@ -24,7 +24,7 @@ public class MasterPanoramaParameterImpl extends ParameterImpl
      * @param dataSetup Some configuration variables
      * @param defaultValue The default value for resetting parameters [0..1]
      */
-    public MasterPanoramaParameterImpl (final DataSetupEx dataSetup, final double defaultValue)
+    public MasterPanningParameterImpl (final DataSetupEx dataSetup, final double defaultValue)
     {
         super (dataSetup, 0, defaultValue);
 

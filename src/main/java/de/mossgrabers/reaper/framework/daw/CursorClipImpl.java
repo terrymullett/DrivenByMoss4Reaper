@@ -588,7 +588,7 @@ public class CursorClipImpl extends BaseImpl implements INoteClip
 
     /** {@inheritDoc} */
     @Override
-    public void updateStepPan (final NotePosition notePosition, final double panorama)
+    public void updateStepPan (final NotePosition notePosition, final double panning)
     {
         // Not supported
     }

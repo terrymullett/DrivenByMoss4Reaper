@@ -30,13 +30,14 @@ public class CursorDeviceImpl extends SpecificDeviceImpl implements ICursorDevic
      * @param dataSetup Some configuration variables
      * @param numSends The number of sends
      * @param numParams The number of parameters
+     * @param numListParams The number of parameters to make available in a list
      * @param numDevicesInBank The number of devices
      * @param numDeviceLayers The number of layers
      * @param numDrumPadLayers The number of drum pad layers
      */
-    public CursorDeviceImpl (final DataSetupEx dataSetup, final int numSends, final int numParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
+    public CursorDeviceImpl (final DataSetupEx dataSetup, final int numSends, final int numParams, final int numListParams, final int numDevicesInBank, final int numDeviceLayers, final int numDrumPadLayers)
     {
-        super (dataSetup, numSends, numParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
+        super (dataSetup, numSends, numParams, numListParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
 
         final int checkedNumDevices = numDevicesInBank >= 0 ? numDevicesInBank : 8;
         this.deviceBank = new DeviceBankImpl (dataSetup, checkedNumDevices);
