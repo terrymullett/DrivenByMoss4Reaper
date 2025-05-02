@@ -730,6 +730,10 @@ public class MessageParser
                 this.parseParameter (device, value, parts);
                 break;
 
+            case "touchedParam":
+                device.setLastTouchedParameterIndex (Integer.parseInt (value));
+                break;
+
             case "band":
                 if (device instanceof final EqualizerDeviceImpl edi)
                 {

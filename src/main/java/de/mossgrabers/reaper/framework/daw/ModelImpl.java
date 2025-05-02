@@ -16,6 +16,7 @@ import de.mossgrabers.framework.daw.data.ISpecificDevice;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.ISceneBank;
 import de.mossgrabers.framework.daw.data.bank.ISlotBank;
+import de.mossgrabers.framework.parameter.IFocusedParameter;
 import de.mossgrabers.framework.scale.Scales;
 import de.mossgrabers.framework.utils.FrameworkException;
 import de.mossgrabers.reaper.framework.IniFiles;
@@ -31,6 +32,7 @@ import de.mossgrabers.reaper.framework.daw.data.bank.ResizedSlotBank;
 import de.mossgrabers.reaper.framework.daw.data.bank.SceneBankImpl;
 import de.mossgrabers.reaper.framework.daw.data.bank.SlotBankImpl;
 import de.mossgrabers.reaper.framework.daw.data.bank.TrackBankImpl;
+import de.mossgrabers.reaper.framework.daw.data.parameter.FocusedParameterImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -50,6 +52,7 @@ public class ModelImpl extends AbstractModel
     private final DataSetupEx                 dataSetup;
     private final Map<Integer, SceneBankImpl> sceneBanks = new HashMap<> (1);
     private final Map<Integer, ISlotBank>     slotBanks  = new HashMap<> (1);
+    private final FocusedParameterImpl        focusedParameter;
 
 
     /**
@@ -96,6 +99,7 @@ public class ModelImpl extends AbstractModel
 
         // Cursor device
         this.cursorDevice = new CursorDeviceImpl (dataSetup, numSends, numParams, numListParams, numDevicesInBank, numDeviceLayers, numDrumPadLayers);
+        this.focusedParameter = new FocusedParameterImpl ((CursorDeviceImpl) this.cursorDevice);
 
         // Drum Machine
         final List<IDrumDevice> drumDevices = new ArrayList<> ();
@@ -242,6 +246,14 @@ public class ModelImpl extends AbstractModel
     {
         if (this.clipLauncherNavigator != null)
             ((ClipLauncherNavigatorImpl) this.clipLauncherNavigator).shutdown ();
+    }
+
+
+    /** {@inheritDoc} */
+    @Override
+    public Optional<IFocusedParameter> getFocusedParameter ()
+    {
+        return this.focusedParameter.doesExist () ? Optional.of (this.focusedParameter) : Optional.empty ();
     }
 
 

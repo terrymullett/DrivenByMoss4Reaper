@@ -30,6 +30,7 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
     private final ILayerBank        layerBank;
     private final IDrumPadBank      drumPadBank;
     private final IParameterList    parameterList;
+    private int                     lastTouchedParameterIndex;
 
 
     /**
@@ -308,5 +309,27 @@ public class SpecificDeviceImpl extends DeviceImpl implements ISpecificDevice
     public IDrumPadBank getDrumPadBank ()
     {
         return this.drumPadBank;
+    }
+
+
+    /**
+     * Set the index of the last touched parameter of the device, if any.
+     *
+     * @param lastTouchedParameterIndex The parameter index, -1 if non is set
+     */
+    public void setLastTouchedParameterIndex (final int lastTouchedParameterIndex)
+    {
+        this.lastTouchedParameterIndex = lastTouchedParameterIndex;
+    }
+
+
+    /**
+     * Get the index of the last touched parameter of the device, if any.
+     *
+     * @return The parameter index, -1 if non is set
+     */
+    public int getLastTouchedParameterIndex ()
+    {
+        return this.lastTouchedParameterIndex;
     }
 }
