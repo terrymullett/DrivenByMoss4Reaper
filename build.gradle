@@ -11,7 +11,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
-version = '25.1.1'
+version = '25.1.2'
 
 jar {
     manifest {

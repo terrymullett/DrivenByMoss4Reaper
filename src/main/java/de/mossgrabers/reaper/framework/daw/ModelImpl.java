@@ -253,7 +253,7 @@ public class ModelImpl extends AbstractModel
     @Override
     public Optional<IFocusedParameter> getFocusedParameter ()
     {
-        return this.focusedParameter.doesExist () ? Optional.of (this.focusedParameter) : Optional.empty ();
+        return Optional.of (this.focusedParameter);
     }
 
 
