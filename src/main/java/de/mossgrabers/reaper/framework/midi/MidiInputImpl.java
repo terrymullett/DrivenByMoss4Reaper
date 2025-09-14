@@ -15,6 +15,7 @@ import de.mossgrabers.framework.controller.valuechanger.RelativeEncoding;
 import de.mossgrabers.framework.daw.IHost;
 import de.mossgrabers.framework.daw.midi.IMidiInput;
 import de.mossgrabers.framework.daw.midi.INoteInput;
+import de.mossgrabers.framework.daw.midi.MidiConstants;
 import de.mossgrabers.framework.daw.midi.MidiShortCallback;
 import de.mossgrabers.framework.daw.midi.MidiSysExCallback;
 import de.mossgrabers.framework.utils.ButtonEvent;
@@ -321,11 +322,14 @@ public class MidiInputImpl implements IMidiInput
     {
         try
         {
-            switch (message)
+            if (message instanceof final SysexMessage sysex)
+                this.handleSysexMessage (sysex);
+            else if (message instanceof ShortMessage sm)
+                this.handleShortMessage (sm);
+            else
             {
-                case final SysexMessage sysex -> this.handleSysexMessage (sysex);
-                case final ShortMessage sm -> this.handleShortMessage (sm);
-                default -> this.host.error ("Unknown MIDI class.");
+                this.host.error ("Unknown MIDI class.");
+                return;
             }
         }
         catch (final RuntimeException ex)
@@ -343,6 +347,10 @@ public class MidiInputImpl implements IMidiInput
     private void handleShortMessage (final ShortMessage message)
     {
         final int status = message.getStatus ();
+        // Ignore active sensing
+        if (status == 0xF8)
+            return;
+
         int data1 = message.getData1 ();
         int data2 = message.getData2 ();
 
@@ -359,8 +367,8 @@ public class MidiInputImpl implements IMidiInput
         }
 
         final boolean isProcessed = this.handleControls (command, channel, data1, data2);
-        // Ignore active sensing
-        if (isProcessed || status == 0xF8)
+        // Still forward MIDI notes
+        if (isProcessed && (command != MidiConstants.CMD_NOTE_ON && command != MidiConstants.CMD_NOTE_OFF))
             return;
 
         if (this.shortCallback != null)

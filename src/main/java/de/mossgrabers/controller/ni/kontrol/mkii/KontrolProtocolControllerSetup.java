@@ -55,6 +55,7 @@ import de.mossgrabers.framework.daw.ITransport;
 import de.mossgrabers.framework.daw.ModelSetup;
 import de.mossgrabers.framework.daw.constants.Capability;
 import de.mossgrabers.framework.daw.constants.DeviceID;
+import de.mossgrabers.framework.daw.data.ICursorDevice;
 import de.mossgrabers.framework.daw.data.ISpecificDevice;
 import de.mossgrabers.framework.daw.data.ITrack;
 import de.mossgrabers.framework.daw.data.bank.ITrackBank;
@@ -68,6 +69,7 @@ import de.mossgrabers.framework.mode.Modes;
 import de.mossgrabers.framework.scale.Scales;
 import de.mossgrabers.framework.utils.ButtonEvent;
 import de.mossgrabers.framework.utils.FrameworkException;
+import de.mossgrabers.framework.utils.IntConsumerSupplier;
 import de.mossgrabers.framework.utils.OperatingSystem;
 import de.mossgrabers.framework.view.Views;
 
@@ -102,7 +104,7 @@ public class KontrolProtocolControllerSetup extends AbstractControllerSetup<Kont
     private ModeMultiSelectCommand<KontrolProtocolControlSurface, KontrolProtocolConfiguration> switcher;
     private final int                                                                           version;
     private String                                                                              kompleteInstance      = "";
-    private boolean                                                                             triggerModeSwitch     = false;
+    private long                                                                                lastTriggerTime       = -1;
 
 
     /**
@@ -300,15 +302,15 @@ public class KontrolProtocolControllerSetup extends AbstractControllerSetup<Kont
             return selectedTrack.isPresent () && selectedTrack.get ().isSolo () ? 1 : 0;
         });
 
-        this.addButtons (surface, 0, 8, ButtonID.ROW_SELECT_1, "Select", (event, index) -> {
+        this.addButtons (surface, 0, 8, ContinuousID.TRACK_SELECT, "Select", (event, index) -> {
             if (event == ButtonEvent.DOWN)
                 this.model.getCurrentTrackBank ().getItem (index).selectOrExpandGroup ();
         }, 15, KontrolProtocolControlSurface.SYSEX_TRACK_SELECTED, index -> this.model.getTrackBank ().getItem (index).isSelected () ? 1 : 0);
 
-        this.addButtons (surface, 0, 8, ButtonID.ROW1_1, "Mute", new KontrolProtocolMuteCommand (this.model, surface), 15, KontrolProtocolControlSurface.SYSEX_TRACK_MUTE, index -> this.model.getTrackBank ().getItem (index).isMute () ? 1 : 0);
-        this.addButtons (surface, 0, 8, ButtonID.ROW2_1, "Solo", new KontrolProtocolSoloCommand (this.model, surface), 15, KontrolProtocolControlSurface.SYSEX_TRACK_SOLO, index -> this.model.getTrackBank ().getItem (index).isSolo () ? 1 : 0);
+        this.addButtons (surface, 0, 8, ContinuousID.TRACK_MUTE, "Mute", new KontrolProtocolMuteCommand (this.model, surface), 15, KontrolProtocolControlSurface.SYSEX_TRACK_MUTE, index -> this.model.getTrackBank ().getItem (index).isMute () ? 1 : 0);
+        this.addButtons (surface, 0, 8, ContinuousID.TRACK_SOLO, "Solo", new KontrolProtocolSoloCommand (this.model, surface), 15, KontrolProtocolControlSurface.SYSEX_TRACK_SOLO, index -> this.model.getTrackBank ().getItem (index).isSolo () ? 1 : 0);
 
-        this.addButtons (surface, 0, 8, ButtonID.ROW3_1, "Arm", (event, index) -> {
+        this.addButtons (surface, 0, 8, ContinuousID.TRACK_ARM, "Arm", (event, index) -> {
             if (event == ButtonEvent.DOWN)
                 this.model.getTrackBank ().getItem (index).toggleRecArm ();
         }, 15, KontrolProtocolControlSurface.SYSEX_TRACK_RECARM, index -> this.model.getTrackBank ().getItem (index).isRecArm () ? 1 : 0);
@@ -320,6 +322,41 @@ public class KontrolProtocolControllerSetup extends AbstractControllerSetup<Kont
         {
             this.addButton (ButtonID.SHIFT, "Shift", new ShiftCommand<> (this.model, surface), 15, KontrolProtocolControlSurface.CC_SHIFT);
             this.addButton (ButtonID.BROWSE, "Browse", this::handleBrowserButtons, 15, KontrolProtocolControlSurface.CC_NAVIGATE_PRESETS, () -> 3);
+        }
+    }
+
+
+    /**
+     * Simulate multiple hardware buttons via an absolute control. Each button is matched by a
+     * specific value. The first value is startValue, which gets increased by one for the other
+     * buttons.
+     *
+     * @param surface The control surface
+     * @param startValue The first matched value
+     * @param numberOfValues The number of buttons
+     * @param continuousID The continuous ID to assign
+     * @param label The label of the button
+     * @param supplier Callback for retrieving the state of the light
+     * @param midiChannel The MIDI channel
+     * @param midiControl The MIDI CC or note
+     * @param command The command to bind
+     * @param colorIds The color IDs to map to the states
+     */
+    protected void addButtons (final KontrolProtocolControlSurface surface, final int startValue, final int numberOfValues, final ContinuousID continuousID, final String label, final TriggerCommand command, final int midiChannel, final int midiControl, final IntConsumerSupplier supplier, final String... colorIds)
+    {
+        this.addAbsoluteKnob (continuousID, label, value -> {
+
+            command.execute (ButtonEvent.DOWN, value);
+            command.execute (ButtonEvent.UP, value);
+
+        }, BindType.CC, midiChannel, midiControl);
+
+        for (int i = 0; i < numberOfValues; i++)
+        {
+            final int index = i;
+
+            final IntSupplier supp = () -> supplier.process (index);
+            this.addLight (surface, null, midiChannel, midiControl, supp, colorIds);
         }
     }
 
@@ -381,32 +418,57 @@ public class KontrolProtocolControllerSetup extends AbstractControllerSetup<Kont
         if (event != ButtonEvent.UP)
             return;
 
-        // Prevent double trigger on button press/release which sends the exact same values
-        if (this.triggerModeSwitch)
+        // Prevent double triggers which occur most of the time
+        final long triggerTime = System.currentTimeMillis ();
+        if (this.lastTriggerTime == -1)
         {
-            final ModeManager modeManager = this.getSurface ().getModeManager ();
-            if (value == 0)
-                this.switcher.executeNormal (event);
-            else
-            {
-                final ParamsMode paramsMode = (ParamsMode) modeManager.get (Modes.DEVICE_PARAMS);
+            // Prevent mode change on startup
+            this.lastTriggerTime = triggerTime;
+            return;
+        }
+        if (triggerTime - this.lastTriggerTime < 300)
+            return;
+        this.lastTriggerTime = triggerTime;
 
+        // Prevent double trigger on button press/release which sends the exact same values
+        final ISpecificDevice nksDevice = this.model.getSpecificDevice (DeviceID.NI_KOMPLETE);
+        final ICursorDevice cursorDevice = this.model.getCursorDevice ();
+        final boolean isNksDeviceSelected = nksDevice.doesExist () && cursorDevice.getPosition () == nksDevice.getPosition ();
+
+        // Note: There is no notification when the special NKS device mode is entered. As a
+        // workaround all switches in the same mode (between device and between volume modes)
+        // are blocked!
+
+        final ModeManager modeManager = this.getSurface ().getModeManager ();
+        final ParamsMode paramsMode = (ParamsMode) modeManager.get (Modes.DEVICE_PARAMS);
+        if (value == 0)
+        {
+            // Switch Volume modes
+            if (!isNksDeviceSelected || paramsMode.getPreviouslySelectedDevice () != nksDevice.getPosition () || modeManager.isActive (Modes.DEVICE_PARAMS))
+                this.switcher.executeNormal (event);
+        }
+        else
+        {
+            // Switch Device modes
+            if (!isNksDeviceSelected || modeManager.isActive (Modes.VOLUME, Modes.SEND, Modes.DEVICE_LAYER))
+            {
                 if (modeManager.isActive (Modes.DEVICE_PARAMS))
-                    paramsMode.selectNextMode ();
+                {
+                    // Prevent accidental switching to Track controls mode when coming from NKS mode
+                    if (paramsMode.isTrackOrProjectMode () || !nksDevice.doesExist () || paramsMode.getPreviouslySelectedDevice () != nksDevice.getPosition ())
+                        paramsMode.selectNextMode ();
+                }
                 else
                 {
                     final boolean isLayerModeActive = modeManager.isActive (Modes.DEVICE_LAYER);
                     if (!isLayerModeActive)
-                        this.model.getCursorDevice ().selectParent ();
+                        cursorDevice.selectParent ();
 
                     modeManager.setActive (Modes.DEVICE_PARAMS);
                     paramsMode.enableLayerSubMode (isLayerModeActive);
                 }
             }
         }
-
-        // Prevent double triggers
-        this.triggerModeSwitch = !this.triggerModeSwitch;
     }
 
 
@@ -455,39 +517,6 @@ public class KontrolProtocolControllerSetup extends AbstractControllerSetup<Kont
         surface.getButton (ButtonID.DELETE).setBounds (225.75, 120.5, 31.75, 22.75);
         surface.getButton (ButtonID.MUTE).setBounds (194.0, 43.0, 24.25, 22.75);
         surface.getButton (ButtonID.SOLO).setBounds (226.25, 43.0, 24.25, 22.75);
-
-        surface.getButton (ButtonID.ROW_SELECT_1).setBounds (276.0, 43.0, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW_SELECT_2).setBounds (330.5, 43.0, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW_SELECT_3).setBounds (385.0, 43.0, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW_SELECT_4).setBounds (439.5, 43.0, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW_SELECT_5).setBounds (494.0, 43.0, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW_SELECT_6).setBounds (548.5, 43.0, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW_SELECT_7).setBounds (602.75, 43.0, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW_SELECT_8).setBounds (657.25, 43.0, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW1_1).setBounds (276.0, 67.5, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW1_2).setBounds (330.5, 67.5, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW1_3).setBounds (385.0, 67.5, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW1_4).setBounds (439.5, 67.5, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW1_5).setBounds (494.0, 67.5, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW1_6).setBounds (548.5, 67.5, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW1_7).setBounds (602.75, 67.5, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW1_8).setBounds (657.25, 67.5, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW2_1).setBounds (276.0, 92.25, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW2_2).setBounds (330.5, 92.25, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW2_3).setBounds (385.0, 92.25, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW2_4).setBounds (439.5, 92.25, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW2_5).setBounds (494.0, 92.25, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW2_6).setBounds (548.5, 92.25, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW2_7).setBounds (602.75, 92.25, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW2_8).setBounds (657.25, 92.25, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW3_1).setBounds (276.0, 116.75, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW3_2).setBounds (330.5, 116.75, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW3_3).setBounds (385.0, 116.75, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW3_4).setBounds (439.5, 116.75, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW3_5).setBounds (494.0, 116.75, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW3_6).setBounds (548.5, 116.75, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW3_7).setBounds (602.75, 116.75, 39.75, 16.0);
-        surface.getButton (ButtonID.ROW3_8).setBounds (657.25, 116.75, 39.75, 16.0);
 
         surface.getButton (ButtonID.BANK_LEFT).setBounds (188.5, 78.5, 29.75, 20.5);
         surface.getButton (ButtonID.BANK_RIGHT).setBounds (225.75, 78.5, 29.75, 20.5);
@@ -615,6 +644,8 @@ public class KontrolProtocolControllerSetup extends AbstractControllerSetup<Kont
             case DEVICE_PARAMS:
                 if (modeManager.getActive () instanceof final FakeParamsMode paramMode)
                     paramMode.switchProvider (isLeft);
+                else
+                    this.model.getClipLauncherNavigator ().navigateTracks (isLeft);
                 break;
 
             default:
