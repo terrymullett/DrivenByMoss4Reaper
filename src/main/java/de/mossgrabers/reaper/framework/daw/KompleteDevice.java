@@ -48,12 +48,15 @@ public class KompleteDevice implements ISpecificDevice
     public String getID ()
     {
         final String name = this.getName ();
-        if (name.contains ("Komplete Kontrol"))
-            return this.instrumentDevice.getID ();
-        else if ((name.contains ("Kontakt 7") || name.contains ("Kontakt 8")) && this.instrumentDevice instanceof final SpecificDeviceImpl deviceImpl)
-            return deviceImpl.getUnpagedParameterName (2048);
-        else if (name.contains ("Maschine 3") && this.instrumentDevice instanceof final SpecificDeviceImpl deviceImpl)
-            return deviceImpl.getUnpagedParameterName (128);
+        if (this.instrumentDevice instanceof final SpecificDeviceImpl deviceImpl)
+        {
+            if (name.contains ("Komplete Kontrol"))
+                return deviceImpl.getUnpagedParameterName (0);
+            if (name.contains ("Kontakt 7") || name.contains ("Kontakt 8"))
+                return deviceImpl.getUnpagedParameterName (2048);
+            if (name.contains ("Maschine 3"))
+                return deviceImpl.getUnpagedParameterName (128);
+        }
         return "";
     }
 
