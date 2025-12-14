@@ -137,13 +137,13 @@ public class BrowserImpl extends AbstractBrowser
         this.columnDataContentTypes = new IBrowserColumn [2] [];
         this.columnDataContentTypes[BrowserContentType.DEVICE.ordinal ()] = new IBrowserColumn []
         {
+            this.deviceCollectionFilterColumn,
             this.deviceLocationFilterColumn,
             this.deviceFileTypeFilterColumn,
             this.deviceCategoryFilterColumn,
             this.deviceTagsFilterColumn,
             this.deviceCreatorFilterColumn,
-            this.deviceTypeFilterColumn,
-            this.deviceCollectionFilterColumn
+            this.deviceTypeFilterColumn
         };
         this.columnDataContentTypes[BrowserContentType.PRESET.ordinal ()] = new IBrowserColumn []
         {
