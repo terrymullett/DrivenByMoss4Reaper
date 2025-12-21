@@ -11,7 +11,7 @@ java {
     targetCompatibility = JavaVersion.VERSION_21
 }
 
-version = '26.4.2'
+version = '26.5.0'
 
 jar {
     manifest {
@@ -83,13 +83,22 @@ installDist {
 
         String name = 'build/DrivenByMoss4Reaper-' + version
 
-        // Windows
+        // Windows - Intel
         ant.zip (destfile: name + '-Windows.zip') {            
             fileset(dir: destinationDir)
             zipfileset(prefix: 'drivenbymoss-libs', dir: new File ('libs', 'libusb4java')) {
                 include(name: '**/libusb4java-*-win32-x86-64.jar')
             }
             fileset(dir: new File ('runtime', 'windows'))
+        }
+
+        // Windows - ARM
+        ant.zip (destfile: name + '-Windows-ARM.zip') {            
+            fileset(dir: destinationDir)
+            zipfileset(prefix: 'drivenbymoss-libs', dir: new File ('libs', 'libusb4java')) {
+                include(name: '**/libusb4java-*-win32-arm-64.jar')
+            }
+            fileset(dir: new File ('runtime', 'windows-arm'))
         }
 
         // Mac - Intel

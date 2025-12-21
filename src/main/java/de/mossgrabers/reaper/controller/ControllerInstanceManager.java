@@ -543,7 +543,7 @@ public class ControllerInstanceManager
         final List<String> oldEntries = new ArrayList<> ();
         for (final Entry<Object, Object> e: properties.entrySet ())
         {
-            if (e.getKey () instanceof final String key)
+            if (e.getKey () instanceof final String key && key.startsWith (CONTROLLER_INSTANCE_TAG))
                 oldEntries.add (key);
         }
         for (final String key: oldEntries)
