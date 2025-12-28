@@ -517,8 +517,8 @@ public class MCUControllerSetup extends AbstractControllerSetup<MCUControlSurfac
                 // Panes
                 this.addButton (surface, ButtonID.NOTE_EDITOR, "Note Editor", new PaneCommand<> (PaneCommand.Panels.NOTE, this.model, surface), MCUControlSurface.MCU_MIDI_TRACKS);
                 this.addButton (surface, ButtonID.AUTOMATION_EDITOR, "Automation Editor", new PaneCommand<> (PaneCommand.Panels.AUTOMATION, this.model, surface), MCUControlSurface.MCU_INPUTS);
-                this.addButton (surface, ButtonID.TOGGLE_DEVICE, "Toggle Device", new PanelLayoutCommand<> (this.model, surface), 0, MCUControlSurface.MCU_AUDIO_TRACKS, () -> !surface.isShiftPressed () && cursorDevice.isWindowOpen ());
-                this.addButton (surface, ButtonID.MIXER, "Mixer", new PaneCommand<> (PaneCommand.Panels.MIXER, this.model, surface), MCUControlSurface.MCU_AUDIO_INSTR);
+                this.addButton (surface, ButtonID.TOGGLE_DEVICE, "Toggle Device", new PanelLayoutCommand<> (this.model, surface), 0, MCUControlSurface.MCU_AUDIO_INSTR, () -> !surface.isShiftPressed () && cursorDevice.isWindowOpen ());
+                this.addButton (surface, ButtonID.MIXER, "Mixer", new PaneCommand<> (PaneCommand.Panels.MIXER, this.model, surface), MCUControlSurface.MCU_AUDIO_TRACKS);
 
                 // Layouts
                 this.addButton (surface, ButtonID.LAYOUT_ARRANGE, "Arrange", new LayoutCommand<> (IApplication.PANEL_LAYOUT_ARRANGE, this.model, surface), MCUControlSurface.MCU_AUX);
