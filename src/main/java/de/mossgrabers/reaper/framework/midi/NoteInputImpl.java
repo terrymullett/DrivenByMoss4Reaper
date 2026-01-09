@@ -1,5 +1,5 @@
 // Written by Jürgen Moßgraber - mossgrabers.de
-// (c) 2017-2025
+// (c) 2017-2026
 // Licensed under LGPLv3 - http://www.gnu.org/licenses/lgpl-3.0.txt
 
 package de.mossgrabers.reaper.framework.midi;
@@ -62,21 +62,41 @@ public class NoteInputImpl extends AbstractNoteInput
             // Remove question marks for faster comparison
             for (final String filter: filters)
             {
-                // Remove question marks at the end, which are not necessary
-                final String trim = filter.replace ('?', ' ').trim ();
+                if (filter.length () != 6)
+                    throw new IllegalArgumentException ("Filter must be 6 characters long!");
 
-                // This needs to deliver either 2 or 4 character lengths
+                final String status = filter.substring (0, 2).replace ('?', ' ').trim ();
+                final String data1 = filter.substring (2, 4).replace ('?', ' ').trim ();
+                final String data2 = filter.substring (4, 6).replace ('?', ' ').trim ();
+                if (status.length () == 0)
+                    throw new IllegalArgumentException ("Filter has missing status!");
+                if (data1.length () == 0 && data2.length () > 0)
+                    throw new IllegalArgumentException ("First data byte filter cannot be empty if second is set!");
+                if (data1.length () == 1 || data2.length () == 1)
+                    throw new IllegalArgumentException ("Can only handle 2 byte data byte filters!");
 
-                List<String> result = new ArrayList<> ();
-                if (trim.length () % 2 == 0)
-                    result.add (trim);
-                else
+                // Add MIDI channels if necessary
+                final List<String> results = new ArrayList<> ();
+                if (status.length () == 1)
                 {
                     for (int i = 0; i <= 0xF; i++)
-                        result.add (trim + Integer.toHexString (i).toUpperCase (Locale.US));
+                        results.add (status + Integer.toHexString (i).toUpperCase (Locale.US));
                 }
+                else
+                    results.add (status);
 
-                backendFilters.addAll (result);
+                // Add data byte filters
+                for (final String result: results)
+                {
+                    String finalFilter = result;
+                    if (data1.length () > 0)
+                    {
+                        finalFilter += data1;
+                        if (data2.length () > 0)
+                            finalFilter += data2;
+                    }
+                    backendFilters.add (finalFilter);
+                }
             }
         }
 
