@@ -1,2 +1,2 @@
-export JAVA_HOME=~/java/jdk-21.0.6+7
+export JAVA_HOME=~/usr/lib/jvm/default-java
 ./gradlew clean generateLicenseReport installDist
